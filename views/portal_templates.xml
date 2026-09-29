@@ -1101,6 +1101,48 @@
         </t>
     </template>
 
+    <template id="portal_vendor_terms" name="Vendor Terms">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4 lm-portal">
+                <h2>Vendor Terms</h2>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <t t-if="not terms">
+                    <p class="text-muted">There are no vendor terms to accept right now.</p>
+                    <a href="/my/vendor" class="btn btn-primary">Go to dashboard</a>
+                </t>
+                <t t-else="">
+                    <div t-if="contract" class="alert alert-success">
+                        You accepted these terms on <span t-esc="contract.signed_at" t-options="{'widget': 'datetime'}"/>.
+                    </div>
+                    <div t-elif="not is_owner" class="alert alert-warning">Only the vendor owner can accept the terms.</div>
+                    <div t-else="" class="alert alert-warning">Please read and accept the terms to continue using the vendor portal.</div>
+                    <div class="card p-3 mb-3">
+                        <h5><t t-esc="terms.name"/> <small class="text-muted">v<t t-esc="terms.version"/></small></h5>
+                        <div t-out="terms.body"/>
+                    </div>
+                    <form t-if="not contract and is_owner" method="post" action="/my/vendor/terms/accept">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <label class="form-check d-block mb-3"><input class="form-check-input" type="checkbox" name="accept" value="1" required="required"/><span class="form-check-label">I have read and accept the vendor terms and conditions</span></label>
+                        <button class="btn btn-primary">Accept terms</button>
+                    </form>
+                    <a t-if="contract" href="/my/vendor" class="btn btn-primary">Go to dashboard</a>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_terms_staff_notice" name="Vendor Terms Pending (Staff)">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4 lm-portal">
+                <div class="alert alert-warning" role="alert">
+                    <h4 class="alert-heading">Vendor terms are waiting for acceptance</h4>
+                    <p class="mb-0">The vendor owner must accept the new vendor terms before the vendor portal can be used again. Please ask the owner of <strong t-esc="vendor.vendor_store_name or vendor.name"/> to sign in and accept them.</p>
+                </div>
+                <a href="/my/vendor/terms" class="btn btn-outline-secondary">Read the terms</a>
+            </div>
+        </t>
+    </template>
+
     <template id="portal_customer_marketplace_orders" name="Customer Marketplace Orders">
         <t t-call="portal.portal_layout">
             <div class="container my-4">

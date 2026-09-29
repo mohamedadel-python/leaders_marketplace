@@ -4,12 +4,25 @@ from odoo.http import request
 def _json_response(data, status=200):
     return request.make_json_response(data, status=status)
 
+def _terms_pending(vendor):
+    """403 payload while the vendor still has to accept the active terms, else None."""
+    if not vendor.is_marketplace_vendor:
+        return None
+    terms = request.env["leaders.vendor.terms"]._pending_for(vendor)
+    if not terms:
+        return None
+    return _json_response({"error": "terms_not_accepted", "terms_version": terms.version,
+                           "accept_url": "/my/vendor/terms"}, 403)
+
 class MarketplaceAPI(http.Controller):
     @http.route("/api/v1/vendor/dashboard", type="http", auth="bearer", methods=["GET"], csrf=False)
     def vendor_dashboard(self):
         vendor = request.env.user.partner_id.commercial_partner_id
         if not vendor.is_marketplace_vendor:
             return _json_response({"error":"not_vendor"}, 403)
+        blocked = _terms_pending(vendor)
+        if blocked:
+            return blocked
         return _json_response({
             "vendor_id":vendor.id,
             "vendor_name":vendor.display_name,
@@ -22,6 +35,9 @@ class MarketplaceAPI(http.Controller):
     @http.route("/api/v1/vendor/orders", type="http", auth="bearer", methods=["GET"], csrf=False)
     def vendor_orders(self):
         vendor = request.env.user.partner_id.commercial_partner_id
+        blocked = _terms_pending(vendor)
+        if blocked:
+            return blocked
         orders = request.env["leaders.vendor.order"].search([("vendor_id","=",vendor.id)], order="id desc", limit=100)
         return _json_response({"items":[{
             "id":o.id,"name":o.name,"state":o.state,"amount_total":o.amount_total,

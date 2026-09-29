@@ -1,7 +1,11 @@
+import logging
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
 
 DOCUMENT_TYPES = [
     ("commercial_register", "Commercial Register"),
@@ -542,22 +546,135 @@ class VendorTerms(models.Model):
     version = fields.Integer(default=1, required=True)
     body = fields.Html(required=True, translate=True)
     active = fields.Boolean(default=True)
+    contract_ids = fields.One2many("leaders.vendor.contract", "terms_id")
+    signed_count = fields.Integer(compute="_compute_signed_count", string="Signed contracts")
+
+    @api.depends("contract_ids.state")
+    def _compute_signed_count(self):
+        for terms in self:
+            terms.signed_count = len(terms.contract_ids.filtered(lambda c: c.state == "signed"))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        if any(vals.get("active", True) for vals in vals_list):
+            self._deactivate_other_versions(self.browse())
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if vals.get("active"):
+            self._deactivate_other_versions(self)
+        return super().write(vals)
+
+    def _deactivate_other_versions(self, keep):
+        """Only one version is in force: activating one retires the others.
+
+        Vendors that signed a retired version are asked to accept the new one
+        (a signed contract belongs to one terms record).
+        """
+        others = self.sudo().search([("active", "=", True), ("id", "not in", keep.ids)])
+        if others:
+            others.with_context(lm_terms_no_cascade=True).write({"active": False})
+
+    @api.constrains("active")
+    def _check_single_active(self):
+        if self.env.context.get("lm_terms_no_cascade"):
+            return
+        if self.search_count([("active", "=", True)]) > 1:
+            raise ValidationError(_("Only one vendor terms version can be active at a time."))
+
+    @api.model
+    def _active_terms(self):
+        return self.sudo().search([("active", "=", True)], order="version desc, id desc", limit=1)
+
+    @api.model
+    def _pending_for(self, vendor):
+        """The active terms the vendor still has to accept, or an empty recordset.
+
+        No active terms record means nothing is required (feature dormant).
+        """
+        terms = self._active_terms()
+        if not terms:
+            return terms
+        signed = self.env["leaders.vendor.contract"].sudo().search_count([
+            ("vendor_id", "=", vendor.commercial_partner_id.id),
+            ("terms_id", "=", terms.id), ("state", "=", "signed")])
+        return self.browse() if signed else terms
+
+    def action_accept(self, vendor, user, ip=None):
+        """Sign these terms for the vendor: accept checkbox = signature."""
+        self.ensure_one()
+        Contract = self.env["leaders.vendor.contract"].sudo()
+        vendor = vendor.commercial_partner_id
+        existing = Contract.search([
+            ("vendor_id", "=", vendor.id), ("terms_id", "=", self.id), ("state", "=", "signed")], limit=1)
+        if existing:
+            return existing
+        contract = Contract.create({
+            "vendor_id": vendor.id, "terms_id": self.id, "user_id": user.id, "accepted": True})
+        contract._sign_by_acceptance(user, ip)
+        return contract
+
 
 class VendorContract(models.Model):
     _name = "leaders.vendor.contract"
     _description = "Vendor Contract"
     _inherit = ["mail.thread"]
+    _order = "signed_at desc, id desc"
 
     vendor_id = fields.Many2one("res.partner", required=True, domain=[("is_marketplace_vendor","=",True)])
     terms_id = fields.Many2one("leaders.vendor.terms", required=True)
+    terms_version = fields.Integer(related="terms_id.version", store=True, string="Terms Version")
+    user_id = fields.Many2one("res.users", string="Signed By", readonly=True)
+    accepted = fields.Boolean(string="Accepted online", readonly=True)
     signed_at = fields.Datetime(readonly=True)
     signed_ip = fields.Char(readonly=True)
     signature = fields.Binary(attachment=True)
-    pdf_id = fields.Many2one("ir.attachment")
+    pdf_id = fields.Many2one("ir.attachment", readonly=True)
     state = fields.Selection([("draft","Draft"),("signed","Signed")], default="draft", tracking=True)
+
+    @api.constrains("vendor_id", "terms_id", "state")
+    def _check_one_signed_per_terms(self):
+        for rec in self.filtered(lambda c: c.state == "signed"):
+            if self.search_count([("vendor_id", "=", rec.vendor_id.id), ("terms_id", "=", rec.terms_id.id),
+                                  ("state", "=", "signed"), ("id", "!=", rec.id)]):
+                raise ValidationError(_("%(vendor)s already signed these terms.", vendor=rec.vendor_id.display_name))
 
     def action_sign(self):
         for rec in self:
             if not rec.signature:
                 raise UserError(_("Signature is required."))
-            rec.write({"state":"signed","signed_at":fields.Datetime.now()})
+            rec.write({"state":"signed","signed_at":fields.Datetime.now(),
+                       "user_id": rec.user_id.id or self.env.user.id})
+            rec._attach_pdf()
+
+    def _sign_by_acceptance(self, user, ip=None):
+        """Sign without a drawn signature: the accept checkbox is the signature."""
+        for rec in self:
+            rec.write({"state": "signed", "signed_at": fields.Datetime.now(), "signed_ip": ip or False,
+                       "user_id": user.id, "accepted": True})
+            rec._attach_pdf()
+
+    def _attach_pdf(self):
+        """Render the QWeb contract and keep it as an attachment (best effort).
+
+        Without wkhtmltopdf, Odoo renders HTML instead (always in test mode), which
+        is stored with the .html extension. A rendering failure never blocks signing.
+        """
+        report = self.env.ref("leaders_marketplace.action_report_vendor_contract", raise_if_not_found=False)
+        for rec in self:
+            if not report:
+                break
+            try:
+                with self.env.cr.savepoint():
+                    content, kind = self.env["ir.actions.report"].sudo().with_context(
+                        lang=rec.user_id.lang or self.env.user.lang)._render_qweb_pdf(report, [rec.id])
+                    ext, mimetype = ("pdf", "application/pdf") if kind == "pdf" else ("html", "text/html")
+                    attachment = self.env["ir.attachment"].sudo().create({
+                        "name": "%s-v%s-%s.%s" % (
+                            _("Vendor Terms Contract"), rec.terms_id.version, rec.vendor_id.id, ext),
+                        "raw": content, "mimetype": mimetype,
+                        "res_model": rec._name, "res_id": rec.id})
+                    rec.sudo().pdf_id = attachment
+            except Exception:  # noqa: BLE001 - the signature is valid without the document
+                _logger.exception("Could not render the contract PDF for %s", rec.display_name)
+                rec.sudo().message_post(body=_("The contract document could not be generated."))

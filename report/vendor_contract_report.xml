@@ -1,0 +1,41 @@
+<odoo>
+    <record id="action_report_vendor_contract" model="ir.actions.report">
+        <field name="name">Vendor Terms Contract</field>
+        <field name="model">leaders.vendor.contract</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">leaders_marketplace.report_vendor_contract</field>
+        <field name="report_file">leaders_marketplace.report_vendor_contract</field>
+        <field name="print_report_name">'Vendor Terms Contract - %s' % object.vendor_id.display_name</field>
+        <field name="binding_model_id" ref="model_leaders_vendor_contract"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_vendor_contract_document">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <h2 t-esc="o.terms_id.name"/>
+                <p class="text-muted">Version <span t-esc="o.terms_id.version"/></p>
+                <div class="mb-4" t-out="o.terms_id.body"/>
+                <hr/>
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><th>Vendor</th><td t-esc="o.vendor_id.vendor_store_name or o.vendor_id.display_name"/></tr>
+                        <tr><th>Signed by</th><td><span t-esc="o.user_id.name or '-'"/> <span t-if="o.user_id.login" t-esc="'(%s)' % o.user_id.login"/></td></tr>
+                        <tr><th>Signed on</th><td><span t-field="o.signed_at"/></td></tr>
+                        <tr><th>IP address</th><td t-esc="o.signed_ip or '-'"/></tr>
+                        <tr><th>Method</th><td><t t-if="o.accepted">Accepted online (checkbox)</t><t t-else="">Signature</t></td></tr>
+                    </tbody>
+                </table>
+                <div t-if="o.signature"><img t-att-src="image_data_uri(o.signature)" style="max-height: 100px;" alt="Signature"/></div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_vendor_contract">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="leaders_marketplace.report_vendor_contract_document"/>
+            </t>
+        </t>
+    </template>
+</odoo>

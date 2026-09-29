@@ -35,3 +35,4 @@ from . import test_fbl_disabled
 from . import test_customer_cancel
 from . import test_cod_protection
 from . import test_bank_change
+from . import test_vendor_terms

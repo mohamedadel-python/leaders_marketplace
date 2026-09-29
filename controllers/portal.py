@@ -3,7 +3,7 @@ import os
 from datetime import timedelta
 from urllib.parse import quote
 
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import HTTPException, NotFound
 
 from odoo import fields, http, _
 from odoo.http import request
@@ -32,7 +32,7 @@ class MarketplacePortal(CustomerPortal):
     def _is_vendor_owner(self):
         return request.env.user.has_group("leaders_marketplace.group_vendor_owner")
 
-    def _require_vendor(self, allow_frozen=False):
+    def _require_vendor(self, allow_frozen=False, check_terms=True):
         """The vendor behind the current user, or an AccessError.
 
         A frozen vendor still has obligations -- orders to ship, returns to
@@ -40,6 +40,13 @@ class MarketplacePortal(CustomerPortal):
         ``allow_frozen=True``. Everything that puts new goods on sale stays
         closed until the freeze is lifted. A banned vendor has no active user
         at all, so they never reach here.
+
+        While an active vendor terms version is unsigned by the vendor, the
+        owner is redirected to /my/vendor/terms and staff get a notice page
+        (raised as an HTTP response, so no route needs to know). Frozen vendors
+        are held to the terms as well: accepting is one click, and the terms
+        page itself is reachable. ``check_terms=False`` is for that page only.
+        With no active terms record nothing is checked.
         """
         if not self._is_vendor_user(allow_frozen=allow_frozen):
             vendor = self._vendor_partner()
@@ -48,7 +55,50 @@ class MarketplacePortal(CustomerPortal):
                     "Your vendor account is frozen, so you cannot list or change "
                     "products. You can still handle your existing orders and returns."))
             raise AccessError(_("Your account is not an approved marketplace vendor."))
-        return self._vendor_partner()
+        vendor = self._vendor_partner()
+        if check_terms:
+            terms = request.env["leaders.vendor.terms"]._pending_for(vendor)
+            if terms:
+                self._raise_terms_required(terms, vendor)
+        return vendor
+
+    def _raise_terms_required(self, terms, vendor):
+        if self._is_vendor_owner():
+            raise HTTPException(response=request.redirect("/my/vendor/terms"))
+        html = request.render("leaders_marketplace.portal_vendor_terms_staff_notice", {
+            "vendor": vendor, "terms": terms}, lazy=False)
+        raise HTTPException(response=request.make_response(html, status=403))
+
+    def _terms_page_values(self, vendor, **extra):
+        Terms = request.env["leaders.vendor.terms"]
+        terms = Terms._active_terms()
+        contract = request.env["leaders.vendor.contract"].sudo().search([
+            ("vendor_id", "=", vendor.id), ("terms_id", "=", terms.id), ("state", "=", "signed")],
+            limit=1) if terms else request.env["leaders.vendor.contract"]
+        values = {"vendor": vendor, "terms": terms, "contract": contract,
+                  "is_owner": self._is_vendor_owner(), "error": False, "freeze_notice": False}
+        values.update(extra)
+        return values
+
+    @http.route("/my/vendor/terms", type="http", auth="user", website=True)
+    def vendor_terms(self, **kw):
+        vendor = self._require_vendor(allow_frozen=True, check_terms=False)
+        return request.render("leaders_marketplace.portal_vendor_terms", self._terms_page_values(vendor))
+
+    @http.route("/my/vendor/terms/accept", type="http", auth="user", website=True,
+                methods=["POST"], csrf=True)
+    def vendor_terms_accept(self, **post):
+        vendor = self._require_vendor(allow_frozen=True, check_terms=False)
+        if not self._is_vendor_owner():
+            raise AccessError(_("Only the vendor owner can accept the terms."))
+        terms = request.env["leaders.vendor.terms"]._active_terms()
+        if not terms:
+            return request.redirect("/my/vendor")
+        if not post.get("accept"):
+            return request.render("leaders_marketplace.portal_vendor_terms", self._terms_page_values(
+                vendor, error=_("You must tick the box to accept the terms.")))
+        terms.action_accept(vendor, request.env.user, request.httprequest.remote_addr)
+        return request.redirect("/my/vendor")
 
     def _vendor_freeze_notice(self, vendor):
         """Banner text for a frozen vendor, or False."""

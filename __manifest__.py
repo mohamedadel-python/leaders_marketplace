@@ -32,6 +32,7 @@
         "views/vendor_order_views.xml",
         "views/vendor_invoice_views.xml",
         "report/vendor_invoice_report.xml",
+        "report/vendor_contract_report.xml",
         "views/commission_views.xml",
         "views/settlement_views.xml",
         "views/fulfillment_views.xml",
@@ -44,7 +45,8 @@
         "views/vendor_apply_templates.xml",
         "views/menu_views.xml",
         "views/cancel_reason_views.xml",
-        "views/bank_change_views.xml"
+        "views/bank_change_views.xml",
+        "views/vendor_terms_views.xml"
     ],
     "assets": {
         "web.assets_backend": [
