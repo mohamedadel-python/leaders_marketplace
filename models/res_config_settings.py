@@ -27,6 +27,18 @@ class ResConfigSettings(models.TransientModel):
              "or one seller's part from the order page, with a reason, while nothing "
              "in it has shipped. Online payments get a draft refund for finance to post.",
     )
+    marketplace_portal_show_standard_entries = fields.Selection(
+        [("only_if_documents", "Only when the customer has documents"),
+         ("always", "Always"),
+         ("never", "Never")],
+        string="Standard Odoo Portal Entries",
+        config_parameter="leaders_marketplace.portal_show_standard_entries",
+        default="only_if_documents",
+        help="Customer /my home: Odoo's own entries (Quotations, Sales Orders, Invoices "
+             "and other installed apps). Only when the customer has documents of that type "
+             "(default), always, or never. Marketplace entries are never hidden and the "
+             "pages themselves keep working.",
+    )
     marketplace_cancel_window_hours = fields.Integer(
         string="Customer Cancellation Window (hours)",
         config_parameter="leaders_marketplace.cancel_window_hours",

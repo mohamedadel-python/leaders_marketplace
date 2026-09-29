@@ -1,7 +1,7 @@
 <odoo>
     <template id="portal_vendor_import" name="Vendor Bulk Import">
-        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
-            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal">
+            
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <h2 class="mb-0">Bulk import</h2>
                 <a href="/my/vendor/products" class="btn btn-outline-secondary">Back</a>
@@ -62,8 +62,8 @@
     </template>
 
     <template id="portal_vendor_import_job" name="Vendor Bulk Import Job">
-        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
-            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal">
+            
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <h2 class="mb-0"><t t-esc="dict(job._fields['kind']._description_selection(job.env)).get(job.kind)"/>: <span t-esc="job.filename"/></h2>
                 <a href="/my/vendor/import" class="btn btn-outline-secondary">Back</a>

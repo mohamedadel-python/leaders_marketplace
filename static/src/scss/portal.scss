@@ -164,6 +164,39 @@
     }
 }
 
+// Vendor shell: sidebar on >= lg, compact scrolling top bar below.
+.lm-vendor-shell {
+    .lm-vendor-crumbs { margin-bottom: 12px; }
+    .lm-vendor-layout { display: block; }
+    .lm-vendor-sidebar { margin-bottom: 16px; min-width: 0; }
+    .lm-vendor-main { min-width: 0; }
+    // The pages still bring their own container; the layout owns the width now.
+    .lm-vendor-main > .container {
+        max-width: none;
+        padding-inline: 0;
+        margin: 0 !important;
+    }
+    .lm-vendor-nav-sep { flex: 0 0 auto; width: 1px; background: #e8eaed; margin-block: 4px; }
+    .lm-vendor-nav-link.disabled { opacity: .5; pointer-events: none; }
+}
+@include media-breakpoint-up(lg) {
+    .lm-vendor-shell {
+        .lm-vendor-layout {
+            display: grid;
+            grid-template-columns: 230px minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+        .lm-vendor-sidebar {
+            position: sticky;
+            inset-block-start: 16px;
+            margin-bottom: 0;
+        }
+        .lm-vendor-nav { flex-direction: column; overflow-x: visible; }
+        .lm-vendor-nav-sep { width: auto; height: 1px; margin-block: 4px; margin-inline: 6px; }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Dashboard
 // ---------------------------------------------------------------------------

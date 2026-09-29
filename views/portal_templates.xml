@@ -152,36 +152,59 @@
             <attribute name="t-att-class">'o_portal_docs row g-2' + (' d-none' if lm_is_vendor else '')</attribute>
         </xpath>
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
-            <t t-if="not lm_is_vendor" t-call="portal.portal_docs_entry">
-                <t t-set="title">Marketplace Orders</t>
-                <t t-set="text">View vendor shipments inside your customer order</t>
-                <t t-set="url" t-value="'/my/marketplace/orders'"/>
-                <t t-set="config_card" t-value="True"/>
+            <t t-if="not lm_is_vendor" t-foreach="request.env['leaders.portal.nav']._customer_entries()" t-as="lm_ce">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title" t-value="lm_ce['title']"/>
+                    <t t-set="text" t-value="lm_ce['text']"/>
+                    <t t-set="url" t-value="lm_ce['url']"/>
+                    <t t-set="config_card" t-value="True"/>
+                    <t t-set="lm_own_card" t-value="True"/>
+                </t>
             </t>
         </xpath>
     </template>
 
+    <!-- Sidebar (top bar on mobile). Every entry comes from leaders.portal.nav, so permissions and
+         feature switches are decided in one place. The nav data is read from `lm_nav`, or fetched here. -->
     <template id="portal_vendor_nav" name="Vendor Portal Navigation">
-        <t t-set="lm_path" t-value="request.httprequest.path"/>
-        <div t-if="freeze_notice" class="alert alert-warning" role="alert">
-            <i class="fa fa-lock"/> <t t-esc="freeze_notice"/>
-            <div class="small mt-1">You can still ship your open orders, answer returns and follow your settlements. New or changed listings are on hold.</div>
-        </div>
-        <nav class="lm-vendor-nav mb-4">
-            <a href="/my/vendor" t-attf-class="lm-vendor-nav-link #{'active' if lm_path == '/my/vendor' else ''}"><i class="fa fa-tachometer"/> Dashboard</a>
-            <a href="/my/vendor/products" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/products') else ''}"><i class="fa fa-cube"/> Products</a>
-            <a href="/my/vendor/orders" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/orders') else ''}"><i class="fa fa-shopping-cart"/> Orders</a>
-            <a href="/my/vendor/returns" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/returns') else ''}"><i class="fa fa-undo"/> Returns</a>
-            <a href="/my/vendor/disputes" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/disputes') else ''}"><i class="fa fa-gavel"/> Disputes</a>
-            <a href="/my/vendor/performance" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/performance') else ''}"><i class="fa fa-line-chart"/> Performance</a>
-            <t t-if="request.env.user.has_group('leaders_marketplace.group_vendor_owner')">
-                <a href="/my/vendor/finance" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/finance') else ''}"><i class="fa fa-money"/> Finance</a>
-                <a href="/my/vendor/delivery-zones" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/delivery-zones') else ''}"><i class="fa fa-map-marker"/> Delivery Zones</a>
-                <a href="/my/vendor/staff" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/staff') else ''}"><i class="fa fa-users"/> Staff</a>
-                <a href="/my/vendor/profile" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/profile') else ''}"><i class="fa fa-id-card-o"/> Profile</a>
-                <a t-if="request.env['leaders.vendor.api.key']._leaders_api_enabled()" href="/my/vendor/api" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/api') else ''}"><i class="fa fa-key"/> API</a>
+        <t t-set="lm_nav" t-value="lm_nav or request.env['leaders.portal.nav']._vendor_nav(request.httprequest.path)"/>
+        <nav class="lm-vendor-nav" aria-label="Vendor menu">
+            <t t-foreach="lm_nav['entries']" t-as="lm_e">
+                <a t-if="not lm_nav['disabled']" t-att-href="lm_e['url']"
+                   t-attf-class="lm-vendor-nav-link #{'active' if lm_e['active'] else ''}"
+                   t-att-aria-current="'page' if lm_e['active'] else None"><i t-attf-class="fa #{lm_e['icon']}"/> <t t-out="lm_e['label']"/></a>
+                <span t-else="" class="lm-vendor-nav-link disabled" aria-disabled="true"><i t-attf-class="fa #{lm_e['icon']}"/> <t t-out="lm_e['label']"/></span>
             </t>
+            <span class="lm-vendor-nav-sep" aria-hidden="true"/>
+            <a t-att-href="lm_nav['purchases_url']" class="lm-vendor-nav-link" id="lm_nav_my_purchases"><i class="fa fa-shopping-bag"/> My purchases</a>
         </nav>
+    </template>
+
+    <!-- The one layout of every vendor page: breadcrumbs, freeze notice, sidebar and the page body. -->
+    <template id="portal_vendor_layout" name="Vendor Portal Layout">
+        <t t-set="lm_nav" t-value="request.env['leaders.portal.nav']._vendor_nav(request.httprequest.path)"/>
+        <t t-call="portal.portal_layout">
+            <t t-set="no_breadcrumbs" t-value="True"/>
+            <div class="container my-3 lm-portal lm-vendor-shell">
+                <nav aria-label="breadcrumb" class="lm-vendor-crumbs">
+                    <ol class="breadcrumb mb-0 px-0" id="lm_vendor_breadcrumbs">
+                        <t t-foreach="lm_nav['crumbs']" t-as="lm_c">
+                            <li t-if="lm_c_first" class="breadcrumb-item"><a t-att-href="lm_c[1]" aria-label="Home" title="Home"><i class="fa fa-home"/></a></li>
+                            <li t-elif="lm_c[1]" class="breadcrumb-item"><a t-att-href="lm_c[1]" t-out="lm_c[0]"/></li>
+                            <li t-else="" class="breadcrumb-item active" aria-current="page" t-out="lm_c[0]"/>
+                        </t>
+                    </ol>
+                </nav>
+                <div t-if="freeze_notice" class="alert alert-warning" role="alert">
+                    <i class="fa fa-lock"/> <t t-esc="freeze_notice"/>
+                    <div class="small mt-1">You can still ship your open orders, answer returns and follow your settlements. New or changed listings are on hold.</div>
+                </div>
+                <div class="lm-vendor-layout">
+                    <aside class="lm-vendor-sidebar"><t t-call="leaders_marketplace.portal_vendor_nav"/></aside>
+                    <main class="lm-vendor-main"><t t-out="0"/></main>
+                </div>
+            </div>
+        </t>
     </template>
 
     <template id="portal_vendor_state_badge" name="Vendor Portal State Badge">
@@ -195,10 +218,10 @@
     </template>
 
     <template id="portal_vendor_dashboard" name="Vendor Dashboard">
-        <t t-call="portal.portal_layout">
-            <t t-set="no_breadcrumbs" t-value="True"/>
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            
             <div class="container my-4 lm-portal lm-dashboard">
-                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                
 
                 <!-- Header -->
                 <div class="lm-dash-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -383,8 +406,8 @@
     </template>
 
     <template id="portal_vendor_products" name="Vendor Products">
-        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
-            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal">
+            
             <div class="d-flex justify-content-between align-items-center mb-3"><h2>Products &amp; Offers</h2><div class="d-flex flex-wrap gap-2"><a t-if="bulk_import_enabled" href="/my/vendor/import" class="btn btn-outline-primary"><i class="fa fa-upload"/> Bulk import</a><a href="/my/vendor/products/new" class="btn btn-primary">+ Add Product</a></div></div>
             <div t-if="error" class="alert alert-danger" t-esc="error"/>
             <div t-if="notice" class="alert alert-success" t-esc="notice"/>
@@ -445,8 +468,8 @@
     </template>
 
     <template id="portal_vendor_product_form" name="Vendor Product Form">
-        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
-            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal">
+            
             <div class="d-flex justify-content-between"><h2><t t-if="offer">Edit Product</t><t t-else="">Add Product</t></h2><a href="/my/vendor/products" class="btn btn-outline-secondary">Back</a></div>
             <div t-if="error" class="alert alert-danger mt-3" t-esc="error"/>
             <div t-if="catalog_enabled and not offer" class="card p-3 mt-3">
@@ -573,9 +596,9 @@
     </template>
 
     <template id="portal_vendor_orders" name="Vendor Orders">
-        <t t-call="portal.portal_layout">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
             <div class="container my-4 lm-portal lm-dashboard">
-                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                
                 <h2 class="mb-3">Vendor Orders</h2>
                 <div class="lm-panel">
                     <div t-if="orders" class="table-responsive">
@@ -620,9 +643,9 @@
     </template>
 
     <template id="portal_vendor_order_detail" name="Vendor Order Detail">
-        <t t-call="portal.portal_layout">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
             <div class="container my-4 lm-portal lm-dashboard">
-                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                
                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                     <div>
                         <h2 class="mb-1"><span t-esc="order.name"/> <t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="order"/></t></h2>
@@ -750,7 +773,7 @@
     </template>
 
     <template id="portal_vendor_finance" name="Vendor Finance">
-        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal"><t t-call="leaders_marketplace.portal_vendor_nav"/><h2>Wallet &amp; Settlements</h2>
+        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal"><h2>Wallet &amp; Settlements</h2>
         <div class="row g-3 mb-4"><div class="col-md-6"><div class="card p-3"><small>Available</small><strong t-esc="vendor.vendor_wallet_balance"/></div></div><div class="col-md-6"><div class="card p-3"><small>On Hold</small><strong t-esc="vendor.vendor_wallet_hold"/></div></div></div>
         <div t-if="reserve_enforced and held_reserves" class="card p-3 mb-4">
             <h5 class="mb-2">Returns Reserve</h5>
@@ -827,9 +850,9 @@
     </template>
 
     <template id="portal_vendor_delivery_zones" name="Vendor Delivery Zones">
-        <t t-call="portal.portal_layout">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
             <div class="container my-4 lm-portal">
-                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                
                 <h2>Delivery Zones</h2>
                 <div t-if="error" class="alert alert-danger" t-esc="error"/>
                 <p class="text-muted">Set your own delivery price per country and state/governorate. Customers are
@@ -943,9 +966,9 @@
     </template>
 
     <template id="portal_vendor_returns" name="Vendor Returns">
-        <t t-call="portal.portal_layout">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
             <div class="container my-4 lm-portal lm-dashboard">
-                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                
                 <h2 class="mb-3">Returns</h2>
                 <div class="lm-panel">
                     <div t-if="records" class="table-responsive">
@@ -970,10 +993,10 @@
     </template>
 
     <template id="portal_vendor_return_detail" name="Vendor Return Detail">
-        <t t-call="portal.portal_layout">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
             <t t-set="ret" t-value="record"/>
             <div class="container my-4 lm-portal lm-dashboard">
-                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                
                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                     <div>
                         <h2 class="mb-1"><t t-esc="record.name"/> <t t-call="leaders_marketplace.portal_return_state_badge"/></h2>
@@ -1079,8 +1102,8 @@
     </template>
 
     <template id="portal_vendor_dispute_detail" name="Vendor Dispute Detail">
-        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
-            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal">
+            
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <h2 class="mb-0"><t t-esc="record.name"/>
                     <span class="badge text-bg-secondary" t-esc="dict(record._fields['state']._description_selection(record.env)).get(record.state)"/>
@@ -1110,7 +1133,7 @@
         </div></t>
     </template>
 
-    <template id="portal_vendor_disputes" name="Vendor Disputes"><t t-call="portal.portal_layout"><div class="container my-4 lm-portal"><t t-call="leaders_marketplace.portal_vendor_nav"/><h2>Disputes</h2>
+    <template id="portal_vendor_disputes" name="Vendor Disputes"><t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal"><h2>Disputes</h2>
             <div t-if="records" class="table-responsive"><table class="table align-middle">
                 <thead><tr><th>Dispute</th><th>Order</th><th>Reason</th><th>Answer by</th><th>Status</th><th/></tr></thead>
                 <tbody><tr t-foreach="records" t-as="r">
@@ -1123,7 +1146,7 @@
                 </tr></tbody>
             </table></div>
             <div t-else="" class="alert alert-info">No disputes. Good news.</div></div></t></template>
-    <template id="portal_vendor_performance" name="Vendor Performance"><t t-call="portal.portal_layout"><div class="container my-4 lm-portal"><t t-call="leaders_marketplace.portal_vendor_nav"/><h2>Performance</h2><div class="mb-3">Current tier: <strong t-esc="vendor.vendor_tier_id.name or '-'"/></div>
+    <template id="portal_vendor_performance" name="Vendor Performance"><t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal"><h2>Performance</h2><div class="mb-3">Current tier: <strong t-esc="vendor.vendor_tier_id.name or '-'"/></div>
                 <div t-if="kpis" class="table-responsive"><table class="table align-middle">
                     <thead><tr><th>Month</th><th class="text-end">Orders</th><th class="text-end">Completed</th><th class="text-end">Cancelled</th><th class="text-end">Late shipments</th><th class="text-end">Rating</th><th class="text-end">Avg. time to ship</th></tr></thead>
                     <tbody><tr t-foreach="kpis" t-as="k">
@@ -1138,7 +1161,7 @@
                 </table></div>
                 <div t-else="" class="alert alert-info">No performance data yet. Your first monthly snapshot appears once you have orders.</div><h4>Penalties</h4><table class="table"><thead><tr><th>Level</th><th>Reason</th><th>Start</th><th>End</th></tr></thead><tbody><tr t-foreach="penalties" t-as="p"><td t-esc="p.level"/><td t-esc="p.reason"/><td t-esc="p.date_start"/><td t-esc="p.date_end or '-'"/></tr></tbody></table></div></t></template>
 
-    <template id="portal_vendor_staff" name="Vendor Staff"><t t-call="portal.portal_layout"><div class="container my-4 lm-portal"><t t-call="leaders_marketplace.portal_vendor_nav"/><h2>Vendor Staff</h2><div t-if="error" class="alert alert-danger" t-esc="error"/><div t-if="invited" class="alert alert-success">Invitation sent.</div><div t-if="resent" class="alert alert-success">Invitation sent again.</div><div t-if="updated" class="alert alert-success">Staff list updated.</div><div t-if="mail_failed" class="alert alert-warning">User created but invitation email could not be sent — use Resend.</div><form method="post" action="/my/vendor/staff" class="card p-3 mb-4"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><div class="row g-2"><div class="col-md-5"><input class="form-control" name="name" placeholder="Employee name" required="required"/></div><div class="col-md-5"><input class="form-control" type="email" name="email" placeholder="Email" required="required"/></div><div class="col-md-2"><button class="btn btn-primary w-100">Invite</button></div></div></form><div class="table-responsive"><table class="table align-middle">
+    <template id="portal_vendor_staff" name="Vendor Staff"><t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal"><h2>Vendor Staff</h2><div t-if="error" class="alert alert-danger" t-esc="error"/><div t-if="invited" class="alert alert-success">Invitation sent.</div><div t-if="resent" class="alert alert-success">Invitation sent again.</div><div t-if="updated" class="alert alert-success">Staff list updated.</div><div t-if="mail_failed" class="alert alert-warning">User created but invitation email could not be sent — use Resend.</div><form method="post" action="/my/vendor/staff" class="card p-3 mb-4"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><div class="row g-2"><div class="col-md-5"><input class="form-control" name="name" placeholder="Employee name" required="required"/></div><div class="col-md-5"><input class="form-control" type="email" name="email" placeholder="Email" required="required"/></div><div class="col-md-2"><button class="btn btn-primary w-100">Invite</button></div></div></form><div class="table-responsive"><table class="table align-middle">
     <thead><tr><th>Name</th><th>Login</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
     <tbody>
         <tr t-foreach="staff" t-as="u">
@@ -1169,9 +1192,9 @@
 </table></div></div></t></template>
 
     <template id="portal_vendor_profile" name="Vendor Profile">
-        <t t-call="portal.portal_layout">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
             <div class="container my-4 lm-portal">
-                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                
                 <h2>Vendor Profile</h2>
                 <div t-if="error" class="alert alert-danger" t-esc="error"/>
                 <div t-if="requested" class="alert alert-success">Payout account change requested. We sent you a security email; the marketplace will review it and payouts are held until then.</div>
@@ -1222,7 +1245,7 @@
     </template>
 
     <template id="portal_vendor_terms" name="Vendor Terms">
-        <t t-call="portal.portal_layout">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
             <div class="container my-4 lm-portal">
                 <h2>Vendor Terms</h2>
                 <div t-if="error" class="alert alert-danger" t-esc="error"/>
@@ -1252,7 +1275,7 @@
     </template>
 
     <template id="portal_vendor_terms_staff_notice" name="Vendor Terms Pending (Staff)">
-        <t t-call="portal.portal_layout">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
             <div class="container my-4 lm-portal">
                 <div class="alert alert-warning" role="alert">
                     <h4 class="alert-heading">Vendor terms are waiting for acceptance</h4>
@@ -1263,8 +1286,70 @@
         </t>
     </template>
 
+    <!-- Customer breadcrumbs: Home > My orders > Order, Home > Returns & disputes -->
+    <template id="portal_breadcrumbs_marketplace" inherit_id="portal.portal_breadcrumbs" name="Marketplace Portal Breadcrumbs" priority="30">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'lm_orders'" class="breadcrumb-item active" aria-current="page">My orders</li>
+            <t t-elif="page_name == 'lm_order' and order">
+                <li class="breadcrumb-item"><a href="/my/marketplace/orders">My orders</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><t t-out="order.name"/></li>
+            </t>
+            <li t-elif="page_name == 'lm_returns'" class="breadcrumb-item active" aria-current="page">Returns &amp; disputes</li>
+        </xpath>
+    </template>
+
+    <!-- Standard Odoo cards of /my follow the "portal_show_standard_entries" setting. -->
+    <template id="portal_docs_entry_marketplace" inherit_id="portal.portal_docs_entry" name="Marketplace Portal Docs Entry Rules" priority="99">
+        <xpath expr="(//div)[1]" position="before">
+            <t t-set="lm_flags" t-value="request.env['leaders.portal.nav']._docs_entry_flags(lm_own_card, url, bool(placeholder_count), bool(show_count))"/>
+        </xpath>
+        <xpath expr="(//div)[1]" position="attributes">
+            <attribute name="t-if">lm_flags[0]</attribute>
+            <attribute name="t-att-class">'o_portal_index_card ' +  ('' if force_show or config_card or lm_flags[1] else 'd-none ') + ('col-12 order-0' if show_count else 'col-md-6 order-2')</attribute>
+        </xpath>
+    </template>
+
+    <template id="portal_customer_marketplace_returns" name="Customer Returns and Disputes">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'lm_returns'"/>
+            <div class="container my-4" id="lm_customer_returns">
+                <h2>Returns &amp; disputes</h2>
+                <h5 class="mt-4">Returns</h5>
+                <div t-if="returns" class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>Return</th><th>Order</th><th>Date</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="returns" t-as="ret">
+                                <td t-esc="ret.name"/>
+                                <td><a t-att-href="'/my/marketplace/orders/%s' % ret.vendor_order_id.id" t-esc="ret.vendor_order_id.name"/></td>
+                                <td t-esc="ret.request_date" t-options="{'widget': 'date'}"/>
+                                <td><t t-call="leaders_marketplace.portal_return_state_badge"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-else="" class="alert alert-info">You have no return requests.</div>
+                <h5 class="mt-4">Disputes</h5>
+                <div t-if="disputes" class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>Dispute</th><th>Order</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="disputes" t-as="dsp">
+                                <td t-esc="dsp.name"/>
+                                <td><a t-att-href="'/my/marketplace/orders/%s' % dsp.vendor_order_id.id" t-esc="dsp.vendor_order_id.name"/></td>
+                                <td><span class="badge rounded-pill text-bg-secondary" t-esc="dict(dsp._fields['state']._description_selection(dsp.env)).get(dsp.state)"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-else="" class="alert alert-info">You have no disputes.</div>
+            </div>
+        </t>
+    </template>
+
     <template id="portal_customer_marketplace_orders" name="Customer Marketplace Orders">
         <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'lm_orders'"/>
             <div class="container my-4">
                 <h2>Marketplace Purchases</h2>
                 <p class="text-muted">Products sold and invoiced by marketplace vendors.</p>
@@ -1290,6 +1375,7 @@
 
     <template id="portal_customer_marketplace_order_detail" name="Customer Marketplace Order Detail">
         <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'lm_order'"/>
             <div class="container my-4">
                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
                     <div>
@@ -1574,8 +1660,8 @@
     </template>
 
     <template id="portal_vendor_variants" name="Vendor Product Variants">
-        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
-            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal">
+            
             <div class="d-flex justify-content-between flex-wrap gap-2">
                 <h2>Variants of <t t-esc="tmpl.name"/></h2>
                 <a href="/my/vendor/products" class="btn btn-outline-secondary">Back</a>
@@ -1721,9 +1807,9 @@
         </t>
     </template>
     <template id="portal_vendor_statement" name="Vendor Statement of Account">
-        <t t-call="portal.portal_layout">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
             <div class="container my-4 lm-portal">
-                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                     <h2 class="mb-0">Statement of account</h2>
                     <div class="d-flex gap-2">

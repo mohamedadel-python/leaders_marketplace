@@ -1794,6 +1794,15 @@ class MarketplacePortal(CustomerPortal):
         ], order="date_order desc, id desc")
         return request.render("leaders_marketplace.portal_customer_marketplace_orders", {"orders": orders})
 
+    @http.route("/my/marketplace/returns", type="http", auth="user", website=True)
+    def customer_marketplace_returns(self, **kw):
+        partner = request.env.user.partner_id.commercial_partner_id
+        domain = [("partner_id", "child_of", partner.id)]
+        return request.render("leaders_marketplace.portal_customer_marketplace_returns", {
+            "returns": request.env["leaders.vendor.return"].sudo().search(domain, order="id desc"),
+            "disputes": request.env["leaders.vendor.dispute"].sudo().search(domain, order="id desc"),
+        })
+
     def _customer_vendor_order(self, order_id):
         partner = request.env.user.partner_id.commercial_partner_id
         order = request.env["leaders.vendor.order"].sudo().search([

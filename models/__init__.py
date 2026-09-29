@@ -28,4 +28,5 @@ from . import vendor_import
 from . import vendor_variants
 from . import vendor_api
 from . import vendor_statement
+from . import portal_nav
 from . import shipping_provider
