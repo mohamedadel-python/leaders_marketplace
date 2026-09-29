@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Default rate limit of the vendor API: 60 calls per minute per key. Seeded
+         because a cleared (0) integer setting deletes its parameter, and a missing
+         parameter means "no limit". -->
+    <record id="param_vendor_api_rate_limit" model="ir.config_parameter">
+        <field name="key">leaders_marketplace.vendor_api_rate_limit_per_minute</field>
+        <field name="value">60</field>
+    </record>
+    <record id="cron_vendor_api_cleanup" model="ir.cron">
+        <field name="name">Marketplace: clean vendor API records</field>
+        <field name="model_id" ref="model_leaders_vendor_api_key"/>
+        <field name="state">code</field><field name="code">model._cron_cleanup()</field>
+        <field name="interval_number">1</field><field name="interval_type">hours</field><field name="active">True</field>
+    </record>
+</odoo>

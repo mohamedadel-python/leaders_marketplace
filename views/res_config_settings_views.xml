@@ -142,6 +142,12 @@
                         <setting string="Import Rows per Cron Run" invisible="not marketplace_vendor_bulk_import_enabled" help="Rows applied per run of the 'process vendor imports' cron.">
                             <field name="marketplace_vendor_import_batch_size"/>
                         </setting>
+                        <setting string="Vendor Write API" help="Let vendor owners create API keys (portal page /my/vendor/api) and manage offers, orders, returns and read finance through /api/v1/vendor with a bearer key. Documentation: /api/v1/openapi.json.">
+                            <field name="marketplace_vendor_api_write_enabled"/>
+                        </setting>
+                        <setting string="API Calls per Minute" invisible="not marketplace_vendor_api_write_enabled" help="Per key. 0 = no limit.">
+                            <field name="marketplace_vendor_api_rate_limit"/>
+                        </setting>
                         <setting string="Vendor Variants, Images and Specifications" help="Let vendors build variants from existing attributes (one offer per variant), add extra images and write specifications on products they own. Off keeps the single-variant product form.">
                             <field name="marketplace_vendor_variants_enabled"/>
                         </setting>

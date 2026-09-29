@@ -26,3 +26,4 @@ from . import bank_change
 from . import ship_wizard
 from . import vendor_import
 from . import vendor_variants
+from . import vendor_api

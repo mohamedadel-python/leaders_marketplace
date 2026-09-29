@@ -1,3 +1,5 @@
+import re
+
 from odoo import http
 from odoo.http import request
 
@@ -32,8 +34,15 @@ class MarketplaceAPI(http.Controller):
             "wallet_hold":vendor.vendor_wallet_hold
         })
 
-    @http.route("/api/v1/vendor/orders", type="http", auth="bearer", methods=["GET"], csrf=False)
+    @http.route("/api/v1/vendor/orders", type="http", auth="leaders_vendor_bearer", methods=["GET"],
+                csrf=False)
     def vendor_orders(self):
+        # A marketplace key (B4) gets the paginated, filterable listing; any other
+        # bearer token was already checked by the stock "bearer" method and keeps
+        # the original answer.
+        from .vendor_api import VendorAPI
+        if re.match(r"^bearer\s+lmk_", request.httprequest.headers.get("Authorization") or "", re.IGNORECASE):
+            return VendorAPI.orders_list_response()
         vendor = request.env.user.partner_id.commercial_partner_id
         blocked = _terms_pending(vendor)
         if blocked:

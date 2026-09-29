@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_vendor_api" name="Vendor API Keys">
+        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
+            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <h2 class="mb-0">API keys</h2>
+                <a href="/my/vendor" class="btn btn-outline-secondary">Back</a>
+            </div>
+            <div t-if="error" class="alert alert-danger" t-esc="error"/>
+            <div t-if="revoked" class="alert alert-success">The key was revoked.</div>
+            <div t-if="new_key" class="alert alert-warning" id="lm_api_new_key">
+                <div class="fw-semibold mb-1">Copy your new key now. It is shown only once and cannot be recovered.</div>
+                <div class="input-group" dir="ltr">
+                    <input type="text" class="form-control font-monospace" readonly="readonly" id="lm_api_new_key_value" t-att-value="new_key"/>
+                </div>
+            </div>
+            <div class="card p-3 mb-3">
+                <h5>Create a key</h5>
+                <form action="/my/vendor/api/keys" method="post" class="row g-2 align-items-end">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-12 col-md-5">
+                        <label class="form-label" for="lm_api_name">Name</label>
+                        <input type="text" id="lm_api_name" name="name" class="form-control" maxlength="100" required="required" placeholder="e.g. ERP sync"/>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="lm_api_scope">Access</label>
+                        <select id="lm_api_scope" name="scope" class="form-select">
+                            <option value="read">Read only</option>
+                            <option value="write">Read and write</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3"><button type="submit" class="btn btn-primary w-100">Create key</button></div>
+                </form>
+            </div>
+            <div class="card p-3 mb-3">
+                <h5>Your keys</h5>
+                <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Name</th><th>Key</th><th>Access</th><th>Created</th><th>Last used</th><th>Status</th><th/></tr></thead>
+                    <tbody>
+                        <tr t-foreach="keys" t-as="k">
+                            <td t-esc="k.name"/>
+                            <td dir="ltr"><code>lmk_<t t-esc="k.key_prefix"/>...</code></td>
+                            <td><t t-esc="'Read and write' if k.scope == 'write' else 'Read only'"/></td>
+                            <td><span t-esc="k.create_date" t-options="{'widget': 'datetime'}"/></td>
+                            <td><span t-if="k.last_used" t-esc="k.last_used" t-options="{'widget': 'datetime'}"/><span t-else="" class="text-muted">Never</span></td>
+                            <td>
+                                <span t-if="k.revoked_date" class="badge text-bg-secondary">Revoked <span t-esc="k.revoked_date" t-options="{'widget': 'date'}"/></span>
+                                <span t-else="" class="badge text-bg-success">Active</span>
+                            </td>
+                            <td>
+                                <form t-if="not k.revoked_date" t-attf-action="/my/vendor/api/keys/#{k.id}/revoke" method="post" onsubmit="return confirm('Revoke this key? Calls using it stop working immediately.');">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Revoke</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr t-if="not keys"><td colspan="7" class="text-muted">No keys yet.</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+            <div class="card p-3">
+                <h5>Quick start</h5>
+                <p class="text-muted mb-2">Send the key as a bearer token. Full reference (OpenAPI): <a href="/api/v1/openapi.json" dir="ltr">/api/v1/openapi.json</a></p>
+                <pre class="bg-light border rounded p-2 small" dir="ltr"><code># list your offers (page/limit, max 100)
+curl -H "Authorization: Bearer YOUR_KEY" "<t t-esc="api_base"/>/api/v1/vendor/offers?limit=20"
+
+# change a price and set a 15% discount (write key; Idempotency-Key makes retries safe)
+curl -X PATCH -H "Authorization: Bearer YOUR_KEY" -H "Idempotency-Key: 4d1c-0001" \
+     -H "Content-Type: application/json" \
+     -d '{"price": 120.0, "discount": {"type": "percent", "percent": 15}}' \
+     "<t t-esc="api_base"/>/api/v1/vendor/offers/42"
+
+# ship an order
+curl -X POST -H "Authorization: Bearer YOUR_KEY" -H "Content-Type: application/json" \
+     -d '{"tracking_ref": "TRK123"}' "<t t-esc="api_base"/>/api/v1/vendor/orders/7/ship"</code></pre>
+                <p class="small text-muted mb-0">Keep keys secret. Errors are JSON: <code dir="ltr">{"error": "code", "message": "...", "details": []}</code>. Calls per minute are limited per key (429 with Retry-After).</p>
+            </div>
+        </div></t>
+    </template>
+</odoo>

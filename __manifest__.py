@@ -19,6 +19,7 @@
         "data/delivery_carrier_data.xml",
         "data/mail_template_data.xml",
         "data/fbl_setting_data.xml",
+        "data/vendor_api_data.xml",
         "data/cancel_reason_data.xml",
         "data/cod_protection_data.xml",
         "data/bank_change_data.xml",
@@ -47,6 +48,8 @@
         "views/menu_views.xml",
         "views/vendor_import_views.xml",
         "views/vendor_import_templates.xml",
+        "views/vendor_api_views.xml",
+        "views/vendor_api_templates.xml",
         "views/cancel_reason_views.xml",
         "views/bank_change_views.xml",
         "views/vendor_terms_views.xml"

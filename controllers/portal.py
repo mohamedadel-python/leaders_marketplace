@@ -1240,6 +1240,59 @@ class MarketplacePortal(CustomerPortal):
         return request.redirect(f"{url}?settlement_requested=1")
 
     # -------------------------------------------------------------------------
+    # Vendor API keys (B4)
+    # -------------------------------------------------------------------------
+    def _api_keys_owner(self):
+        """The vendor owner allowed to manage API keys; 404 while the write API is off."""
+        if not request.env["leaders.vendor.api.key"]._leaders_api_enabled():
+            raise NotFound()
+        vendor = self._require_vendor(allow_frozen=True)
+        if not self._is_vendor_owner():
+            raise AccessError(_("Only the vendor owner can manage API keys."))
+        return vendor
+
+    def _api_keys_render(self, vendor, **extra):
+        values = {
+            "vendor": vendor, "error": False, "new_key": False, "revoked": False,
+            "api_base": request.httprequest.host_url.rstrip("/"),
+            "keys": request.env["leaders.vendor.api.key"].sudo().search(
+                [("vendor_id", "=", vendor.id)]),
+        }
+        values.update(extra)
+        return self._vendor_render("leaders_marketplace.portal_vendor_api", values)
+
+    @http.route("/my/vendor/api", type="http", auth="user", website=True)
+    def vendor_api_keys(self, **kw):
+        vendor = self._api_keys_owner()
+        return self._api_keys_render(vendor, revoked=bool(kw.get("revoked")))
+
+    @http.route("/my/vendor/api/keys", type="http", auth="user", website=True,
+                methods=["POST"], csrf=True)
+    def vendor_api_key_create(self, **post):
+        vendor = self._api_keys_owner()
+        try:
+            with request.env.cr.savepoint():
+                _key, plaintext = request.env["leaders.vendor.api.key"]._leaders_generate(
+                    vendor, request.env.user, post.get("name"), post.get("scope") or "read")
+        except UserError as exc:
+            return self._api_keys_render(vendor, error=str(exc))
+        # The plaintext is rendered in this response only; nothing keeps it.
+        response = self._api_keys_render(vendor, new_key=plaintext)
+        response.headers["Cache-Control"] = "no-store"
+        return response
+
+    @http.route("/my/vendor/api/keys/<int:key_id>/revoke", type="http", auth="user", website=True,
+                methods=["POST"], csrf=True)
+    def vendor_api_key_revoke(self, key_id, **post):
+        vendor = self._api_keys_owner()
+        key = request.env["leaders.vendor.api.key"].sudo().search([
+            ("id", "=", key_id), ("vendor_id", "=", vendor.id)], limit=1)
+        if not key:
+            raise NotFound()
+        key.action_revoke()
+        return request.redirect("/my/vendor/api?revoked=1")
+
+    # -------------------------------------------------------------------------
     # Delivery zones
     # -------------------------------------------------------------------------
     @http.route("/my/vendor/delivery-zones", type="http", auth="user", website=True)

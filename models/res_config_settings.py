@@ -282,6 +282,21 @@ class ResConfigSettings(models.TransientModel):
         default=50,
         help="How many validated rows the import cron applies per run (all jobs together).",
     )
+    marketplace_vendor_api_write_enabled = fields.Boolean(
+        string="Vendor Write API",
+        config_parameter="leaders_marketplace.vendor_api_write_enabled",
+        default=False,
+        help="Off: the vendor API keys page and the /api/v1/vendor endpoints that use a marketplace "
+             "key do not exist (404). On: vendor owners can create API keys and use the API to "
+             "manage offers, ship orders, answer returns and read wallet and settlements.",
+    )
+    marketplace_vendor_api_rate_limit = fields.Integer(
+        string="API Calls per Minute per Key",
+        config_parameter="leaders_marketplace.vendor_api_rate_limit_per_minute",
+        default=60,
+        help="Calls a single vendor API key may make per minute (429 with Retry-After beyond). "
+             "0 = no limit.",
+    )
     marketplace_vendor_variants_enabled = fields.Boolean(
         string="Vendor Variants, Images and Specifications",
         config_parameter="leaders_marketplace.vendor_variants_enabled",

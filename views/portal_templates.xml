@@ -179,6 +179,7 @@
                 <a href="/my/vendor/delivery-zones" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/delivery-zones') else ''}"><i class="fa fa-map-marker"/> Delivery Zones</a>
                 <a href="/my/vendor/staff" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/staff') else ''}"><i class="fa fa-users"/> Staff</a>
                 <a href="/my/vendor/profile" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/profile') else ''}"><i class="fa fa-id-card-o"/> Profile</a>
+                <a t-if="request.env['leaders.vendor.api.key']._leaders_api_enabled()" href="/my/vendor/api" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/api') else ''}"><i class="fa fa-key"/> API</a>
             </t>
         </nav>
     </template>
