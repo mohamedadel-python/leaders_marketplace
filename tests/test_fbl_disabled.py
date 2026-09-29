@@ -103,8 +103,18 @@ class TestFblDisabledModels(FblModeCommon):
         self.assertIn("FBL stock of Split Vendor", message)
         self.assertTrue(self.env["res.partner"]._leaders_fbl_enabled())
 
+    def _clear_all_fbl_usage(self):
+        """Nothing in the database (demo or upgraded data included) may use FBL."""
+        self.env["leaders.marketplace.offer"].with_context(active_test=False).search([
+            ("fulfillment_type", "=", "fbl"), ("state", "!=", "rejected")]).write({"state": "rejected"})
+        for partner in self.env["res.partner"].search([("vendor_fbl_location_id", "!=", False)]):
+            for quant in self.env["stock.quant"].sudo().search([
+                    ("location_id", "=", partner.vendor_fbl_location_id.id), ("quantity", "!=", 0)]):
+                self.env["stock.quant"]._leaders_adjust_vendor_stock(
+                    quant.product_id, quant.location_id, quant.owner_id, -quant.quantity)
+
     def test_turning_off_allowed_once_fbl_is_unused(self):
-        self.fbl_offer.write({"state": "rejected"})
+        self._clear_all_fbl_usage()
         self.env["stock.quant"]._leaders_adjust_vendor_stock(
             self.fbl_product, self.vendor.vendor_fbl_location_id, self.vendor, -3)
         self._settings_off()
