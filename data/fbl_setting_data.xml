@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- FBL (the platform's own warehouse) is on by default. Seeded as "True"
+         because a cleared checkbox deletes its parameter; only True/true/1 counts
+         as on (see res.partner._leaders_fbl_enabled). -->
+    <record id="param_fbl_enabled" model="ir.config_parameter">
+        <field name="key">leaders_marketplace.fbl_enabled</field>
+        <field name="value">True</field>
+    </record>
+</odoo>

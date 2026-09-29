@@ -27,6 +27,13 @@ class BuyBoxConfig(models.Model):
     fbl_shipping_bonus = fields.Float(default=1.0, help="Shipping score for FBL (0..1).")
     fbm_shipping_bonus = fields.Float(default=0.5, help="Shipping score for FBM (0..1).")
 
+    fbl_enabled = fields.Boolean(compute="_compute_fbl_enabled")
+
+    def _compute_fbl_enabled(self):
+        enabled = self.env["res.partner"]._leaders_fbl_enabled()
+        for rec in self:
+            rec.fbl_enabled = enabled
+
     # Offers with zero available stock must never win the Buy Box.
     require_stock = fields.Boolean(default=True)
 

@@ -230,6 +230,8 @@ class MarketplaceOffer(models.Model):
         """
         cfg = self.env["leaders.buybox.config"].get_active()
         tier_scale = self._tier_score_scale()
+        # Without a platform warehouse FBL does not exist, so it earns no bonus.
+        fbl_on = self.env["res.partner"]._leaders_fbl_enabled()
         product_ids = [pid for pid in self.mapped("product_id").ids if pid]
         max_price_by_product = {}
         if product_ids:
@@ -249,7 +251,7 @@ class MarketplaceOffer(models.Model):
             price_score = 1.0 - (rec.price / max_price) if max_price else 0.0
             rating_score = (rec.rating or 0.0) / 5.0
             avail_score = 1.0 if rec.available_qty() > 0 else 0.0
-            shipping_score = cfg.fbl_shipping_bonus if rec.fulfillment_type == "fbl" else cfg.fbm_shipping_bonus
+            shipping_score = cfg.fbl_shipping_bonus if (fbl_on and rec.fulfillment_type == "fbl") else cfg.fbm_shipping_bonus
             tier_score = rec._tier_score(scale=tier_scale)
             rec.buybox_score = (
                 cfg.price_weight * price_score
@@ -306,6 +308,37 @@ class MarketplaceOffer(models.Model):
                     price = winner._leaders_price_in_company_currency()
                     if winner.product_id.list_price != price:
                         template.sudo().list_price = price
+
+    fbl_enabled = fields.Boolean(compute="_compute_fbl_enabled")
+
+    def _compute_fbl_enabled(self):
+        enabled = self.env["res.partner"]._leaders_fbl_enabled()
+        for rec in self:
+            rec.fbl_enabled = enabled
+
+    @api.model
+    def _leaders_fbl_allowed(self):
+        """True when FBL may be used (the platform has its own warehouse).
+
+        Single entry point for every place that accepts a fulfilment type: the
+        portal forms, the bulk import and the vendor API must call this (or
+        ``_leaders_check_fulfillment_type``) instead of reading the setting.
+        """
+        return self.env["res.partner"]._leaders_fbl_enabled()
+
+    @api.model
+    def _leaders_check_fulfillment_type(self, fulfillment_type):
+        """Raise a UserError when ``fulfillment_type`` is FBL but FBL is off."""
+        if fulfillment_type == "fbl" and not self._leaders_fbl_allowed():
+            raise UserError(self.env["res.partner"]._leaders_fbl_disabled_message())
+        return fulfillment_type
+
+    @api.constrains("fulfillment_type")
+    def _check_fbl_allowed(self):
+        if self._leaders_fbl_allowed():
+            return
+        if self.filtered(lambda o: o.fulfillment_type == "fbl"):
+            raise ValidationError(self.env["res.partner"]._leaders_fbl_disabled_message())
 
     def _apply_fulfillment_policy(self):
         """Force the fulfilment type a policy dictates, if any applies.

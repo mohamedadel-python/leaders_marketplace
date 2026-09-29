@@ -80,6 +80,7 @@ class MarketplacePortal(CustomerPortal):
             "vendor": vendor,
             "offer": offer,
             "vendor_owns_content": owns_content,
+            "fbl_enabled": request.env["leaders.marketplace.offer"]._leaders_fbl_allowed(),
             "forced_fulfillment": forced_policy.forced_fulfillment_type or False,
             "forced_fulfillment_name": forced_policy.name or "",
             "categories": request.env["product.public.category"].sudo().search([], order="name"),
@@ -231,6 +232,7 @@ class MarketplacePortal(CustomerPortal):
             ("vendor_id", "=", vendor.id)
         ], order="id desc")
         return self._vendor_render("leaders_marketplace.portal_vendor_products", {
+            "fbl_enabled": request.env["leaders.marketplace.offer"]._leaders_fbl_allowed(),
             "offers": offers,
             "vendor": vendor,
             "error": kw.get("error"),
@@ -252,6 +254,11 @@ class MarketplacePortal(CustomerPortal):
         currency_id = int(post.get("currency_id") or request.env.company.currency_id.id)
         website_ids = [int(x) for x in request.httprequest.form.getlist("market_ids") if x]
 
+        if fulfillment_type == "fbl" and not request.env["leaders.marketplace.offer"]._leaders_fbl_allowed():
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, error=request.env["res.partner"]._leaders_fbl_disabled_message()),
+            )
         if not name or not seller_sku or price < 0:
             return self._vendor_render(
                 "leaders_marketplace.portal_vendor_product_form",
@@ -320,7 +327,9 @@ class MarketplacePortal(CustomerPortal):
         query = post.get("q") or (product.name if product else "")
 
         error = False
-        if not product or product.product_tmpl_id.marketplace_state != "published" or not product.sale_ok:
+        if fulfillment_type == "fbl" and not Offer._leaders_fbl_allowed():
+            error = request.env["res.partner"]._leaders_fbl_disabled_message()
+        elif not product or product.product_tmpl_id.marketplace_state != "published" or not product.sale_ok:
             error = _("Choose a published product from the catalog.")
         elif not seller_sku or price < 0:
             error = _("Seller SKU and a valid price are required.")
@@ -368,6 +377,11 @@ class MarketplacePortal(CustomerPortal):
         category_id = int(post.get("public_category_id") or 0)
         currency_id = int(post.get("currency_id") or offer.currency_id.id)
         website_ids = [int(x) for x in request.httprequest.form.getlist("market_ids") if x]
+        if fulfillment_type == "fbl" and not request.env["leaders.marketplace.offer"]._leaders_fbl_allowed():
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, offer=offer, error=request.env["res.partner"]._leaders_fbl_disabled_message()),
+            )
         if not name or not seller_sku or price < 0:
             return self._vendor_render(
                 "leaders_marketplace.portal_vendor_product_form",

@@ -18,7 +18,8 @@
                         <field name="vendor_tier_weight"/>
                     </group>
                     <group string="Fulfilment / Stock">
-                        <field name="fbl_shipping_bonus"/>
+                        <field name="fbl_enabled" invisible="1"/>
+                        <field name="fbl_shipping_bonus" invisible="not fbl_enabled"/>
                         <field name="fbm_shipping_bonus"/>
                         <field name="require_stock"/>
                     </group>

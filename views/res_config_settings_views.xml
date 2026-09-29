@@ -19,6 +19,9 @@
                         <setting string="Vendor-Only Checkouts" help="Hide vendor-only checkouts from the customer's Orders list, show the real total on the confirmation page and send one Marketplace order confirmation email.">
                             <field name="marketplace_vendor_only_presentation"/>
                         </setting>
+                        <setting string="Marketplace Warehouse (FBL)" help="Off when the marketplace has no warehouse of its own: vendors then ship their own goods (FBM only) and FBL is hidden and refused everywhere. Cannot be turned off while active FBL offers or FBL stock exist.">
+                            <field name="marketplace_fbl_enabled"/>
+                        </setting>
                         <setting string="Public Vendor Application" help="Let visitors apply to sell at /vendor/apply.">
                             <field name="marketplace_vendor_apply_enabled"/>
                             <div class="content-group" invisible="not marketplace_vendor_apply_enabled">
@@ -85,7 +88,7 @@
                         <setting string="Default Commission Rate (%)" help="Used for vendors with no tier rate of their own. Only applied when vendors without a plan are charged the tier rate.">
                             <field name="marketplace_default_commission_rate"/>
                         </setting>
-                        <setting string="FBL Delivery Charge" help="FBL orders ship from the marketplace warehouse. Choose whether the delivery charge is paid to the vendor or kept by the marketplace.">
+                        <setting string="FBL Delivery Charge" invisible="not marketplace_fbl_enabled" help="FBL orders ship from the marketplace warehouse. Choose whether the delivery charge is paid to the vendor or kept by the marketplace.">
                             <field name="marketplace_fbl_delivery_income"/>
                         </setting>
                         <setting string="Split Delivery Between Vendors" help="Only for carriers other than the per-governorate marketplace one. Off, the whole charge goes to the first vendor of the checkout.">
@@ -97,7 +100,7 @@
                         <setting string="Vendor Image Max Size (MB)" help="Largest product image a vendor may upload from the portal. Non-image files are always refused.">
                             <field name="marketplace_vendor_image_max_mb"/>
                         </setting>
-                        <setting string="COD Cash Journal" help="Where the cash collected on delivery is received for platform-delivered (FBL) orders. Empty, nothing is booked and a chatter note is left instead.">
+                        <setting string="COD Cash Journal" invisible="not marketplace_fbl_enabled" help="Where the cash collected on delivery is received for platform-delivered (FBL) orders. Empty, nothing is booked and a chatter note is left instead.">
                             <field name="marketplace_cod_cash_journal_id"/>
                         </setting>
                         <setting string="FBM Delivery Confirmation" help="Whether a vendor marking their own shipment delivered completes the order, or only reports it for the customer to confirm.">

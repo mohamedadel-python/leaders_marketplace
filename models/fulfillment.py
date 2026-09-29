@@ -50,6 +50,8 @@ class FulfillmentFee(models.Model):
         already carrying that reference is skipped, so re-running the cron in
         the same month cannot charge twice.
         """
+        if not self.env["res.partner"]._leaders_fbl_enabled():
+            return  # no platform warehouse, nothing is stored for vendors
         Quant = self.env["stock.quant"]
         Tx = self.env["leaders.wallet.transaction"]
         storage_rules = self.search([("active", "=", True), ("fee_type", "=", "storage")])
@@ -99,6 +101,13 @@ class FulfillmentPolicy(models.Model):
     vendor_id = fields.Many2one("res.partner")
     forced_fulfillment_type = fields.Selection([("fbm","FBM"),("fbl","FBL")], required=True)
 
+    @api.constrains("forced_fulfillment_type", "active")
+    def _check_fbl_allowed(self):
+        if self.env["res.partner"]._leaders_fbl_enabled():
+            return
+        if self.filtered(lambda p: p.active and p.forced_fulfillment_type == "fbl"):
+            raise UserError(self.env["res.partner"]._leaders_fbl_disabled_message())
+
     @api.model
     def _policy_for(self, vendor, categories):
         """Most specific active policy: vendor+category, then vendor, then category.
@@ -117,6 +126,9 @@ class FulfillmentPolicy(models.Model):
             # vendor+category (2) beats vendor (1) beats category (1) beats nothing.
             return (bool(policy.vendor_id) + bool(policy.category_id),
                     bool(policy.vendor_id), -policy.id)
+        if not self.env["res.partner"]._leaders_fbl_enabled():
+            # A stored FBL policy is ignored while the platform has no warehouse.
+            candidates = candidates.filtered(lambda p: p.forced_fulfillment_type != "fbl")
         applicable = candidates.filtered(lambda p: p.vendor_id or p.category_id)
         return applicable.sorted(rank, reverse=True)[:1]
 
@@ -138,6 +150,8 @@ class FulfillmentInbound(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        if not self.env["res.partner"]._leaders_fbl_enabled():
+            raise UserError(self.env["res.partner"]._leaders_fbl_disabled_message())
         for vals in vals_list:
             if vals.get("name","New") == "New":
                 vals["name"] = self.env["ir.sequence"].next_by_code("leaders.fulfillment.inbound") or "New"

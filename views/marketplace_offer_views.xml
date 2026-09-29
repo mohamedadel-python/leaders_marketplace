@@ -46,7 +46,8 @@
                         <field name="seller_sku"/>
                         <field name="price"/>
                         <field name="currency_id"/>
-                        <field name="fulfillment_type"/>
+                        <field name="fbl_enabled" invisible="1"/>
+                        <field name="fulfillment_type" invisible="not fbl_enabled"/>
                         <field name="stock_location_id"/>
                         <field name="market_ids" widget="many2many_tags"/>
                         <field name="buybox_score" readonly="1"/>

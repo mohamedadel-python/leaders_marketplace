@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
@@ -61,6 +62,20 @@ class ResPartner(models.Model):
         """Catalog offers, seller display, storefronts and ratings (off by default)."""
         return self.env["ir.config_parameter"].sudo().get_param(
             "leaders_marketplace.catalog_offers_enabled") in ("True", "true", "1")
+
+    @api.model
+    def _leaders_fbl_enabled(self):
+        """FBL (fulfilment from the platform's own warehouse) is available.
+
+        On by default; off means the platform has no warehouse and every vendor
+        ships their own goods (FBM only). Only "True/true/1" counts as on.
+        """
+        return self.env["ir.config_parameter"].sudo().get_param(
+            "leaders_marketplace.fbl_enabled") in ("True", "true", "1")
+
+    @api.model
+    def _leaders_fbl_disabled_message(self):
+        return _("Fulfilled by Leaders (FBL) is not available: the marketplace has no warehouse of its own.")
 
     def _marketplace_refresh_vendor_ratings(self):
         """Store each vendor's rating average/count from their consumed order ratings."""
@@ -131,6 +146,8 @@ class ResPartner(models.Model):
         never reserved for the company's own orders.
         """
         warehouse = self._marketplace_main_warehouse()
+        if not warehouse:
+            raise UserError(_("The marketplace has no main warehouse to keep FBL stock in."))
         Location = self.env["stock.location"].sudo().with_context(active_test=False)
         root = Location.search([
             ("location_id", "=", warehouse.view_location_id.id),
@@ -176,7 +193,8 @@ class ResPartner(models.Model):
                     })
                 partner.vendor_warehouse_id = warehouse
             partner.vendor_location_id = partner.vendor_warehouse_id.lot_stock_id
-            if not partner.vendor_fbl_location_id:
+            # FBM-only mode: the platform has no warehouse, so no FBL location.
+            if not partner.vendor_fbl_location_id and self._leaders_fbl_enabled():
                 partner.vendor_fbl_location_id = Location.create({
                     "name": name,
                     "location_id": self._marketplace_fbl_root_location().id,
@@ -188,6 +206,8 @@ class ResPartner(models.Model):
     def _marketplace_stock_location(self, fulfillment_type):
         self.ensure_one()
         vendor = self.commercial_partner_id
+        if fulfillment_type == "fbl" and not self._leaders_fbl_enabled():
+            raise UserError(self._leaders_fbl_disabled_message())
         vendor._marketplace_ensure_vendor_stock()
         return vendor.vendor_fbl_location_id if fulfillment_type == "fbl" else vendor.vendor_location_id
 

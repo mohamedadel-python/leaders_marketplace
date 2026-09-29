@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 NOTIFICATION_EVENTS = [('vendor_order_confirmed', 'Vendor: new order confirmed'), ('vendor_return_requested', 'Vendor: return requested'), ('vendor_return_escalated', 'Vendor: return escalated'), ('vendor_return_decided', 'Vendor: return decided by the marketplace'), ('vendor_dispute_opened', 'Vendor: dispute opened'), ('vendor_dispute_escalated', 'Vendor: dispute escalated'), ('vendor_dispute_resolved', 'Vendor: dispute resolved'), ('vendor_settlement_approved', 'Vendor: settlement approved'), ('vendor_settlement_paid', 'Vendor: settlement paid'), ('vendor_settlement_debt', 'Vendor: settlement debt to pay'), ('vendor_offer_approved', 'Vendor: offer approved'), ('vendor_offer_rejected', 'Vendor: offer rejected'), ('vendor_product_approved', 'Vendor: product approved'), ('vendor_product_rejected', 'Vendor: product rejected'), ('vendor_application_approved', 'Vendor: application approved'), ('vendor_application_rejected', 'Vendor: application rejected'), ('vendor_penalty_applied', 'Vendor: penalty applied'), ('vendor_penalty_lifted', 'Vendor: penalty lifted'), ('customer_order_shipped', 'Customer: order shipped'), ('customer_order_delivered', 'Customer: order delivered'), ('customer_return_approved', 'Customer: return approved'), ('customer_return_rejected', 'Customer: return rejected'), ('customer_return_refunded', 'Customer: return refunded'), ('customer_order_cancelled', 'Customer: order cancelled')]
 
@@ -71,6 +72,16 @@ class ResConfigSettings(models.TransientModel):
         locals()["marketplace_notify_%s" % _key] = fields.Boolean(
             string=_label, config_parameter="leaders_marketplace.notify_%s" % _key, default=True)
     del _key, _label
+
+    marketplace_fbl_enabled = fields.Boolean(
+        string="Marketplace Has Its Own Warehouse (FBL)",
+        config_parameter="leaders_marketplace.fbl_enabled",
+        default=True,
+        help="On (default): vendors may use Fulfilled by Leaders (FBL) from the "
+             "marketplace warehouse. Off: every vendor ships their own goods (FBM only); "
+             "no FBL location is created and FBL is hidden and refused everywhere. "
+             "It cannot be turned off while active FBL offers or FBL stock exist.",
+    )
 
     marketplace_commission_invoicing = fields.Selection([
         ("journal", "Journal entry (today)"),
@@ -274,7 +285,39 @@ class ResConfigSettings(models.TransientModel):
         res["marketplace_commission_tax_ids"] = [(6, 0, self.env["account.tax"].browse(ids).exists().ids)]
         return res
 
+    def _leaders_fbl_blockers(self):
+        """Lines describing the active FBL offers / FBL stock that forbid turning FBL off."""
+        Offer = self.env["leaders.marketplace.offer"].sudo()
+        Quant = self.env["stock.quant"].sudo()
+        lines = []
+        offers = Offer.search([("fulfillment_type", "=", "fbl"), ("state", "!=", "rejected")])
+        for offer in offers:
+            lines.append(_("Offer %(offer)s of %(vendor)s", offer=offer.display_name,
+                           vendor=offer.vendor_id.display_name))
+        vendors = self.env["res.partner"].sudo().search([("vendor_fbl_location_id", "!=", False)])
+        for vendor in vendors:
+            quants = Quant.search([
+                ("location_id", "child_of", vendor.vendor_fbl_location_id.id),
+                ("quantity", ">", 0)])
+            if quants:
+                lines.append(_("FBL stock of %(vendor)s: %(qty)s units", vendor=vendor.display_name,
+                               qty=sum(quants.mapped("quantity"))))
+        groups = self.env["leaders.fulfillment.group"].sudo().search([
+            ("fulfillment_type", "=", "fbl"),
+            ("state", "not in", ("delivered", "cancelled"))])
+        for group in groups:
+            lines.append(_("Open FBL shipment %(group)s of %(vendor)s", group=group.name,
+                           vendor=group.vendor_id.display_name))
+        return lines
+
     def set_values(self):
+        Partner = self.env["res.partner"]
+        if not self.marketplace_fbl_enabled and Partner._leaders_fbl_enabled():
+            blockers = self._leaders_fbl_blockers()
+            if blockers:
+                raise UserError(_(
+                    "FBL cannot be turned off while it is in use:\n%s",
+                    "\n".join("- %s" % line for line in blockers)))
         super().set_values()
         self.env["ir.config_parameter"].sudo().set_param(
             "leaders_marketplace.commission_tax_ids",

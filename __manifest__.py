@@ -18,6 +18,7 @@
         "data/cron_data.xml",
         "data/delivery_carrier_data.xml",
         "data/mail_template_data.xml",
+        "data/fbl_setting_data.xml",
         "data/commission_invoice_products.xml",
         "views/res_partner_views.xml",
         "views/vendor_application_views.xml",

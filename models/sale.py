@@ -817,6 +817,8 @@ class FulfillmentGroup(models.Model):
             warehouse = self.vendor_id.commercial_partner_id.vendor_warehouse_id
         else:
             warehouse = self.env["res.partner"]._marketplace_main_warehouse()
+            if not warehouse:
+                raise UserError(_("The marketplace has no main warehouse to ship FBL orders from."))
         if not warehouse:
             raise UserError(_("No warehouse configured for vendor %s.", self.vendor_id.display_name))
         return warehouse.out_type_id
