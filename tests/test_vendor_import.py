@@ -255,7 +255,8 @@ class TestVendorImportApply(ImportCommon):
         self.Import.cron_process_imports()
         self.assertEqual((job.state, job.applied_rows), ("done", 5))
         self.Import.cron_process_imports()
-        self.assertEqual(self.Offer.search_count([("seller_sku", "like", "B-%")]), 5)
+        self.assertEqual(self.Offer.search_count([
+            ("vendor_id", "=", self.vendor.id), ("seller_sku", "in", ["B-%s" % i for i in range(5)])]), 5)
 
     def test_rows_are_rechecked_at_apply(self):
         job = self._new_job([new_row(name="A", sku="R-1", price="1"), new_row(name="B", sku="R-2", price="1")])
