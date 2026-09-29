@@ -43,6 +43,42 @@ class SaleOrderLine(models.Model):
             )
         return context
 
+    @api.depends("marketplace_offer_id")
+    def _compute_discount(self):
+        """Carry a running vendor discount as the line discount (B1).
+
+        The line is priced at the offer's REGULAR price (see
+        ``_get_product_price_context``) and the vendor discount is the line
+        ``discount``, so the vendor order line and the vendor invoice show both
+        the original price and the discount, and every amount downstream
+        (commission, wallet, settlements) uses the discounted subtotal.
+
+        With a pricelist discount as well (e.g. a platform coupon/pricelist
+        percentage) the two are chained, never added: the customer pays
+        ``price * (1 - vendor%) * (1 - pricelist%)``, i.e. the pricelist
+        applies on top of the vendor's discounted price. Marketplace lines are
+        reset first so a discount that ended (or a pricelist discount the core
+        does not recompute) can never linger.
+        """
+        marketplace_lines = self.filtered(lambda l: l.marketplace_offer_id and not l.display_type)
+        for line in marketplace_lines:
+            line.discount = 0.0
+        super()._compute_discount()
+        for line in marketplace_lines:
+            percent = line.marketplace_offer_id.sudo()._leaders_active_discount_percent()
+            if percent > 0:
+                line.discount = 100.0 - (100.0 - line.discount) * (100.0 - percent) / 100.0
+
+    @api.model
+    def _leaders_refresh_discount_lines(self, offers):
+        """Re-price the open cart lines of ``offers`` after a discount started or ended."""
+        lines = self.sudo().search([
+            ("marketplace_offer_id", "in", offers.ids), ("order_id.state", "in", ("draft", "sent"))])
+        if lines:
+            self.env.add_to_compute(self._fields["discount"], lines)
+            lines.flush_recordset(["discount"])
+        return lines
+
     def _marketplace_vendor_line_vals(self):
         self.ensure_one()
         return {
@@ -145,9 +181,14 @@ class SaleOrder(models.Model):
                 line.marketplace_offer_id = winner
                 changed = True
             before = line.price_unit
+            discount_before = line.discount
             line.with_context(force_price_recomputation=True)._compute_price_unit()
+            # A vendor discount may have started or ended since the line was added.
+            self.env.add_to_compute(line._fields["discount"], line)
+            line.flush_recordset(["discount"])
             currency = line.currency_id or self.currency_id or self.env.company.currency_id
-            if currency.compare_amounts(line.price_unit, before):
+            if currency.compare_amounts(line.price_unit, before) or float_compare(
+                    line.discount, discount_before, precision_digits=2):
                 changed = True
         return changed
 

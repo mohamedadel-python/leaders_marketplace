@@ -386,9 +386,25 @@
             <t t-call="leaders_marketplace.portal_vendor_nav"/>
             <div class="d-flex justify-content-between align-items-center mb-3"><h2>Products &amp; Offers</h2><a href="/my/vendor/products/new" class="btn btn-primary">+ Add Product</a></div>
             <div t-if="error" class="alert alert-danger" t-esc="error"/>
+            <div t-if="notice" class="alert alert-success" t-esc="notice"/>
             <div class="alert alert-info"><t t-if="fbl_enabled">FBM stock can be updated here. FBL stock is updated through warehouse inbound receipts.</t><t t-else="">Update your stock here.</t></div>
-            <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Product</th><th>SKU</th><th>Price</th><th>Fulfillment</th><th>Status</th><th>Buy Box</th><th>Stock</th><th></th></tr></thead>
+            <form t-if="discounts_enabled" id="lm_bulk_discount_form" action="/my/vendor/products/discount-bulk" method="post" class="card p-3 mb-3">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <h5 class="mb-1">Discount selected offers</h5>
+                <p class="small text-muted mb-2">Tick offers below, then apply one percentage (a sale price is set per offer on its edit page). Dates are optional.</p>
+                <div class="row g-2 align-items-end">
+                    <div class="col-6 col-md-2"><label class="form-label small mb-0">Discount %</label><input class="form-control" type="number" name="discount_percent" min="0.01" max="99.99" step="0.01"/></div>
+                    <div class="col-12 col-md-3"><label class="form-label small mb-0">Starts</label><input class="form-control" type="datetime-local" name="discount_start"/></div>
+                    <div class="col-12 col-md-3"><label class="form-label small mb-0">Ends</label><input class="form-control" type="datetime-local" name="discount_end"/></div>
+                    <div class="col-12 col-md-4 d-flex gap-2">
+                        <button type="submit" name="action" value="apply" class="btn btn-primary">Apply discount</button>
+                        <button type="submit" name="action" value="clear" class="btn btn-outline-secondary">Remove discount</button>
+                    </div>
+                </div>
+            </form>
+            <div class="table-responsive"><table class="table align-middle"><thead><tr><th t-if="discounts_enabled"><span class="visually-hidden">Select</span></th><th>Product</th><th>SKU</th><th>Price</th><th>Fulfillment</th><th>Status</th><th>Buy Box</th><th>Stock</th><th></th></tr></thead>
             <tbody><tr t-foreach="offers" t-as="o">
+                <td t-if="discounts_enabled"><input type="checkbox" name="offer_ids" t-att-value="o.id" form="lm_bulk_discount_form" t-att-aria-label="o.seller_sku"/></td>
                 <td>
                     <span t-esc="o.product_id.display_name"/>
                     <div class="small text-danger" t-if="o.reject_reason">Offer rejected: <t t-esc="o.reject_reason"/></div>
@@ -399,7 +415,13 @@
                         and is not on the website yet.
                     </div>
                 </td>
-                <td t-esc="o.seller_sku"/><td><span t-esc="o.price"/> <span t-esc="o.currency_id.name"/></td><td t-esc="o.fulfillment_type.upper()"/><td t-esc="o.state"/><td><span t-if="o.is_buybox_winner" class="badge text-bg-success">Winner</span></td>
+                <td t-esc="o.seller_sku"/><td><span t-esc="o.price"/> <span t-esc="o.currency_id.name"/>
+                    <div t-if="o.discount_state != 'none'" class="small">
+                        <span t-if="o.discount_state == 'active'" class="badge text-bg-danger">-<t t-esc="'%.0f' % o.discount_regular_percent"/>%</span>
+                        <span t-else="" class="badge text-bg-secondary" t-esc="dict(o._fields['discount_state']._description_selection(o.env)).get(o.discount_state)"/>
+                        <span t-if="o.discount_state == 'active'" class="text-muted">now <t t-esc="o.effective_price"/></span>
+                    </div>
+                </td><td t-esc="o.fulfillment_type.upper()"/><td t-esc="o.state"/><td><span t-if="o.is_buybox_winner" class="badge text-bg-success">Winner</span></td>
                 <td>
                     <t t-if="o.fulfillment_type == 'fbm'">
                         <form t-att-action="'/my/vendor/products/%s/stock' % o.id" method="post" class="d-flex gap-1">
@@ -474,6 +496,37 @@
                 </div>
                 <div class="mt-4 d-flex gap-2"><button class="btn btn-primary">Save Draft</button><a href="/my/vendor/products" class="btn btn-outline-secondary">Cancel</a></div>
             </form>
+            <div t-if="offer and discounts_enabled" id="lm_discount_card" class="card p-4 mt-3">
+                <h5>Discount</h5>
+                <div t-if="discount_result" class="alert alert-success">
+                    <t t-if="discount_result == 'pending_approval'">Saved. This discount is above the approval limit: it takes effect once the marketplace approves it.</t>
+                    <t t-elif="discount_result == 'cleared'">Discount removed.</t>
+                    <t t-else="">Discount saved.</t>
+                </div>
+                <p class="small text-muted">The regular price stays as listed. While a discount runs customers see the original price struck through, the new price and the percentage; you fund the discount and your invoice shows both.</p>
+                <p t-if="offer.discount_state != 'none'" class="mb-2">Status:
+                    <strong t-esc="dict(offer._fields['discount_state']._description_selection(offer.env)).get(offer.discount_state)"/>
+                    <t t-if="offer.discount_state == 'active'"> - customers pay <strong t-esc="offer.effective_price"/> <span t-esc="offer.currency_id.name"/></t>
+                </p>
+                <form t-att-action="'/my/vendor/products/%s/discount' % offer.id" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="row g-3">
+                        <div class="col-md-3"><label class="form-label">Type</label>
+                            <select class="form-select" name="discount_type">
+                                <option value="percent" t-att-selected="offer.discount_type != 'price'">Percentage</option>
+                                <option value="price" t-att-selected="offer.discount_type == 'price'">Sale price</option>
+                            </select></div>
+                        <div class="col-6 col-md-2"><label class="form-label">Percentage</label><input class="form-control" type="number" name="discount_percent" min="0.01" max="99.99" step="0.01" t-att-value="offer.discount_percent or ''"/></div>
+                        <div class="col-6 col-md-2"><label class="form-label">Sale price</label><input class="form-control" type="number" name="discount_price" min="0.01" step="0.01" t-att-value="offer.discount_price or ''"/></div>
+                        <div class="col-12 col-md-3"><label class="form-label">Starts (optional)</label><input class="form-control" type="datetime-local" name="discount_start" t-att-value="discount_start_local"/></div>
+                        <div class="col-12 col-md-3"><label class="form-label">Ends (optional)</label><input class="form-control" type="datetime-local" name="discount_end" t-att-value="discount_end_local"/></div>
+                    </div>
+                    <div class="mt-3 d-flex gap-2">
+                        <button type="submit" name="action" value="set" class="btn btn-primary">Save discount</button>
+                        <button t-if="offer.discount_state != 'none'" type="submit" name="action" value="clear" class="btn btn-outline-danger">Remove discount</button>
+                    </div>
+                </form>
+            </div>
             <div t-if="offer" class="mt-3"><form t-if="offer.state in ('draft','rejected')" t-att-action="'/my/vendor/products/%s/submit' % offer.id" method="post"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-success">Submit for Review</button></form></div>
         </div></t>
     </template>

@@ -38,3 +38,4 @@ from . import test_bank_change
 from . import test_vendor_terms
 from . import test_partial_shipments
 from . import test_ship_sla
+from . import test_vendor_discounts

@@ -88,6 +88,12 @@
                         <setting string="Flag High Cancellation Rates" help="Prepare a draft warning penalty when a vendor's monthly cancellation rate passes the threshold. Never applied automatically.">
                             <field name="marketplace_kpi_auto_warning"/>
                         </setting>
+                        <setting string="Vendor Product Discounts" help="Let vendors discount their own offers (percentage or sale price, optional dates). Off keeps every price as it is; running discounts are not touched.">
+                            <field name="marketplace_vendor_discounts_enabled"/>
+                        </setting>
+                        <setting string="Discount Without Approval (%)" help="A vendor discount above this percentage waits for a reviewer in Discounts to Review." invisible="not marketplace_vendor_discounts_enabled">
+                            <field name="marketplace_max_vendor_discount_without_approval"/>
+                        </setting>
                         <setting string="Ship-by SLA" help="Days after confirmation by which a vendor must ship. Orders past it are flagged Late, reviewers get an activity and the vendor an email (notification switch). A vendor tier can override the value.">
                             <field name="marketplace_ship_sla_days"/>
                         </setting>

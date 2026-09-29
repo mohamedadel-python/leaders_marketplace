@@ -91,4 +91,24 @@
             </p>
         </xpath>
     </template>
+    <!-- B1: vendor discount badge. The struck-through original price comes from the
+         core price templates (has_discounted_price / base_price / line.discount). -->
+    <template id="product_price_vendor_discount_badge" inherit_id="website_sale.product_price">
+        <xpath expr="//span[@itemprop='listPrice']" position="after">
+            <span t-if="combination_info.get('leaders_discount_percent')"
+                  class="badge text-bg-danger ms-1 align-middle lm-discount-badge"><bdi dir="ltr">-<t t-out="combination_info['leaders_discount_percent']"/>%</bdi></span>
+        </xpath>
+    </template>
+    <template id="products_item_vendor_discount_badge" inherit_id="website_sale.products_item">
+        <xpath expr="//span[@itemprop='price']" position="before">
+            <span t-if="template_price_vals.get('leaders_discount_percent')"
+                  class="badge text-bg-danger ms-1 lm-discount-badge"><bdi dir="ltr">-<t t-out="template_price_vals['leaders_discount_percent']"/>%</bdi></span>
+        </xpath>
+    </template>
+    <template id="cart_lines_vendor_discount_badge" inherit_id="website_sale.cart_lines">
+        <xpath expr="//div[@name='website_sale_cart_line_price']" position="inside">
+            <span t-if="line.marketplace_offer_id and line.discount &gt; 0"
+                  class="badge text-bg-danger ms-1 lm-discount-badge"><bdi dir="ltr">-<t t-out="int(line.discount)"/>%</bdi></span>
+        </xpath>
+    </template>
 </odoo>

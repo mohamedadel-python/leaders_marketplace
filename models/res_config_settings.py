@@ -185,6 +185,23 @@ class ResConfigSettings(models.TransientModel):
         default=20.0,
         help="Monthly late-shipment rate above which a draft warning is prepared.",
     )
+    marketplace_vendor_discounts_enabled = fields.Boolean(
+        string="Vendor Product Discounts",
+        config_parameter="leaders_marketplace.vendor_discounts_enabled",
+        default=False,
+        help="Off: vendors cannot set discounts (portal, bulk import and API refuse); "
+             "discounts already stored keep running. On: a vendor can discount an offer "
+             "by percentage or sale price, with optional start and end dates. The vendor "
+             "funds the discount; the website shows the original price struck through.",
+    )
+    marketplace_max_vendor_discount_without_approval = fields.Float(
+        string="Discount Without Approval (%)",
+        config_parameter="leaders_marketplace.max_vendor_discount_without_approval",
+        default=50.0,
+        help="A vendor discount above this percentage of the regular price waits for a "
+             "reviewer (Discounts to Review) before it takes effect. Use a small value "
+             "such as 0.01 to review every discount.",
+    )
     marketplace_enforce_returns_reserve = fields.Boolean(
         string="Withhold a Returns Reserve",
         config_parameter="leaders_marketplace.enforce_returns_reserve",

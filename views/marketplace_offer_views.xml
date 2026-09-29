@@ -8,6 +8,8 @@
                 <field name="vendor_id"/>
                 <field name="seller_sku"/>
                 <field name="price"/>
+                <field name="effective_price" optional="hide"/>
+                <field name="discount_state" optional="hide"/>
                 <field name="fulfillment_type"/>
                 <field name="state"/>
                 <field name="product_marketplace_state" string="Product" optional="show"/>
@@ -30,6 +32,15 @@
                             groups="leaders_marketplace.group_marketplace_reviewer"/>
                     <button name="action_approve" string="Approve" type="object" invisible="state != 'pending'"/>
                     <button name="action_reject" string="Reject" type="object" invisible="state != 'pending'"/>
+                    <button name="action_approve_discount" string="Approve discount" type="object" class="btn-primary"
+                            invisible="discount_state != 'pending_approval'"
+                            groups="leaders_marketplace.group_marketplace_reviewer"/>
+                    <button name="action_reject_discount" string="Reject discount" type="object"
+                            invisible="discount_state != 'pending_approval'"
+                            groups="leaders_marketplace.group_marketplace_reviewer"/>
+                    <button name="action_clear_discount" string="Remove discount" type="object"
+                            invisible="discount_state == 'none'"
+                            groups="leaders_marketplace.group_marketplace_reviewer"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -53,6 +64,20 @@
                         <field name="buybox_score" readonly="1"/>
                         <field name="is_buybox_winner" readonly="1"/>
                     </group>
+                    <group string="Vendor Discount">
+                        <group>
+                            <field name="discount_state"/>
+                            <field name="discount_type" readonly="1"/>
+                            <field name="discount_percent" readonly="1" invisible="discount_type != 'percent'"/>
+                            <field name="discount_price" readonly="1" invisible="discount_type != 'price'"/>
+                            <field name="discount_regular_percent"/>
+                        </group>
+                        <group>
+                            <field name="discount_start" readonly="1"/>
+                            <field name="discount_end" readonly="1"/>
+                            <field name="effective_price"/>
+                        </group>
+                    </group>
                     <field name="reject_reason"/>
                 </sheet>
             </form>
@@ -68,6 +93,8 @@
                 <field name="seller_sku"/>
                 <filter name="offer_pending" string="Pending" domain="[('state', '=', 'pending')]"/>
                 <filter name="offer_active" string="Active" domain="[('state', '=', 'active')]"/>
+                <filter name="offer_discount_pending" string="Discount to Review" domain="[('discount_state', '=', 'pending_approval')]"/>
+                <filter name="offer_discount_active" string="Discounted Now" domain="[('discount_state', '=', 'active')]"/>
                 <separator/>
                 <filter name="offer_buybox" string="Buy Box Winners" domain="[('is_buybox_winner', '=', True)]"/>
                 <filter name="offer_out_of_stock" string="Out of Stock" domain="[('available_qty_cache', '&lt;=', 0)]"/>
@@ -85,5 +112,39 @@
         <field name="res_model">leaders.marketplace.offer</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_marketplace_offer_search"/>
+    </record>
+    <record id="view_offer_discount_review_tree" model="ir.ui.view">
+        <field name="name">leaders.marketplace.offer.discount.review.tree</field>
+        <field name="model">leaders.marketplace.offer</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="0">
+                <field name="product_id"/>
+                <field name="vendor_id"/>
+                <field name="price"/>
+                <field name="discount_type"/>
+                <field name="discount_percent"/>
+                <field name="discount_price"/>
+                <field name="discount_regular_percent"/>
+                <field name="discount_start"/>
+                <field name="discount_end"/>
+                <field name="discount_state"/>
+                <button name="action_approve_discount" string="Approve" type="object" icon="fa-check"
+                        invisible="discount_state != 'pending_approval'"
+                        groups="leaders_marketplace.group_marketplace_reviewer"/>
+                <button name="action_reject_discount" string="Reject" type="object" icon="fa-times"
+                        invisible="discount_state != 'pending_approval'"
+                        groups="leaders_marketplace.group_marketplace_reviewer"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_offer_discounts_to_review" model="ir.actions.act_window">
+        <field name="name">Discounts to Review</field>
+        <field name="res_model">leaders.marketplace.offer</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('discount_state', '=', 'pending_approval')]</field>
+        <field name="search_view_id" ref="view_marketplace_offer_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_offer_discount_review_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_marketplace_offer_form')})]"/>
     </record>
 </odoo>

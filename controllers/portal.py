@@ -135,6 +135,9 @@ class MarketplacePortal(CustomerPortal):
             "fbl_enabled": request.env["leaders.marketplace.offer"]._leaders_fbl_allowed(),
             "forced_fulfillment": forced_policy.forced_fulfillment_type or False,
             "forced_fulfillment_name": forced_policy.name or "",
+            "discounts_enabled": request.env["leaders.marketplace.offer"]._leaders_discounts_enabled(),
+            "discount_start_local": self._dt_to_local(offer.discount_start) if offer else "",
+            "discount_end_local": self._dt_to_local(offer.discount_end) if offer else "",
             "categories": request.env["product.public.category"].sudo().search([], order="name"),
             "websites": request.env["website"].sudo().search([]),
             "currencies": request.env["res.currency"].sudo().search([("active", "=", True)], order="name"),
@@ -285,9 +288,11 @@ class MarketplacePortal(CustomerPortal):
         ], order="id desc")
         return self._vendor_render("leaders_marketplace.portal_vendor_products", {
             "fbl_enabled": request.env["leaders.marketplace.offer"]._leaders_fbl_allowed(),
+            "discounts_enabled": request.env["leaders.marketplace.offer"]._leaders_discounts_enabled(),
             "offers": offers,
             "vendor": vendor,
             "error": kw.get("error"),
+            "notice": kw.get("notice"),
         })
 
     @http.route(["/my/vendor/products/new"], type="http", auth="user", website=True, methods=["GET", "POST"], csrf=True)
@@ -420,6 +425,7 @@ class MarketplacePortal(CustomerPortal):
         if request.httprequest.method == "GET":
             values = self._vendor_form_values(vendor, offer=offer)
             values["created"] = request.params.get("created")
+            values["discount_result"] = request.params.get("discount")
             return self._vendor_render("leaders_marketplace.portal_vendor_product_form", values)
 
         name = (post.get("name") or "").strip()
@@ -488,6 +494,99 @@ class MarketplacePortal(CustomerPortal):
         if offer.stock_location_id != location:
             offer.sudo().write({"stock_location_id": location.id})
         return request.redirect(f"/my/vendor/products/{offer.id}/edit?saved=1")
+
+    # -------------------------------------------------------------------------
+    # Vendor discounts (B1)
+    # -------------------------------------------------------------------------
+    @staticmethod
+    def _user_tz():
+        import pytz
+        try:
+            return pytz.timezone(request.env.user.tz or "UTC")
+        except pytz.UnknownTimeZoneError:
+            return pytz.UTC
+
+    def _dt_from_local(self, value):
+        """A ``datetime-local`` form value (the user's time zone) as a UTC datetime, or False."""
+        import pytz
+        from datetime import datetime
+        value = (value or "").strip()
+        if not value:
+            return False
+        try:
+            local = datetime.strptime(value.replace("T", " ")[:16], "%Y-%m-%d %H:%M")
+        except ValueError:
+            raise UserError(_("The discount dates are not valid."))
+        return self._user_tz().localize(local).astimezone(pytz.UTC).replace(tzinfo=None)
+
+    def _dt_to_local(self, value):
+        import pytz
+        if not value:
+            return ""
+        return pytz.UTC.localize(value).astimezone(self._user_tz()).strftime("%Y-%m-%dT%H:%M")
+
+    def _discount_values_from_post(self, post, percent_only=False):
+        kind = "percent" if percent_only else post.get("discount_type")
+        return {
+            "type": kind,
+            "percent": post.get("discount_percent"),
+            "price": post.get("discount_price"),
+            "start": self._dt_from_local(post.get("discount_start")),
+            "end": self._dt_from_local(post.get("discount_end")),
+        }
+
+    @http.route("/my/vendor/products/<int:offer_id>/discount", type="http", auth="user", website=True, methods=["POST"], csrf=True)
+    def vendor_product_discount(self, offer_id, **post):
+        """Set or remove the discount of one own offer (same service as bulk import / API)."""
+        vendor = self._require_vendor()
+        offer = self._offer_owned_by_vendor(offer_id, vendor)
+        if post.get("action") == "clear":
+            offer._leaders_clear_discount()
+            return request.redirect(f"/my/vendor/products/{offer.id}/edit?discount=cleared")
+        try:
+            state = offer._leaders_set_discount(self._discount_values_from_post(post))
+        except (UserError, ValidationError) as exc:
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, offer=offer, error=str(exc)))
+        return request.redirect(f"/my/vendor/products/{offer.id}/edit?discount={state}")
+
+    @http.route("/my/vendor/products/discount-bulk", type="http", auth="user", website=True, methods=["POST"], csrf=True)
+    def vendor_products_discount_bulk(self, **post):
+        """Apply one percentage (and dates) to several own offers, or remove their discounts."""
+        vendor = self._require_vendor()
+        ids = []
+        for raw in request.httprequest.form.getlist("offer_ids"):
+            if str(raw).isdigit():
+                ids.append(int(raw))
+        if not ids:
+            return request.redirect("/my/vendor/products?error=%s" % quote(_("Select at least one offer.")))
+        # Ownership first: a single foreign id refuses the whole request.
+        offers = request.env["leaders.marketplace.offer"].sudo()
+        for offer_id in ids:
+            offers |= self._offer_owned_by_vendor(offer_id, vendor)
+        if post.get("action") == "clear":
+            offers._leaders_clear_discount()
+            return request.redirect("/my/vendor/products?notice=%s" % quote(
+                _("Discount removed from %s offer(s).", len(offers))))
+        try:
+            values = self._discount_values_from_post(post, percent_only=True)
+        except UserError as exc:
+            return request.redirect("/my/vendor/products?error=%s" % quote(str(exc)))
+        applied, failed = 0, []
+        for offer in offers:
+            try:
+                with request.env.cr.savepoint():
+                    offer._leaders_set_discount(values)
+                applied += 1
+            except (UserError, ValidationError) as exc:
+                failed.append("%s: %s" % (offer.seller_sku, exc))
+        if failed and not applied:
+            return request.redirect("/my/vendor/products?error=%s" % quote("; ".join(failed)))
+        notice = _("Discount applied to %s offer(s).", applied)
+        if failed:
+            notice += " " + _("Skipped: %s", "; ".join(failed))
+        return request.redirect("/my/vendor/products?notice=%s" % quote(notice))
 
     @http.route("/my/vendor/products/<int:offer_id>/submit", type="http", auth="user", website=True, methods=["POST"], csrf=True)
     def vendor_product_submit(self, offer_id, **post):

@@ -29,6 +29,12 @@
         <field name="state">code</field><field name="code">model.cron_auto_confirm_delivery()</field>
         <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
     </record>
+    <record id="cron_refresh_offer_discounts" model="ir.cron">
+        <field name="name">Marketplace: Start/End Vendor Discounts</field>
+        <field name="model_id" ref="model_leaders_marketplace_offer"/>
+        <field name="state">code</field><field name="code">model.cron_refresh_discounts()</field>
+        <field name="interval_number">15</field><field name="interval_type">minutes</field><field name="active">True</field>
+    </record>
     <record id="cron_refresh_buybox" model="ir.cron">
         <field name="name">Marketplace: Refresh Buy Box</field>
         <field name="model_id" ref="model_leaders_marketplace_offer"/>

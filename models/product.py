@@ -217,7 +217,7 @@ class MarketplaceOffer(models.Model):
             return 1.0
         return (tier.sequence - min_seq) / (max_seq - min_seq)
 
-    @api.depends("price","fulfillment_type","rating","vendor_id.vendor_tier_id")
+    @api.depends("price","effective_price","fulfillment_type","rating","vendor_id.vendor_tier_id")
     def _compute_buybox_score(self):
         """Weighted, admin-configurable Buy Box score.
 
@@ -239,16 +239,17 @@ class MarketplaceOffer(models.Model):
                 ("product_id", "in", product_ids), ("state", "=", "active"), ("active", "=", True),
             ])
             for sibling in siblings:
-                if sibling.price:
+                # The price actually charged (a running vendor discount included).
+                if sibling.effective_price:
                     pid = sibling.product_id.id
-                    max_price_by_product[pid] = max(max_price_by_product.get(pid, 0.0), sibling.price)
+                    max_price_by_product[pid] = max(max_price_by_product.get(pid, 0.0), sibling.effective_price)
         for rec in self:
             if not rec.product_id:
                 rec.buybox_score = 0.0
                 continue
-            max_price = max_price_by_product.get(rec.product_id.id) or rec.price or 1.0
+            max_price = max_price_by_product.get(rec.product_id.id) or rec.effective_price or 1.0
             # price_score in 0..1 (cheapest -> 1).
-            price_score = 1.0 - (rec.price / max_price) if max_price else 0.0
+            price_score = 1.0 - (rec.effective_price / max_price) if max_price else 0.0
             rating_score = (rec.rating or 0.0) / 5.0
             avail_score = 1.0 if rec.available_qty() > 0 else 0.0
             shipping_score = cfg.fbl_shipping_bonus if (fbl_on and rec.fulfillment_type == "fbl") else cfg.fbm_shipping_bonus
@@ -291,7 +292,7 @@ class MarketplaceOffer(models.Model):
             if cfg.require_stock:
                 eligible = offers.filtered(lambda o: o.available_qty() > 0) or offers
             winner = eligible.sorted(
-                key=lambda o: (-o.buybox_score, -(o.rating or 0.0), o.price, o.id)
+                key=lambda o: (-o.buybox_score, -(o.rating or 0.0), o.effective_price, o.id)
             )[:1]
             to_win = winner
             to_clear = offers - to_win
@@ -371,7 +372,8 @@ class MarketplaceOffer(models.Model):
         if {"fulfillment_type", "vendor_id", "product_tmpl_id"}.intersection(vals):
             self._apply_fulfillment_policy()
         # Any change that can affect ranking triggers a winner recompute.
-        trigger = {"price","rating","state","active","fulfillment_type","stock_location_id","vendor_id","product_id"}
+        trigger = {"price","rating","state","active","fulfillment_type","stock_location_id","vendor_id","product_id",
+                   "discount_state"}
         if trigger.intersection(vals):
             self._recompute_buybox_winner()
         return res
@@ -409,15 +411,25 @@ class MarketplaceOffer(models.Model):
             templates.action_marketplace_approve()
         return True
 
-    def _leaders_price_in_company_currency(self, company=None, date=None):
-        """This offer's price expressed in the company currency."""
+    def _leaders_price_in_company_currency(self, company=None, date=None, effective=False):
+        """This offer's price expressed in the company currency.
+
+        By default the REGULAR price (what a cart line is priced from; the
+        vendor discount is carried by the line's discount). ``effective=True``
+        gives the price actually charged while a vendor discount is running
+        (Buy Box, website price display).
+        """
+        self.ensure_one()
+        return self._leaders_to_company_currency(
+            self.effective_price if effective else self.price, company=company, date=date)
+
+    def _leaders_to_company_currency(self, amount, company=None, date=None):
         self.ensure_one()
         company = company or self.env.company
         date = date or fields.Date.context_today(self)
         if self.currency_id == company.currency_id:
-            return self.price
-        return self.currency_id._convert(
-            self.price, company.currency_id, company, date)
+            return amount
+        return self.currency_id._convert(amount, company.currency_id, company, date)
 
     def available_qty(self):
         """Free quantity of the vendor-owned stock backing this offer."""
@@ -543,7 +555,7 @@ class MarketplaceOffer(models.Model):
         cfg = self.env["leaders.buybox.config"].sudo().get_active()
         if winner and cfg.require_stock and winner.available_qty() <= 0:
             in_stock = offers.filtered(lambda o: o.available_qty() > 0).sorted(
-                key=lambda o: (-o.buybox_score, -(o.rating or 0.0), o.price, o.id))
+                key=lambda o: (-o.buybox_score, -(o.rating or 0.0), o.effective_price, o.id))
             if in_stock:
                 return in_stock[:1]
         return winner
@@ -592,7 +604,7 @@ class ProductTemplateWebsite(models.Model):
             ("product_tmpl_id", "=", template.id), ("state", "=", "active"), ("active", "=", True),
         ])._leaders_filter_by_market()
         others = (offers - winner).filtered(lambda o: o.available_qty() > 0).sorted(
-            key=lambda o: (o.price, o.id))
+            key=lambda o: (o.effective_price, o.id))
         if not winner and not others:
             return {}
         return {"winner": winner, "others": others, "multi_variant": len(template.product_variant_ids) > 1}
@@ -602,17 +614,62 @@ class ProductTemplateWebsite(models.Model):
 
         Without this a multi-variant marketplace product would be priced from
         the shared template list_price, which no longer follows any single
-        vendor's offer.
+        vendor's offer. The price is the EFFECTIVE one (vendor discount
+        included); the struck-through price and the "-X%" badge come from the
+        offer's reference price (lowest price of the last 30 days), see
+        ``_leaders_display_discount``.
         """
+        offer = None
+        effective_price = 0.0
         if product_or_template._name == "product.product":
             offer = self.env["leaders.marketplace.offer"]._get_marketplace_winner(
                 product_or_template)
             if offer and offer.price:
+                effective_price = offer._leaders_price_in_company_currency(
+                    date=date, effective=True)
                 product_or_template = product_or_template.with_context(
-                    leaders_offer_unit_price=offer._leaders_price_in_company_currency(
-                        date=date))
-        return super()._get_additionnal_combination_info(
+                    leaders_offer_unit_price=effective_price)
+        info = super()._get_additionnal_combination_info(
             product_or_template, quantity, date, website)
+        display = offer._leaders_display_discount() if offer and offer.price else {}
+        if display and effective_price and info.get("price"):
+            # ``price`` already carries pricelist, taxes and currency: scale the
+            # reference price by the same factor so both figures stay comparable.
+            ratio = info["price"] / effective_price
+            reference = offer._leaders_to_company_currency(display["reference"], date=date)
+            info["list_price"] = max(info.get("list_price") or 0.0, reference * ratio)
+            info["has_discounted_price"] = True
+            # A variant switch does not refresh a server-rendered badge, so it is
+            # only offered where the product has a single variant.
+            if len(offer.product_tmpl_id.product_variant_ids) == 1:
+                info["leaders_discount_percent"] = display["percent"]
+        return info
+
+    def _get_sales_prices(self, website):
+        """Shop grid: add the struck reference price and the "-X%" badge."""
+        res = super()._get_sales_prices(website)
+        Offer = self.env["leaders.marketplace.offer"]
+        for template in self:
+            vals = res.get(template.id)
+            if not vals or len(template.product_variant_ids) != 1 or not vals.get("price_reduce"):
+                continue
+            offer = Offer._get_marketplace_winner(template.product_variant_id)
+            display = offer._leaders_display_discount() if offer and offer.price else {}
+            if not display:
+                continue
+            company_currency = self.env.company.currency_id
+            regular = offer._leaders_price_in_company_currency()
+            # The grid prices the synchronised template list_price, which is the
+            # REGULAR price of the winner (cart and back-office lines are priced from
+            # it, the discount travels as the line discount). Scale it to the
+            # effective and reference prices; skip when it is not this offer's price.
+            if company_currency.compare_amounts(template.list_price, regular) != 0 or not offer.price:
+                continue
+            regular_price = vals["price_reduce"]
+            vals["price_reduce"] = regular_price * display["effective"] / offer.price
+            vals["base_price"] = regular_price * display["reference"] / offer.price
+            vals["leaders_discount_percent"] = display["percent"]
+        return res
 
 
 class MarketplaceOfferPublishLog(models.Model):

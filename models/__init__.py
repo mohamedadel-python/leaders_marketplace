@@ -5,6 +5,7 @@ from . import stock
 from . import vendor_core
 from . import buybox
 from . import product
+from . import offer_discount
 from . import sale
 from . import customer_cancel
 from . import vendor_invoice
