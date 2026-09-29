@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 18:36+0000\n"
-"PO-Revision-Date: 2026-09-29 18:36+0000\n"
+"POT-Creation-Date: 2026-09-29 22:00+0000\n"
+"PO-Revision-Date: 2026-09-29 22:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,8 +21,39 @@ msgid "\" for this vendor or category; it cannot be changed here."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid ""
+"# list your offers (page/limit, max 100)\n"
+"curl -H \"Authorization: Bearer YOUR_KEY\" \""
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_tier__reserve_percent
 msgid "% of net held as a returns reserve."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "%(carrier)s reports the parcel as %(status)s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "%(column)s '%(value)s' matches several products; the row is ambiguous."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "%(column)s is not a valid date: '%(value)s'."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "%(column)s must be a number, got '%(value)s'."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -94,6 +125,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "%s cannot be negative."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/delivery.py:0
 msgid "%s delivery"
 msgstr ""
@@ -108,6 +145,53 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/settlement.py:0
 msgid "%s has already been paid; reverse the payout before cancelling."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+msgid "%s is not a marketplace vendor."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "%s is required."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "%s offer(s) created as drafts."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "%s offer(s) submitted for review."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "%s picked up the parcel: shipped."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "%s reported the parcel as delivered."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "%s: parcel %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.actions.report,print_report_name:leaders_marketplace.action_report_vendor_statement
+msgid "'Vendor Statement - %s' % object.display_name"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -133,6 +217,11 @@ msgid ", otherwise the marketplace decides."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "- customers pay"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid ""
 ".\n"
@@ -145,13 +234,55 @@ msgid "/ unit"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "/api/v1/openapi.json"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid ""
+"/api/v1/vendor/offers/42\"\n"
+"\n"
+"# ship an order\n"
+"curl -X POST -H \"Authorization: Bearer YOUR_KEY\" -H \"Content-Type: application/json\" \\\n"
+"     -d '{\"tracking_ref\": \"TRK123\"}' \""
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid ""
+"/api/v1/vendor/offers?limit=20\"\n"
+"\n"
+"# change a price and set a 15% discount (write key; Idempotency-Key makes retries safe)\n"
+"curl -X PATCH -H \"Authorization: Bearer YOUR_KEY\" -H \"Idempotency-Key: 4d1c-0001\" \\\n"
+"     -H \"Content-Type: application/json\" \\\n"
+"     -d '{\"price\": 120.0, \"discount\": {\"type\": \"percent\", \"percent\": 15}}' \\\n"
+"     \""
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "/api/v1/vendor/orders/7/ship\""
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
 msgid "1. Business information"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "1. Download a template"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
 msgid "2. Legal information"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "2. Upload your file"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -589,8 +720,18 @@ msgid "<i class=\"fa fa-cubes\"/> Inventory"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "<i class=\"fa fa-download\"/> Download label"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
 msgid "<i class=\"fa fa-exclamation-triangle\"/> Confirm cash collected"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+msgid "<i class=\"fa fa-file-excel-o\"/> Download XLSX"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -600,9 +741,19 @@ msgid "<i class=\"fa fa-file-pdf-o\"/> Credit Note"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+msgid "<i class=\"fa fa-file-pdf-o\"/> Download PDF"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "<i class=\"fa fa-file-pdf-o\"/> Invoice"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+msgid "<i class=\"fa fa-file-text-o\"/> Statement of account"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -640,6 +791,11 @@ msgstr ""
 msgid ""
 "<i class=\"fa fa-info-circle\"/> Product details are managed by the "
 "marketplace; you can edit your offer only."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_nav
+msgid "<i class=\"fa fa-key\"/> API"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -724,6 +880,11 @@ msgid "<i class=\"fa fa-tachometer\"/> Open Dashboard"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "<i class=\"fa fa-tag\"/> Create shipment / label"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 msgid "<i class=\"fa fa-tags\"/> Offers by Status"
 msgstr ""
@@ -786,6 +947,11 @@ msgid "<i class=\"fa fa-undo\"/> Returns"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid "<i class=\"fa fa-upload\"/> Bulk import"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_nav
 msgid "<i class=\"fa fa-users\"/> Staff"
@@ -819,6 +985,23 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "<option value=\"fbm\">FBM</option>"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid ""
+"<select class=\"form-select form-select-sm\" name=\"new_attr_kind\"><option "
+"value=\"variant\">Variant option</option><option "
+"value=\"spec\">Specification</option></select>"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid ""
+"<select id=\"lm_api_scope\" name=\"scope\" class=\"form-select\">\n"
+"                            <option value=\"read\">Read only</option>\n"
+"                            <option value=\"write\">Read and write</option>\n"
+"                        </select>"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1078,6 +1261,11 @@ msgid "<span class=\"lm-kpi-sub\">Ready for payout</span>"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid "<span class=\"visually-hidden\">Select</span>"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 msgid "<span> to </span>"
 msgstr ""
@@ -1152,9 +1340,34 @@ msgid "A bank proof is required to change the payout account."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__discount_approved
+msgid ""
+"A discount above the approval threshold is only effective once a reviewer "
+"approved it."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+msgid "A discount sale price must be above 0."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "A fulfillment policy forces FBL, so the initial stock was not added."
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "A name and a valid email address are required."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "A name is too long (max %s characters)."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1171,8 +1384,22 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "A percentage discount must be above 0 and below 100."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/delivery.py:0
 msgid "A platform delivery price cannot belong to a vendor."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "A product can have at most %s extra images."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1191,13 +1418,58 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "A shipment can only be created before the group ships."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "A shipment is listed twice."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "A shipment was already created for %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+msgid "A statement cannot cover more than one year."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "A user with this email already exists."
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "A valid price is required for %s."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.constraint,message:leaders_marketplace.constraint_leaders_vendor_kpi_vendor_period_uniq
 msgid "A vendor already has a KPI snapshot for this month."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_max_vendor_discount_without_approval
+msgid ""
+"A vendor discount above this percentage of the regular price waits for a "
+"reviewer (Discounts to Review) before it takes effect. Use a small value "
+"such as 0.01 to review every discount."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"A vendor discount above this percentage waits for a reviewer in Discounts to"
+" Review."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1214,6 +1486,31 @@ msgid "A verification code was sent. It is valid for 5 minutes."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "API Calls per Minute"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_api_rate_limit
+msgid "API Calls per Minute per Key"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "API keys"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__awb
+msgid "AWB"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "AWB:"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
 msgid "Accept terms"
 msgstr ""
@@ -1226,6 +1523,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
 msgid "Accepted online (checkbox)"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Access"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1358,10 +1660,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__active
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__active
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__discount_state__active
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__state__active
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
 msgid "Active"
@@ -1446,6 +1751,11 @@ msgid "Add at least one product before receiving this inbound."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Add new values, separated by commas"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.actions.act_window,help:leaders_marketplace.action_vendor_delivery_zone
 msgid "Add the platform delivery price per governorate"
 msgstr ""
@@ -1453,6 +1763,13 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.product_page_marketplace_sellers
 msgid "Add to cart"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "Adding new attribute values is not allowed."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1497,6 +1814,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_cod_enabled
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Allow Cash on Delivery"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Allow vendors to add new attribute values and attributes. They are global: "
+"every vendor sees them."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1582,7 +1906,9 @@ msgid "Applications per Day (IP / Email)"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import_line__status__applied
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_penalty__state__applied
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_search
 msgid "Applied"
 msgstr ""
@@ -1598,6 +1924,11 @@ msgid "Applied Date"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__applied_rows
+msgid "Applied Rows"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__applies_to
 msgid "Applies To"
 msgstr ""
@@ -1605,6 +1936,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_form
 msgid "Apply"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid "Apply discount"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1622,6 +1958,7 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_offer_discount_review_tree
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
@@ -1636,6 +1973,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_return_form
 msgid "Approve Return"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
+msgid "Approve discount"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1687,6 +2029,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cancel_reason_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cancel_reason_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_shipping_provider_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_terms_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_terms_search
@@ -1713,6 +2056,18 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "At least one vendor document is required."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "At most %s new values can be added at once."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "At most %s specification lines are allowed."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1808,8 +2163,17 @@ msgid "Awaiting Goods"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__awb
+msgid "Awb"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dispute_detail
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
 msgid "Back"
 msgstr ""
@@ -1817,6 +2181,19 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace
 msgid "Back to Draft"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
+msgid "Balance"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+msgid "Balance:"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1914,6 +2291,7 @@ msgid "Block Payouts While a Bank Change Is Pending"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__body
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__body
 msgid "Body"
 msgstr ""
@@ -1936,6 +2314,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:leaders.vendor.tier,name:leaders_marketplace.vendor_tier_bronze
 msgid "Bronze"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "Bulk import"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2119,8 +2502,21 @@ msgid "COD refusal counter reset by %(user)s (was %(old)s)."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "CSV"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__calc_method
 msgid "Calc Method"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_api_rate_limit
+msgid ""
+"Calls a single vendor API key may make per minute (429 with Retry-After "
+"beyond). 0 = no limit."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2137,6 +2533,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_return_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_statement_wizard_form
 msgid "Cancel"
 msgstr ""
 
@@ -2322,6 +2719,26 @@ msgid "Carrier"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "Carrier %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_shipping_provider__provider_type
+msgid ""
+"Carrier addons add their own values (selection_add) and override "
+"_create_shipment and _parse_webhook."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_shipping_provider__credentials
+msgid ""
+"Carrier credentials (JSON text). Only marketplace managers can read it; "
+"never exposed to portal or API users."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_config_settings__marketplace_commission_recognition__cash
 msgid "Cash (on settlement)"
 msgstr ""
@@ -2433,6 +2850,18 @@ msgid "Category"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Category '%s' does not exist."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Category '%s' is ambiguous."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Change payout account"
 msgstr ""
@@ -2468,8 +2897,38 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+msgid "Choose a discount type: percentage or sale price."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Choose a file to upload."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Choose a published product from the catalog."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Choose a shipping provider."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "Choose an active shipping provider."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Choose what you want to import."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2494,11 +2953,20 @@ msgid "Closed (Rejected)"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
+msgid "Closing balance"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cod_cash_confirmed_date
 msgid "Cod Cash Confirmed Date"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__code
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__code
 msgid "Code"
 msgstr ""
@@ -2517,6 +2985,17 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Collected for vendor order %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Column"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Columns"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2769,6 +3248,11 @@ msgid "Confirm Cash Collected"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Confirm import of"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
 msgid ""
 "Confirm once the products are back in your warehouse. The customer is "
@@ -2782,6 +3266,7 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__state__confirmed
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__state__confirmed
 msgid "Confirmed"
 msgstr ""
@@ -2813,6 +3298,16 @@ msgid "Conversation"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Copy your new key now. It is shown only once and cannot be recovered."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__count
+msgid "Count"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__country_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__country_id
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
@@ -2827,8 +3322,40 @@ msgid "Create Settlements Automatically"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Create a key"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Create key"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+msgid "Create offers"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_fulfillment_group_form
+msgid "Create shipment / label"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__shipping_status__created
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_shipping_event__status__created
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Created"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid "Created Automatically"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__user_id
+msgid "Created By"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2853,16 +3380,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound_line__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__create_uid
@@ -2872,6 +3407,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_reserve__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_statement_wizard__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__create_uid
@@ -2895,16 +3431,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound_line__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__create_date
@@ -2914,10 +3458,31 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_reserve__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_statement_wizard__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__create_date
 msgid "Created on"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "Creating new attributes is not allowed."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__credentials
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_shipping_provider_form
+msgid "Credentials"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
+msgid "Credit"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2932,6 +3497,8 @@ msgid "Cumulative Sales"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__currency_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__currency_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__currency_id
@@ -2941,6 +3508,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__currency_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__currency_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__currency_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__currency_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__currency_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__currency_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__currency_id
@@ -2956,7 +3524,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_partner__company_currency_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_users__company_currency_id
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 msgid "Currency"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
+msgid "Currency:"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3092,10 +3666,16 @@ msgid "Daily"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__date
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Date"
 msgstr ""
 
@@ -3107,6 +3687,7 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__date_from
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_target__date_from
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_statement_wizard__date_from
 msgid "Date From"
 msgstr ""
 
@@ -3128,6 +3709,7 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__date_to
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_target__date_to
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_statement_wizard__date_to
 msgid "Date To"
 msgstr ""
 
@@ -3199,6 +3781,14 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
+msgid "Debit"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Debt collected %s"
 msgstr ""
@@ -3219,8 +3809,12 @@ msgid "Deduction"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__deductions
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Deductions"
 msgstr ""
 
@@ -3242,7 +3836,9 @@ msgid "Default unit of measure used for all stock operations."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__shipping_status__delivered
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__state__delivered
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_shipping_event__status__delivered
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 msgid "Delivered"
@@ -3366,7 +3962,117 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__discount
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__discount
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "Discount"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+msgid "Discount %"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__discount_regular_percent
+msgid "Discount % of Regular Price"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__discount_approved
+msgid "Discount Approved"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__discount_end
+msgid "Discount End"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__discount_percent
+msgid "Discount Percent"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__discount_price
+msgid "Discount Price"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__discount_start
+msgid "Discount Start"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__discount_state
+msgid "Discount Status"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__discount_type
+msgid "Discount Type"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_max_vendor_discount_without_approval
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Discount Without Approval (%)"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Discount applied to %s offer(s)."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Discount dates need a discount_percent or discount_price."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"Discount dates: YYYY-MM-DD or YYYY-MM-DD HH:MM, in your account time zone. "
+"Use either discount_percent or discount_price."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Discount removed from %s offer(s)."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Discount removed."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Discount saved."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid "Discount selected offers"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
+msgid "Discount to Review"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
+msgid "Discounted Now"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_offer_discounts_to_review
+#: model:ir.ui.menu,name:leaders_marketplace.menu_offer_discounts_to_review
+msgid "Discounts to Review"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3386,16 +4092,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound_line__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__display_name
@@ -3405,6 +4119,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_reserve__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_statement_wizard__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__display_name
@@ -3455,6 +4170,12 @@ msgid "Disputes"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Do not give a discount and clear it in the same row."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__document_ids
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 msgid "Document"
@@ -3496,7 +4217,18 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__state__done
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__state__done
 msgid "Done"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_statement_wizard_form
+msgid "Download XLSX"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_fulfillment_group_form
+msgid "Download label"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3541,6 +4273,24 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_shipping_provider__provider_type__dummy
+#: model:leaders.shipping.provider,name:leaders_marketplace.shipping_provider_dummy
+msgid "Dummy (tests)"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Duplicate sku %s in the file."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Duplicated line."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_wallet_transaction__type__earning
 msgid "Earning"
 msgstr ""
@@ -3552,6 +4302,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 msgid "Edit"
 msgstr ""
 
@@ -3571,6 +4322,11 @@ msgid "Effective Period"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__effective_price
+msgid "Effective Price"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 msgid "Email"
 msgstr ""
@@ -3586,8 +4342,28 @@ msgid "Employee name"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__discount_end
+msgid "Empty = never ends."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__discount_start
+msgid "Empty = starts immediately."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
 msgid "End"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid "Ends"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Ends (optional)"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3601,6 +4377,31 @@ msgstr ""
 msgid ""
 "Entry booked for a fee or adjustment, so the vendor payable account follows "
 "the wallet."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__error_file
+msgid "Error File"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__error_filename
+msgid "Error Filename"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Error file (.xlsx)"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "Errors"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Errors and warnings"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3695,6 +4496,17 @@ msgid "Escrow release %s"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__event_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__event_ids
+msgid "Event"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_shipping_provider_form
+msgid "Events"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_sale_order__marketplace_vendor_only
 msgid ""
 "Every product of this checkout belongs to marketplace vendors, so the order "
@@ -3702,6 +4514,27 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid ""
+"Every row is checked first. Nothing is created until you confirm, and only "
+"valid rows are imported."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"Every row is checked first. You download the error file, then confirm to "
+"import only the valid rows."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "Excel (.xlsx)"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__discount_state__expired
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__verification_status__expired
 msgid "Expired"
 msgstr ""
@@ -3728,6 +4561,21 @@ msgid "Extra Deduction"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Extra Images"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_max_extra_images
+msgid "Extra gallery images a vendor may add per product. 0 or empty means 8."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Extra images per product (0 = 8)."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__fulfillment_type__fbl
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_policy__forced_fulfillment_type__fbl
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__fulfillment_type__fbl
@@ -3737,6 +4585,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 msgid "FBL - Fulfilled by Leaders"
 msgstr ""
 
@@ -3795,12 +4644,15 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
 msgid "FBL shipments are handled by the Leaders warehouse."
 msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
 msgid ""
 "FBL stock is controlled by warehouse inbound receipts, not direct vendor "
 "adjustments."
@@ -3821,6 +4673,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 msgid "FBM - Fulfilled by Vendor"
 msgstr ""
 
@@ -3838,9 +4691,18 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__shipping_status__failed
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_shipping_event__status__failed
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__kyc_state__failed
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__state__failed
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import_line__status__failed
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_kyc_state__failed
 msgid "Failed"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__failed_rows
+msgid "Failed at apply"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3848,6 +4710,11 @@ msgstr ""
 msgid ""
 "Fallback percentage used when a vendor has no tier rate. Only applied when "
 "vendors without a plan are charged the tier rate."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_shipping_event__processed
+msgid "False when the event was logged but no action was taken."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3878,13 +4745,33 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__file
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__file
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 msgid "File"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "File (.xlsx or .csv, max 10 MB)"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__file_name
 msgid "File Name"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__filename
+msgid "Filename"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"Fill one row per line. Delete the example row (its SKU starts with EXAMPLE-)"
+" or leave it: it is skipped."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4023,6 +4910,7 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_vendor__date_from
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
 msgid "From"
 msgstr ""
 
@@ -4068,6 +4956,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 msgid "Fulfillment"
 msgstr ""
@@ -4150,6 +5039,29 @@ msgid "Fulfilment fee %s"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_shipping_provider_form
+msgid "Generate a new webhook secret? The carrier must be updated with it."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_shipping_provider_form
+msgid "Generate secret"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Give a barcode or an internal reference."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"Give the barcode or the internal reference of a published catalog product."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
 msgid "Go to dashboard"
 msgstr ""
@@ -4170,7 +5082,11 @@ msgid "Governorate"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Gross"
 msgstr ""
 
@@ -4181,6 +5097,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__group_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__group_id
 msgid "Group"
 msgstr ""
 
@@ -4200,6 +5117,11 @@ msgid "Group By"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_ir_http
+msgid "HTTP Routing"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound__has_message
@@ -4214,6 +5136,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__has_message
 msgid "Has Message"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_api_idempotency__request_hash
+msgid "Hash of method, path and JSON body."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4259,6 +5186,11 @@ msgid "Higher = cheaper offers win more."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "History"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_reserve__transaction_hold_id
 msgid "Hold Transaction"
 msgstr ""
@@ -4275,6 +5207,12 @@ msgstr ""
 msgid ""
 "Hours after ordering during which a customer can cancel. 0 = no limit (only "
 "the shipping status matters)."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_import_batch_size
+msgid ""
+"How many validated rows the import cron applies per run (all jobs together)."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4309,16 +5247,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound_line__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__id
@@ -4328,6 +5274,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_reserve__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_statement_wizard__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__id
@@ -4360,6 +5307,16 @@ msgstr ""
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__activity_exception_icon
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_return__activity_exception_icon
 msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__idempotency_key
+msgid "Idempotency Key"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.constraint,message:leaders_marketplace.constraint_leaders_vendor_api_idempotency_key_idem_unique
+msgid "Idempotency key already used."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4410,11 +5367,51 @@ msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Ignored unknown column(s): %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "Image"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__import_id
+msgid "Import"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_import_batch_size
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Import Rows per Cron Run"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Import finished: %(applied)s applied, %(failed)s failed."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Imported"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_fbm_auto_confirm_days
 msgid ""
 "In 'Customer confirms delivery' mode, a reported delivery the customer never"
 " answered is confirmed automatically after this many days. Zero waits for "
 "the customer forever."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__shipping_status__in_transit
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_shipping_event__status__in_transit
+msgid "In Transit"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4434,8 +5431,37 @@ msgid "Individual"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"Initial stock applies to FBM only; FBL stock comes from inbound receipts."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Instructions"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid "Internal notes about this review."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import_line__status__invalid
+msgid "Invalid"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__invalid_rows
+msgid "Invalid Rows"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+msgid "Invalid date: %s. Use the format YYYY-MM-DD."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4515,8 +5541,18 @@ msgid "Is Follower"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__is_revoked
+msgid "Is Revoked"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__issue_date
 msgid "Issue Date"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_import_line__messages
+msgid "JSON list of {column, message, level}."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4576,6 +5612,36 @@ msgid "Keep it for the marketplace"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid ""
+"Keep keys secret. Errors are JSON: <code dir=\"ltr\">{\"error\": \"code\", "
+"\"message\": \"...\", \"details\": []}</code>. Calls per minute are limited "
+"per key (429 with Retry-After)."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__key_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__key_id
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Key"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__key_hash
+msgid "Key Hash"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__key_prefix
+msgid "Key Prefix"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__kind
+msgid "Kind"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__kyc_state
 msgid "Kyc State"
 msgstr ""
@@ -4616,16 +5682,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound_line__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__write_uid
@@ -4635,6 +5709,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_reserve__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_statement_wizard__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__write_uid
@@ -4658,16 +5733,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound_line__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__write_date
@@ -4677,10 +5760,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_reserve__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_statement_wizard__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__last_used
+msgid "Last Used"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Last used"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4817,11 +5911,51 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Let vendor owners create API keys (portal page /my/vendor/api) and manage "
+"offers, orders, returns and read finance through /api/v1/vendor with a "
+"bearer key. Documentation: /api/v1/openapi.json."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Let vendors build variants from existing attributes (one offer per variant),"
+" add extra images and write specifications on products they own. Off keeps "
+"the single-variant product form."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Let vendors create shipments and labels with the active shipping providers "
+"(Marketplace > Configuration > Shipping Providers) and let carriers report "
+"pickup, delivery and refusal through a signed webhook."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Let vendors discount their own offers (percentage or sale price, optional "
+"dates). Off keeps every price as it is; running discounts are not touched."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Let vendors upload xlsx/csv files to create products, sell catalog products "
+"and update price, stock and discounts. Every row is validated first and only"
+" valid rows are applied after the vendor confirms."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Let visitors apply to sell at /vendor/apply."
 msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__level
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_search
 msgid "Level"
@@ -4851,6 +5985,7 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__line_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound__line_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__line_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__line_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__line_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__line_ids
@@ -4879,6 +6014,13 @@ msgid "Location"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__log
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_import_form
+msgid "Log"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 msgid "Login"
 msgstr ""
@@ -4904,6 +6046,21 @@ msgid "Manage stock <i class=\"fa fa-angle-right\"/>"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Manage the offers of the variants"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:leaders.shipping.provider,name:leaders_marketplace.shipping_provider_manual
+msgid "Manual"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_shipping_provider__provider_type__manual
+msgid "Manual (vendor enters tracking)"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 msgid "Mark Completed"
 msgstr ""
@@ -4916,6 +6073,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 msgid "Mark as done"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Market(s) not allowed for your account: %s."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5045,6 +6208,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_leaders_marketplace_offer_publish_log
 msgid "Marketplace Offer Publish Day"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_marketplace_offer_price_history
+msgid "Marketplace Offer Regular Price History"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5264,6 +6432,7 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
 msgid "Marketplace stock updates require a goods product, not a service."
 msgstr ""
 
@@ -5481,6 +6650,11 @@ msgid "Marketplace: Settlement: amount due from the vendor"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.actions.server,name:leaders_marketplace.cron_refresh_offer_discounts_ir_actions_server
+msgid "Marketplace: Start/End Vendor Discounts"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.actions.server,name:leaders_marketplace.cron_sync_vendor_ratings_ir_actions_server
 msgid "Marketplace: Sync Vendor Ratings to Offers"
 msgstr ""
@@ -5506,14 +6680,37 @@ msgid "Marketplace: Vendor application rejected"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.actions.server,name:leaders_marketplace.cron_vendor_api_cleanup_ir_actions_server
+msgid "Marketplace: clean vendor API records"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.actions.server,name:leaders_marketplace.cron_process_vendor_imports_ir_actions_server
+msgid "Marketplace: process vendor imports"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__market_ids
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 msgid "Markets"
 msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__masked_account_number
 msgid "Masked Account Number"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Material: Cotton"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace
+msgid ""
+"Material: Cotton\n"
+"Weight: 2 kg"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5531,6 +6728,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_ir_ui_menu
 msgid "Menu"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Message"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5560,6 +6762,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__messages
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__message_ids
@@ -5616,8 +6819,25 @@ msgid "Minimum Amount"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_api_rate__window_start
+msgid "Minute number since the epoch."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__missing_requirements
 msgid "Missing Requirements"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Missing column(s): %s. Download the template for the right headers."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Missing, invalid or revoked API key."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5679,6 +6899,131 @@ msgid "Move Type"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+msgid "Movements"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be a non-empty list of shipments."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be a non-empty list of {line_id, quantity}."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be a number."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be a whole number of at least %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be a whole number."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be an ISO 8601 date and time (e.g. 2026-10-01T09:00:00Z)."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be an ISO 8601 date and time."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be an object, or null to remove the discount."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be an object."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be approve or reject."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be at least %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be at least 1."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be at most %s characters."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be at most %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be between 1 and %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be greater than %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be one of: %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be percent or price."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be text."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Must be true or false."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__my_activity_date_deadline
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__my_activity_date_deadline
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__my_activity_date_deadline
@@ -5703,6 +7048,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__name
@@ -5714,6 +7061,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__name
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 msgid "Name"
 msgstr ""
@@ -5761,9 +7109,13 @@ msgid "Negative wallet transaction that withholds this reserve."
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_tree
 msgid "Net"
 msgstr ""
@@ -5771,6 +7123,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__net_amount
 msgid "Net Amount"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+msgid "Net:"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5792,8 +7149,36 @@ msgid "Neutralises the commission of the cancelled settlement."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Never"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_import__submit_after_import
+msgid ""
+"New offers (and the products they create) are sent for review once created."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "New option name"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:mail.template,subject:leaders_marketplace.mail_template_vendor_order_confirmed
 msgid "New order {{ object.name }}"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__kind__new_products
+msgid "New products"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"New products are created as drafts unless you tick 'submit after import'."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5842,8 +7227,19 @@ msgid "No Cash on Delivery order yet."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__discount_state__none
+msgid "No Discount"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.actions.act_window,help:leaders_marketplace.action_vendor_kpi
 msgid "No KPI snapshot yet."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "No active offer of yours has the sku %s."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5920,6 +7316,16 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "No import yet."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "No keys yet."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_dispute_conversation
 msgid "No messages yet."
 msgstr ""
@@ -5943,6 +7349,12 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "No published catalog product matches %(column)s '%(value)s'."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "No published product matches your search."
 msgstr ""
@@ -5963,6 +7375,11 @@ msgid "No return requests."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "No row can be imported. Fix the errors and upload the file again."
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid ""
@@ -5970,8 +7387,19 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
+msgid "No settlements in this period."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 msgid "No staff yet. Invite someone above."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+msgid "No transactions in this period."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6006,6 +7434,12 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Not found."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Not set"
 msgstr ""
@@ -6018,6 +7452,7 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__note
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__note
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 msgid "Note"
@@ -6037,6 +7472,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.actions.act_window,help:leaders_marketplace.action_product_marketplace_review
 msgid "Nothing is waiting for review."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Nothing to update: fill price, stock or a discount."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6108,8 +7549,21 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"Numbers use a dot or a comma as decimal separator. Negative numbers are "
+"refused."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_target_commission__amount_rate
 msgid "OTC %"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__occurred_at
+msgid "Occurred At"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6156,6 +7610,40 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_shipping_providers_enabled
+msgid ""
+"Off: shipping providers are ignored (vendors type the tracking number, the "
+"carrier webhook answers 404). On: vendors can create shipments and labels "
+"with the active providers and carriers can report status through "
+"/api/v1/shipping/webhook/<provider code>."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_bulk_import_enabled
+msgid ""
+"Off: the portal page /my/vendor/import does not exist. On: vendors can "
+"upload xlsx/csv files to create products, offers on catalog products, or "
+"update price, stock and discount by seller SKU."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_api_write_enabled
+msgid ""
+"Off: the vendor API keys page and the /api/v1/vendor endpoints that use a "
+"marketplace key do not exist (404). On: vendor owners can create API keys "
+"and use the API to manage offers, ship orders, answer returns and read "
+"wallet and settlements."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_variants_enabled
+msgid ""
+"Off: the vendor product form is the single-variant form. On: vendors can "
+"pick existing attributes to make variants (one offer per variant), add extra"
+" images and write specifications, on products they own."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_enforce_returns_reserve
 msgid ""
 "Off: the vendor tier's reserve percentage is recorded but the vendor is paid"
@@ -6172,7 +7660,25 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_discounts_enabled
+msgid ""
+"Off: vendors cannot set discounts (portal, bulk import and API refuse); "
+"discounts already stored keep running. On: a vendor can discount an offer by"
+" percentage or sale price, with optional start and end dates. The vendor "
+"funds the discount; the website shows the original price struck through."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_allow_vendor_attributes
+msgid ""
+"Off: vendors only choose existing attributes and values. On: they may also "
+"add new values (and new attributes), which become visible to every vendor."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__offer_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__offer_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__offer_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__offer_id
 msgid "Offer"
 msgstr ""
@@ -6213,8 +7719,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_product_product__marketplace_offer_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_product_template__marketplace_offer_count
 #: model:ir.ui.menu,name:leaders_marketplace.menu_offers
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace_review_list
 msgid "Offers"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__kind__catalog_offers
+msgid "Offers on catalog products"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6267,6 +7779,24 @@ msgid ""
 "Once a month, move each vendor up to the highest tier whose seniority, sales"
 " and rating thresholds they meet. Vendors are never moved down "
 "automatically."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_product_product__leaders_specs
+#: model:ir.model.fields,help:leaders_marketplace.field_product_template__leaders_specs
+msgid ""
+"One 'name: value' per line. Shown as a table on the website product page."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.constraint,message:leaders_marketplace.constraint_leaders_vendor_api_rate_key_window_unique
+msgid "One counter per key and minute."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid ""
+"One per line as \"Name: value\". They appear as a table on the product page."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6325,6 +7855,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Only a validated import can be confirmed."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/returns.py:0
 msgid "Only an open dispute can be escalated."
 msgstr ""
@@ -6353,8 +7889,27 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Only http and https image addresses are allowed."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Only image files (PNG, JPEG, GIF, WebP) can be uploaded."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+msgid "Only marketplace managers and finance can print vendor statements."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "Only marketplace managers can generate a webhook secret."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6413,6 +7968,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "Only shipped groups can be reported as delivered."
 msgstr ""
@@ -6427,6 +7983,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/fulfillment.py:0
 msgid "Only storable products can be received into FBL stock."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid ""
+"Only the first messages are shown; download the error file for all of them."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6481,6 +8043,12 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Only the vendor owner can manage API keys."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Only the vendor owner can manage delivery zones."
 msgstr ""
 
@@ -6513,6 +8081,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_dispute__state__open
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_my_home_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_disputes
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_search
 msgid "Open"
 msgstr ""
@@ -6539,6 +8108,14 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
+msgid "Opening balance"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.ui.menu,name:leaders_marketplace.menu_marketplace_operations
 msgid "Operations"
 msgstr ""
@@ -6560,6 +8137,11 @@ msgstr ""
 msgid ""
 "Optional. When the untaxed amount of the goods this zone ships reaches this "
 "value, the delivery price is waived. Empty or 0 = no free shipping."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Options and Variants"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6754,6 +8336,16 @@ msgid "Pay it to the vendor"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__payload
+msgid "Payload"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__payload_hash
+msgid "Payload Hash"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__payment_id
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
 msgid "Payment"
@@ -6823,8 +8415,12 @@ msgid "Payout Journal Entry"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Payout account"
 msgstr ""
 
@@ -6906,6 +8502,11 @@ msgid "Per Kg"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Per key. 0 = no limit."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__percent
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__percent
 msgid "Percent"
@@ -6921,6 +8522,8 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__rule_type__percent
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_fee__calc_method__percent
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__discount_type__percent
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "Percentage"
 msgstr ""
 
@@ -6931,8 +8534,12 @@ msgid "Performance"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__period
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Period"
 msgstr ""
 
@@ -6950,6 +8557,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+msgid "Period from"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/settlement.py:0
 msgid "Period sales: %(sales)s; rate per achievement"
 msgstr ""
@@ -6961,7 +8574,14 @@ msgid "Period sales: %(sales)s; target completion: %(completion).2f%%"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+msgid "Period to"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Period:"
 msgstr ""
 
@@ -6979,6 +8599,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/commission.py:0
 msgid "Pick a metric for this achievement plan."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__shipping_status__picked_up
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_shipping_event__status__picked_up
+msgid "Picked Up"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7125,6 +8751,18 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+msgid "Please give both the start and the end date."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_api.py:0
+msgid "Please give the key a name."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/bank_change.py:0
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "Please provide a rejection reason."
@@ -7256,16 +8894,23 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__price
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_price_history__price
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__price
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 msgid "Price"
 msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
 msgid "Price / free delivery from"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__price_history_ids
+msgid "Price History"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7297,6 +8942,11 @@ msgid "Price Weight"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__kind__update
+msgid "Price, stock and discount update"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.cart_marketplace_price_changed
 msgid "Prices of some items changed, please review your cart"
 msgstr ""
@@ -7307,11 +8957,22 @@ msgid "Print"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_statement_wizard_form
+msgid "Print PDF"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__priority
 msgid "Priority"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__processed
+msgid "Processed"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__state__processing
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__state__processing
 msgid "Processing"
 msgstr ""
@@ -7367,6 +9028,13 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_product_product
 msgid "Product Variant"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+msgid ""
+"Product created with its variants. Now set the seller SKU, price and stock "
+"of each variant."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7436,7 +9104,13 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_delivery_carrier__delivery_type
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__provider_id
 msgid "Provider"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__provider_type
+msgid "Provider Type"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7497,6 +9171,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__periodicity__quarter
 msgid "Quarterly"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Quick start"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7574,8 +9253,23 @@ msgid "Ratings Needed to Rank a Vendor"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__raw_status
+msgid "Raw Status"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 msgid "Reactivate"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_api_key__scope__write
+msgid "Read and write"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_api_key__scope__read
+msgid "Read only"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7628,6 +9322,11 @@ msgid "Received"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__received_at
+msgid "Received At"
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Received from %s"
@@ -7657,9 +9356,18 @@ msgid "Recompute this month"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__reference
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Reference"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Refresh"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7740,6 +9448,12 @@ msgid "Refusal Returns"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__shipping_status__refused
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_shipping_event__status__refused
+msgid "Refused"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__refused_at_delivery
 msgid "Refused At Delivery"
 msgstr ""
@@ -7769,6 +9483,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_offer_discount_review_tree
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
 msgid "Reject"
@@ -7791,6 +9506,12 @@ msgid "Reject Return"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
+msgid "Reject discount"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__discount_state__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__state__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__state__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_bank_change__state__rejected
@@ -7845,7 +9566,15 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "Remove"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
+msgid "Remove discount"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7895,6 +9624,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__request_date
 msgid "Request Date"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__request_hash
+msgid "Request Hash"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7955,6 +9689,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_form
 msgid "Required to resolve; the customer and the vendor both see this."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Required when the order has several open shipments."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8117,6 +9857,12 @@ msgid "Return {{ object.name }} escalated"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__shipping_status__returned
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_shipping_event__status__returned
+msgid "Returned"
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/returns.py:0
 msgid "Returned products must belong to the vendor order."
@@ -8202,6 +9948,53 @@ msgid "Reviewer Notes"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_api_key_form
+msgid "Revoke"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_api_key_form
+msgid "Revoke this key? Calls using it stop working immediately."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Revoked"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__revoked_date
+msgid "Revoked Date"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Row"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Row %(row)s failed: %(message)s"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__row_number
+msgid "Row Number"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Rows"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Rows applied per run of the 'process vendor imports' cron."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__rule_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__rule_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__rule_id
@@ -8238,6 +10031,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__message_has_sms_error
 msgid "SMS Delivery error"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__discount_type__price
+msgid "Sale Price"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Sale price"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8286,7 +10089,25 @@ msgid "Save Draft"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Save discount"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid ""
+"Saved. This discount is above the approval limit: it takes effect once the "
+"marketplace approves it."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__discount_state__scheduled
+msgid "Scheduled"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__scope
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__scope
 msgid "Scope"
 msgstr ""
 
@@ -8316,8 +10137,20 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Select at least one offer."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/returns.py:0
 msgid "Select at least one product to return."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "Select at least one variant."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8355,19 +10188,34 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
 msgid "Seller SKU"
 msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
 msgid "Seller SKU %s is already used by another of your offers."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "Seller SKU %s is used twice."
 msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Seller SKU and a valid price are required."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "Seller SKU is required for %s."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8381,8 +10229,20 @@ msgid "Seller Sku"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Selling existing catalog products is not enabled."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "Send"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Send at least one of: price, discount, stock, submit."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8401,6 +10261,11 @@ msgid "Send reply"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Send the key as a bearer token. Full reference (OpenAPI):"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 msgid "Send the password invitation again"
 msgstr ""
@@ -8409,6 +10274,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__sequence
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__sequence
 msgid "Sequence"
@@ -8459,10 +10325,14 @@ msgid "Settled"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__settlement_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__settlement_id
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_wallet_transaction__type__settlement
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Settlement"
 msgstr ""
 
@@ -8506,10 +10376,21 @@ msgid "Settlement {{ object.name }}: amount due"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model:ir.actions.act_window,name:leaders_marketplace.action_settlement
 #: model:ir.ui.menu,name:leaders_marketplace.menu_settlements
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Settlements"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_shipping_provider__webhook_secret
+msgid ""
+"Shared secret for the HMAC-SHA256 signature (header X-Signature, hex) of the"
+" raw webhook body."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8570,6 +10451,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "Shipment created with %(provider)s (AWB %(awb)s)."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/stock.py:0
 msgid "Shipment validated by %(user)s (%(picking)s)."
 msgstr ""
@@ -8591,7 +10478,30 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_fulfillment_group_form
 msgid "Shipping"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_shipping_providers_enabled
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Shipping Carrier Framework"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_shipping_event
+msgid "Shipping Event"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__shipping_event_ids
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_fulfillment_group_form
+msgid "Shipping Events"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__label_attachment_id
+msgid "Shipping Label"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8600,8 +10510,31 @@ msgid "Shipping Methods"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_shipping_provider
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__shipping_provider_id
+msgid "Shipping Provider"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_shipping_provider
+#: model:ir.ui.menu,name:leaders_marketplace.menu_shipping_providers
+msgid "Shipping Providers"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__shipping_speed_weight
 msgid "Shipping Speed Weight"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__shipping_status
+msgid "Shipping Status"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "Shipping providers are not enabled."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8617,6 +10550,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "Ships from:"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+msgid "Show"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8693,6 +10631,12 @@ msgid "Silver"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Skipped: %s"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.actions.act_window,help:leaders_marketplace.action_vendor_kpi
 msgid ""
 "Snapshots are computed nightly, or on demand with the Recompute KPIs button."
@@ -8729,6 +10673,19 @@ msgid "Source Location"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Specification"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_product_product__leaders_specs
+#: model:ir.model.fields,field_description:leaders_marketplace.field_product_template__leaders_specs
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.product_page_leaders_specs
+msgid "Specifications"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_split_delivery_proportional
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Split Delivery Between Vendors"
@@ -8755,6 +10712,16 @@ msgid "Start Review"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid "Starts"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Starts (optional)"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__state
@@ -8766,6 +10733,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__state_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__state
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__state
@@ -8788,16 +10756,37 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+msgid "Statement"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+msgid "Statement of account"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__status
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__status
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__status
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_orders
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_disputes
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_returns
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cod_vendor_order_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
@@ -8823,6 +10812,8 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 msgid "Status:"
 msgstr ""
@@ -8841,6 +10832,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_tree
 msgid "Stock"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+msgid "Stock (FBM)"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8905,6 +10901,11 @@ msgid "Submit"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+msgid "Submit all draft offers for review"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
 msgid "Submit application"
 msgstr ""
@@ -8912,6 +10913,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "Submit for Review"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__submit_after_import
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "Submit for review after import"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9110,8 +11117,32 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "The Idempotency-Key header must be 1 to 255 characters."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "The added stock quantity cannot be negative."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The address did not return an image (PNG, JPEG, GIF, WebP)."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "The attribute name is required."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The barcode and the internal reference point to different products."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9190,8 +11221,53 @@ msgid "The delivery proof is too large."
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+msgid "The discount dates are not valid."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The discount end date is already in the past."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The discount is above the limit and waits for approval."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The discount must end after it starts."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+msgid "The discount percentage is not a number."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+msgid "The discount sale price is not a number."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 msgid "The document was replaced and will be checked again."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The downloaded image is empty."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9220,8 +11296,93 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The file has more than %s rows; split it."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The file has no header row."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "The file is empty or larger than 10 MB."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The file is not a valid .xlsx workbook."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The file is too large (max %s MB)."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"The image address points to a private or local network and was not fetched."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The image address redirects too many times."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The image could not be downloaded: %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The image download timed out after %s seconds."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The image host %s cannot be resolved."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The image host %s has an invalid address."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
 msgid "The image is too large (max %(size)s MB)."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The image server answered HTTP %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_api.py:0
+msgid "The key name is too long."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "The key was revoked."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9278,6 +11439,19 @@ msgid "The period cannot end in the future."
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_api.py:0
+msgid "The price cannot be negative."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__effective_price
+msgid ""
+"The price charged now: the discounted price while a discount is active, else"
+" the regular price."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
 msgid ""
 "The products come back to the Leaders warehouse (FBL), which confirms "
@@ -9286,8 +11460,45 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "The provider code may only contain lowercase letters, digits, - and _."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.constraint,message:leaders_marketplace.constraint_leaders_shipping_provider_code_uniq
+msgid "The provider code must be unique."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "The quantity to ship of %s cannot be negative."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid ""
+"The regular price stays as listed. While a discount runs customers see the "
+"original price struck through, the new price and the percentage; you fund "
+"the discount and your invoice shows both."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "The request body is not valid JSON."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "The request body must be a JSON object."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "The request is not valid."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9299,6 +11510,18 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__late_notified
 msgid "The reviewers and the vendor were already told this order is late."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "The rows with errors are skipped."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The sale price must be above 0 and below the regular price."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9323,7 +11546,20 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
-#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "The specifications are too long (max %s characters)."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+msgid "The start date cannot be after the end date."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
 msgid "The stock quantity cannot be negative."
 msgstr ""
 
@@ -9340,8 +11576,25 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The uploaded file is empty."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "The uploaded image is empty."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_import_line__payload
+msgid "The validated row as JSON: the apply step uses exactly this."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "The vendor account is not active any more; the import was stopped."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9383,6 +11636,18 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "There is no valid row to import."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "There is nothing left to ship on this order."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "These documents are expired and cannot be verified: %s"
 msgstr ""
@@ -9394,10 +11659,23 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "This Idempotency-Key was already used with a different request."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid ""
 "This application cannot be approved yet:\n"
 "%s"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "This attribute cannot be used."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9426,6 +11704,17 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "This field is required."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "This import is being processed in the background."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_invoice_document
 msgid ""
 "This invoice is issued by the vendor named above.\n"
@@ -9436,6 +11725,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "This is not a Cash on Delivery order."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "This key is read only."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9484,6 +11779,16 @@ msgid "This product does not have an FBL offer for the selected vendor."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "This product has"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+msgid "This product has no variants yet."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace
 msgid ""
 "This product is waiting for a marketplace review; it is not on the website "
@@ -9526,6 +11831,29 @@ msgid "This shipment can no longer be shipped."
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "This shipment cannot be shipped in state %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "This shipment does not belong to the order."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "This shipment has no label."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.constraint,message:leaders_marketplace.constraint_leaders_shipping_event_provider_event_uniq
+msgid "This shipping event was already received."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.seller_store_page
 msgid "This store has no published products yet."
 msgstr ""
@@ -9546,8 +11874,24 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid ""
+"Tick offers below, then apply one percentage (a sale price is set per offer "
+"on its edit page). Dates are optional."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid ""
+"Tick the values this product comes in. Every combination becomes a variant "
+"with its own seller SKU, price, stock and offer, which you fill in on the "
+"next page. Options marked \"Specification\" only describe the product."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_vendor__date_to
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
 msgid "To"
 msgstr ""
 
@@ -9581,6 +11925,18 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Too many requests. Retry later."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "Too many variants (%(n)s): the limit is %(max)s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/cod_protection.py:0
 msgid "Too many wrong attempts. Please ask for a new code."
 msgstr ""
@@ -9605,12 +11961,25 @@ msgid "Total Commission Amount"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__total_rows
+msgid "Total Rows"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
+msgid "Total movements"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 msgid "Total:"
 msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "Track"
 msgstr ""
 
@@ -9627,6 +11996,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__tracking_ref
 msgid "Tracking Reference"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__tracking_url
+msgid "Tracking Url"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9657,9 +12031,15 @@ msgid "Transfer"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__type
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__type
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
 msgid "Type"
 msgstr ""
 
@@ -9676,6 +12056,18 @@ msgstr ""
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__state__under_review
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_state__under_review
 msgid "Under Review"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Unexpected error while reading the file: %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Unexpected error: %s"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9709,8 +12101,38 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Unknown carrier."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Unknown field."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_api.py:0
+msgid "Unknown key scope."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Unknown market(s): %s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Unknown stock update mode."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid "Unknown value for attribute %s."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9730,6 +12152,11 @@ msgid "Untaxed Amount"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Up to"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
 msgid "Update"
 msgstr ""
@@ -9746,8 +12173,36 @@ msgid "Upgrade Vendor Tiers Automatically"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Upload an .xlsx or .csv file."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "Upload and check"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__state__uploaded
+msgid "Uploaded"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__user_id
+msgid "Uploaded by"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__achieve_is_tiered
 msgid "Use Target Tiers"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Use either discount_percent or discount_price, not both."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9768,6 +12223,11 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_shipping_provider__code
+msgid "Used in the webhook URL: /api/v1/shipping/webhook/<code>."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 msgid "User created but invitation email could not be sent — use Resend."
 msgstr ""
@@ -9784,6 +12244,56 @@ msgid "VAT Certificate"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import_line__status__valid
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "Valid"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__valid_rows
+msgid "Valid Rows"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__state__validated
+msgid "Validated"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Validated %(total)s row(s): %(valid)s valid, %(invalid)s with errors."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_import__state__validating
+msgid "Validating"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "Values, separated by commas"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+msgid "Variant"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+msgid "Variants of"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_variants
+msgid "Variants without an offer"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_vendor__vendor_id
@@ -9795,10 +12305,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__vendor_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__vendor_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__vendor_id
@@ -9807,6 +12319,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_reserve__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__vendor_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_statement_wizard__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order_line__vendor_id
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__scope__vendor
@@ -9841,6 +12354,27 @@ msgid "Vendor - %s"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_vendor_api_idempotency
+msgid "Vendor API Idempotency Record"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_vendor_api_key
+msgid "Vendor API Key"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_api_key
+#: model:ir.ui.menu,name:leaders_marketplace.menu_vendor_api_keys
+msgid "Vendor API Keys"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_vendor_api_rate
+msgid "Vendor API Rate Counter"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__vendor_amount
 msgid "Vendor Amount"
 msgstr ""
@@ -9865,6 +12399,18 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__vendor_bill_id
 msgid "Vendor Bill"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_vendor_import
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_bulk_import_enabled
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Vendor Bulk Import"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_vendor_import_line
+msgid "Vendor Bulk Import Row"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9925,6 +12471,11 @@ msgid "Vendor Delivery Price per Governorate"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
+msgid "Vendor Discount"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_leaders_vendor_document
 msgid "Vendor Document"
 msgstr ""
@@ -9932,6 +12483,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__credit_note_ids
 msgid "Vendor Documents"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_max_extra_images
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Vendor Extra Images"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9955,6 +12512,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_image_max_mb
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Vendor Image Max Size (MB)"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_import
+#: model:ir.ui.menu,name:leaders_marketplace.menu_vendor_imports
+msgid "Vendor Imports"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -10118,6 +12681,12 @@ msgid "Vendor Portal User"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_discounts_enabled
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Vendor Product Discounts"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Vendor Profile"
 msgstr ""
@@ -10177,6 +12746,36 @@ msgid "Vendor State"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_statement_wizard
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_partner_form_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_statement_wizard_form
+msgid "Vendor Statement"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_vendor_statement
+msgid "Vendor Statement Helpers"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_report_leaders_marketplace_report_vendor_statement
+msgid "Vendor Statement Report"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_vendor_statement_wizard
+msgid "Vendor Statement Wizard"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_statement.py:0
+#: model:ir.actions.report,name:leaders_marketplace.action_report_vendor_statement
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_statement_document
+msgid "Vendor Statement of Account"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_partner__vendor_location_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_users__vendor_location_id
 msgid "Vendor Stock Location (FBM)"
@@ -10227,6 +12826,12 @@ msgid "Vendor Tiers"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_variants_enabled
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Vendor Variants, Images and Specifications"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_partner__vendor_wallet_balance
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_users__vendor_wallet_balance
 msgid "Vendor Wallet Balance"
@@ -10250,8 +12855,20 @@ msgid "Vendor Warehouse (FBM)"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_api_write_enabled
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Vendor Write API"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:mail.template,name:leaders_marketplace.mail_template_vendor_application_submitted
 msgid "Vendor application received"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Vendor bulk import stock (%s)"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -10263,6 +12880,19 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Vendor debt collection %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/offer_discount.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Vendor discounts are not enabled on this marketplace."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Vendor discounts are not enabled."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -10319,7 +12949,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
-#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
 msgid "Vendor portal stock correction (%s)"
 msgstr ""
 
@@ -10504,6 +13134,12 @@ msgid "Vendors Can Cancel Orders"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_allow_vendor_attributes
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Vendors May Create Attributes"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_no_plan_commission_mode
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Vendors Without a Commission Plan"
@@ -10576,6 +13212,11 @@ msgid "View vendor shipments inside your customer order"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__discount_state__pending_approval
+msgid "Waiting for Approval"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_form
 msgid "Waiting for a marketplace decision."
 msgstr ""
@@ -10593,6 +13234,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 msgid "Wallet Transactions"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_statement
+msgid "Wallet transactions"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -10635,6 +13281,16 @@ msgstr ""
 msgid ""
 "We opened a case with the marketplace about your missing shipment. You will "
 "hear back shortly."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__webhook_secret
+msgid "Webhook Secret"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__webhook_url
+msgid "Webhook Url"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -10715,6 +13371,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_my_home_marketplace
 msgid "Welcome back"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
+msgid "What do you import?"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -10837,6 +13498,11 @@ msgid "Why are you returning these products?"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__window_start
+msgid "Window Start"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
 msgid "Winner"
 msgstr ""
@@ -10844,6 +13510,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
 msgid "With Orders"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "With errors"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -10875,6 +13546,8 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
 msgid "You already have an offer for this product with the same fulfillment."
 msgstr ""
 
@@ -10947,6 +13620,12 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "You cannot access this product."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "You cannot access this return."
 msgstr ""
 
@@ -10964,8 +13643,31 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid ""
+"You cannot add a new option to a product whose variants already have offers "
+"or orders. Add values to an existing option instead."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "You cannot manage this user."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid ""
+"You cannot remove %(values)s: variants using it already have offers or "
+"orders."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
+msgid ""
+"You cannot remove the option %s: its variants already have offers or orders."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -10976,7 +13678,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
-#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
 msgid ""
 "You cannot set the stock of %(product)s to %(qty)s: %(reserved)s are already"
 " reserved for open orders."
@@ -11032,12 +13734,18 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
 msgid "Your account is not an approved marketplace vendor."
 msgstr ""
 
 #. module: leaders_marketplace
 #: model:mail.template,subject:leaders_marketplace.mail_template_customer_order_cancelled_by_customer
 msgid "Your cancellation of order {{ object.name }} is confirmed"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "Your keys"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -11127,10 +13835,22 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/controllers/vendor_api.py:0
+msgid "Your vendor account is frozen, so you cannot list or change products."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid ""
 "Your vendor account is frozen, so you cannot list or change products. You "
 "can still handle your existing orders and returns."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "Your vendor account is not active."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -11147,6 +13867,8 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+#: code:addons/leaders_marketplace/models/vendor_variants.py:0
 msgid "Your vendor tier product limit has been reached."
 msgstr ""
 
@@ -11164,6 +13886,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
 msgid "and is not on the website yet."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "clear_discount must be yes or no."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -11190,8 +13918,18 @@ msgid "e.g. Al Nour Electronics"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "e.g. ERP sync"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid "e.g. SA03 8000 0000 6080 1016 7519"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "extra images shown in the product gallery."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -11200,8 +13938,40 @@ msgid "free from"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "fulfillment must be fbm or fbl."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"fulfillment: fbm (default) or fbl. initial_qty is the opening FBM stock."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 msgid "i.e. Vendor targets 2026"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "image_url must be an http or https address."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"image_url: optional http(s) address of a public image; a bad image only "
+"produces a warning."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "in a moment."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -11220,9 +13990,41 @@ msgid "it"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
+msgid "lmk_"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"markets: optional website names separated by ';'. Empty means all your "
+"allowed markets."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "name is required."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"name, sku and price are required. category must be the name of an existing "
+"website category."
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/vendor_apply.py:0
 msgid "none published"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid "now"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -11241,6 +14043,8 @@ msgid "on the vendor's behalf through the marketplace."
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
 msgid "optional"
 msgstr ""
@@ -11256,8 +14060,42 @@ msgid "ratings)"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "required"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 msgid "returns ·"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "sku and price are required. The offer is created as a draft."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"sku identifies one of your existing offers. Leave a column empty to keep the"
+" current value."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid "sku is required."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"stock is the new FBM quantity (a correction, like 'Set' in the portal). "
+"clear_discount: yes removes the discount."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -11283,8 +14121,23 @@ msgid "to sign in and accept them."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
+msgid "valid rows"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
+msgid "variants."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 msgid "was received. We sent you an email with this page's link."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_shipping_provider_form
+msgid "{\"api_key\": \"...\"}"
 msgstr ""
 
 #. module: leaders_marketplace
