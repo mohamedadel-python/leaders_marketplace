@@ -3,11 +3,13 @@
         <field name="name">leaders.vendor.delivery.zone.list</field>
         <field name="model">leaders.vendor.delivery.zone</field>
         <field name="arch" type="xml">
-            <list editable="bottom">
-                <field name="vendor_id"/>
+            <list editable="bottom" decoration-info="is_platform">
+                <field name="is_platform" string="Platform"/>
+                <field name="vendor_id" readonly="is_platform" required="not is_platform"/>
                 <field name="country_id"/>
                 <field name="state_id"/>
                 <field name="price"/>
+                <field name="free_shipping_threshold" optional="show"/>
                 <field name="currency_id" column_invisible="1"/>
             </list>
         </field>
@@ -19,10 +21,12 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="vendor_id"/>
+                        <field name="is_platform"/>
+                        <field name="vendor_id" invisible="is_platform" required="not is_platform"/>
                         <field name="country_id" invisible="1"/>
                         <field name="state_id"/>
                         <field name="price"/>
+                        <field name="free_shipping_threshold"/>
                         <field name="currency_id" invisible="1"/>
                         <field name="active" invisible="1"/>
                     </group>
@@ -30,9 +34,32 @@
             </form>
         </field>
     </record>
+    <record id="view_vendor_delivery_zone_search" model="ir.ui.view">
+        <field name="name">leaders.vendor.delivery.zone.search</field>
+        <field name="model">leaders.vendor.delivery.zone</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="vendor_id"/>
+                <field name="state_id"/>
+                <filter name="platform" string="Platform" domain="[('is_platform', '=', True)]"/>
+                <filter name="vendors" string="Vendors" domain="[('is_platform', '=', False)]"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_scope" string="Platform / Vendor" context="{'group_by': 'is_platform'}"/>
+                    <filter name="group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
     <record id="action_vendor_delivery_zone" model="ir.actions.act_window">
-        <field name="name">Vendor Delivery Zones</field>
+        <field name="name">Delivery Zones (Platform and Vendors)</field>
         <field name="res_model">leaders.vendor.delivery.zone</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_vendor_delivery_zone_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add the platform delivery price per governorate</p>
+            <p>Tick "Platform" for the marketplace's own price: it is charged once for company products and
+                warehouse (FBL) goods. Vendor rows price each vendor's own shipments.</p>
+        </field>
     </record>
 </odoo>

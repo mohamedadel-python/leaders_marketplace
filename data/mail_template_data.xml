@@ -29,6 +29,7 @@
             </tr>
         </tbody>
     </table>
+    <p t-if="object._leaders_delivery_breakdown()">Delivery: <t t-out="object._leaders_delivery_breakdown_text()"/></p>
     <p>You can follow every shipment under Marketplace Orders in your account.</p>
 </div>
             </field>

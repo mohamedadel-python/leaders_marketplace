@@ -4,6 +4,7 @@ from . import test_vendor_returns
 from . import test_vendor_application
 from . import test_commission_achievement
 from . import test_delivery_zone
+from . import test_delivery_platform
 from . import test_cash_on_delivery
 from . import test_security_rpc
 from . import test_vendor_product_content

@@ -733,6 +733,7 @@
                             </select>
                         </div>
                         <div class="col-auto"><label class="form-label">Price</label><input type="number" step="0.01" min="0" name="price" class="form-control" required="required"/></div>
+                        <div class="col-auto"><label class="form-label">Free delivery from</label><input type="number" step="0.01" min="0" name="free_shipping_threshold" class="form-control" placeholder="optional"/></div>
                         <div class="col-auto"><button type="submit" class="btn btn-primary">Add</button></div>
                     </form>
                 </div>
@@ -779,7 +780,7 @@
                 </script>
                 <div class="table-responsive">
                     <table class="table">
-                        <thead><tr><th>Country</th><th>Governorate</th><th>Price</th><th/></tr></thead>
+                        <thead><tr><th>Country</th><th>Governorate</th><th>Price / free delivery from</th><th/></tr></thead>
                         <tbody>
                             <tr t-foreach="zones" t-as="z">
                                 <td t-esc="z.country_id.name"/>
@@ -788,6 +789,7 @@
                                     <form method="post" t-attf-action="/my/vendor/delivery-zones/#{z.id}/update" class="d-flex gap-2">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                         <input type="number" step="0.01" min="0" name="price" t-att-value="z.price" class="form-control form-control-sm" style="max-width:120px"/>
+                                        <input type="number" step="0.01" min="0" name="free_shipping_threshold" t-att-value="z.free_shipping_threshold or ''" placeholder="free from" class="form-control form-control-sm" style="max-width:120px"/>
                                         <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
                                     </form>
                                 </td>

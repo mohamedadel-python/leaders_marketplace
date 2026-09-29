@@ -233,25 +233,44 @@ class SaleOrder(models.Model):
 
         zone_moved = 0.0
         platform_delivery = 0.0
-        for index, (vendor, lines) in enumerate(by_vendor.items()):
-            line_vals = [(0, 0, line._marketplace_vendor_line_vals()) for line in lines]
-            if zone_priced:
-                price = self.env["leaders.vendor.delivery.zone"]._price_for(
-                    vendor, self.partner_shipping_id.state_id)
+        plan = fbm_prices = None
+        fbl_shares = {}
+        if zone_priced:
+            # FBM vendors are paid their own zone price; what is left of the
+            # charge is the platform's part (company products, FBL goods).
+            plan = self._leaders_zone_delivery_plan()
+            state = self.partner_shipping_id.state_id
+            fbm_prices = {}
+            for zone_vendor, price in plan["vendors"]:
                 if price is None:
                     raise UserError(_(
                         "%(vendor)s does not deliver to %(state)s.",
-                        vendor=vendor.display_name, state=self.partner_shipping_id.state_id.name or _("this address")))
-                if fbl_income == "platform" and self._leaders_lines_are_all_fbl(lines):
+                        vendor=zone_vendor.display_name, state=state.name or _("this address")))
+                fbm_prices[zone_vendor] = price
+            platform_part = max(0.0, sum(delivery_lines.mapped("price_unit")) - sum(fbm_prices.values()))
+            if plan["fbl_lines"] and not company_remaining and platform_part:
+                if fbl_income == "platform":
                     # The marketplace warehouse ships it, so the marketplace keeps it.
-                    platform_delivery += price
+                    platform_delivery = platform_part
                 else:
+                    fbl_shares = self._leaders_fbl_delivery_shares(plan["fbl_lines"], platform_part)
+        for index, (vendor, lines) in enumerate(by_vendor.items()):
+            line_vals = [(0, 0, line._marketplace_vendor_line_vals()) for line in lines]
+            if zone_priced:
+                if vendor in fbm_prices:
+                    price = fbm_prices[vendor]
                     line_vals += [(0, 0, dict(
                         delivery_lines[:1]._marketplace_vendor_line_vals(),
                         price_unit=price, discount=0.0,
                         name=_("Delivery - %s", self.partner_shipping_id.state_id.name or ""),
                         is_delivery=True))]
                     zone_moved += price
+                if vendor in fbl_shares:
+                    line_vals += [(0, 0, dict(
+                        delivery_lines[:1]._marketplace_vendor_line_vals(),
+                        price_unit=fbl_shares[vendor], discount=0.0,
+                        name=_("Delivery - %s", self.partner_shipping_id.state_id.name or ""),
+                        is_delivery=True))]
             elif non_zone_shares:
                 if vendor in non_zone_shares:
                     line_vals += non_zone_shares[vendor]
@@ -283,6 +302,25 @@ class SaleOrder(models.Model):
         moved.sudo().unlink()
         self.marketplace_split_done = True
         return True
+
+    def _leaders_fbl_delivery_shares(self, fbl_lines, amount):
+        """Split the platform delivery ``amount`` across the FBL vendors of a
+        checkout that has no company product ("vendor" income mode): by untaxed
+        FBL amount, the rounding difference on the last vendor."""
+        currency = self.currency_id or self.env.company.currency_id
+        bases = {}
+        for line in fbl_lines:
+            vendor = line.marketplace_offer_id.vendor_id.commercial_partner_id
+            bases[vendor] = bases.get(vendor, 0.0) + line.price_subtotal
+        vendors = list(bases)
+        grand = sum(bases.values())
+        shares, allocated = {}, 0.0
+        for vendor in vendors[:-1]:
+            share = currency.round(amount * bases[vendor] / grand) if grand else 0.0
+            shares[vendor] = share
+            allocated += share
+        shares[vendors[-1]] = currency.round(amount - allocated)
+        return {v: a for v, a in shares.items() if a}
 
     @staticmethod
     def _leaders_lines_are_all_fbl(lines):

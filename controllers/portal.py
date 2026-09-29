@@ -794,6 +794,7 @@ class MarketplacePortal(CustomerPortal):
                     raise UserError(_("Please select a governorate and a valid price."))
                 request.env["leaders.vendor.delivery.zone"].sudo().create({
                     "vendor_id": vendor.id, "state_id": state_id, "price": price,
+                    "free_shipping_threshold": max(self._to_float(post.get("free_shipping_threshold"), 0.0), 0.0),
                 })
         except (UserError, ValidationError) as e:
             return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
@@ -820,7 +821,11 @@ class MarketplacePortal(CustomerPortal):
                 price = self._to_float(post.get("price"), -1.0)
                 if price < 0:
                     raise UserError(_("Please enter a valid price."))
-                zone.write({"price": price})
+                vals = {"price": price}
+                if "free_shipping_threshold" in post:
+                    vals["free_shipping_threshold"] = max(
+                        self._to_float(post.get("free_shipping_threshold"), 0.0), 0.0)
+                zone.write(vals)
         except (UserError, ValidationError) as e:
             return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
         return request.redirect(url)

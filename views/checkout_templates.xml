@@ -18,4 +18,45 @@
             </div>
         </xpath>
     </template>
+    <!-- A1: who charges which part of the delivery (cart, checkout and payment steps). -->
+    <template id="cart_total_delivery_breakdown" inherit_id="website_sale.total">
+        <xpath expr="//tr[@id='order_delivery']" position="after">
+            <t t-set="lm_breakdown" t-value="website_sale_order._leaders_delivery_breakdown() if website_sale_order and website_sale_order.carrier_id else []"/>
+            <tr t-foreach="lm_breakdown" t-as="lm_part" t-if="len(lm_breakdown) &gt; 0" class="lm-delivery-breakdown">
+                <td class="ps-3 pt-0 pb-2 border-0 text-muted small" colspan="2"><t t-out="lm_part[0]"/></td>
+                <td class="text-end pe-0 pt-0 pb-2 border-0 text-muted small">
+                    <span t-if="lm_part[1]" t-out="lm_part[1]" style="white-space: nowrap;"
+                          t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                    <span t-else="">Free</span>
+                </td>
+            </tr>
+        </xpath>
+    </template>
+    <template id="confirmation_delivery_breakdown" inherit_id="website_sale.confirmation">
+        <xpath expr="//t[@t-call='website_sale.payment_confirmation_status']" position="after">
+            <t t-set="lm_breakdown" t-value="order._leaders_delivery_breakdown()"/>
+            <div t-if="lm_breakdown" class="lm-delivery-breakdown mt-3 text-muted small">
+                <t t-foreach="lm_breakdown" t-as="lm_part">
+                    <span class="d-inline-block me-3">
+                        <t t-out="lm_part[0]"/>:
+                        <span t-if="lm_part[1]" t-out="lm_part[1]" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                        <span t-else="">Free</span>
+                    </span>
+                </t>
+            </div>
+        </xpath>
+    </template>
+    <template id="report_saleorder_delivery_breakdown" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//div[@id='total']" position="after">
+            <t t-set="lm_breakdown" t-value="doc._leaders_delivery_breakdown()"/>
+            <p t-if="lm_breakdown" class="lm-delivery-breakdown text-muted small">
+                <t t-foreach="lm_breakdown" t-as="lm_part">
+                    <t t-out="lm_part[0]"/>:
+                    <span t-if="lm_part[1]" t-out="lm_part[1]" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                    <span t-else="">Free</span>
+                    <t t-if="not lm_part_last"> · </t>
+                </t>
+            </p>
+        </xpath>
+    </template>
 </odoo>
