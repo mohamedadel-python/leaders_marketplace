@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 13:43+0000\n"
-"PO-Revision-Date: 2026-09-29 13:43+0000\n"
+"POT-Creation-Date: 2026-09-29 18:36+0000\n"
+"PO-Revision-Date: 2026-09-29 18:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -43,10 +43,15 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
-#: code:addons/leaders_marketplace/models/settlement.py:0
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
 msgid ""
-"%(name)s has a posted marketplace invoice (%(invoice)s); issue a credit note"
-" for it before cancelling the settlement."
+"%(order)s already has a delivered shipment; handle this refusal as a return."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_core.py:0
+msgid "%(vendor)s already signed these terms."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -54,6 +59,14 @@ msgstr ""
 #: code:addons/leaders_marketplace/models/delivery.py:0
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "%(vendor)s does not deliver to %(state)s."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/settlement.py:0
+msgid ""
+"%(vendor)s has a payout account change waiting for review. Approve or reject"
+" it before paying %(name)s."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -81,6 +94,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "%s delivery"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/performance.py:0
 msgid "%s has already been lifted; create a new penalty instead."
 msgstr ""
@@ -89,6 +108,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/settlement.py:0
 msgid "%s has already been paid; reverse the payout before cancelling."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.actions.report,print_report_name:leaders_marketplace.action_report_vendor_contract
+msgid "'Vendor Terms Contract - %s' % object.vendor_id.display_name"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -202,6 +226,18 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_bank_change_requested
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p><strong>Security notice.</strong> A change of your payout bank account was requested<t t-if=\"object.requested_by\"> by <t t-out=\"object.requested_by.name\"/></t> (request <t t-out=\"object.name\"/>).</p>\n"
+"<p>New account: <t t-out=\"object.bank_name\"/>, <t t-out=\"object.account_holder\"/>, <t t-out=\"object.masked_account_number\"/>.</p>\n"
+"<p>The marketplace reviews it before it replaces your current account, and payouts are held meanwhile. If you did not make this request, contact the marketplace immediately and change your password.</p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/profile\">Open your profile</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_penalty_applied
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
@@ -252,6 +288,16 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_order_late
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>Order <strong t-out=\"object.name\"/> should have shipped by <t t-out=\"object.ship_by_date\" t-options=\"{'widget': 'datetime'}\"/> and has not left yet. Please ship it as soon as possible: late shipments count against your performance.</p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/orders/{{ object.id }}\">Open the order</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:mail.template,body_html:leaders_marketplace.mail_template_customer_order_delivered
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
@@ -265,6 +311,16 @@ msgstr ""
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "<p>The <strong t-out=\"dict(object._fields['level']._description_selection(object.env)).get(object.level)\"/> on your store was lifted.</p><p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor\">Open in your vendor portal</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_order_cancelled_by_customer
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>The customer cancelled order <strong t-out=\"object.name\"/>. <strong>Do not ship it.</strong></p><p t-if=\"object.cancel_reason\">Reason: <t t-out=\"object.cancel_reason\"/></p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/orders/{{ object.id }}\">Open the order</a></p>\n"
 "</div>\n"
 "            "
 msgstr ""
@@ -316,6 +372,16 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_customer_order_cancelled_by_customer
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>We cancelled order <strong t-out=\"object.name\"/> as you asked.</p><p t-if=\"object.cancel_reason\">Reason: <t t-out=\"object.cancel_reason\"/></p>\n"
+"<p t-if=\"object.payment_method != 'cod'\">If you already paid online, a refund of <t t-out=\"object.amount_total\" t-options=\"{'widget': 'monetary', 'display_currency': object.currency_id}\"/> is being processed.</p><p t-else=\"\">You had chosen Cash on Delivery, so nothing was charged.</p><p><a t-attf-href=\"{{ object.get_base_url() }}/my/marketplace/orders/{{ object.id }}\">See your order</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_order_confirmed
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
@@ -354,6 +420,26 @@ msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "<p>Your order <strong t-out=\"object.name\"/> was cancelled.</p><p t-if=\"object.cancel_reason\">Reason: <t t-out=\"object.cancel_reason\"/></p>\n"
 "<p t-if=\"object.payment_method != 'cod'\">If you already paid online, a refund of <t t-out=\"object.amount_total\" t-options=\"{'widget': 'monetary', 'display_currency': object.currency_id}\"/> is being prepared.</p><p><a t-attf-href=\"{{ object.get_base_url() }}/my/marketplace/orders/{{ object.id }}\">Follow your order</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_bank_change_approved
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>Your payout account change <strong t-out=\"object.name\"/> was approved. Future payouts go to <t t-out=\"object.bank_name\"/>, <t t-out=\"object.masked_account_number\"/>.</p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/profile\">Open your profile</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_bank_change_rejected
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>Your payout account change <strong t-out=\"object.name\"/> was not accepted. Your current payout account stays as it was.</p><p t-if=\"object.reject_reason\">Reason: <t t-out=\"object.reject_reason\"/></p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/profile\">Open your profile</a></p>\n"
 "</div>\n"
 "            "
 msgstr ""
@@ -472,6 +558,22 @@ msgid "<i class=\"fa fa-check\"/> Mark as Delivered"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "<i class=\"fa fa-check-circle\"/> Phone number verified."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
+msgid "<i class=\"fa fa-clock-o\"/> Late"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "<i class=\"fa fa-clock-o\"/> Your refund is being processed."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
 msgid "<i class=\"fa fa-comment\"/> Details"
 msgstr ""
@@ -516,6 +618,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "<i class=\"fa fa-hourglass-half\"/> Delivery reported"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_nav
+msgid "<i class=\"fa fa-id-card-o\"/> Profile"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -628,12 +735,29 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "<i class=\"fa fa-times\"/> Cancel order"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "<i class=\"fa fa-times\"/> Cancel this seller's part"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "<i class=\"fa fa-times\"/> I did not receive it"
 msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
 msgid "<i class=\"fa fa-times\"/> Reject Return"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid ""
+"<i class=\"fa fa-truck\"/> Part of this order has already shipped and cannot"
+" be cancelled. Request a return after delivery."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -644,6 +768,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "<i class=\"fa fa-truck\"/> Shipments"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "<i class=\"fa fa-undo\"/> Customer refused"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -668,6 +797,11 @@ msgid "<option value=\"\">-</option>"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "<option value=\"\">Choose a reason</option>"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "<option value=\"\">Select</option>"
 msgstr ""
@@ -684,9 +818,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
-msgid ""
-"<select class=\"form-select\" name=\"fulfillment_type\"><option "
-"value=\"fbm\">FBM</option><option value=\"fbl\">FBL</option></select>"
+msgid "<option value=\"fbm\">FBM</option>"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -742,6 +874,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
 msgid ""
 "<span class=\"form-check-label\">I accept the terms and conditions *</span>"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid ""
+"<span class=\"form-check-label\">I have read and accept the vendor terms and"
+" conditions</span>"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1003,13 +1142,51 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "A bank proof (statement or letter from the bank) is required."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "A bank proof is required to change the payout account."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "A name and a valid email address are required."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "A payout account change is already waiting for review for this vendor."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "A payout account change is already waiting for review."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "A platform delivery price cannot belong to a vendor."
 msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "A settlement already exists for an overlapping period."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"A settlement cannot be marked paid while its vendor has a payout account "
+"change waiting for review. Registering money received from a vendor is never"
+" blocked."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1032,6 +1209,26 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "A verification code was sent. It is valid for 5 minutes."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "Accept terms"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__accepted
+msgid "Accepted online"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "Accepted online (checkbox)"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__access_warning
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__access_warning
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__access_warning
@@ -1040,7 +1237,13 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_my_home_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Account"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__account_holder
+msgid "Account Holder"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1054,12 +1257,23 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__bank_account_number
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__account_number
 msgid "Account Number / IBAN"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Account holder"
 msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
 msgid "Account holder *"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Account number / IBAN"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1122,6 +1336,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_needaction
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_needaction
@@ -1138,6 +1353,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__active
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__active
@@ -1227,6 +1443,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/fulfillment.py:0
 msgid "Add at least one product before receiving this inbound."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.actions.act_window,help:leaders_marketplace.action_vendor_delivery_zone
+msgid "Add the platform delivery price per governorate"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1377,6 +1598,11 @@ msgid "Applied Date"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__applies_to
+msgid "Applies To"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_form
 msgid "Apply"
 msgstr ""
@@ -1398,6 +1624,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
 msgid "Approve"
 msgstr ""
 
@@ -1423,6 +1650,11 @@ msgid "Approve the vendor before creating portal access."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
+msgid "Approve this change? Settlements will be paid to the new account."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid ""
 "Approve this vendor? The vendor company, its warehouse and the owner's "
@@ -1433,8 +1665,10 @@ msgstr ""
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__state__approved
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_settlement__state__approved
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__state__approved
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_bank_change__state__approved
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__state__approved
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_state__approved
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
 msgid "Approved"
 msgstr ""
 
@@ -1444,8 +1678,25 @@ msgid "Approved By"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "Approved: settlements of %(vendor)s are now paid to %(account)s."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cancel_reason_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cancel_reason_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_terms_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_terms_search
 msgid "Archived"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Ask for a verification code first."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1471,6 +1722,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_attachment_count
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_attachment_count
@@ -1478,6 +1730,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__message_attachment_count
 msgid "Attachment Count"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__attempts
+msgid "Attempts"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1492,6 +1749,7 @@ msgid "Availability Weight"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__available_qty
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_line__state__available
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_wallet_transaction__state__available
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
@@ -1567,6 +1825,11 @@ msgid "Ban"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Bank"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid "Bank Information"
 msgstr ""
@@ -1575,17 +1838,43 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__bank_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__bank_name
 msgid "Bank Name"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__proof
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__document_type__bank_proof
 msgid "Bank Proof"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_partner__vendor_payout_bank_id
+#: model:ir.model.fields,help:leaders_marketplace.field_res_users__vendor_payout_bank_id
+msgid ""
+"Bank account settlements are paid to. Set when the vendor application is "
+"approved and replaced only by an approved payout account change."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Bank name"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
 msgid "Bank name *"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Bank name, account holder and account number are required."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Bank proof (PDF or image)"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1614,6 +1903,17 @@ msgid "Biweekly"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_cod_refusal_block_count
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Block COD After Refusals"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_block_payout_on_pending_bank_change
+msgid "Block Payouts While a Bank Change Is Pending"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__body
 msgid "Body"
 msgstr ""
@@ -1621,6 +1921,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 msgid "Bonus"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_cancel_reason__applies_to__both
+msgid "Both"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1751,6 +2056,33 @@ msgid "COD Commission Due Entry"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_cod_max_amount
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "COD Maximum Amount"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "COD Phone Verification"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cod_phone_verified
+msgid "COD Phone Verified"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_partner__leaders_cod_refusal_count
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_users__leaders_cod_refusal_count
+msgid "COD Refusals"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cod_phone
+msgid "COD Verified Phone"
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "COD commission %s"
@@ -1781,6 +2113,12 @@ msgid "COD fulfilment fee %s"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "COD refusal counter reset by %(user)s (was %(old)s)."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__calc_method
 msgid "Calc Method"
 msgstr ""
@@ -1791,13 +2129,25 @@ msgid "Can return"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_fulfillment_inbound_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_leaders_ship_wizard_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_return_form
 msgid "Cancel"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancel_date
+msgid "Cancel Date"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancel_note
+msgid "Cancel Note"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1806,9 +2156,28 @@ msgid "Cancel Reason"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid "Cancel Remaining"
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Cancel marketplace collection %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid ""
+"Cancel the part of this shipment that was not shipped? The customer will "
+"only receive what already left."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid ""
+"Cancel this order as refused by the customer at the door? The goods return "
+"to the source location and no earning is created."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1826,8 +2195,20 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_order_form_customer_cancel
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_list
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 msgid "Cancellation"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cancel_date
+msgid "Cancellation Date"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cancel_note
+msgid "Cancellation Note"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1842,7 +2223,20 @@ msgid "Cancellation Rate Threshold (%)"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancel_reason_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cancel_reason_id
+msgid "Cancellation Reason"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_cancel_reason
+#: model:ir.ui.menu,name:leaders_marketplace.menu_cancel_reasons
+msgid "Cancellation Reasons"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__refund_payment_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_refund_payment_id
 msgid "Cancellation Refund"
 msgstr ""
 
@@ -1881,12 +2275,45 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancelled_by
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cancelled_by_type
 msgid "Cancelled By"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancelled_by_type
+msgid "Cancelled By Type"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_account_payment__leaders_cancelled_sale_id
+msgid "Cancelled Company Order"
 msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_account_payment__leaders_cancelled_order_id
 msgid "Cancelled Marketplace Order"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
+msgid "Cancelled by the customer"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Cancelled order %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Cancelled settlement %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "Cancels every seller's part of this purchase."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -1921,6 +2348,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.actions.act_window,name:leaders_marketplace.action_cod_vendor_order
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__is_cod
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__payment_method__cod
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__sale_order__leaders_payment_method__cod
 #: model:ir.ui.menu,name:leaders_marketplace.menu_cod_orders
@@ -1929,8 +2357,48 @@ msgid "Cash on Delivery"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_cod_otp
+msgid "Cash on Delivery Phone Verification Code"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Cash on Delivery is hidden above this order total. 0 means no limit."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_cod_max_amount
+msgid ""
+"Cash on Delivery is hidden and refused for orders above this total (company "
+"currency). 0 means no limit."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_cod_refusal_block_count
+msgid ""
+"Cash on Delivery is hidden for a customer who refused this many COD parcels "
+"at the door. 0 turns the block off. Managers can reset the counter on the "
+"customer."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"Cash on Delivery is not available for orders above %(limit)s. Please pay "
+"online."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Cash on Delivery is not available for your account. Please pay online."
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/checkout.py:0
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
 msgid "Cash on Delivery is not available."
 msgstr ""
 
@@ -1946,6 +2414,14 @@ msgid "Cash on Delivery: collection deferred until delivery."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_partner__leaders_cod_refusal_count
+#: model:ir.model.fields,help:leaders_marketplace.field_res_users__leaders_cod_refusal_count
+msgid ""
+"Cash-on-delivery parcels this customer refused at the door. Customer "
+"cancellations before shipping do not count."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_catalog_offers_enabled
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Catalog Offers, Storefronts and Ratings"
@@ -1954,6 +2430,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__category_id
 msgid "Category"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Change payout account"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2020,6 +2501,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__code
 msgid "Code"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__code_hash
+msgid "Code Hash"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2236,6 +2722,12 @@ msgid "Company"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_account_payment__leaders_cancelled_sale_id
+msgid ""
+"Company sales order this payment refunds after the customer cancelled it."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__state__completed
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
 msgid "Completed"
@@ -2306,7 +2798,13 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_res_partner
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Contact"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__contract_ids
+msgid "Contract"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2340,6 +2838,8 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__create_uid
@@ -2355,7 +2855,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__create_uid
@@ -2377,6 +2880,8 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__create_date
@@ -2392,7 +2897,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__create_date
@@ -2461,9 +2969,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__partner_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__partner_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__partner_id
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__cancelled_by_type__customer
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__sale_order__leaders_cancelled_by_type__customer
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_returns
 msgid "Customer"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_cancel_window_hours
+msgid "Customer Cancellation Window (hours)"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Customer Order Cancellation"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2476,6 +2996,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__refund_payment_id
 msgid "Customer Refund Payment"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_cancel_reason__applies_to__customer
+msgid "Customer cancellations"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2492,14 +3017,25 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
 msgid ""
 "Customer refund payment of %(amount)s prepared for the cancelled order; post"
 " it once the money is sent."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid "Customer refused"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "Customer:"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_customer_order_cancelled_by_customer
+msgid "Customer: cancellation confirmed"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2533,6 +3069,24 @@ msgid "Customer: return rejected"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_customer_can_cancel_orders
+msgid "Customers Can Cancel Orders"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Customers cannot cancel orders on this marketplace."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Customers confirm a 6-digit code sent to their phone before a Cash on "
+"Delivery order is accepted."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_tier__payout_frequency__daily
 msgid "Daily"
 msgstr ""
@@ -2541,6 +3095,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__date
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Date"
 msgstr ""
 
@@ -2582,6 +3137,28 @@ msgid "Date:"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_tier__ship_sla_days
+msgid ""
+"Days a vendor of this tier has to ship a confirmed order. 0 = use the "
+"marketplace setting (Settings > Marketplace > Ship Within)."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_ship_sla_days
+msgid ""
+"Days after a vendor order is confirmed by which it must ship. A vendor tier "
+"can override it (tier value 0 = use this one)."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Days after confirmation by which a vendor must ship. Orders past it are "
+"flagged Late, reviewers get an activity and the vendor an email "
+"(notification switch). A vendor tier can override the value."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_tier__escrow_release_days
 msgid "Days after delivery before funds are released."
 msgstr ""
@@ -2611,6 +3188,13 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__deactivated_user_ids
 msgid "Deactivated Users"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__ship_by_date
+msgid ""
+"Deadline to ship this order: confirmation time plus the ship-by SLA (the "
+"vendor tier's, else the marketplace setting)."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2734,15 +3318,38 @@ msgid "Delivery Zones"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_delivery_zone
+msgid "Delivery Zones (Platform and Vendors)"
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Delivery collected on %s"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_delivery_zone__is_platform
+msgid ""
+"Delivery price of the marketplace itself, charged once for the company's "
+"products and for goods shipped from the marketplace warehouse (FBL)."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "Delivery prices and thresholds cannot be negative."
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "Delivery proof"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_delivery_too_long
+msgid "Delivery takes too long"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2764,6 +3371,8 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__display_name
@@ -2779,7 +3388,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__display_name
@@ -2897,8 +3509,21 @@ msgstr ""
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_penalty__state__draft
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__product_template__marketplace_state__draft
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_state__draft
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_search
 msgid "Draft"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Draft credit note prepared for the cancelled order."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Draft credit note prepared: post it before the refund payment."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2906,6 +3531,13 @@ msgstr ""
 msgid ""
 "Draft refund prepared when a paid order was cancelled. Finance posts it once"
 " the money has actually been sent back."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_sale_order__leaders_refund_payment_id
+msgid ""
+"Draft refund prepared when the company part of a checkout paid online was "
+"cancelled by the customer. Finance posts it once the money is sent."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -2956,6 +3588,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
 msgid "End"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Enter a quantity to ship for at least one product."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3075,6 +3713,11 @@ msgid "Expired documents"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__expires_at
+msgid "Expires At"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__expiry_date
 msgid "Expiry Date"
 msgstr ""
@@ -3088,6 +3731,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__fulfillment_type__fbl
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_policy__forced_fulfillment_type__fbl
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__fulfillment_type__fbl
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "FBL"
 msgstr ""
 
@@ -3116,6 +3760,14 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_leaders_fulfillment_inbound_line
 msgid "FBL Vendor Inbound Line"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_config_settings.py:0
+msgid ""
+"FBL cannot be turned off while it is in use:\n"
+"%s"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3155,6 +3807,12 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_config_settings.py:0
+msgid "FBL stock of %(vendor)s: %(qty)s units"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__fulfillment_type__fbm
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_policy__forced_fulfillment_type__fbm
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__fulfillment_type__fbm
@@ -3190,6 +3848,12 @@ msgstr ""
 msgid ""
 "Fallback percentage used when a vendor has no tier rate. Only applied when "
 "vendors without a plan are charged the tier rate."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__fbl_enabled
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__fbl_enabled
+msgid "Fbl Enabled"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3266,12 +3930,19 @@ msgid "Flag High Cancellation Rates"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_late_shipment_auto_warning
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Flag High Late-Shipment Rates"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_follower_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_follower_ids
@@ -3288,6 +3959,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_partner_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_partner_ids
@@ -3317,6 +3989,25 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__forced_fulfillment_type
 msgid "Forced Fulfillment Type"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.cart_total_delivery_breakdown
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.confirmation_delivery_breakdown
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_saleorder_delivery_breakdown
+msgid "Free"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__free_shipping_threshold
+msgid "Free Shipping Threshold"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
+msgid "Free delivery from"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3355,6 +4046,14 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.product_page_marketplace_sellers
 msgid "Fulfilled by Leaders"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_partner.py:0
+msgid ""
+"Fulfilled by Leaders (FBL) is not available: the marketplace has no "
+"warehouse of its own."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3451,6 +4150,11 @@ msgid "Fulfilment fee %s"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "Go to dashboard"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:leaders.vendor.tier,name:leaders_marketplace.vendor_tier_gold
 msgid "Gold"
 msgstr ""
@@ -3476,9 +4180,17 @@ msgid "Gross Amount"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__group_id
+msgid "Group"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cod_vendor_order_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
@@ -3494,6 +4206,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__has_message
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__has_message
@@ -3518,6 +4231,13 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid ""
+"Hide Cash on Delivery for customers who refused this many parcels at the "
+"door. 0 turns it off."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
 "Hide vendor-only checkouts from the customer's Orders list, show the real "
 "total on the confirmation page and send one Marketplace order confirmation "
 "email."
@@ -3526,6 +4246,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
 msgid "High Cancellation"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
+msgid "High Late Shipments"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3546,7 +4271,31 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_cancel_window_hours
+msgid ""
+"Hours after ordering during which a customer can cancel. 0 = no limit (only "
+"the shipping status matters)."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_changed_mind
+msgid "I changed my mind"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_found_cheaper
+msgid "I found a better price elsewhere"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_ordered_by_mistake
+msgid "I ordered by mistake"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__id
@@ -3562,7 +4311,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__id
@@ -3585,6 +4337,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__document_type__id_passport
 msgid "ID / Passport"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "IP address"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3612,6 +4369,7 @@ msgstr ""
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_needaction
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_invoice__message_needaction
@@ -3634,6 +4392,8 @@ msgstr ""
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__message_has_sms_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_has_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_has_sms_error
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_has_error
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_has_sms_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_has_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_has_sms_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__message_has_error
@@ -3676,6 +4436,13 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid "Internal notes about this review."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Invalid shipment quantity."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3737,6 +4504,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_is_follower
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_is_follower
@@ -3833,6 +4601,8 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__write_uid
@@ -3848,7 +4618,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__write_uid
@@ -3870,6 +4643,8 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__write_date
@@ -3885,7 +4660,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__write_date
@@ -3903,6 +4681,45 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__is_late
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
+msgid "Late"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__late_notified
+msgid "Late Notified"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__late_shipment_rate
+msgid "Late Shipment Rate"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_list
+msgid "Late Shipments"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/performance.py:0
+msgid ""
+"Late shipment rate of %(rate).2f%% in %(period)s (threshold %(limit).2f%%)."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
+msgid "Late shipments"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_late_shipment_rate_threshold
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Late-Shipment Rate Threshold (%)"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3924,6 +4741,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_stock_move__leaders_vendor_line_id
 msgid "Leaders Vendor Line"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "Leaders delivery"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -3983,6 +4806,13 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Let a vendor owner cancel an unshipped order from the portal."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Let customers cancel a whole checkout or one seller's part from their order "
+"page while nothing has shipped. 0 hours = no time limit."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4089,6 +4919,8 @@ msgid "Mark as done"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__cancelled_by_type__platform
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__sale_order__leaders_cancelled_by_type__platform
 #: model:ir.module.category,name:leaders_marketplace.module_category_marketplace
 #: model:ir.ui.menu,name:leaders_marketplace.menu_marketplace_root
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
@@ -4169,6 +5001,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_leaders_fulfillment_group
 msgid "Marketplace Fulfillment Group"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_fbl_enabled
+msgid "Marketplace Has Its Own Warehouse (FBL)"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4292,6 +5129,11 @@ msgid "Marketplace Vendor Tier"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Marketplace Warehouse (FBL)"
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Marketplace accounts not configured; skipped the commission invoice."
@@ -4358,6 +5200,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Marketplace fees %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Marketplace invoice %(invoice)s credited by %(credit)s."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4447,6 +5295,11 @@ msgid "Marketplace: Auto-confirm Reported FBM Deliveries"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_customer_order_cancelled_by_customer
+msgid "Marketplace: Cancellation confirmed (customer)"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.actions.server,name:leaders_marketplace.cron_compute_vendor_kpis_ir_actions_server
 msgid "Marketplace: Compute Vendor KPIs"
 msgstr ""
@@ -4474,6 +5327,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.actions.server,name:leaders_marketplace.cron_escalate_overdue_returns_ir_actions_server
 msgid "Marketplace: Escalate Unanswered Returns"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.actions.server,name:leaders_marketplace.cron_late_shipments_ir_actions_server
+msgid "Marketplace: Late shipments"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4507,13 +5365,39 @@ msgid "Marketplace: Order cancelled"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_order_cancelled_by_customer
+msgid "Marketplace: Order cancelled by the customer (vendor)"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:mail.template,name:leaders_marketplace.mail_template_customer_order_delivered
 msgid "Marketplace: Order delivered"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_order_late
+msgid "Marketplace: Order not shipped by its ship-by date (vendor)"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:mail.template,name:leaders_marketplace.mail_template_customer_order_shipped
 msgid "Marketplace: Order shipped"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_bank_change_approved
+msgid "Marketplace: Payout account change approved (vendor)"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_bank_change_rejected
+msgid "Marketplace: Payout account change rejected (vendor)"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_bank_change_requested
+msgid ""
+"Marketplace: Payout account change requested (security notice, always sent)"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4628,6 +5512,11 @@ msgid "Markets"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__masked_account_number
+msgid "Masked Account Number"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__max_amount
 msgid "Maximum Amount"
 msgstr ""
@@ -4640,12 +5529,18 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_ir_ui_menu
+msgid "Menu"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_has_error
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_has_error
@@ -4662,6 +5557,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_ids
@@ -4669,6 +5565,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__message_ids
 msgid "Messages"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "Method"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4732,6 +5633,11 @@ msgid "Missing: Product Categories"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "Mobile number for Cash on Delivery"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
 msgid "Month"
@@ -4747,6 +5653,12 @@ msgstr ""
 #: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_kpi_cancellation_threshold
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Monthly cancellation rate above which a draft warning is prepared."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_late_shipment_rate_threshold
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Monthly late-shipment rate above which a draft warning is prepared."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -4782,6 +5694,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_target__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__name
@@ -4791,6 +5704,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__name
@@ -4941,6 +5855,7 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
 msgid "No bank journal found to prepare the cancellation refund payment."
 msgstr ""
 
@@ -5038,6 +5953,11 @@ msgid "No ratings yet."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "No requests yet."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_returns
 msgid "No return requests."
 msgstr ""
@@ -5086,9 +6006,27 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Not set"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__is_late
+msgid ""
+"Not shipped yet and past its ship-by date. Time passing cannot trigger a "
+"stored compute, so the hourly cron refreshes it."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__note
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 msgid "Note"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "Note (optional)"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5108,6 +6046,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_needaction_counter
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_needaction_counter
@@ -5124,6 +6063,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_has_error_counter
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_has_error_counter
@@ -5140,6 +6080,7 @@ msgstr ""
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_needaction_counter
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_invoice__message_needaction_counter
@@ -5156,6 +6097,7 @@ msgstr ""
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_has_error_counter
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_invoice__message_has_error_counter
@@ -5171,6 +6113,14 @@ msgid "OTC %"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Off when the marketplace has no warehouse of its own: vendors then ship "
+"their own goods (FBM only) and FBL is hidden and refused everywhere. Cannot "
+"be turned off while active FBL offers or FBL stock exist."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_only_presentation
 msgid ""
 "Off: a checkout made only of vendor products is shown as today. On: it is "
@@ -5178,6 +6128,14 @@ msgid ""
 "the confirmation page shows the checkout total instead of an empty summary, "
 "and the customer receives a Marketplace order confirmation email listing the"
 " vendor orders."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_customer_can_cancel_orders
+msgid ""
+"Off: customers cannot cancel. On: a customer can cancel a whole checkout or "
+"one seller's part from the order page, with a reason, while nothing in it "
+"has shipped. Online payments get a draft refund for finance to post."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5220,6 +6178,12 @@ msgid "Offer"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_config_settings.py:0
+msgid "Offer %(offer)s of %(vendor)s"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__offer_state_snapshot
 msgid "Offer State Snapshot"
 msgstr ""
@@ -5251,6 +6215,23 @@ msgstr ""
 #: model:ir.ui.menu,name:leaders_marketplace.menu_offers
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace_review_list
 msgid "Offers"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_block_payout_on_pending_bank_change
+msgid ""
+"On (default): a settlement cannot be marked paid while its vendor has a "
+"payout account change waiting for review, so money never goes to an account "
+"that is about to be replaced. Off: payouts are not held back."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_fbl_enabled
+msgid ""
+"On (default): vendors may use Fulfilled by Leaders (FBL) from the "
+"marketplace warehouse. Off: every vendor ships their own goods (FBM only); "
+"no FBL location is created and FBL is hidden and refused everywhere. It "
+"cannot be turned off while active FBL offers or FBL stock exist."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5301,6 +6282,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Only Cash on Delivery shipments can be refused at the door."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/settlement.py:0
 msgid ""
 "Only a draft or approved settlement can be cancelled; %(name)s is %(state)s."
@@ -5309,7 +6296,31 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Only a partially shipped group has a remaining part to cancel."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "Only a pending request can be approved."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "Only a pending request can be rejected."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
 msgid "Only a reported delivery can be disputed as not received."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Only a shipped group can be marked as refused by the customer."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5348,6 +6359,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Only marketplace managers can reset the COD refusal counter."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/returns.py:0
 msgid "Only new return requests can be approved by the vendor."
 msgstr ""
@@ -5361,6 +6378,25 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.constraint,message:leaders_marketplace.constraint_leaders_vendor_delivery_zone_vendor_state_uniq
 msgid "Only one delivery price per governorate per vendor."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "Only one platform delivery price per governorate."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_core.py:0
+msgid "Only one vendor terms version can be active at a time."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_terms_form
+msgid ""
+"Only one version is active at a time. Activating a version deactivates the others and every vendor\n"
+"                        must accept it before using the vendor portal again. With no active version nothing is required."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5402,13 +6438,32 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "Only the vendor owner can accept the terms."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Only the vendor owner can access financial information."
 msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Only the vendor owner can access the vendor profile."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Only the vendor owner can cancel orders."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Only the vendor owner can change the payout account."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5463,6 +6518,12 @@ msgid "Open"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_config_settings.py:0
+msgid "Open FBL shipment %(group)s of %(vendor)s"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_auto_settlements
 msgid ""
 "Open a DRAFT settlement for each vendor at the end of every period of their "
@@ -5495,6 +6556,14 @@ msgid "Optional message to the customer"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_delivery_zone__free_shipping_threshold
+msgid ""
+"Optional. When the untaxed amount of the goods this zone ships reaches this "
+"value, the delivery price is waived. Empty or 0 = no free shipping."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__order_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__order_id
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
@@ -5505,6 +6574,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_returns
 msgid "Order"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Order %s was not shipped by its ship-by date"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_cancel_reason
+msgid "Order Cancellation Reason"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5525,13 +6605,34 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Order cancelled by the customer. Reason: %(reason)s"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "Order cancelled by the vendor. Reason: %(reason)s"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_order_late
+msgid "Order {{ object.name }} is late: ship it now"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_order_cancelled_by_customer
+msgid "Order {{ object.name }} was cancelled by the customer: do not ship"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_invoice_document
 msgid "Order:"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__demanded_qty
+msgid "Ordered"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5554,6 +6655,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__refund_method__original
 msgid "Original Payment"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_other
+msgid "Other"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5615,8 +6721,19 @@ msgid "Paid"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Partial quantities can only be shipped for one shipment at a time."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__state__partially_fulfilled
 msgid "Partially Fulfilled"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__state__partially_shipped
+msgid "Partially Shipped"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5677,6 +6794,20 @@ msgid "Payout %s"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_bank_change
+#: model:ir.ui.menu,name:leaders_marketplace.menu_vendor_bank_changes
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Payout Account Changes"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__payout_bank_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_partner__vendor_payout_bank_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_users__vendor_payout_bank_id
+msgid "Payout Bank Account"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__payout_frequency
 msgid "Payout Frequency"
 msgstr ""
@@ -5689,6 +6820,19 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__payment_move_id
 msgid "Payout Journal Entry"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Payout account"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid ""
+"Payout account change requested. We sent you a security email; the "
+"marketplace will review it and payouts are held until then."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5735,10 +6879,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__kyc_state__pending
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_bank_change__state__pending
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__verification_status__pending
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__state__pending
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_kyc_state__pending
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
 msgid "Pending"
 msgstr ""
 
@@ -5763,6 +6909,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__percent
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__percent
 msgid "Percent"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_kpi__late_shipment_rate
+msgid ""
+"Percent of the month's orders shipped after their ship-by date, or still "
+"unshipped past it."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5815,6 +6968,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__periodicity
 msgid "Periodicity"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__phone
+msgid "Phone"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5876,8 +7034,16 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__is_platform
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__approved_by__platform
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_list
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
 msgid "Platform"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
+msgid "Platform / Vendor"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5910,8 +7076,27 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Please choose a reason for cancelling."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "Please choose the vendor of this delivery price."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/vendor_apply.py:0
 msgid "Please enter a valid business email address."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"Please enter a valid mobile number, digits only with an optional leading +."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5940,8 +7125,14 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "Please provide a rejection reason."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "Please read and accept the terms to continue using the vendor portal."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -5966,6 +7157,18 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Please tell us why you are returning the products."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Please verify your phone number to pay Cash on Delivery."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Please wait a minute before asking for a new code."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6040,6 +7243,13 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Prepare a draft warning penalty when a vendor's monthly late-shipment rate "
+"passes the threshold. Never applied automatically."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_only_presentation
 msgid "Present Vendor-Only Checkouts to Customers"
 msgstr ""
@@ -6051,6 +7261,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
 msgid "Price"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
+msgid "Price / free delivery from"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6106,6 +7321,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound_line__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__product_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__product_id
@@ -6180,6 +7396,7 @@ msgid "Product {{ object.name }} rejected"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__line_ids
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_my_home_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_return_form
@@ -6205,6 +7422,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.actions.act_window,help:leaders_marketplace.action_product_marketplace_review
 msgid "Products vendors submit from their portal land here."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__proof_name
+msgid "Proof File Name"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6260,6 +7482,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__achieve_type__qty_sold
 msgid "Quantity Sold"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "Quantity to ship now (the rest stays in a second shipment)"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6331,6 +7558,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__rating_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__rating_ids
@@ -6351,6 +7579,11 @@ msgid "Reactivate"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms_staff_notice
+msgid "Read the terms"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__state__ready
 msgid "Ready to Ship"
 msgstr ""
@@ -6366,8 +7599,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__reason
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__reason
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__reason
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_disputes
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Reason"
 msgstr ""
 
@@ -6460,6 +7695,7 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
 msgid "Refund cancelled %s"
 msgstr ""
 
@@ -6499,6 +7735,34 @@ msgid "Refunds"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__refusal_picking_ids
+msgid "Refusal Returns"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__refused_at_delivery
+msgid "Refused At Delivery"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_stock_picking__leaders_refused_group_id
+msgid "Refused Shipment"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_refused_at_delivery
+msgid "Refused at delivery"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Refused at delivery: %(group)s (%(order)s)"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
 msgid "Register Vendor Payment"
 msgstr ""
@@ -6506,6 +7770,7 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
 msgid "Reject"
 msgstr ""
 
@@ -6516,6 +7781,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__reject_reason
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__reject_reason
 msgid "Reject Reason"
 msgstr ""
 
@@ -6527,10 +7793,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__state__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__state__rejected
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_bank_change__state__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__verification_status__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__product_template__marketplace_state__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_state__rejected
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
 msgid "Rejected"
 msgstr ""
 
@@ -6586,6 +7854,11 @@ msgid "Replace"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__previous_bank_id
+msgid "Replaced Account"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "Report a problem"
 msgstr ""
@@ -6614,6 +7887,12 @@ msgid "Representative Position"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
+msgid "Request"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__request_date
 msgid "Request Date"
 msgstr ""
@@ -6629,13 +7908,33 @@ msgid "Request a Settlement"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Request change"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Request history"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__state__requested
 msgid "Requested"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__requested_by
+msgid "Requested By"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__require_stock
 msgid "Require Stock"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
+msgid "Required to reject"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6690,6 +7989,16 @@ msgid "Reserved"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_partner_form_marketplace
+msgid "Reset COD refusals"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_partner_form_marketplace
+msgid "Reset the Cash on Delivery refusal counter of this customer?"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 msgid "Reset to draft"
 msgstr ""
@@ -6716,6 +8025,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_form
 msgid "Restored on lift"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__bank_id
+msgid "Resulting Bank Account"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6845,6 +8159,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
 msgid "Review"
 msgstr ""
 
@@ -6864,6 +8179,16 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "Review vendor application %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__reviewed_by
+msgid "Reviewed By"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__reviewed_date
+msgid "Reviewed Date"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -6905,6 +8230,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_has_sms_error
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_has_sms_error
@@ -6940,6 +8266,16 @@ msgid "Sales People"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__salt
+msgid "Salt"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_cod_otp__code_hash
+msgid "Salted HMAC of the code; the code itself is never stored."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
 msgid "Save"
 msgstr ""
@@ -6969,6 +8305,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__access_token
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__access_token
 msgid "Security Token"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_bank_change_requested
+msgid ""
+"Security notice: a payout account change was requested for {{ "
+"object.vendor_id.vendor_store_name or object.vendor_id.name }}"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7043,6 +8386,11 @@ msgid "Send"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "Send code"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "Send rating"
 msgstr ""
@@ -7059,6 +8407,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__sequence
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__sequence
@@ -7164,8 +8513,53 @@ msgid "Settlements"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_leaders_ship_wizard_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 msgid "Ship"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__ship_by_date
+msgid "Ship By"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_leaders_ship_wizard_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid "Ship Quantities"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_ship_wizard
+msgid "Ship Quantities of a Fulfillment Group"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__ship_sla_days
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_ship_sla_days
+msgid "Ship Within (days)"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_ship_wizard_line
+msgid "Ship Wizard Line"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
+msgid "Ship by"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "Ship by:"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Ship-by SLA"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7236,12 +8630,18 @@ msgid "Shows a Cash on Delivery option at checkout, alongside online payment."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_form
+msgid "Sign"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_buybox_config_form
 msgid "Signal Weights"
 msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__signature
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
 msgid "Signature"
 msgstr ""
 
@@ -7253,6 +8653,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_contract__state__signed
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
 msgid "Signed"
 msgstr ""
 
@@ -7262,8 +8663,28 @@ msgid "Signed At"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__user_id
+msgid "Signed By"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__signed_ip
 msgid "Signed Ip"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "Signed by"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__signed_count
+msgid "Signed contracts"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "Signed on"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7287,6 +8708,12 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__legal_type__sole_proprietorship
 msgid "Sole Proprietorship"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Some of the products to ship do not belong to this shipment."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7335,6 +8762,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__state
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__state_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__state
@@ -7367,11 +8795,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_returns
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cod_vendor_order_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_search
@@ -7438,6 +8868,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Storage fee %s"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Store"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7596,6 +9031,12 @@ msgid "Tax invoice to the vendor"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/settlement.py:0
+msgid "Tax of the credited marketplace invoice."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_wallet_transaction__type__fee_tax
 msgid "Tax on Marketplace Fees"
 msgstr ""
@@ -7632,6 +9073,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__terms_id
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
 msgid "Terms"
 msgstr ""
 
@@ -7644,6 +9086,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "Terms & Conditions not accepted"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__terms_version
+msgid "Terms Version"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7668,6 +9115,25 @@ msgid "The added stock quantity cannot be negative."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "The code is not correct."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid ""
+"The company part of order %s is already shipped and can no longer be "
+"cancelled."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_core.py:0
+msgid "The contract document could not be generated."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
 msgid ""
 "The customer can escalate this return; the marketplace will take the final "
@@ -7678,6 +9144,27 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "The customer did not receive this shipment."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_cod_require_otp
+msgid ""
+"The customer must confirm a 6-digit code sent to their phone (SMS when the "
+"SMS module is installed, otherwise email) before a Cash on Delivery order is"
+" accepted."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"The customer refused the Cash on Delivery parcel at the door (%(groups)s). "
+"Goods returning to %(where)s through %(pickings)s. No earning was created."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "The customer refused the parcel at the door"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7739,6 +9226,18 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/res_partner.py:0
+msgid "The marketplace has no main warehouse to keep FBL stock in."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "The marketplace has no main warehouse to ship FBL orders from."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/commission.py:0
 msgid "The minimum amount cannot exceed the maximum amount."
 msgstr ""
@@ -7768,6 +9267,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "The part that was not shipped was cancelled."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "The period cannot end in the future."
 msgstr ""
@@ -7781,8 +9286,25 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "The quantity to ship of %s cannot be negative."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/returns.py:0
 msgid "The return window of %s days for this order has passed."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__late_notified
+msgid "The reviewers and the vendor were already told this order is late."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "The security notice could not be sent to the vendor owner."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7793,9 +9315,27 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_stock_picking__leaders_refused_group_id
+msgid ""
+"The shipment the customer refused at the door; this receipt brings the goods"
+" back."
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "The stock quantity cannot be negative."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "The time to cancel this order has passed (%s hours after ordering)."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "The time to cancel this order has passed."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7825,6 +9365,23 @@ msgid "The vendor is already present in the plan."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms_staff_notice
+msgid ""
+"The vendor owner must accept the new vendor terms before the vendor portal "
+"can be used again. Please ask the owner of"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__payout_bank_id
+msgid "The vendor's current payout account."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "There are no vendor terms to accept right now."
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "These documents are expired and cannot be verified: %s"
@@ -7841,6 +9398,12 @@ msgstr ""
 msgid ""
 "This application cannot be approved yet:\n"
 "%s"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "This code has expired. Please ask for a new one."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7884,8 +9447,22 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid ""
+"This order has already shipped and can no longer be cancelled. Request a "
+"return after delivery."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "This order has no vendor invoice."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "This order is already cancelled."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7932,9 +9509,20 @@ msgid "This return is received by the Leaders warehouse."
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "This seller's part of your order was cancelled."
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/settlement.py:0
 msgid "This settlement has no vendor debt to collect."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/ship_wizard.py:0
+msgid "This shipment can no longer be shipped."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7951,6 +9539,13 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.actions.act_window,help:leaders_marketplace.action_vendor_delivery_zone
+msgid ""
+"Tick \"Platform\" for the marketplace's own price: it is charged once for company products and\n"
+"                warehouse (FBL) goods. Vendor rows price each vendor's own shipments."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_vendor__date_to
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 msgid "To"
@@ -7959,6 +9554,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
 msgid "To Process"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__quantity
+msgid "To Ship"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -7971,6 +9571,18 @@ msgstr ""
 #: code:addons/leaders_marketplace/controllers/vendor_apply.py:0
 msgid ""
 "Too many applications from your address today. Please try again tomorrow."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Too many codes were requested. Please try again later."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Too many wrong attempts. Please ask for a new code."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8010,6 +9622,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__tracking_ref
 msgid "Tracking Ref"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__tracking_ref
+msgid "Tracking Reference"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8086,6 +9703,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Unknown cancellation scope."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Unknown stock update mode."
 msgstr ""
@@ -8109,6 +9732,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
 msgid "Update"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid "Update your stock here."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8167,6 +9795,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__vendor_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__vendor_id
@@ -8181,11 +9810,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order_line__vendor_id
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__scope__vendor
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__cancelled_by_type__vendor
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__approved_by__vendor
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__sale_order__leaders_cancelled_by_type__vendor
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_invoice_document
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cod_vendor_order_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
@@ -8258,6 +9893,12 @@ msgid "Vendor Contract"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_contract
+#: model:ir.ui.menu,name:leaders_marketplace.menu_vendor_contracts
+msgid "Vendor Contracts"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__credit_note_id
 msgid "Vendor Credit Note"
 msgstr ""
@@ -8281,11 +9922,6 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_leaders_vendor_delivery_zone
 msgid "Vendor Delivery Price per Governorate"
-msgstr ""
-
-#. module: leaders_marketplace
-#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_delivery_zone
-msgid "Vendor Delivery Zones"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8364,6 +10000,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__vendor_line_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__vendor_line_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__vendor_line_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__vendor_line_id
 msgid "Vendor Line"
@@ -8456,6 +10093,11 @@ msgid "Vendor Payable Account"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_vendor_bank_change
+msgid "Vendor Payout Bank Account Change"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_penalty
 msgid "Vendor Penalties"
 msgstr ""
@@ -8473,6 +10115,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__portal_user_id
 msgid "Vendor Portal User"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Vendor Profile"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8548,8 +10195,18 @@ msgid "Vendor Store Slug"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_terms
 #: model:ir.model,name:leaders_marketplace.model_leaders_vendor_terms
+#: model:ir.ui.menu,name:leaders_marketplace.menu_vendor_terms
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
 msgid "Vendor Terms"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_core.py:0
+#: model:ir.actions.report,name:leaders_marketplace.action_report_vendor_contract
+msgid "Vendor Terms Contract"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8595,6 +10252,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:mail.template,name:leaders_marketplace.mail_template_vendor_application_submitted
 msgid "Vendor application received"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_cancel_reason__applies_to__vendor
+msgid "Vendor cancellations"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -8679,6 +10341,11 @@ msgid "Vendor settlement %s"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms_staff_notice
+msgid "Vendor terms are waiting for acceptance"
+msgstr ""
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid ""
@@ -8756,6 +10423,26 @@ msgid "Vendor: offer rejected"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_order_cancelled_by_customer
+msgid "Vendor: order cancelled by the customer"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_order_late
+msgid "Vendor: order not shipped by its ship-by date"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_bank_change_approved
+msgid "Vendor: payout account change approved"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_bank_change_rejected
+msgid "Vendor: payout account change rejected"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_penalty_applied
 msgid "Vendor: penalty applied"
 msgstr ""
@@ -8807,6 +10494,7 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__vendor_ids
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
 msgid "Vendors"
 msgstr ""
 
@@ -8833,6 +10521,12 @@ msgid "Verification Status"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "Verification code"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__verified
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__kyc_state__verified
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__verification_status__verified
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_kyc_state__verified
@@ -8850,6 +10544,7 @@ msgid "Verified Date"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid "Verify"
 msgstr ""
@@ -8860,7 +10555,13 @@ msgid "Verify KYC"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_cod_require_otp
+msgid "Verify Phone for Cash on Delivery"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__version
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
 msgid "Version"
 msgstr ""
 
@@ -8917,6 +10618,19 @@ msgid "Warning"
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"We could not send the code. Please check your number or email and try again."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "We do not deliver to %(state)s."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid ""
 "We opened a case with the marketplace about your missing shipment. You will "
@@ -8941,6 +10655,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__website_message_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__website_message_ids
@@ -8962,6 +10677,7 @@ msgstr ""
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__website_message_ids
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_invoice__website_message_ids
@@ -9002,6 +10718,13 @@ msgid "Welcome back"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_leaders_ship_wizard_form
+msgid ""
+"What is not shipped now stays in a second shipment of the same group, with "
+"its own tracking reference."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__missing_requirements
 msgid "What still blocks the approval of this application."
 msgstr ""
@@ -9039,6 +10762,13 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_late_shipment_auto_warning
+msgid ""
+"When a vendor's monthly late-shipment rate passes the threshold below, "
+"prepare a DRAFT warning penalty for a manager to review."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_reserve__release_date
 msgid ""
 "When the marketplace stops holding this back: the shipment date plus the "
@@ -9065,6 +10795,20 @@ msgstr ""
 msgid ""
 "Whether a vendor marking their own shipment delivered completes the order, "
 "or only reports it for the customer to confirm."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_cancel_reason__applies_to
+msgid ""
+"Who can pick this reason. Only the customer cancellation uses the list "
+"today; the value is kept for vendor cancellations."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__cancelled_by_type
+msgid ""
+"Who cancelled the order. Customer cancellations are left out of the vendor "
+"KPIs and penalties. Empty on orders cancelled before this existed."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9109,8 +10853,23 @@ msgid "Withhold a Returns Reserve"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__wizard_id
+msgid "Wizard"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_wrong_details
+msgid "Wrong address or order details"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__periodicity__year
 msgid "Yearly"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "You accepted these terms on"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9136,6 +10895,11 @@ msgstr ""
 msgid ""
 "You can still ship your open orders, answer returns and follow your "
 "settlements. New or changed listings are on hold."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "You cancelled this order. Reason:"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9219,6 +10983,17 @@ msgid ""
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "You cannot ship more %(product)s than ordered (%(qty)s of %(needed)s)."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "You chose Cash on Delivery, so nothing was charged."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_orders
 msgid "You have no marketplace purchases yet."
 msgstr ""
@@ -9231,6 +11006,26 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "You must tick the box to accept the terms."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Your Cash on Delivery verification code"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"Your Cash on Delivery verification code is %(code)s. It is valid for "
+"%(minutes)s minutes."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Your account is frozen: %s"
 msgstr ""
 
@@ -9238,6 +11033,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Your account is not an approved marketplace vendor."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_customer_order_cancelled_by_customer
+msgid "Your cancellation of order {{ object.name }} is confirmed"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9256,6 +11056,11 @@ msgid "Your offer is approved, but the product is still"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "Your order was cancelled."
+msgstr ""
+
+#. module: leaders_marketplace
 #: model:mail.template,subject:leaders_marketplace.mail_template_customer_order_cancelled
 msgid "Your order {{ object.name }} was cancelled"
 msgstr ""
@@ -9268,6 +11073,16 @@ msgstr ""
 #. module: leaders_marketplace
 #: model:mail.template,subject:leaders_marketplace.mail_template_customer_order_delivered
 msgid "Your order {{ object.vendor_order_id.name }} was delivered"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_bank_change_approved
+msgid "Your payout account change {{ object.name }} was approved"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_bank_change_rejected
+msgid "Your payout account change {{ object.name }} was rejected"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9336,6 +11151,12 @@ msgid "Your vendor tier product limit has been reached."
 msgstr ""
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "account %s"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 msgid "after shipping"
 msgstr ""
@@ -9374,6 +11195,11 @@ msgid "e.g. SA03 8000 0000 6080 1016 7519"
 msgstr ""
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
+msgid "free from"
+msgstr ""
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 msgid "i.e. Vendor targets 2026"
 msgstr ""
@@ -9381,6 +11207,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 msgid "is only charged once confirmed."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "is waiting for review. You can send a new one after it is decided."
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9407,6 +11238,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_invoice_document
 msgid "on the vendor's behalf through the marketplace."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
+msgid "optional"
 msgstr ""
 
 #. module: leaders_marketplace
@@ -9439,6 +11275,11 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 msgid "to process"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms_staff_notice
+msgid "to sign in and accept them."
 msgstr ""
 
 #. module: leaders_marketplace

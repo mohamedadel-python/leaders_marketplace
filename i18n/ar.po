@@ -45,13 +45,18 @@ msgstr "تم تأكيد تسليم %(group)s تلقائياً: لم يرد ال�
 
 #. module: leaders_marketplace
 #. odoo-python
-#: code:addons/leaders_marketplace/models/settlement.py:0
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
 msgid ""
-"%(name)s has a posted marketplace invoice (%(invoice)s); issue a credit note"
-" for it before cancelling the settlement."
+"%(order)s already has a delivered shipment; handle this refusal as a return."
 msgstr ""
-"لدى %(name)s فاتورة سوق مرحّلة (%(invoice)s)؛ أصدر إشعار دائن لها قبل إلغاء "
-"التسوية."
+"يحتوي %(order)s بالفعل على شحنة تم تسليمها؛ تعامل مع هذا الرفض على أنه "
+"مرتجع."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_core.py:0
+msgid "%(vendor)s already signed these terms."
+msgstr "وقّع %(vendor)s هذه الشروط بالفعل."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -59,6 +64,16 @@ msgstr ""
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "%(vendor)s does not deliver to %(state)s."
 msgstr "%(vendor)s لا يوصّل إلى %(state)s."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/settlement.py:0
+msgid ""
+"%(vendor)s has a payout account change waiting for review. Approve or reject"
+" it before paying %(name)s."
+msgstr ""
+"لدى %(vendor)s طلب تغيير لحساب صرف المستحقات قيد المراجعة. اعتمده أو ارفضه "
+"قبل الدفع إلى %(name)s."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -88,6 +103,12 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "%s delivery"
+msgstr "توصيل %s"
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/performance.py:0
 msgid "%s has already been lifted; create a new penalty instead."
 msgstr "تم رفع %s بالفعل؛ أنشئ عقوبة جديدة بدلاً منها."
@@ -97,6 +118,11 @@ msgstr "تم رفع %s بالفعل؛ أنشئ عقوبة جديدة بدلاً 
 #: code:addons/leaders_marketplace/models/settlement.py:0
 msgid "%s has already been paid; reverse the payout before cancelling."
 msgstr "تم دفع %s بالفعل؛ اعكس عملية صرف المستحقات قبل الإلغاء."
+
+#. module: leaders_marketplace
+#: model:ir.actions.report,print_report_name:leaders_marketplace.action_report_vendor_contract
+msgid "'Vendor Terms Contract - %s' % object.vendor_id.display_name"
+msgstr "'عقد شروط البائع - %s' % object.vendor_id.display_name"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
@@ -244,6 +270,25 @@ msgstr ""
 "            "
 
 #. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_bank_change_requested
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p><strong>Security notice.</strong> A change of your payout bank account was requested<t t-if=\"object.requested_by\"> by <t t-out=\"object.requested_by.name\"/></t> (request <t t-out=\"object.name\"/>).</p>\n"
+"<p>New account: <t t-out=\"object.bank_name\"/>, <t t-out=\"object.account_holder\"/>, <t t-out=\"object.masked_account_number\"/>.</p>\n"
+"<p>The marketplace reviews it before it replaces your current account, and payouts are held meanwhile. If you did not make this request, contact the marketplace immediately and change your password.</p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/profile\">Open your profile</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p><strong>تنبيه أمني.</strong> تم طلب تغيير حساب صرف المستحقات البنكي الخاص بك<t t-if=\"object.requested_by\"> بواسطة <t t-out=\"object.requested_by.name\"/></t> (الطلب <t t-out=\"object.name\"/>).</p>\n"
+"<p>الحساب الجديد: <t t-out=\"object.bank_name\"/>, <t t-out=\"object.account_holder\"/>, <t t-out=\"object.masked_account_number\"/>.</p>\n"
+"<p>يراجعه السوق قبل أن يحل محل حسابك الحالي، وتُحجب المدفوعات في هذه الأثناء. إذا لم تقدّم هذا الطلب، فتواصل مع السوق فورًا وغيّر كلمة المرور الخاصة بك.</p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/profile\">افتح ملفك الشخصي</a></p>\n"
+"</div>\n"
+"            "
+
+#. module: leaders_marketplace
 #: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_penalty_applied
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
@@ -319,6 +364,21 @@ msgstr ""
 "            "
 
 #. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_order_late
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>Order <strong t-out=\"object.name\"/> should have shipped by <t t-out=\"object.ship_by_date\" t-options=\"{'widget': 'datetime'}\"/> and has not left yet. Please ship it as soon as possible: late shipments count against your performance.</p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/orders/{{ object.id }}\">Open the order</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>الطلب <strong t-out=\"object.name\"/> كان يجب شحنه قبل <t t-out=\"object.ship_by_date\" t-options=\"{'widget': 'datetime'}\"/> ولم يغادر بعد. يرجى شحنه في أقرب وقت ممكن: تؤثر الشحنات المتأخرة سلبًا على أدائك.</p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/orders/{{ object.id }}\">افتح الطلب</a></p>\n"
+"</div>\n"
+"            "
+
+#. module: leaders_marketplace
 #: model:mail.template,body_html:leaders_marketplace.mail_template_customer_order_delivered
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
@@ -341,6 +401,21 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "<p>تم رفع <strong t-out=\"dict(object._fields['level']._description_selection(object.env)).get(object.level)\"/> عن متجرك.</p><p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor\">افتح في بوابة البائع</a></p>\n"
+"</div>\n"
+"            "
+
+#. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_order_cancelled_by_customer
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>The customer cancelled order <strong t-out=\"object.name\"/>. <strong>Do not ship it.</strong></p><p t-if=\"object.cancel_reason\">Reason: <t t-out=\"object.cancel_reason\"/></p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/orders/{{ object.id }}\">Open the order</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>ألغى العميل الطلب <strong t-out=\"object.name\"/>. <strong>لا تشحنه.</strong></p><p t-if=\"object.cancel_reason\">السبب: <t t-out=\"object.cancel_reason\"/></p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/orders/{{ object.id }}\">افتح الطلب</a></p>\n"
 "</div>\n"
 "            "
 
@@ -412,6 +487,21 @@ msgstr ""
 "            "
 
 #. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_customer_order_cancelled_by_customer
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>We cancelled order <strong t-out=\"object.name\"/> as you asked.</p><p t-if=\"object.cancel_reason\">Reason: <t t-out=\"object.cancel_reason\"/></p>\n"
+"<p t-if=\"object.payment_method != 'cod'\">If you already paid online, a refund of <t t-out=\"object.amount_total\" t-options=\"{'widget': 'monetary', 'display_currency': object.currency_id}\"/> is being processed.</p><p t-else=\"\">You had chosen Cash on Delivery, so nothing was charged.</p><p><a t-attf-href=\"{{ object.get_base_url() }}/my/marketplace/orders/{{ object.id }}\">See your order</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>لقد ألغينا الطلب <strong t-out=\"object.name\"/> بناءً على طلبك.</p><p t-if=\"object.cancel_reason\">السبب: <t t-out=\"object.cancel_reason\"/></p>\n"
+"<p t-if=\"object.payment_method != 'cod'\">إذا كنت قد دفعت عبر الإنترنت، فإن استرداد مبلغ <t t-out=\"object.amount_total\" t-options=\"{'widget': 'monetary', 'display_currency': object.currency_id}\"/> قيد المعالجة.</p><p t-else=\"\">لقد اخترت الدفع عند الاستلام، لذلك لم يتم خصم أي مبلغ.</p><p><a t-attf-href=\"{{ object.get_base_url() }}/my/marketplace/orders/{{ object.id }}\">عرض طلبك</a></p>\n"
+"</div>\n"
+"            "
+
+#. module: leaders_marketplace
 #: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_order_confirmed
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
@@ -474,6 +564,36 @@ msgstr ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "<p>تم إلغاء طلبك <strong t-out=\"object.name\"/>.</p><p t-if=\"object.cancel_reason\">السبب: <t t-out=\"object.cancel_reason\"/></p>\n"
 "<p t-if=\"object.payment_method != 'cod'\">إذا كنت قد دفعت إلكترونياً، فيجري تجهيز استرداد بقيمة <t t-out=\"object.amount_total\" t-options=\"{'widget': 'monetary', 'display_currency': object.currency_id}\"/>.</p><p><a t-attf-href=\"{{ object.get_base_url() }}/my/marketplace/orders/{{ object.id }}\">تابع طلبك</a></p>\n"
+"</div>\n"
+"            "
+
+#. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_bank_change_approved
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>Your payout account change <strong t-out=\"object.name\"/> was approved. Future payouts go to <t t-out=\"object.bank_name\"/>, <t t-out=\"object.masked_account_number\"/>.</p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/profile\">Open your profile</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>طلب تغيير حساب صرف المستحقات <strong t-out=\"object.name\"/> تم اعتماده. ستُدفع المستحقات المستقبلية إلى <t t-out=\"object.bank_name\"/>, <t t-out=\"object.masked_account_number\"/>.</p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/profile\">افتح ملفك الشخصي</a></p>\n"
+"</div>\n"
+"            "
+
+#. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_bank_change_rejected
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>Your payout account change <strong t-out=\"object.name\"/> was not accepted. Your current payout account stays as it was.</p><p t-if=\"object.reject_reason\">Reason: <t t-out=\"object.reject_reason\"/></p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/profile\">Open your profile</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>طلب تغيير حساب صرف المستحقات <strong t-out=\"object.name\"/> لم يتم قبوله. يبقى حساب صرف المستحقات الحالي كما هو.</p><p t-if=\"object.reject_reason\">السبب: <t t-out=\"object.reject_reason\"/></p>\n"
+"<p><a t-attf-href=\"{{ object.get_base_url() }}/my/vendor/profile\">افتح ملفك الشخصي</a></p>\n"
 "</div>\n"
 "            "
 
@@ -624,6 +744,22 @@ msgid "<i class=\"fa fa-check\"/> Mark as Delivered"
 msgstr "<i class=\"fa fa-check\"/> وضع علامة تم التسليم"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "<i class=\"fa fa-check-circle\"/> Phone number verified."
+msgstr "<i class=\"fa fa-check-circle\"/> تم التحقق من رقم الهاتف."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
+msgid "<i class=\"fa fa-clock-o\"/> Late"
+msgstr "<i class=\"fa fa-clock-o\"/> متأخر"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "<i class=\"fa fa-clock-o\"/> Your refund is being processed."
+msgstr "<i class=\"fa fa-clock-o\"/> جارٍ معالجة الاسترداد الخاص بك."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
 msgid "<i class=\"fa fa-comment\"/> Details"
 msgstr "<i class=\"fa fa-comment\"/> التفاصيل"
@@ -669,6 +805,11 @@ msgstr "<i class=\"fa fa-gavel\"/> قرارك"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "<i class=\"fa fa-hourglass-half\"/> Delivery reported"
 msgstr "<i class=\"fa fa-hourglass-half\"/> تم الإبلاغ عن التسليم"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_nav
+msgid "<i class=\"fa fa-id-card-o\"/> Profile"
+msgstr "<i class=\"fa fa-id-card-o\"/> الملف الشخصي"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
@@ -782,6 +923,16 @@ msgstr "<i class=\"fa fa-times\"/> إلغاء الطلب"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "<i class=\"fa fa-times\"/> Cancel order"
+msgstr "<i class=\"fa fa-times\"/> إلغاء الطلب"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "<i class=\"fa fa-times\"/> Cancel this seller's part"
+msgstr "<i class=\"fa fa-times\"/> إلغاء جزء هذا البائع"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "<i class=\"fa fa-times\"/> I did not receive it"
 msgstr "<i class=\"fa fa-times\"/> لم أستلمه"
 
@@ -789,6 +940,15 @@ msgstr "<i class=\"fa fa-times\"/> لم أستلمه"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
 msgid "<i class=\"fa fa-times\"/> Reject Return"
 msgstr "<i class=\"fa fa-times\"/> رفض المرتجع"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid ""
+"<i class=\"fa fa-truck\"/> Part of this order has already shipped and cannot"
+" be cancelled. Request a return after delivery."
+msgstr ""
+"<i class=\"fa fa-truck\"/> تم شحن جزء من هذا الطلب بالفعل ولا يمكن إلغاؤه. "
+"اطلب مرتجعًا بعد التسليم."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
@@ -799,6 +959,11 @@ msgstr "<i class=\"fa fa-truck\"/> شحن"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "<i class=\"fa fa-truck\"/> Shipments"
 msgstr "<i class=\"fa fa-truck\"/> الشحنات"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "<i class=\"fa fa-undo\"/> Customer refused"
+msgstr "<i class=\"fa fa-undo\"/> رفض العميل الاستلام"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
@@ -822,6 +987,11 @@ msgid "<option value=\"\">-</option>"
 msgstr "<option value=\"\">-</option>"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "<option value=\"\">Choose a reason</option>"
+msgstr "<option value=\"\">اختر سببًا</option>"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "<option value=\"\">Select</option>"
 msgstr "<option value=\"\">اختر</option>"
@@ -838,12 +1008,8 @@ msgstr "<option value=\"\">اختر...</option>"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
-msgid ""
-"<select class=\"form-select\" name=\"fulfillment_type\"><option "
-"value=\"fbm\">FBM</option><option value=\"fbl\">FBL</option></select>"
-msgstr ""
-"<select class=\"form-select\" name=\"fulfillment_type\"><option "
-"value=\"fbm\">FBM</option><option value=\"fbl\">FBL</option></select>"
+msgid "<option value=\"fbm\">FBM</option>"
+msgstr "<option value=\"fbm\">FBM</option>"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
@@ -903,6 +1069,15 @@ msgstr "<span class=\"form-check-label\">أوافق على اتفاقية الب
 msgid ""
 "<span class=\"form-check-label\">I accept the terms and conditions *</span>"
 msgstr "<span class=\"form-check-label\">أوافق على الشروط والأحكام *</span>"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid ""
+"<span class=\"form-check-label\">I have read and accept the vendor terms and"
+" conditions</span>"
+msgstr ""
+"<span class=\"form-check-label\">لقد قرأت الشروط والأحكام الخاصة بالبائع "
+"وأوافق عليها</span>"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_my_home_marketplace
@@ -1232,14 +1407,55 @@ msgstr "<strong>ردك:</strong>"
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "A bank proof (statement or letter from the bank) is required."
+msgstr "مطلوب إثبات بنكي (كشف حساب أو خطاب من البنك)."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "A bank proof is required to change the payout account."
+msgstr "مطلوب إثبات بنكي لتغيير حساب صرف المستحقات."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "A name and a valid email address are required."
 msgstr "الاسم وعنوان بريد إلكتروني صالح مطلوبان."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "A payout account change is already waiting for review for this vendor."
+msgstr "يوجد طلب تغيير لحساب صرف المستحقات قيد المراجعة لهذا البائع."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "A payout account change is already waiting for review."
+msgstr "يوجد طلب تغيير لحساب صرف المستحقات قيد المراجعة بالفعل."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "A platform delivery price cannot belong to a vendor."
+msgstr "لا يمكن أن يكون سعر توصيل المنصة تابعًا لبائع."
 
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "A settlement already exists for an overlapping period."
 msgstr "توجد تسوية بالفعل لفترة متداخلة."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"A settlement cannot be marked paid while its vendor has a payout account "
+"change waiting for review. Registering money received from a vendor is never"
+" blocked."
+msgstr ""
+"لا يمكن وضع علامة مدفوعة على تسوية بينما لدى بائعها طلب تغيير لحساب صرف "
+"المستحقات قيد المراجعة. أما تسجيل الأموال المستلمة من البائع فلا يُحظر "
+"أبدًا."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -1263,6 +1479,26 @@ msgstr ""
 "المستوى ليتم خصم نسبة مستوى البائع من كل تسوية بدلاً من ذلك."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "A verification code was sent. It is valid for 5 minutes."
+msgstr "تم إرسال رمز التحقق. وهو صالح لمدة 5 دقائق."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "Accept terms"
+msgstr "قبول الشروط"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__accepted
+msgid "Accepted online"
+msgstr "تم القبول عبر الإنترنت"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "Accepted online (checkbox)"
+msgstr "تم القبول عبر الإنترنت (مربع اختيار)"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__access_warning
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__access_warning
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__access_warning
@@ -1271,8 +1507,14 @@ msgstr "تحذير الوصول"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_my_home_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Account"
 msgstr "الحساب"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__account_holder
+msgid "Account Holder"
+msgstr "صاحب الحساب"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -1285,13 +1527,24 @@ msgstr "اسم صاحب الحساب"
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__bank_account_number
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__account_number
 msgid "Account Number / IBAN"
 msgstr "رقم الحساب / IBAN"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Account holder"
+msgstr "صاحب الحساب"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
 msgid "Account holder *"
 msgstr "صاحب الحساب *"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Account number / IBAN"
+msgstr "رقم الحساب / IBAN"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
@@ -1353,6 +1606,7 @@ msgstr "الإنجازات"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_needaction
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_needaction
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_needaction
@@ -1369,6 +1623,7 @@ msgstr "الإجراءات"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__active
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__active
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__active
@@ -1459,6 +1714,11 @@ msgstr "أضف ملاحظة توضح سبب رفض %s."
 #: code:addons/leaders_marketplace/models/fulfillment.py:0
 msgid "Add at least one product before receiving this inbound."
 msgstr "أضف منتجاً واحداً على الأقل قبل استلام هذه الشحنة الواردة."
+
+#. module: leaders_marketplace
+#: model_terms:ir.actions.act_window,help:leaders_marketplace.action_vendor_delivery_zone
+msgid "Add the platform delivery price per governorate"
+msgstr "أضف سعر توصيل المنصة لكل محافظة"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.product_page_marketplace_sellers
@@ -1609,6 +1869,11 @@ msgid "Applied Date"
 msgstr "تاريخ التطبيق"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__applies_to
+msgid "Applies To"
+msgstr "ينطبق على"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_form
 msgid "Apply"
 msgstr "تطبيق"
@@ -1630,6 +1895,7 @@ msgstr "قدّم طلباً للبيع في السوق الخاص بنا"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
 msgid "Approve"
 msgstr "اعتماد"
 
@@ -1655,6 +1921,11 @@ msgid "Approve the vendor before creating portal access."
 msgstr "اعتمد البائع قبل إنشاء صلاحية الوصول إلى البوابة."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
+msgid "Approve this change? Settlements will be paid to the new account."
+msgstr "هل تريد اعتماد هذا التغيير؟ سيتم دفع التسويات إلى الحساب الجديد."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid ""
 "Approve this vendor? The vendor company, its warehouse and the owner's "
@@ -1667,8 +1938,10 @@ msgstr ""
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__state__approved
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_settlement__state__approved
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__state__approved
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_bank_change__state__approved
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__state__approved
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_state__approved
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
 msgid "Approved"
 msgstr "معتمد"
 
@@ -1678,9 +1951,26 @@ msgid "Approved By"
 msgstr "اعتمده"
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "Approved: settlements of %(vendor)s are now paid to %(account)s."
+msgstr "تم الاعتماد: يتم الآن دفع تسويات %(vendor)s إلى %(account)s."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cancel_reason_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cancel_reason_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_terms_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_terms_search
 msgid "Archived"
 msgstr "مؤرشف"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Ask for a verification code first."
+msgstr "اطلب رمز التحقق أولًا."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
@@ -1705,6 +1995,7 @@ msgstr "مستند واحد على الأقل للبائع مطلوب."
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_attachment_count
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_attachment_count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_attachment_count
@@ -1713,6 +2004,11 @@ msgstr "مستند واحد على الأقل للبائع مطلوب."
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__message_attachment_count
 msgid "Attachment Count"
 msgstr "عدد المرفقات"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__attempts
+msgid "Attempts"
+msgstr "المحاولات"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_fbm_auto_confirm_days
@@ -1726,6 +2022,7 @@ msgid "Availability Weight"
 msgstr "وزن التوافر"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__available_qty
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_line__state__available
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_wallet_transaction__state__available
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
@@ -1801,6 +2098,11 @@ msgid "Ban"
 msgstr "حظر"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Bank"
+msgstr "البنك"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid "Bank Information"
 msgstr "بيانات البنك"
@@ -1809,18 +2111,46 @@ msgstr "بيانات البنك"
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__bank_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__bank_name
 msgid "Bank Name"
 msgstr "اسم البنك"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__proof
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__document_type__bank_proof
 msgid "Bank Proof"
 msgstr "إثبات بنكي"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_partner__vendor_payout_bank_id
+#: model:ir.model.fields,help:leaders_marketplace.field_res_users__vendor_payout_bank_id
+msgid ""
+"Bank account settlements are paid to. Set when the vendor application is "
+"approved and replaced only by an approved payout account change."
+msgstr ""
+"الحساب البنكي الذي تُدفع إليه التسويات. يتم تحديده عند اعتماد طلب انضمام "
+"البائع ولا يُستبدل إلا بطلب تغيير معتمد لحساب صرف المستحقات."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Bank name"
+msgstr "اسم البنك"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
 msgid "Bank name *"
 msgstr "اسم البنك *"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Bank name, account holder and account number are required."
+msgstr "اسم البنك وصاحب الحساب ورقم الحساب مطلوبة."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Bank proof (PDF or image)"
+msgstr "إثبات بنكي (PDF أو صورة)"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_state__banned
@@ -1848,6 +2178,17 @@ msgid "Biweekly"
 msgstr "كل أسبوعين"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_cod_refusal_block_count
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Block COD After Refusals"
+msgstr "حظر الدفع عند الاستلام بعد حالات الرفض"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_block_payout_on_pending_bank_change
+msgid "Block Payouts While a Bank Change Is Pending"
+msgstr "حظر صرف المستحقات أثناء وجود تغيير بنكي قيد الانتظار"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__body
 msgid "Body"
 msgstr "المحتوى"
@@ -1856,6 +2197,11 @@ msgstr "المحتوى"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 msgid "Bonus"
 msgstr "مكافأة"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_cancel_reason__applies_to__both
+msgid "Both"
+msgstr "كلاهما"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__document_type__brand_authorization
@@ -1985,6 +2331,33 @@ msgid "COD Commission Due Entry"
 msgstr "قيد استحقاق عمولة الدفع عند الاستلام"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_cod_max_amount
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "COD Maximum Amount"
+msgstr "الحد الأقصى لمبلغ الدفع عند الاستلام"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "COD Phone Verification"
+msgstr "التحقق من الهاتف للدفع عند الاستلام"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cod_phone_verified
+msgid "COD Phone Verified"
+msgstr "تم التحقق من الهاتف للدفع عند الاستلام"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_partner__leaders_cod_refusal_count
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_users__leaders_cod_refusal_count
+msgid "COD Refusals"
+msgstr "حالات الرفض في الدفع عند الاستلام"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cod_phone
+msgid "COD Verified Phone"
+msgstr "الهاتف الذي تم التحقق منه للدفع عند الاستلام"
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "COD commission %s"
@@ -2015,6 +2388,14 @@ msgid "COD fulfilment fee %s"
 msgstr "رسوم التنفيذ للدفع عند الاستلام %s"
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "COD refusal counter reset by %(user)s (was %(old)s)."
+msgstr ""
+"تمت إعادة تعيين عداد حالات الرفض في الدفع عند الاستلام بواسطة %(user)s (كان "
+"%(old)s)."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__calc_method
 msgid "Calc Method"
 msgstr "طريقة الحساب"
@@ -2025,9 +2406,11 @@ msgid "Can return"
 msgstr "يمكن الإرجاع"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_fulfillment_inbound_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_leaders_ship_wizard_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_return_form
@@ -2035,15 +2418,48 @@ msgid "Cancel"
 msgstr "إلغاء"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancel_date
+msgid "Cancel Date"
+msgstr "تاريخ الإلغاء"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancel_note
+msgid "Cancel Note"
+msgstr "ملاحظة الإلغاء"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancel_reason
 msgid "Cancel Reason"
 msgstr "سبب الإلغاء"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid "Cancel Remaining"
+msgstr "إلغاء المتبقي"
 
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Cancel marketplace collection %s"
 msgstr "إلغاء تحصيل السوق %s"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid ""
+"Cancel the part of this shipment that was not shipped? The customer will "
+"only receive what already left."
+msgstr ""
+"هل تريد إلغاء الجزء غير المشحون من هذه الشحنة؟ لن يستلم العميل سوى ما غادر "
+"بالفعل."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid ""
+"Cancel this order as refused by the customer at the door? The goods return "
+"to the source location and no earning is created."
+msgstr ""
+"هل تريد إلغاء هذا الطلب باعتبار أن العميل رفض استلامه عند الباب؟ ستعود "
+"البضائع إلى موقع المصدر ولن يتم إنشاء أي أرباح."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
@@ -2063,9 +2479,21 @@ msgstr ""
 "هل تريد إلغاء طلب البائع هذا؟ سيتم إلغاء عمليات التسليم وعكس تحصيل الأمانة."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_order_form_customer_cancel
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_list
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 msgid "Cancellation"
 msgstr "الإلغاء"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cancel_date
+msgid "Cancellation Date"
+msgstr "تاريخ الإلغاء"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cancel_note
+msgid "Cancellation Note"
+msgstr "ملاحظة الإلغاء"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__cancellation_rate
@@ -2079,7 +2507,20 @@ msgid "Cancellation Rate Threshold (%)"
 msgstr "حد معدل الإلغاء (%)"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancel_reason_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cancel_reason_id
+msgid "Cancellation Reason"
+msgstr "سبب الإلغاء"
+
+#. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_cancel_reason
+#: model:ir.ui.menu,name:leaders_marketplace.menu_cancel_reasons
+msgid "Cancellation Reasons"
+msgstr "أسباب الإلغاء"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__refund_payment_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_refund_payment_id
 msgid "Cancellation Refund"
 msgstr "استرداد الإلغاء"
 
@@ -2118,13 +2559,46 @@ msgstr "ملغى %s"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancelled_by
+#: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order__leaders_cancelled_by_type
 msgid "Cancelled By"
 msgstr "تم الإلغاء بواسطة"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__cancelled_by_type
+msgid "Cancelled By Type"
+msgstr "نوع جهة الإلغاء"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_account_payment__leaders_cancelled_sale_id
+msgid "Cancelled Company Order"
+msgstr "طلب الشركة الملغى"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_account_payment__leaders_cancelled_order_id
 msgid "Cancelled Marketplace Order"
 msgstr "طلب السوق الملغى"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
+msgid "Cancelled by the customer"
+msgstr "ألغاه العميل"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Cancelled order %s"
+msgstr "طلب ملغى %s"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Cancelled settlement %s"
+msgstr "تسوية ملغاة %s"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "Cancels every seller's part of this purchase."
+msgstr "يلغي جزء كل بائع من هذه العملية الشرائية."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__carrier_id
@@ -2158,6 +2632,7 @@ msgstr "إيصال نقدية"
 
 #. module: leaders_marketplace
 #: model:ir.actions.act_window,name:leaders_marketplace.action_cod_vendor_order
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__is_cod
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__payment_method__cod
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__sale_order__leaders_payment_method__cod
 #: model:ir.ui.menu,name:leaders_marketplace.menu_cod_orders
@@ -2166,8 +2641,57 @@ msgid "Cash on Delivery"
 msgstr "الدفع عند الاستلام"
 
 #. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_cod_otp
+msgid "Cash on Delivery Phone Verification Code"
+msgstr "رمز التحقق من الهاتف للدفع عند الاستلام"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Cash on Delivery is hidden above this order total. 0 means no limit."
+msgstr ""
+"يُخفى الدفع عند الاستلام عند تجاوز إجمالي الطلب هذا الحد. القيمة 0 تعني بلا "
+"حد."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_cod_max_amount
+msgid ""
+"Cash on Delivery is hidden and refused for orders above this total (company "
+"currency). 0 means no limit."
+msgstr ""
+"يُخفى الدفع عند الاستلام ويُرفض للطلبات التي يتجاوز إجماليها هذا الحد (بعملة"
+" الشركة). القيمة 0 تعني بلا حد."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_cod_refusal_block_count
+msgid ""
+"Cash on Delivery is hidden for a customer who refused this many COD parcels "
+"at the door. 0 turns the block off. Managers can reset the counter on the "
+"customer."
+msgstr ""
+"يُخفى الدفع عند الاستلام عن العميل الذي رفض هذا العدد من طرود الدفع عند "
+"الاستلام عند الباب. القيمة 0 توقف الحظر. يمكن للمديرين إعادة تعيين العداد "
+"لدى العميل."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"Cash on Delivery is not available for orders above %(limit)s. Please pay "
+"online."
+msgstr ""
+"الدفع عند الاستلام غير متاح للطلبات التي تتجاوز %(limit)s. يرجى الدفع عبر "
+"الإنترنت."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Cash on Delivery is not available for your account. Please pay online."
+msgstr "الدفع عند الاستلام غير متاح لحسابك. يرجى الدفع عبر الإنترنت."
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/checkout.py:0
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
 msgid "Cash on Delivery is not available."
 msgstr "الدفع عند الاستلام غير متاح."
 
@@ -2183,6 +2707,16 @@ msgid "Cash on Delivery: collection deferred until delivery."
 msgstr "الدفع عند الاستلام: يؤجل التحصيل حتى التسليم."
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_partner__leaders_cod_refusal_count
+#: model:ir.model.fields,help:leaders_marketplace.field_res_users__leaders_cod_refusal_count
+msgid ""
+"Cash-on-delivery parcels this customer refused at the door. Customer "
+"cancellations before shipping do not count."
+msgstr ""
+"طرود الدفع عند الاستلام التي رفضها هذا العميل عند الباب. لا تُحتسب إلغاءات "
+"العميل قبل الشحن."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_catalog_offers_enabled
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Catalog Offers, Storefronts and Ratings"
@@ -2192,6 +2726,11 @@ msgstr "عروض الكتالوج والمتاجر والتقييمات"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__category_id
 msgid "Category"
 msgstr "الفئة"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Change payout account"
+msgstr "تغيير حساب صرف المستحقات"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_config_settings__marketplace_no_plan_commission_mode__none
@@ -2261,6 +2800,11 @@ msgstr "تاريخ تأكيد نقدية الدفع عند الاستلام"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__code
 msgid "Code"
 msgstr "الرمز"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__code_hash
+msgid "Code Hash"
+msgstr "تجزئة الرمز"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
@@ -2480,6 +3024,12 @@ msgid "Company"
 msgstr "الشركة"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_account_payment__leaders_cancelled_sale_id
+msgid ""
+"Company sales order this payment refunds after the customer cancelled it."
+msgstr "طلب مبيعات الشركة الذي تستردّه هذه الدفعة بعد أن ألغاه العميل."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__state__completed
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
 msgid "Completed"
@@ -2550,8 +3100,14 @@ msgstr "المبلغ المستهلك"
 
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_res_partner
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Contact"
 msgstr "جهة الاتصال"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__contract_ids
+msgid "Contract"
+msgstr "العقد"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dispute_detail
@@ -2584,6 +3140,8 @@ msgstr "يتم الإنشاء تلقائيًا عند تقديم طلب الان
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__create_uid
@@ -2599,7 +3157,10 @@ msgstr "يتم الإنشاء تلقائيًا عند تقديم طلب الان
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__create_uid
@@ -2621,6 +3182,8 @@ msgstr "أنشأه"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__create_date
@@ -2636,7 +3199,10 @@ msgstr "أنشأه"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__create_date
@@ -2705,10 +3271,22 @@ msgstr "المستوى الحالي:"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__partner_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__partner_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__partner_id
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__cancelled_by_type__customer
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__sale_order__leaders_cancelled_by_type__customer
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_returns
 msgid "Customer"
 msgstr "العميل"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_cancel_window_hours
+msgid "Customer Cancellation Window (hours)"
+msgstr "مهلة إلغاء العميل (بالساعات)"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Customer Order Cancellation"
+msgstr "إلغاء الطلب من قبل العميل"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__access_url
@@ -2721,6 +3299,11 @@ msgstr "رابط بوابة العميل"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__refund_payment_id
 msgid "Customer Refund Payment"
 msgstr "دفعة استرداد العميل"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_cancel_reason__applies_to__customer
+msgid "Customer cancellations"
+msgstr "إلغاءات العملاء"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_config_settings__marketplace_fbm_delivery_mode__customer_confirm
@@ -2736,6 +3319,7 @@ msgstr "تم تجهيز دفعة استرداد العميل %s؛ قم بترح�
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
 msgid ""
 "Customer refund payment of %(amount)s prepared for the cancelled order; post"
 " it once the money is sent."
@@ -2744,9 +3328,19 @@ msgstr ""
 "إرسال المبلغ."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid "Customer refused"
+msgstr "رفض العميل الاستلام"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "Customer:"
 msgstr "العميل:"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_customer_order_cancelled_by_customer
+msgid "Customer: cancellation confirmed"
+msgstr "العميل: تأكيد الإلغاء"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_customer_order_cancelled
@@ -2779,6 +3373,26 @@ msgid "Customer: return rejected"
 msgstr "العميل: تم رفض المرتجع"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_customer_can_cancel_orders
+msgid "Customers Can Cancel Orders"
+msgstr "يمكن للعملاء إلغاء الطلبات"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Customers cannot cancel orders on this marketplace."
+msgstr "لا يمكن للعملاء إلغاء الطلبات في هذا السوق."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Customers confirm a 6-digit code sent to their phone before a Cash on "
+"Delivery order is accepted."
+msgstr ""
+"يؤكد العملاء رمزًا من 6 أرقام يُرسل إلى هواتفهم قبل قبول طلب الدفع عند "
+"الاستلام."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_tier__payout_frequency__daily
 msgid "Daily"
 msgstr "يوميًا"
@@ -2787,6 +3401,7 @@ msgstr "يوميًا"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__date
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Date"
 msgstr "التاريخ"
 
@@ -2828,6 +3443,35 @@ msgid "Date:"
 msgstr "التاريخ:"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_tier__ship_sla_days
+msgid ""
+"Days a vendor of this tier has to ship a confirmed order. 0 = use the "
+"marketplace setting (Settings > Marketplace > Ship Within)."
+msgstr ""
+"عدد الأيام التي يملكها بائع هذا المستوى لشحن طلب مؤكد. القيمة 0 = استخدام "
+"إعداد السوق (الإعدادات > السوق > الشحن خلال)."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_ship_sla_days
+msgid ""
+"Days after a vendor order is confirmed by which it must ship. A vendor tier "
+"can override it (tier value 0 = use this one)."
+msgstr ""
+"عدد الأيام بعد تأكيد طلب البائع التي يجب أن يُشحن خلالها. يمكن لمستوى البائع"
+" تجاوزها (القيمة 0 في المستوى = استخدام هذه القيمة)."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Days after confirmation by which a vendor must ship. Orders past it are "
+"flagged Late, reviewers get an activity and the vendor an email "
+"(notification switch). A vendor tier can override the value."
+msgstr ""
+"عدد الأيام بعد التأكيد التي يجب على البائع الشحن خلالها. تُوسم الطلبات "
+"المتجاوزة لها بأنها متأخرة، ويحصل المراجعون على نشاط ويحصل البائع على بريد "
+"إلكتروني (مفتاح الإشعارات). يمكن لمستوى البائع تجاوز هذه القيمة."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_tier__escrow_release_days
 msgid "Days after delivery before funds are released."
 msgstr "عدد الأيام بعد التسليم قبل تحرير الأموال."
@@ -2858,6 +3502,15 @@ msgstr "تم إلغاء التفعيل"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__deactivated_user_ids
 msgid "Deactivated Users"
 msgstr "المستخدمون المعطلون"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__ship_by_date
+msgid ""
+"Deadline to ship this order: confirmation time plus the ship-by SLA (the "
+"vendor tier's, else the marketplace setting)."
+msgstr ""
+"الموعد النهائي لشحن هذا الطلب: وقت التأكيد بالإضافة إلى مهلة الشحن (الخاصة "
+"بمستوى البائع، وإلا فإعداد السوق)."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -2980,16 +3633,41 @@ msgid "Delivery Zones"
 msgstr "مناطق التسليم"
 
 #. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_delivery_zone
+msgid "Delivery Zones (Platform and Vendors)"
+msgstr "مناطق التوصيل (المنصة والبائعون)"
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Delivery collected on %s"
 msgstr "تم تحصيل التسليم في %s"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_delivery_zone__is_platform
+msgid ""
+"Delivery price of the marketplace itself, charged once for the company's "
+"products and for goods shipped from the marketplace warehouse (FBL)."
+msgstr ""
+"سعر توصيل السوق نفسه، يُحتسب مرة واحدة لمنتجات الشركة وللبضائع المشحونة من "
+"مستودع السوق (FBL)."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "Delivery prices and thresholds cannot be negative."
+msgstr "لا يمكن أن تكون أسعار التوصيل وحدودها سالبة."
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "Delivery proof"
 msgstr "إثبات التسليم"
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_delivery_too_long
+msgid "Delivery takes too long"
+msgstr "التوصيل يستغرق وقتًا طويلًا"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
@@ -3010,6 +3688,8 @@ msgstr "الخصم"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__display_name
@@ -3025,7 +3705,10 @@ msgstr "الخصم"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__display_name
@@ -3143,9 +3826,22 @@ msgstr "تم"
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_penalty__state__draft
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__product_template__marketplace_state__draft
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_state__draft
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_search
 msgid "Draft"
 msgstr "مسودة"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Draft credit note prepared for the cancelled order."
+msgstr "تم إعداد إشعار دائن مسودة للطلب الملغى."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Draft credit note prepared: post it before the refund payment."
+msgstr "تم إعداد إشعار دائن مسودة: قم بترحيله قبل دفعة الاسترداد."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__refund_payment_id
@@ -3155,6 +3851,15 @@ msgid ""
 msgstr ""
 "مسودة استرداد تم تجهيزها عند إلغاء طلب مدفوع. تقوم المالية بترحيلها بعد "
 "إعادة المبلغ فعليًا."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_sale_order__leaders_refund_payment_id
+msgid ""
+"Draft refund prepared when the company part of a checkout paid online was "
+"cancelled by the customer. Finance posts it once the money is sent."
+msgstr ""
+"تم إعداد استرداد مسودة عند إلغاء العميل لجزء الشركة من عملية شراء مدفوعة عبر"
+" الإنترنت. تقوم المالية بترحيله بعد إرسال الأموال."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_wallet_transaction__type__earning
@@ -3205,6 +3910,12 @@ msgstr "اسم الموظف"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
 msgid "End"
 msgstr "النهاية"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Enter a quantity to ship for at least one product."
+msgstr "أدخل كمية للشحن لمنتج واحد على الأقل."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_wallet_transaction__move_id
@@ -3327,6 +4038,11 @@ msgid "Expired documents"
 msgstr "المستندات المنتهية الصلاحية"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__expires_at
+msgid "Expires At"
+msgstr "تاريخ الانتهاء"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__expiry_date
 msgid "Expiry Date"
 msgstr "تاريخ الانتهاء"
@@ -3340,6 +4056,7 @@ msgstr "خصم إضافي"
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__fulfillment_type__fbl
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_policy__forced_fulfillment_type__fbl
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__fulfillment_type__fbl
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid "FBL"
 msgstr "FBL"
 
@@ -3369,6 +4086,16 @@ msgstr "وارد بائع FBL"
 #: model:ir.model,name:leaders_marketplace.model_leaders_fulfillment_inbound_line
 msgid "FBL Vendor Inbound Line"
 msgstr "بند وارد بائع FBL"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_config_settings.py:0
+msgid ""
+"FBL cannot be turned off while it is in use:\n"
+"%s"
+msgstr ""
+"لا يمكن إيقاف FBL أثناء استخدامه:\n"
+"%s"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -3414,6 +4141,12 @@ msgstr ""
 "المباشرة."
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_config_settings.py:0
+msgid "FBL stock of %(vendor)s: %(qty)s units"
+msgstr "مخزون FBL للبائع %(vendor)s: %(qty)s وحدة"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__fulfillment_type__fbm
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_policy__forced_fulfillment_type__fbm
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__fulfillment_type__fbm
@@ -3454,6 +4187,12 @@ msgid ""
 msgstr ""
 "النسبة الاحتياطية المستخدمة عندما لا يكون للبائع معدل مستوى. تُطبق فقط عند "
 "احتساب معدل المستوى على البائعين بدون خطة."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__fbl_enabled
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__fbl_enabled
+msgid "Fbl Enabled"
+msgstr "FBL مفعّل"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__fbl_shipping_bonus
@@ -3529,12 +4268,19 @@ msgid "Flag High Cancellation Rates"
 msgstr "تمييز معدلات الإلغاء المرتفعة"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_late_shipment_auto_warning
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Flag High Late-Shipment Rates"
+msgstr "تنبيه عند ارتفاع معدلات الشحن المتأخر"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_follower_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_follower_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_follower_ids
@@ -3551,6 +4297,7 @@ msgstr "المتابعون"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_partner_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_partner_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_partner_ids
@@ -3584,6 +4331,25 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_policy__forced_fulfillment_type
 msgid "Forced Fulfillment Type"
 msgstr "نوع التنفيذ الإجباري"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.cart_total_delivery_breakdown
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.confirmation_delivery_breakdown
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_saleorder_delivery_breakdown
+msgid "Free"
+msgstr "مجاني"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__free_shipping_threshold
+msgid "Free Shipping Threshold"
+msgstr "حد الشحن المجاني"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
+msgid "Free delivery from"
+msgstr "توصيل مجاني ابتداءً من"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_penalty__level__freeze
@@ -3624,6 +4390,14 @@ msgstr "تم التنفيذ"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.product_page_marketplace_sellers
 msgid "Fulfilled by Leaders"
 msgstr "شحن بواسطة ليدرز"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_partner.py:0
+msgid ""
+"Fulfilled by Leaders (FBL) is not available: the marketplace has no "
+"warehouse of its own."
+msgstr "الشحن بواسطة ليدرز (FBL) غير متاح: لا يملك السوق مستودعًا خاصًا به."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.product_page_marketplace_sellers
@@ -3719,6 +4493,11 @@ msgid "Fulfilment fee %s"
 msgstr "رسوم التنفيذ %s"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "Go to dashboard"
+msgstr "الانتقال إلى لوحة التحكم"
+
+#. module: leaders_marketplace
 #: model:leaders.vendor.tier,name:leaders_marketplace.vendor_tier_gold
 msgid "Gold"
 msgstr "ذهبي"
@@ -3744,9 +4523,17 @@ msgid "Gross Amount"
 msgstr "المبلغ الإجمالي"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__group_id
+msgid "Group"
+msgstr "المجموعة"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cod_vendor_order_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
@@ -3762,6 +4549,7 @@ msgstr "تجميع حسب"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__has_message
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__has_message
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__has_message
@@ -3788,6 +4576,15 @@ msgstr ""
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid ""
+"Hide Cash on Delivery for customers who refused this many parcels at the "
+"door. 0 turns it off."
+msgstr ""
+"إخفاء الدفع عند الاستلام عن العملاء الذين رفضوا هذا العدد من الطرود عند "
+"الباب. القيمة 0 توقف ذلك."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
 "Hide vendor-only checkouts from the customer's Orders list, show the real "
 "total on the confirmation page and send one Marketplace order confirmation "
 "email."
@@ -3799,6 +4596,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
 msgid "High Cancellation"
 msgstr "إلغاء مرتفع"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
+msgid "High Late Shipments"
+msgstr "الشحن المتأخر المرتفع"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_buybox_config__price_weight
@@ -3820,7 +4622,33 @@ msgstr ""
 "الإيقاف، يُسجَّل الاحتياطي فقط."
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_cancel_window_hours
+msgid ""
+"Hours after ordering during which a customer can cancel. 0 = no limit (only "
+"the shipping status matters)."
+msgstr ""
+"عدد الساعات بعد الطلب التي يمكن للعميل خلالها الإلغاء. القيمة 0 = بلا حد "
+"(تُراعى حالة الشحن فقط)."
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_changed_mind
+msgid "I changed my mind"
+msgstr "غيّرت رأيي"
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_found_cheaper
+msgid "I found a better price elsewhere"
+msgstr "وجدت سعرًا أفضل في مكان آخر"
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_ordered_by_mistake
+msgid "I ordered by mistake"
+msgstr "طلبت بالخطأ"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__id
@@ -3836,7 +4664,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__id
@@ -3860,6 +4691,11 @@ msgstr "ID"
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__document_type__id_passport
 msgid "ID / Passport"
 msgstr "بطاقة الهوية / جواز السفر"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "IP address"
+msgstr "عنوان IP"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__activity_exception_icon
@@ -3886,6 +4722,7 @@ msgstr "أيقونة للإشارة إلى نشاط استثنائي."
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_needaction
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__message_needaction
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_invoice__message_needaction
@@ -3908,6 +4745,8 @@ msgstr "إذا تم تحديده، فهناك رسائل جديدة تتطلب �
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__message_has_sms_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_has_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_has_sms_error
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_has_error
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_has_sms_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_has_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_has_sms_error
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__message_has_error
@@ -3954,6 +4793,13 @@ msgstr "فرد"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid "Internal notes about this review."
 msgstr "ملاحظات داخلية حول هذه المراجعة."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Invalid shipment quantity."
+msgstr "كمية الشحن غير صالحة."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
@@ -4015,6 +4861,7 @@ msgstr "هو توصيل"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_is_follower
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_is_follower
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_is_follower
@@ -4129,6 +4976,8 @@ msgstr ""
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__write_uid
@@ -4144,7 +4993,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__write_uid
@@ -4166,6 +5018,8 @@ msgstr "آخر تحديث بواسطة"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_achievement__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__write_date
@@ -4181,7 +5035,10 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__write_date
@@ -4200,6 +5057,45 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__write_date
 msgid "Last Updated on"
 msgstr "آخر تحديث في"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__is_late
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
+msgid "Late"
+msgstr "متأخر"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__late_notified
+msgid "Late Notified"
+msgstr "تم إشعار التأخر"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__late_shipment_rate
+msgid "Late Shipment Rate"
+msgstr "معدل الشحن المتأخر"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_list
+msgid "Late Shipments"
+msgstr "الشحنات المتأخرة"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/performance.py:0
+msgid ""
+"Late shipment rate of %(rate).2f%% in %(period)s (threshold %(limit).2f%%)."
+msgstr "معدل الشحن المتأخر %(rate).2f%% خلال %(period)s (الحد %(limit).2f%%)."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
+msgid "Late shipments"
+msgstr "الشحنات المتأخرة"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_late_shipment_rate_threshold
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Late-Shipment Rate Threshold (%)"
+msgstr "حد معدل الشحن المتأخر (%)"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_stock_picking__leaders_fulfillment_group_id
@@ -4221,6 +5117,12 @@ msgstr "مرتجع ليدرز"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_stock_move__leaders_vendor_line_id
 msgid "Leaders Vendor Line"
 msgstr "بند بائع ليدرز"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "Leaders delivery"
+msgstr "توصيل ليدرز"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_form
@@ -4280,6 +5182,15 @@ msgstr "النوع القانوني *"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Let a vendor owner cancel an unshipped order from the portal."
 msgstr "السماح لمالك البائع بإلغاء طلب لم يتم شحنه من البوابة."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Let customers cancel a whole checkout or one seller's part from their order "
+"page while nothing has shipped. 0 hours = no time limit."
+msgstr ""
+"اسمح للعملاء بإلغاء عملية شراء كاملة أو جزء بائع واحد من صفحة طلبهم ما دام "
+"لم يتم شحن شيء. 0 ساعة = بلا حد زمني."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
@@ -4386,6 +5297,8 @@ msgid "Mark as done"
 msgstr "تحديد كمنجز"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__cancelled_by_type__platform
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__sale_order__leaders_cancelled_by_type__platform
 #: model:ir.module.category,name:leaders_marketplace.module_category_marketplace
 #: model:ir.ui.menu,name:leaders_marketplace.menu_marketplace_root
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
@@ -4467,6 +5380,11 @@ msgstr "مالية السوق"
 #: model:ir.model,name:leaders_marketplace.model_leaders_fulfillment_group
 msgid "Marketplace Fulfillment Group"
 msgstr "مجموعة تنفيذ السوق"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_fbl_enabled
+msgid "Marketplace Has Its Own Warehouse (FBL)"
+msgstr "يمتلك السوق مستودعًا خاصًا (FBL)"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__commission_invoice_id
@@ -4589,6 +5507,11 @@ msgid "Marketplace Vendor Tier"
 msgstr "مستوى بائع السوق"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Marketplace Warehouse (FBL)"
+msgstr "مستودع السوق (FBL)"
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Marketplace accounts not configured; skipped the commission invoice."
@@ -4659,6 +5582,12 @@ msgstr "إيراد السوق %s"
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Marketplace fees %s"
 msgstr "رسوم السوق %s"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Marketplace invoice %(invoice)s credited by %(credit)s."
+msgstr "تم تسجيل إشعار دائن %(credit)s لفاتورة السوق %(invoice)s."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -4749,6 +5678,11 @@ msgid "Marketplace: Auto-confirm Reported FBM Deliveries"
 msgstr "السوق: التأكيد التلقائي لتسليمات FBM المبلَّغ عنها"
 
 #. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_customer_order_cancelled_by_customer
+msgid "Marketplace: Cancellation confirmed (customer)"
+msgstr "السوق: تأكيد الإلغاء (العميل)"
+
+#. module: leaders_marketplace
 #: model:ir.actions.server,name:leaders_marketplace.cron_compute_vendor_kpis_ir_actions_server
 msgid "Marketplace: Compute Vendor KPIs"
 msgstr "السوق: احتساب مؤشرات أداء البائعين"
@@ -4777,6 +5711,11 @@ msgstr "السوق: تصعيد النزاعات دون رد"
 #: model:ir.actions.server,name:leaders_marketplace.cron_escalate_overdue_returns_ir_actions_server
 msgid "Marketplace: Escalate Unanswered Returns"
 msgstr "السوق: تصعيد المرتجعات دون رد"
+
+#. module: leaders_marketplace
+#: model:ir.actions.server,name:leaders_marketplace.cron_late_shipments_ir_actions_server
+msgid "Marketplace: Late shipments"
+msgstr "السوق: الشحنات المتأخرة"
 
 #. module: leaders_marketplace
 #: model:ir.actions.server,name:leaders_marketplace.cron_lift_expired_penalties_ir_actions_server
@@ -4809,14 +5748,40 @@ msgid "Marketplace: Order cancelled"
 msgstr "السوق: تم إلغاء الطلب"
 
 #. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_order_cancelled_by_customer
+msgid "Marketplace: Order cancelled by the customer (vendor)"
+msgstr "السوق: طلب ألغاه العميل (البائع)"
+
+#. module: leaders_marketplace
 #: model:mail.template,name:leaders_marketplace.mail_template_customer_order_delivered
 msgid "Marketplace: Order delivered"
 msgstr "السوق: تم تسليم الطلب"
 
 #. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_order_late
+msgid "Marketplace: Order not shipped by its ship-by date (vendor)"
+msgstr "السوق: طلب لم يُشحن حتى موعد الشحن (البائع)"
+
+#. module: leaders_marketplace
 #: model:mail.template,name:leaders_marketplace.mail_template_customer_order_shipped
 msgid "Marketplace: Order shipped"
 msgstr "السوق: تم شحن الطلب"
+
+#. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_bank_change_approved
+msgid "Marketplace: Payout account change approved (vendor)"
+msgstr "السوق: اعتماد تغيير حساب صرف المستحقات (البائع)"
+
+#. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_bank_change_rejected
+msgid "Marketplace: Payout account change rejected (vendor)"
+msgstr "السوق: رفض تغيير حساب صرف المستحقات (البائع)"
+
+#. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_vendor_bank_change_requested
+msgid ""
+"Marketplace: Payout account change requested (security notice, always sent)"
+msgstr "السوق: طلب تغيير حساب صرف المستحقات (تنبيه أمني، يُرسل دائمًا)"
 
 #. module: leaders_marketplace
 #: model:mail.template,name:leaders_marketplace.mail_template_vendor_penalty_applied
@@ -4930,6 +5895,11 @@ msgid "Markets"
 msgstr "الأسواق"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__masked_account_number
+msgid "Masked Account Number"
+msgstr "رقم الحساب المخفي"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_line__max_amount
 msgid "Maximum Amount"
 msgstr "الحد الأقصى للمبلغ"
@@ -4944,12 +5914,18 @@ msgstr ""
 "24 ساعة. القيمة 0 تعطل الحد."
 
 #. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_ir_ui_menu
+msgid "Menu"
+msgstr "القائمة"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_has_error
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_has_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_has_error
@@ -4966,6 +5942,7 @@ msgstr "خطأ في تسليم الرسالة"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_ids
@@ -4974,6 +5951,11 @@ msgstr "خطأ في تسليم الرسالة"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__message_ids
 msgid "Messages"
 msgstr "الرسائل"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "Method"
+msgstr "الطريقة"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__achieve_type
@@ -5040,6 +6022,11 @@ msgid "Missing: Product Categories"
 msgstr "ناقص: فئات المنتجات"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "Mobile number for Cash on Delivery"
+msgstr "رقم الهاتف المحمول للدفع عند الاستلام"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
 msgid "Month"
@@ -5056,6 +6043,12 @@ msgstr "شهري"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
 msgid "Monthly cancellation rate above which a draft warning is prepared."
 msgstr "معدل الإلغاء الشهري الذي يُعدّ عند تجاوزه تحذير في صورة مسودة."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_late_shipment_rate_threshold
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Monthly late-shipment rate above which a draft warning is prepared."
+msgstr "معدل الشحن المتأخر الشهري الذي يُعدّ عند تجاوزه تحذير مسودة."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
@@ -5092,6 +6085,7 @@ msgstr "متجري"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_target__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__name
@@ -5101,6 +6095,7 @@ msgstr "متجري"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__name
@@ -5253,6 +6248,7 @@ msgstr "لم يتم العثور على أرباح متاحة لهذه الفت�
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
 msgid "No bank journal found to prepare the cancellation refund payment."
 msgstr "لم يتم العثور على يومية بنكية لتجهيز دفعة استرداد الإلغاء."
 
@@ -5355,6 +6351,11 @@ msgid "No ratings yet."
 msgstr "لا توجد تقييمات حتى الآن."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "No requests yet."
+msgstr "لا توجد طلبات بعد."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_returns
 msgid "No return requests."
 msgstr "لا توجد طلبات مرتجعات."
@@ -5405,10 +6406,30 @@ msgstr ""
 "مخزون البائع غير كافٍ لشحن %(product)s (المتاح %(done)s من %(needed)s)."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Not set"
+msgstr "غير محدد"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__is_late
+msgid ""
+"Not shipped yet and past its ship-by date. Time passing cannot trigger a "
+"stored compute, so the hourly cron refreshes it."
+msgstr ""
+"لم يُشحن بعد وتجاوز موعد الشحن. لا يمكن للوقت أن يفعّل حقلًا محسوبًا "
+"مخزّنًا، لذلك تقوم المهمة المجدولة كل ساعة بتحديثه."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__note
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 msgid "Note"
 msgstr "ملاحظة"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "Note (optional)"
+msgstr "ملاحظة (اختياري)"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_document__notes
@@ -5427,6 +6448,7 @@ msgstr "لا يوجد شيء في انتظار المراجعة."
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_needaction_counter
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_needaction_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_needaction_counter
@@ -5443,6 +6465,7 @@ msgstr "عدد الإجراءات"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_has_error_counter
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_has_error_counter
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_has_error_counter
@@ -5459,6 +6482,7 @@ msgstr "عدد الأخطاء"
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_needaction_counter
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__message_needaction_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_invoice__message_needaction_counter
@@ -5475,6 +6499,7 @@ msgstr "عدد الرسائل التي تتطلب إجراءً"
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__message_has_error_counter
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__message_has_error_counter
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_invoice__message_has_error_counter
@@ -5490,6 +6515,17 @@ msgid "OTC %"
 msgstr "OTC %"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Off when the marketplace has no warehouse of its own: vendors then ship "
+"their own goods (FBM only) and FBL is hidden and refused everywhere. Cannot "
+"be turned off while active FBL offers or FBL stock exist."
+msgstr ""
+"يكون معطّلًا عندما لا يملك السوق مستودعًا خاصًا به: يشحن البائعون حينها "
+"بضائعهم بأنفسهم (FBM فقط) ويُخفى FBL ويُرفض في كل مكان. لا يمكن إيقافه أثناء"
+" وجود عروض FBL نشطة أو مخزون FBL."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_only_presentation
 msgid ""
 "Off: a checkout made only of vendor products is shown as today. On: it is "
@@ -5502,6 +6538,17 @@ msgstr ""
 "إخفاؤه من قائمة طلبات العميل (ويوجد ضمن طلبات السوق)، وتعرض صفحة التأكيد "
 "إجمالي الدفع بدلاً من ملخص فارغ، ويتلقى العميل رسالة تأكيد طلب السوق تسرد "
 "طلبات البائعين."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_customer_can_cancel_orders
+msgid ""
+"Off: customers cannot cancel. On: a customer can cancel a whole checkout or "
+"one seller's part from the order page, with a reason, while nothing in it "
+"has shipped. Online payments get a draft refund for finance to post."
+msgstr ""
+"معطّل: لا يمكن للعملاء الإلغاء. مفعّل: يمكن للعميل إلغاء عملية شراء كاملة أو"
+" جزء بائع واحد من صفحة الطلب، مع ذكر السبب، ما دام لم يُشحن شيء منها. تحصل "
+"المدفوعات عبر الإنترنت على استرداد مسودة لترحيله من قبل المالية."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_catalog_offers_enabled
@@ -5555,6 +6602,12 @@ msgid "Offer"
 msgstr "العرض"
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_config_settings.py:0
+msgid "Offer %(offer)s of %(vendor)s"
+msgstr "العرض %(offer)s للبائع %(vendor)s"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__offer_state_snapshot
 msgid "Offer State Snapshot"
 msgstr "لقطة حالة العرض"
@@ -5587,6 +6640,30 @@ msgstr "تقييم العرض/البائع (من 0 إلى 5)، يُستخدم ف
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace_review_list
 msgid "Offers"
 msgstr "العروض"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_block_payout_on_pending_bank_change
+msgid ""
+"On (default): a settlement cannot be marked paid while its vendor has a "
+"payout account change waiting for review, so money never goes to an account "
+"that is about to be replaced. Off: payouts are not held back."
+msgstr ""
+"مفعّل (افتراضيًا): لا يمكن وضع علامة مدفوعة على تسوية بينما لدى بائعها طلب "
+"تغيير لحساب صرف المستحقات قيد المراجعة، حتى لا تذهب الأموال إلى حساب على وشك"
+" الاستبدال. معطّل: لا يتم حجب المدفوعات."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_fbl_enabled
+msgid ""
+"On (default): vendors may use Fulfilled by Leaders (FBL) from the "
+"marketplace warehouse. Off: every vendor ships their own goods (FBM only); "
+"no FBL location is created and FBL is hidden and refused everywhere. It "
+"cannot be turned off while active FBL offers or FBL stock exist."
+msgstr ""
+"مفعّل (افتراضيًا): يمكن للبائعين استخدام الشحن بواسطة ليدرز (FBL) من مستودع "
+"السوق. معطّل: يشحن كل بائع بضائعه بنفسه (FBM فقط)؛ ولا يتم إنشاء موقع FBL "
+"ويُخفى FBL ويُرفض في كل مكان. لا يمكن إيقافه أثناء وجود عروض FBL نشطة أو "
+"مخزون FBL."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_tier__escrow_release_policy__on_deliver
@@ -5638,6 +6715,12 @@ msgstr "الدفع الإلكتروني"
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Only Cash on Delivery shipments can be refused at the door."
+msgstr "يمكن رفض الاستلام عند الباب لشحنات الدفع عند الاستلام فقط."
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/settlement.py:0
 msgid ""
 "Only a draft or approved settlement can be cancelled; %(name)s is %(state)s."
@@ -5647,8 +6730,32 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Only a partially shipped group has a remaining part to cancel."
+msgstr "لا يوجد جزء متبقٍ للإلغاء إلا في المجموعة التي تم شحنها جزئيًا."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "Only a pending request can be approved."
+msgstr "لا يمكن اعتماد إلا الطلب قيد الانتظار."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "Only a pending request can be rejected."
+msgstr "لا يمكن رفض إلا الطلب قيد الانتظار."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
 msgid "Only a reported delivery can be disputed as not received."
 msgstr "لا يمكن رفع نزاع بعدم الاستلام إلا على تسليم تم الإبلاغ عنه."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Only a shipped group can be marked as refused by the customer."
+msgstr "لا يمكن وضع علامة رفض العميل الاستلام إلا على مجموعة تم شحنها."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -5691,6 +6798,13 @@ msgstr "يمكن رفع ملفات الصور فقط (PNG وJPEG وGIF وWebP)."
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Only marketplace managers can reset the COD refusal counter."
+msgstr ""
+"يمكن لمديري السوق فقط إعادة تعيين عداد حالات الرفض في الدفع عند الاستلام."
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/returns.py:0
 msgid "Only new return requests can be approved by the vendor."
 msgstr "لا يمكن للبائع الموافقة إلا على طلبات المرتجعات الجديدة."
@@ -5705,6 +6819,27 @@ msgstr "لا يمكن للبائع رفض إلا طلبات المرتجعات �
 #: model:ir.model.constraint,message:leaders_marketplace.constraint_leaders_vendor_delivery_zone_vendor_state_uniq
 msgid "Only one delivery price per governorate per vendor."
 msgstr "سعر توصيل واحد فقط لكل محافظة لكل بائع."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "Only one platform delivery price per governorate."
+msgstr "سعر توصيل واحد فقط للمنصة لكل محافظة."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_core.py:0
+msgid "Only one vendor terms version can be active at a time."
+msgstr "يمكن أن يكون إصدار واحد فقط من شروط البائع نشطًا في كل مرة."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_terms_form
+msgid ""
+"Only one version is active at a time. Activating a version deactivates the others and every vendor\n"
+"                        must accept it before using the vendor portal again. With no active version nothing is required."
+msgstr ""
+"إصدار واحد فقط نشط في كل مرة. تفعيل إصدار يعطّل الإصدارات الأخرى، ويجب على كل بائع\n"
+"                        قبوله قبل استخدام بوابة البائع مرة أخرى. وعند عدم وجود إصدار نشط لا يُطلب شيء."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -5745,14 +6880,33 @@ msgstr "يمكن للمكتب الخلفي للسوق فقط تنفيذ هذا �
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "Only the vendor owner can accept the terms."
+msgstr "مالك البائع فقط يمكنه قبول الشروط."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Only the vendor owner can access financial information."
 msgstr "يمكن لمالك البائع فقط الوصول إلى المعلومات المالية."
 
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Only the vendor owner can access the vendor profile."
+msgstr "مالك البائع فقط يمكنه الوصول إلى ملف البائع الشخصي."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Only the vendor owner can cancel orders."
 msgstr "يمكن لمالك البائع فقط إلغاء الطلبات."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "Only the vendor owner can change the payout account."
+msgstr "مالك البائع فقط يمكنه تغيير حساب صرف المستحقات."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -5808,6 +6962,12 @@ msgid "Open"
 msgstr "مفتوح"
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/res_config_settings.py:0
+msgid "Open FBL shipment %(group)s of %(vendor)s"
+msgstr "فتح شحنة FBL %(group)s للبائع %(vendor)s"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_auto_settlements
 msgid ""
 "Open a DRAFT settlement for each vendor at the end of every period of their "
@@ -5846,6 +7006,16 @@ msgid "Optional message to the customer"
 msgstr "رسالة اختيارية إلى العميل"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_delivery_zone__free_shipping_threshold
+msgid ""
+"Optional. When the untaxed amount of the goods this zone ships reaches this "
+"value, the delivery price is waived. Empty or 0 = no free shipping."
+msgstr ""
+"اختياري. عندما يبلغ المبلغ الخاضع للضريبة غير المشمول للبضائع التي تشحنها "
+"هذه المنطقة هذه القيمة، يُعفى سعر التوصيل. فارغ أو 0 = لا شحن مجاني."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__order_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__order_id
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
@@ -5857,6 +7027,17 @@ msgstr "رسالة اختيارية إلى العميل"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_returns
 msgid "Order"
 msgstr "الطلب"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Order %s was not shipped by its ship-by date"
+msgstr "لم يتم شحن الطلب %s حتى موعد الشحن"
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_cancel_reason
+msgid "Order Cancellation Reason"
+msgstr "سبب إلغاء الطلب"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_kpi__order_count
@@ -5876,14 +7057,35 @@ msgstr "مبلغ الطلب الذي يمثل اكتمال 100%."
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Order cancelled by the customer. Reason: %(reason)s"
+msgstr "ألغى العميل الطلب. السبب: %(reason)s"
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "Order cancelled by the vendor. Reason: %(reason)s"
 msgstr "تم إلغاء الطلب من قِبل البائع. السبب: %(reason)s"
 
 #. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_order_late
+msgid "Order {{ object.name }} is late: ship it now"
+msgstr "الطلب {{ object.name }} متأخر: اشحنه الآن"
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_order_cancelled_by_customer
+msgid "Order {{ object.name }} was cancelled by the customer: do not ship"
+msgstr "ألغى العميل الطلب {{ object.name }}: لا تشحنه"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_invoice_document
 msgid "Order:"
 msgstr "الطلب:"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__demanded_qty
+msgid "Ordered"
+msgstr "تم الطلب"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
@@ -5907,6 +7109,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__refund_method__original
 msgid "Original Payment"
 msgstr "الدفعة الأصلية"
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_other
+msgid "Other"
+msgstr "أخرى"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_vendor__other_plans
@@ -5967,9 +7174,20 @@ msgid "Paid"
 msgstr "مدفوع"
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Partial quantities can only be shipped for one shipment at a time."
+msgstr "لا يمكن شحن كميات جزئية إلا لشحنة واحدة في كل مرة."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__state__partially_fulfilled
 msgid "Partially Fulfilled"
 msgstr "منفَّذ جزئياً"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__state__partially_shipped
+msgid "Partially Shipped"
+msgstr "تم الشحن جزئيًا"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_search
@@ -6031,6 +7249,20 @@ msgid "Payout %s"
 msgstr "صرف مستحقات %s"
 
 #. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_bank_change
+#: model:ir.ui.menu,name:leaders_marketplace.menu_vendor_bank_changes
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Payout Account Changes"
+msgstr "تغييرات حساب صرف المستحقات"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__payout_bank_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_partner__vendor_payout_bank_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_users__vendor_payout_bank_id
+msgid "Payout Bank Account"
+msgstr "الحساب البنكي لصرف المستحقات"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__payout_frequency
 msgid "Payout Frequency"
 msgstr "تكرار صرف المستحقات"
@@ -6044,6 +7276,21 @@ msgstr "يومية صرف المستحقات"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__payment_move_id
 msgid "Payout Journal Entry"
 msgstr "قيد يومية صرف المستحقات"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Payout account"
+msgstr "حساب صرف المستحقات"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid ""
+"Payout account change requested. We sent you a security email; the "
+"marketplace will review it and payouts are held until then."
+msgstr ""
+"تم طلب تغيير حساب صرف المستحقات. أرسلنا إليك رسالة أمان بالبريد الإلكتروني؛ "
+"سيراجعه السوق وتُحجب المدفوعات إلى ذلك الحين."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__pdf_id
@@ -6089,10 +7336,12 @@ msgstr "تم رفع العقوبة بواسطة %(user)s."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__kyc_state__pending
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_bank_change__state__pending
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__verification_status__pending
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__state__pending
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_kyc_state__pending
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
 msgid "Pending"
 msgstr "قيد الانتظار"
 
@@ -6118,6 +7367,14 @@ msgstr "لكل كجم"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__percent
 msgid "Percent"
 msgstr "نسبة مئوية"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_kpi__late_shipment_rate
+msgid ""
+"Percent of the month's orders shipped after their ship-by date, or still "
+"unshipped past it."
+msgstr ""
+"نسبة طلبات الشهر التي شُحنت بعد موعد الشحن، أو التي لا تزال غير مشحونة بعده."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__rule_type__percent
@@ -6170,6 +7427,11 @@ msgstr "الفترة:"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__periodicity
 msgid "Periodicity"
 msgstr "الدورية"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__phone
+msgid "Phone"
+msgstr "الهاتف"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -6232,9 +7494,17 @@ msgstr ""
 "مستهدفة ولخطط الإنجاز بمعدل ثابت، والتي تبقى تسوية بتسوية."
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__is_platform
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__approved_by__platform
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_list
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
 msgid "Platform"
 msgstr "المنصة"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
+msgid "Platform / Vendor"
+msgstr "المنصة / البائع"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__decision_note
@@ -6266,9 +7536,29 @@ msgstr "يرجى اختيار تقييم بين 1 و5."
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Please choose a reason for cancelling."
+msgstr "يرجى اختيار سبب الإلغاء."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "Please choose the vendor of this delivery price."
+msgstr "يرجى اختيار البائع الخاص بسعر التوصيل هذا."
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/vendor_apply.py:0
 msgid "Please enter a valid business email address."
 msgstr "يرجى إدخال عنوان بريد إلكتروني تجاري صالح."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"Please enter a valid mobile number, digits only with an optional leading +."
+msgstr ""
+"يرجى إدخال رقم هاتف محمول صحيح، أرقام فقط مع علامة + اختيارية في البداية."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -6296,9 +7586,15 @@ msgstr "يرجى ذكر سبب إلغاء هذا الطلب."
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "Please provide a rejection reason."
 msgstr "يرجى تقديم سبب الرفض."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "Please read and accept the terms to continue using the vendor portal."
+msgstr "يرجى قراءة الشروط وقبولها لمواصلة استخدام بوابة البائع."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -6323,6 +7619,18 @@ msgstr "يرجى إخبارنا بما حدث من خطأ."
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Please tell us why you are returning the products."
 msgstr "يرجى إخبارنا بسبب إرجاعك المنتجات."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Please verify your phone number to pay Cash on Delivery."
+msgstr "يرجى التحقق من رقم هاتفك للدفع عند الاستلام."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Please wait a minute before asking for a new code."
+msgstr "يرجى الانتظار دقيقة قبل طلب رمز جديد."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -6399,6 +7707,15 @@ msgstr ""
 "المحدد. لا تُطبَّق تلقائياً أبداً."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Prepare a draft warning penalty when a vendor's monthly late-shipment rate "
+"passes the threshold. Never applied automatically."
+msgstr ""
+"إعداد عقوبة تحذير مسودة عندما يتجاوز معدل الشحن المتأخر الشهري للبائع الحد. "
+"لا تُطبَّق تلقائيًا أبدًا."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_only_presentation
 msgid "Present Vendor-Only Checkouts to Customers"
 msgstr "عرض الدفعات المكونة من منتجات البائعين فقط للعملاء"
@@ -6411,6 +7728,11 @@ msgstr "عرض الدفعات المكونة من منتجات البائعين 
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
 msgid "Price"
 msgstr "السعر"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
+msgid "Price / free delivery from"
+msgstr "السعر / توصيل مجاني ابتداءً من"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__price_subtotal
@@ -6465,6 +7787,7 @@ msgstr "قيد المعالجة"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_inbound_line__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__product_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__product_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__product_id
@@ -6539,6 +7862,7 @@ msgid "Product {{ object.name }} rejected"
 msgstr "تم رفض المنتج {{ object.name }}"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__line_ids
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_my_home_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_return_form
@@ -6565,6 +7889,11 @@ msgstr "منتجات للمراجعة"
 #: model_terms:ir.actions.act_window,help:leaders_marketplace.action_product_marketplace_review
 msgid "Products vendors submit from their portal land here."
 msgstr "تصل هنا المنتجات التي يقدمها البائعون من بوابتهم."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__proof_name
+msgid "Proof File Name"
+msgstr "اسم ملف الإثبات"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
@@ -6620,6 +7949,11 @@ msgstr "الكمية"
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__achieve_type__qty_sold
 msgid "Quantity Sold"
 msgstr "الكمية المباعة"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "Quantity to ship now (the rest stays in a second shipment)"
+msgstr "الكمية المراد شحنها الآن (يبقى الباقي في شحنة ثانية)"
 
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_stock_quant
@@ -6690,6 +8024,7 @@ msgstr "عدد التقييمات"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__rating_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__rating_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__rating_ids
@@ -6710,6 +8045,11 @@ msgid "Reactivate"
 msgstr "إعادة تفعيل"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms_staff_notice
+msgid "Read the terms"
+msgstr "اقرأ الشروط"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_fulfillment_group__state__ready
 msgid "Ready to Ship"
 msgstr "جاهز للشحن"
@@ -6727,8 +8067,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__reason
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__reason
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__reason
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_disputes
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "Reason"
 msgstr "السبب"
 
@@ -6823,6 +8165,7 @@ msgstr "طريقة الاسترداد"
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
 msgid "Refund cancelled %s"
 msgstr "تم إلغاء الاسترداد %s"
 
@@ -6864,6 +8207,34 @@ msgid "Refunds"
 msgstr "المبالغ المستردة"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__refusal_picking_ids
+msgid "Refusal Returns"
+msgstr "مرتجعات الرفض"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__refused_at_delivery
+msgid "Refused At Delivery"
+msgstr "رفض العميل الاستلام"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_stock_picking__leaders_refused_group_id
+msgid "Refused Shipment"
+msgstr "شحنة مرفوضة"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_refused_at_delivery
+msgid "Refused at delivery"
+msgstr "رفض العميل الاستلام"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Refused at delivery: %(group)s (%(order)s)"
+msgstr "رفض العميل الاستلام: %(group)s (%(order)s)"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_settlement_form
 msgid "Register Vendor Payment"
 msgstr "تسجيل دفعة البائع"
@@ -6871,6 +8242,7 @@ msgstr "تسجيل دفعة البائع"
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
 msgid "Reject"
 msgstr "رفض"
 
@@ -6881,6 +8253,7 @@ msgstr "رفض المنتج"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__reject_reason
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__reject_reason
 msgid "Reject Reason"
 msgstr "سبب الرفض"
 
@@ -6892,10 +8265,12 @@ msgstr "رفض المرتجع"
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_marketplace_offer__state__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__state__rejected
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_bank_change__state__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__verification_status__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__product_template__marketplace_state__rejected
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_state__rejected
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
 msgid "Rejected"
 msgstr "مرفوض"
 
@@ -6951,6 +8326,11 @@ msgid "Replace"
 msgstr "استبدال"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__previous_bank_id
+msgid "Replaced Account"
+msgstr "الحساب المستبدل"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "Report a problem"
 msgstr "الإبلاغ عن مشكلة"
@@ -6979,6 +8359,12 @@ msgid "Representative Position"
 msgstr "منصب الممثل"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
+msgid "Request"
+msgstr "الطلب"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__request_date
 msgid "Request Date"
 msgstr "تاريخ الطلب"
@@ -6994,14 +8380,34 @@ msgid "Request a Settlement"
 msgstr "طلب تسوية"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Request change"
+msgstr "طلب التغيير"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Request history"
+msgstr "سجل الطلبات"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__state__requested
 msgid "Requested"
 msgstr "مطلوب"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__requested_by
+msgid "Requested By"
+msgstr "طلب بواسطة"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__require_stock
 msgid "Require Stock"
 msgstr "يتطلب مخزونًا"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
+msgid "Required to reject"
+msgstr "مطلوب للرفض"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
@@ -7055,6 +8461,16 @@ msgid "Reserved"
 msgstr "محجوز"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_partner_form_marketplace
+msgid "Reset COD refusals"
+msgstr "إعادة تعيين حالات الرفض في الدفع عند الاستلام"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_partner_form_marketplace
+msgid "Reset the Cash on Delivery refusal counter of this customer?"
+msgstr "هل تريد إعادة تعيين عداد حالات رفض الدفع عند الاستلام لهذا العميل؟"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 msgid "Reset to draft"
 msgstr "إعادة إلى مسودة"
@@ -7082,6 +8498,11 @@ msgstr "المستخدم المسؤول"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_form
 msgid "Restored on lift"
 msgstr "تتم الاستعادة عند الرفع"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__bank_id
+msgid "Resulting Bank Account"
+msgstr "الحساب البنكي الناتج"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__return_id
@@ -7210,6 +8631,7 @@ msgstr "عكس:"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_form
 msgid "Review"
 msgstr "مراجعة"
 
@@ -7232,6 +8654,16 @@ msgstr ""
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "Review vendor application %s"
 msgstr "مراجعة طلب انضمام البائع %s"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__reviewed_by
+msgid "Reviewed By"
+msgstr "تمت المراجعة بواسطة"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__reviewed_date
+msgid "Reviewed Date"
+msgstr "تاريخ المراجعة"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__reviewer_id
@@ -7272,6 +8704,7 @@ msgstr "SKU:"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__message_has_sms_error
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__message_has_sms_error
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__message_has_sms_error
@@ -7307,6 +8740,16 @@ msgid "Sales People"
 msgstr "مندوبو المبيعات"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__salt
+msgid "Salt"
+msgstr "Salt"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_cod_otp__code_hash
+msgid "Salted HMAC of the code; the code itself is never stored."
+msgstr "HMAC مملّح للرمز؛ لا يتم تخزين الرمز نفسه أبدًا."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
 msgid "Save"
 msgstr "حفظ"
@@ -7337,6 +8780,15 @@ msgstr "البحث في الكتالوج باسم المنتج"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__access_token
 msgid "Security Token"
 msgstr "رمز الأمان"
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_bank_change_requested
+msgid ""
+"Security notice: a payout account change was requested for {{ "
+"object.vendor_id.vendor_store_name or object.vendor_id.name }}"
+msgstr ""
+"تنبيه أمني: تم طلب تغيير حساب صرف المستحقات لـ {{ "
+"object.vendor_id.vendor_store_name or object.vendor_id.name }}"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -7412,6 +8864,11 @@ msgid "Send"
 msgstr "إرسال"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "Send code"
+msgstr "إرسال الرمز"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "Send rating"
 msgstr "إرسال التقييم"
@@ -7428,6 +8885,7 @@ msgstr "إعادة إرسال دعوة كلمة المرور"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_buybox_config__sequence
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cancel_reason__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_fee__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__sequence
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__sequence
@@ -7539,9 +8997,54 @@ msgid "Settlements"
 msgstr "التسويات"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_leaders_ship_wizard_form
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
 msgid "Ship"
 msgstr "شحن"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order__ship_by_date
+msgid "Ship By"
+msgstr "موعد الشحن"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_leaders_ship_wizard_form
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
+msgid "Ship Quantities"
+msgstr "كميات الشحن"
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_ship_wizard
+msgid "Ship Quantities of a Fulfillment Group"
+msgstr "كميات الشحن لمجموعة تنفيذ"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_tier__ship_sla_days
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_ship_sla_days
+msgid "Ship Within (days)"
+msgstr "الشحن خلال (أيام)"
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_ship_wizard_line
+msgid "Ship Wizard Line"
+msgstr "سطر معالج الشحن"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
+msgid "Ship by"
+msgstr "موعد الشحن"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "Ship by:"
+msgstr "موعد الشحن:"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Ship-by SLA"
+msgstr "مهلة الشحن (SLA)"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -7612,12 +9115,18 @@ msgstr ""
 "يعرض خيار الدفع عند الاستلام عند إتمام الطلب، إلى جانب الدفع الإلكتروني."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_form
+msgid "Sign"
+msgstr "توقيع"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_buybox_config_form
 msgid "Signal Weights"
 msgstr "أوزان المؤشرات"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__signature
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
 msgid "Signature"
 msgstr "التوقيع"
 
@@ -7629,6 +9138,7 @@ msgstr "التوقيع مطلوب."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_contract__state__signed
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
 msgid "Signed"
 msgstr "موقَّع"
 
@@ -7638,9 +9148,29 @@ msgid "Signed At"
 msgstr "وقت التوقيع"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__user_id
+msgid "Signed By"
+msgstr "وقّع بواسطة"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__signed_ip
 msgid "Signed Ip"
 msgstr "IP التوقيع"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "Signed by"
+msgstr "وقّع بواسطة"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__signed_count
+msgid "Signed contracts"
+msgstr "العقود الموقّعة"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
+msgid "Signed on"
+msgstr "تاريخ التوقيع"
 
 #. module: leaders_marketplace
 #: model:leaders.vendor.tier,name:leaders_marketplace.vendor_tier_silver
@@ -7664,6 +9194,12 @@ msgstr "البائع:"
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__legal_type__sole_proprietorship
 msgid "Sole Proprietorship"
 msgstr "منشأة فردية"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Some of the products to ship do not belong to this shipment."
+msgstr "بعض المنتجات المراد شحنها لا تنتمي إلى هذه الشحنة."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
@@ -7713,6 +9249,7 @@ msgstr "بدء المراجعة"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__state
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__state
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__state_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__state
@@ -7746,11 +9283,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_returns
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cod_vendor_order_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_penalty_search
@@ -7822,6 +9361,11 @@ msgstr "رسوم التخزين"
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Storage fee %s"
 msgstr "رسوم التخزين %s"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Store"
+msgstr "المتجر"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__store_name
@@ -7984,6 +9528,12 @@ msgid "Tax invoice to the vendor"
 msgstr "فاتورة ضريبية للبائع"
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/settlement.py:0
+msgid "Tax of the credited marketplace invoice."
+msgstr "ضريبة فاتورة السوق المُشعَر بدائنيتها."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_wallet_transaction__type__fee_tax
 msgid "Tax on Marketplace Fees"
 msgstr "ضريبة رسوم السوق"
@@ -8020,6 +9570,7 @@ msgstr "حدثنا عن نشاطك التجاري. الحقول المميزة �
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__terms_id
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
 msgid "Terms"
 msgstr "الشروط"
 
@@ -8033,6 +9584,11 @@ msgstr "تم قبول الشروط والأحكام"
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "Terms & Conditions not accepted"
 msgstr "لم يتم قبول الشروط والأحكام"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__terms_version
+msgid "Terms Version"
+msgstr "إصدار الشروط"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
@@ -8056,6 +9612,25 @@ msgid "The added stock quantity cannot be negative."
 msgstr "لا يمكن أن تكون كمية المخزون المضافة سالبة."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "The code is not correct."
+msgstr "الرمز غير صحيح."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid ""
+"The company part of order %s is already shipped and can no longer be "
+"cancelled."
+msgstr "تم شحن جزء الشركة من الطلب %s بالفعل ولم يعد من الممكن إلغاؤه."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_core.py:0
+msgid "The contract document could not be generated."
+msgstr "تعذّر إنشاء مستند العقد."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_return_detail
 msgid ""
 "The customer can escalate this return; the marketplace will take the final "
@@ -8067,6 +9642,31 @@ msgstr "يمكن للعميل تصعيد هذا المرتجع؛ وسيتخذ ا
 #: code:addons/leaders_marketplace/models/sale.py:0
 msgid "The customer did not receive this shipment."
 msgstr "لم يستلم العميل هذه الشحنة."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_cod_require_otp
+msgid ""
+"The customer must confirm a 6-digit code sent to their phone (SMS when the "
+"SMS module is installed, otherwise email) before a Cash on Delivery order is"
+" accepted."
+msgstr ""
+"يجب على العميل تأكيد رمز من 6 أرقام يُرسل إلى هاتفه (رسالة SMS عند تثبيت "
+"وحدة SMS، وإلا بالبريد الإلكتروني) قبل قبول طلب الدفع عند الاستلام."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"The customer refused the Cash on Delivery parcel at the door (%(groups)s). "
+"Goods returning to %(where)s through %(pickings)s. No earning was created."
+msgstr ""
+"رفض العميل طرد الدفع عند الاستلام عند الباب (%(groups)s). البضائع عائدة إلى "
+"%(where)s عبر %(pickings)s. لم يتم إنشاء أي أرباح."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
+msgid "The customer refused the parcel at the door"
+msgstr "رفض العميل الطرد عند الباب"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -8131,6 +9731,18 @@ msgstr "الصورة كبيرة جدًا (الحد الأقصى %(size)s ميج�
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/res_partner.py:0
+msgid "The marketplace has no main warehouse to keep FBL stock in."
+msgstr "لا يملك السوق مستودعًا رئيسيًا لحفظ مخزون FBL فيه."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "The marketplace has no main warehouse to ship FBL orders from."
+msgstr "لا يملك السوق مستودعًا رئيسيًا لشحن طلبات FBL منه."
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/commission.py:0
 msgid "The minimum amount cannot exceed the maximum amount."
 msgstr "لا يمكن أن يتجاوز الحد الأدنى للمبلغ الحد الأقصى."
@@ -8160,6 +9772,12 @@ msgstr "يتلقى المالك بيانات دخول بوابة البائع ب
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "The part that was not shipped was cancelled."
+msgstr "تم إلغاء الجزء الذي لم يُشحن."
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "The period cannot end in the future."
 msgstr "لا يمكن أن تنتهي الفترة في المستقبل."
@@ -8173,9 +9791,26 @@ msgstr "تعود المنتجات إلى مستودع ليدرز (FBL)، الذ�
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "The quantity to ship of %s cannot be negative."
+msgstr "لا يمكن أن تكون كمية الشحن للمنتج %s سالبة."
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/returns.py:0
 msgid "The return window of %s days for this order has passed."
 msgstr "انتهت مهلة المرتجع البالغة %s يومًا لهذا الطلب."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__late_notified
+msgid "The reviewers and the vendor were already told this order is late."
+msgstr "تم إبلاغ المراجعين والبائع بالفعل أن هذا الطلب متأخر."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/bank_change.py:0
+msgid "The security notice could not be sent to the vendor owner."
+msgstr "تعذّر إرسال التنبيه الأمني إلى مالك البائع."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
@@ -8185,10 +9820,28 @@ msgid ""
 msgstr "أبلغ البائع بأن هذه الشحنة تم تسليمها. يرجى إخبارنا هل وصلت."
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_stock_picking__leaders_refused_group_id
+msgid ""
+"The shipment the customer refused at the door; this receipt brings the goods"
+" back."
+msgstr "الشحنة التي رفضها العميل عند الباب؛ يعيد هذا الإيصال البضائع."
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "The stock quantity cannot be negative."
 msgstr "لا يمكن أن تكون كمية المخزون سالبة."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "The time to cancel this order has passed (%s hours after ordering)."
+msgstr "انقضى وقت إلغاء هذا الطلب (%s ساعة بعد الطلب)."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "The time to cancel this order has passed."
+msgstr "انقضى وقت إلغاء هذا الطلب."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -8220,6 +9873,25 @@ msgid "The vendor is already present in the plan."
 msgstr "البائع موجود بالفعل في الخطة."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms_staff_notice
+msgid ""
+"The vendor owner must accept the new vendor terms before the vendor portal "
+"can be used again. Please ask the owner of"
+msgstr ""
+"يجب على مالك البائع قبول شروط البائع الجديدة قبل أن يمكن استخدام بوابة "
+"البائع مرة أخرى. يرجى مطالبة مالك"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__payout_bank_id
+msgid "The vendor's current payout account."
+msgstr "حساب صرف المستحقات الحالي للبائع."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "There are no vendor terms to accept right now."
+msgstr "لا توجد شروط بائع للقبول حاليًا."
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_core.py:0
 msgid "These documents are expired and cannot be verified: %s"
@@ -8239,6 +9911,12 @@ msgid ""
 msgstr ""
 "لا يمكن اعتماد طلب الانضمام هذا بعد:\n"
 "%s"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "This code has expired. Please ask for a new one."
+msgstr "انتهت صلاحية هذا الرمز. يرجى طلب رمز جديد."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -8285,9 +9963,24 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid ""
+"This order has already shipped and can no longer be cancelled. Request a "
+"return after delivery."
+msgstr ""
+"تم شحن هذا الطلب بالفعل ولم يعد من الممكن إلغاؤه. اطلب مرتجعًا بعد التسليم."
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "This order has no vendor invoice."
 msgstr "ليس لهذا الطلب فاتورة بائع."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "This order is already cancelled."
+msgstr "هذا الطلب ملغى بالفعل."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
@@ -8336,10 +10029,21 @@ msgid "This return is received by the Leaders warehouse."
 msgstr "يستلم مستودع ليدرز هذا المرتجع."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "This seller's part of your order was cancelled."
+msgstr "تم إلغاء جزء هذا البائع من طلبك."
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/settlement.py:0
 msgid "This settlement has no vendor debt to collect."
 msgstr "ليس على هذه التسوية دين على البائع لتحصيله."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/ship_wizard.py:0
+msgid "This shipment can no longer be shipped."
+msgstr "لم يعد من الممكن شحن هذه الشحنة."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.seller_store_page
@@ -8357,6 +10061,15 @@ msgstr ""
 "التسليم). استخدم 'تسجيل دفعة البائع' عند استلامه."
 
 #. module: leaders_marketplace
+#: model_terms:ir.actions.act_window,help:leaders_marketplace.action_vendor_delivery_zone
+msgid ""
+"Tick \"Platform\" for the marketplace's own price: it is charged once for company products and\n"
+"                warehouse (FBL) goods. Vendor rows price each vendor's own shipments."
+msgstr ""
+"ضع علامة على \"المنصة\" للسعر الخاص بالسوق نفسه: يُحتسب مرة واحدة لمنتجات الشركة\n"
+"                وبضائع المستودع (FBL). أما صفوف البائعين فتسعّر شحنات كل بائع على حدة."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_plan_vendor__date_to
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 msgid "To"
@@ -8366,6 +10079,11 @@ msgstr "إلى"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
 msgid "To Process"
 msgstr "للمعالجة"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__quantity
+msgid "To Ship"
+msgstr "للشحن"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_my_home_marketplace
@@ -8380,6 +10098,18 @@ msgid ""
 msgstr ""
 "عدد كبير جدًا من طلبات الانضمام من عنوانك اليوم. يرجى المحاولة مرة أخرى "
 "غدًا."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Too many codes were requested. Please try again later."
+msgstr "تم طلب رموز كثيرة جدًا. يرجى المحاولة لاحقًا."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Too many wrong attempts. Please ask for a new code."
+msgstr "محاولات خاطئة كثيرة جدًا. يرجى طلب رمز جديد."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
@@ -8418,6 +10148,11 @@ msgstr "التتبع"
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__tracking_ref
 msgid "Tracking Ref"
+msgstr "رقم التتبع"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard__tracking_ref
+msgid "Tracking Reference"
 msgstr "رقم التتبع"
 
 #. module: leaders_marketplace
@@ -8494,6 +10229,12 @@ msgstr "إجراء غير معروف."
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/customer_cancel.py:0
+msgid "Unknown cancellation scope."
+msgstr "نطاق الإلغاء غير معروف."
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Unknown stock update mode."
 msgstr "وضع تحديث المخزون غير معروف."
@@ -8518,6 +10259,11 @@ msgstr "المبلغ غير شامل الضريبة"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
 msgid "Update"
 msgstr "تحديث"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_products
+msgid "Update your stock here."
+msgstr "حدّث مخزونك هنا."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_auto_tier_upgrade
@@ -8579,6 +10325,7 @@ msgstr "شهادة VAT"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer_publish_log__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__vendor_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_delivery_zone__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__vendor_id
@@ -8593,11 +10340,17 @@ msgstr "شهادة VAT"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_wallet_transaction__vendor_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_sale_order_line__vendor_id
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__scope__vendor
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_order__cancelled_by_type__vendor
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_return__approved_by__vendor
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__sale_order__leaders_cancelled_by_type__vendor
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_invoice_document
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_cod_vendor_order_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_marketplace_offer_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_product_template_marketplace_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_bank_change_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_contract_search
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_dispute_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_kpi_search
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
@@ -8670,6 +10423,12 @@ msgid "Vendor Contract"
 msgstr "عقد البائع"
 
 #. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_contract
+#: model:ir.ui.menu,name:leaders_marketplace.menu_vendor_contracts
+msgid "Vendor Contracts"
+msgstr "عقود البائعين"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__credit_note_id
 msgid "Vendor Credit Note"
 msgstr "إشعار دائن البائع"
@@ -8694,11 +10453,6 @@ msgstr "خصم البائع"
 #: model:ir.model,name:leaders_marketplace.model_leaders_vendor_delivery_zone
 msgid "Vendor Delivery Price per Governorate"
 msgstr "سعر توصيل البائع لكل محافظة"
-
-#. module: leaders_marketplace
-#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_delivery_zone
-msgid "Vendor Delivery Zones"
-msgstr "مناطق توصيل البائع"
 
 #. module: leaders_marketplace
 #: model:ir.model,name:leaders_marketplace.model_leaders_vendor_document
@@ -8776,6 +10530,7 @@ msgstr "حالة KYC للبائع"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_line__vendor_line_id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__vendor_line_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice_line__vendor_line_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return_line__vendor_line_id
 msgid "Vendor Line"
@@ -8868,6 +10623,11 @@ msgid "Vendor Payable Account"
 msgstr "حساب مستحقات البائع"
 
 #. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_vendor_bank_change
+msgid "Vendor Payout Bank Account Change"
+msgstr "تغيير الحساب البنكي لصرف مستحقات البائع"
+
+#. module: leaders_marketplace
 #: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_penalty
 msgid "Vendor Penalties"
 msgstr "عقوبات البائع"
@@ -8886,6 +10646,11 @@ msgstr "خطة البائع"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__portal_user_id
 msgid "Vendor Portal User"
 msgstr "مستخدم بوابة البائع"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "Vendor Profile"
+msgstr "الملف الشخصي للبائع"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_partner__vendor_rating_avg
@@ -8960,9 +10725,19 @@ msgid "Vendor Store Slug"
 msgstr "المعرّف المختصر لمتجر البائع"
 
 #. module: leaders_marketplace
+#: model:ir.actions.act_window,name:leaders_marketplace.action_vendor_terms
 #: model:ir.model,name:leaders_marketplace.model_leaders_vendor_terms
+#: model:ir.ui.menu,name:leaders_marketplace.menu_vendor_terms
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
 msgid "Vendor Terms"
 msgstr "شروط البائع"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_core.py:0
+#: model:ir.actions.report,name:leaders_marketplace.action_report_vendor_contract
+msgid "Vendor Terms Contract"
+msgstr "عقد شروط البائع"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_partner__vendor_tier_id
@@ -9008,6 +10783,11 @@ msgstr "مستودع البائع (FBM)"
 #: model:mail.template,name:leaders_marketplace.mail_template_vendor_application_submitted
 msgid "Vendor application received"
 msgstr "تم استلام طلب انضمام البائع"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_cancel_reason__applies_to__vendor
+msgid "Vendor cancellations"
+msgstr "إلغاءات البائعين"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -9089,6 +10869,11 @@ msgstr "تم نقل منتجات البائع في عملية الدفع هذه 
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Vendor settlement %s"
 msgstr "تسوية البائع %s"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms_staff_notice
+msgid "Vendor terms are waiting for acceptance"
+msgstr "شروط البائع بانتظار القبول"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -9175,6 +10960,26 @@ msgid "Vendor: offer rejected"
 msgstr "البائع: تم رفض العرض"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_order_cancelled_by_customer
+msgid "Vendor: order cancelled by the customer"
+msgstr "البائع: طلب ألغاه العميل"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_order_late
+msgid "Vendor: order not shipped by its ship-by date"
+msgstr "البائع: طلب لم يُشحن حتى موعد الشحن"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_bank_change_approved
+msgid "Vendor: payout account change approved"
+msgstr "البائع: اعتماد تغيير حساب صرف المستحقات"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_bank_change_rejected
+msgid "Vendor: payout account change rejected"
+msgstr "البائع: رفض تغيير حساب صرف المستحقات"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_notify_vendor_penalty_applied
 msgid "Vendor: penalty applied"
 msgstr "البائع: تم تطبيق عقوبة"
@@ -9226,6 +11031,7 @@ msgstr "البائع: تم دفع التسوية"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__vendor_ids
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_delivery_zone_search
 msgid "Vendors"
 msgstr "البائعون"
 
@@ -9252,6 +11058,12 @@ msgid "Verification Status"
 msgstr "حالة التحقق"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
+msgid "Verification code"
+msgstr "رمز التحقق"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_cod_otp__verified
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_application__kyc_state__verified
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_vendor_document__verification_status__verified
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__res_partner__vendor_kyc_state__verified
@@ -9269,6 +11081,7 @@ msgid "Verified Date"
 msgstr "تاريخ التحقق"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_application_form
 msgid "Verify"
 msgstr "تحقق"
@@ -9279,7 +11092,13 @@ msgid "Verify KYC"
 msgstr "التحقق من KYC"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_cod_require_otp
+msgid "Verify Phone for Cash on Delivery"
+msgstr "التحقق من الهاتف للدفع عند الاستلام"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_terms__version
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_contract_document
 msgid "Version"
 msgstr "الإصدار"
 
@@ -9336,6 +11155,21 @@ msgid "Warning"
 msgstr "تحذير"
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"We could not send the code. Please check your number or email and try again."
+msgstr ""
+"تعذّر إرسال الرمز. يرجى التحقق من رقمك أو بريدك الإلكتروني والمحاولة مرة "
+"أخرى."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/delivery.py:0
+msgid "We do not deliver to %(state)s."
+msgstr "لا نوصّل إلى %(state)s."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid ""
 "We opened a case with the marketplace about your missing shipment. You will "
@@ -9360,6 +11194,7 @@ msgstr "فئة الموقع الإلكتروني"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_marketplace_offer__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_settlement__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_application__website_message_ids
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_bank_change__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_contract__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__website_message_ids
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_invoice__website_message_ids
@@ -9383,6 +11218,7 @@ msgstr ""
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_marketplace_offer__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_settlement__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__website_message_ids
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_bank_change__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_contract__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_dispute__website_message_ids
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_invoice__website_message_ids
@@ -9421,6 +11257,14 @@ msgstr "وزن تقييم البائع/العرض."
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_my_home_marketplace
 msgid "Welcome back"
 msgstr "مرحبًا بعودتك"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_leaders_ship_wizard_form
+msgid ""
+"What is not shipped now stays in a second shipment of the same group, with "
+"its own tracking reference."
+msgstr ""
+"ما لم يُشحن الآن يبقى في شحنة ثانية من المجموعة نفسها، برقم تتبع خاص بها."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_application__missing_requirements
@@ -9464,6 +11308,15 @@ msgstr ""
 "تحذير بصيغة مسودة ليراجعها المدير. لا يتم تطبيق أي شيء تلقائيًا."
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_late_shipment_auto_warning
+msgid ""
+"When a vendor's monthly late-shipment rate passes the threshold below, "
+"prepare a DRAFT warning penalty for a manager to review."
+msgstr ""
+"عندما يتجاوز معدل الشحن المتأخر الشهري للبائع الحد أدناه، قم بإعداد عقوبة "
+"تحذير مسودة ليراجعها المدير."
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_reserve__release_date
 msgid ""
 "When the marketplace stops holding this back: the shipment date plus the "
@@ -9499,6 +11352,24 @@ msgid ""
 msgstr ""
 "ما إذا كان تأكيد البائع تسليم شحنته بنفسه يُكمل الطلب، أو يكتفي بالإبلاغ عنه"
 " ليؤكده العميل."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_cancel_reason__applies_to
+msgid ""
+"Who can pick this reason. Only the customer cancellation uses the list "
+"today; the value is kept for vendor cancellations."
+msgstr ""
+"من يمكنه اختيار هذا السبب. لا يستخدم القائمة اليوم سوى إلغاء العميل؛ وتُحفظ "
+"القيمة لإلغاءات البائعين."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order__cancelled_by_type
+msgid ""
+"Who cancelled the order. Customer cancellations are left out of the vendor "
+"KPIs and penalties. Empty on orders cancelled before this existed."
+msgstr ""
+"من ألغى الطلب. تُستبعد إلغاءات العملاء من مؤشرات أداء البائعين وعقوباتهم. "
+"فارغ للطلبات التي أُلغيت قبل وجود هذا الحقل."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_fulfillment_group__delivered_reported_by
@@ -9546,9 +11417,24 @@ msgid "Withhold a Returns Reserve"
 msgstr "احتجاز احتياطي مرتجعات"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__wizard_id
+msgid "Wizard"
+msgstr "المعالج"
+
+#. module: leaders_marketplace
+#: model:leaders.cancel.reason,name:leaders_marketplace.cancel_reason_wrong_details
+msgid "Wrong address or order details"
+msgstr "عنوان أو تفاصيل طلب خاطئة"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_commission_rule__periodicity__year
 msgid "Yearly"
 msgstr "سنويًا"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms
+msgid "You accepted these terms on"
+msgstr "قبلت هذه الشروط بتاريخ"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -9576,6 +11462,11 @@ msgid ""
 msgstr ""
 "لا يزال بإمكانك شحن طلباتك المفتوحة والرد على المرتجعات ومتابعة تسوياتك. أما"
 " القوائم الجديدة أو المعدلة فهي معلّقة."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "You cancelled this order. Reason:"
+msgstr "لقد ألغيت هذا الطلب. السبب:"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -9660,6 +11551,18 @@ msgstr ""
 "للطلبات المفتوحة."
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "You cannot ship more %(product)s than ordered (%(qty)s of %(needed)s)."
+msgstr ""
+"لا يمكنك شحن كمية من %(product)s أكبر من المطلوب (%(qty)s من %(needed)s)."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "You chose Cash on Delivery, so nothing was charged."
+msgstr "اخترت الدفع عند الاستلام، لذلك لم يتم خصم أي مبلغ."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_orders
 msgid "You have no marketplace purchases yet."
 msgstr "ليس لديك مشتريات من السوق بعد."
@@ -9672,6 +11575,28 @@ msgstr "ليس لديك منتجات بعد."
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/controllers/portal.py:0
+msgid "You must tick the box to accept the terms."
+msgstr "يجب تحديد المربع لقبول الشروط."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid "Your Cash on Delivery verification code"
+msgstr "رمز التحقق الخاص بك للدفع عند الاستلام"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/cod_protection.py:0
+msgid ""
+"Your Cash on Delivery verification code is %(code)s. It is valid for "
+"%(minutes)s minutes."
+msgstr ""
+"رمز التحقق الخاص بك للدفع عند الاستلام هو %(code)s. وهو صالح لمدة "
+"%(minutes)s دقيقة."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Your account is frozen: %s"
 msgstr "حسابك مجمَّد: %s"
 
@@ -9680,6 +11605,11 @@ msgstr "حسابك مجمَّد: %s"
 #: code:addons/leaders_marketplace/controllers/portal.py:0
 msgid "Your account is not an approved marketplace vendor."
 msgstr "حسابك ليس حساب بائع معتمد في السوق."
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_customer_order_cancelled_by_customer
+msgid "Your cancellation of order {{ object.name }} is confirmed"
+msgstr "تم تأكيد إلغائك للطلب {{ object.name }}"
 
 #. module: leaders_marketplace
 #: model:mail.template,subject:leaders_marketplace.mail_template_marketplace_order_confirmation
@@ -9697,6 +11627,11 @@ msgid "Your offer is approved, but the product is still"
 msgstr "تم اعتماد عرضك، لكن المنتج لا يزال"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
+msgid "Your order was cancelled."
+msgstr "تم إلغاء طلبك."
+
+#. module: leaders_marketplace
 #: model:mail.template,subject:leaders_marketplace.mail_template_customer_order_cancelled
 msgid "Your order {{ object.name }} was cancelled"
 msgstr "تم إلغاء طلبك {{ object.name }}"
@@ -9710,6 +11645,16 @@ msgstr "تم شحن طلبك {{ object.vendor_order_id.name }}"
 #: model:mail.template,subject:leaders_marketplace.mail_template_customer_order_delivered
 msgid "Your order {{ object.vendor_order_id.name }} was delivered"
 msgstr "تم تسليم طلبك {{ object.vendor_order_id.name }}"
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_bank_change_approved
+msgid "Your payout account change {{ object.name }} was approved"
+msgstr "تم اعتماد طلب تغيير حساب صرف المستحقات {{ object.name }}"
+
+#. module: leaders_marketplace
+#: model:mail.template,subject:leaders_marketplace.mail_template_vendor_bank_change_rejected
+msgid "Your payout account change {{ object.name }} was rejected"
+msgstr "تم رفض طلب تغيير حساب صرف المستحقات {{ object.name }}"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
@@ -9779,6 +11724,12 @@ msgid "Your vendor tier product limit has been reached."
 msgstr "تم بلوغ الحد الأقصى للمنتجات في مستوى البائع الخاص بك."
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "account %s"
+msgstr "الحساب %s"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_finance
 msgid "after shipping"
 msgstr "بعد الشحن"
@@ -9819,6 +11770,11 @@ msgid "e.g. SA03 8000 0000 6080 1016 7519"
 msgstr "مثال: SA03 8000 0000 6080 1016 7519"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
+msgid "free from"
+msgstr "مجاني ابتداءً من"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_commission_rule_form
 msgid "i.e. Vendor targets 2026"
 msgstr "مثال: مستهدفات البائعين 2026"
@@ -9827,6 +11783,11 @@ msgstr "مثال: مستهدفات البائعين 2026"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 msgid "is only charged once confirmed."
 msgstr "لا تُحتسب إلا بعد التأكيد."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
+msgid "is waiting for review. You can send a new one after it is decided."
+msgstr "قيد المراجعة. يمكنك إرسال طلب جديد بعد البت فيه."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
@@ -9853,6 +11814,11 @@ msgstr "على"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.report_vendor_invoice_document
 msgid "on the vendor's behalf through the marketplace."
 msgstr "نيابةً عن البائع عبر السوق."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_delivery_zones
+msgid "optional"
+msgstr "اختياري"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dispute_detail
@@ -9885,6 +11851,11 @@ msgstr "هذا العنوان"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_dashboard
 msgid "to process"
 msgstr "للمعالجة"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_terms_staff_notice
+msgid "to sign in and accept them."
+msgstr "لتسجيل الدخول وقبولها."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.vendor_apply_status
