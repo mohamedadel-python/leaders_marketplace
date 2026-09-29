@@ -34,6 +34,10 @@ class VendorTier(models.Model):
     min_months = fields.Integer(default=0)
     min_sales = fields.Monetary(currency_field="currency_id")
     min_rating = fields.Float(default=0.0)
+    ship_sla_days = fields.Integer(
+        string="Ship Within (days)", default=0,
+        help="Days a vendor of this tier has to ship a confirmed order. 0 = use "
+             "the marketplace setting (Settings > Marketplace > Ship Within).")
     currency_id = fields.Many2one("res.currency", default=lambda self: self.env.company.currency_id)
 
     @api.model

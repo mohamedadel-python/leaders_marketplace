@@ -486,7 +486,7 @@
                 <div class="lm-panel">
                     <div t-if="orders" class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Payment</th><th class="text-end">Total</th><th class="text-end">Commission</th><th class="text-end">Net</th><th>Invoice</th></tr></thead>
+                            <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Ship by</th><th>Payment</th><th class="text-end">Total</th><th class="text-end">Commission</th><th class="text-end">Net</th><th>Invoice</th></tr></thead>
                             <tbody>
                                 <tr t-foreach="orders" t-as="o">
                                     <td>
@@ -495,6 +495,10 @@
                                     </td>
                                     <td t-esc="o.partner_id.display_name"/>
                                     <td><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                                    <td class="text-nowrap">
+                                        <span t-if="o.ship_by_date" t-esc="o.ship_by_date" t-options="{'widget': 'date'}"/><span t-else="" class="text-muted">-</span>
+                                        <span t-if="o.is_late" class="badge rounded-pill text-bg-danger ms-1"><i class="fa fa-clock-o"/> Late</span>
+                                    </td>
                                     <td>
                                         <span t-if="o.payment_method == 'cod'" class="badge text-bg-secondary">Cash on Delivery</span>
                                         <span t-else="" class="badge text-bg-light border">Online</span>
@@ -529,6 +533,8 @@
                     <div>
                         <h2 class="mb-1"><span t-esc="order.name"/> <t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="order"/></t></h2>
                         <div class="text-muted">Customer: <span t-esc="order.partner_id.display_name"/></div>
+                        <div t-if="order.ship_by_date" class="text-muted">Ship by: <span t-esc="order.ship_by_date" t-options="{'widget': 'datetime'}"/>
+                            <span t-if="order.is_late" class="badge rounded-pill text-bg-danger ms-1"><i class="fa fa-clock-o"/> Late</span></div>
                     </div>
                     <form t-if="order.state == 'pending'" t-att-action="'/my/vendor/orders/%s/confirm' % order.id" method="post">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -1014,12 +1020,13 @@
             <div t-else="" class="alert alert-info">No disputes. Good news.</div></div></t></template>
     <template id="portal_vendor_performance" name="Vendor Performance"><t t-call="portal.portal_layout"><div class="container my-4 lm-portal"><t t-call="leaders_marketplace.portal_vendor_nav"/><h2>Performance</h2><div class="mb-3">Current tier: <strong t-esc="vendor.vendor_tier_id.name or '-'"/></div>
                 <div t-if="kpis" class="table-responsive"><table class="table align-middle">
-                    <thead><tr><th>Month</th><th class="text-end">Orders</th><th class="text-end">Completed</th><th class="text-end">Cancelled</th><th class="text-end">Rating</th><th class="text-end">Avg. time to ship</th></tr></thead>
+                    <thead><tr><th>Month</th><th class="text-end">Orders</th><th class="text-end">Completed</th><th class="text-end">Cancelled</th><th class="text-end">Late shipments</th><th class="text-end">Rating</th><th class="text-end">Avg. time to ship</th></tr></thead>
                     <tbody><tr t-foreach="kpis" t-as="k">
                         <td t-esc="k.period" t-options="{'widget': 'date', 'format': 'MMMM yyyy'}"/>
                         <td class="text-end" t-esc="k.order_count"/>
                         <td class="text-end"><t t-esc="'%.2f' % k.completion_rate"/>%</td>
                         <td class="text-end"><span t-attf-class="#{'text-danger fw-semibold' if k.cancellation_rate &gt; 20 else ''}"><t t-esc="'%.2f' % k.cancellation_rate"/>%</span></td>
+                        <td class="text-end"><span t-attf-class="#{'text-danger fw-semibold' if k.late_shipment_rate &gt; 20 else ''}"><t t-esc="'%.2f' % k.late_shipment_rate"/>%</span></td>
                         <td class="text-end"><t t-esc="'%.2f' % k.avg_rating"/></td>
                         <td class="text-end"><t t-if="k.avg_ship_hours"><t t-esc="'%.1f' % k.avg_ship_hours"/> h</t><t t-else="">-</t></td>
                     </tr></tbody>

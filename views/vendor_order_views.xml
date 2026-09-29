@@ -48,6 +48,8 @@
                             <field name="partner_id" readonly="state != 'pending'"/>
                             <field name="partner_shipping_id" readonly="state != 'pending'"/>
                             <field name="date_order" readonly="state != 'pending'"/>
+                            <field name="ship_by_date"/>
+                            <field name="is_late"/>
                             <field name="sale_order_id"/>
                             <field name="invoice_id"/>
                         </group>
@@ -150,6 +152,7 @@
                 <field name="vendor_id"/>
                 <field name="partner_id"/>
                 <filter name="to_process" string="To Process" domain="[('state', 'in', ('confirmed', 'processing', 'partially_fulfilled'))]"/>
+                <filter name="late_shipment" string="Late" domain="[('is_late', '=', True)]"/>
                 <filter name="cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
                 <filter name="cancelled_by_customer" string="Cancelled by the customer" domain="[('cancelled_by_type', '=', 'customer')]"/>
                 <group expand="0" string="Group By">

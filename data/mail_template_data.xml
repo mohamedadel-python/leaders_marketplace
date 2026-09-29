@@ -379,6 +379,19 @@
             </field>
             <field name="auto_delete" eval="True"/>
         </record>
+        <record id="mail_template_vendor_order_late" model="mail.template">
+            <field name="name">Marketplace: Order not shipped by its ship-by date (vendor)</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_order"/>
+            <field name="subject">Order {{ object.name }} is late: ship it now</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Order <strong t-out="object.name"/> should have shipped by <t t-out="object.ship_by_date" t-options="{'widget': 'datetime'}"/> and has not left yet. Please ship it as soon as possible: late shipments count against your performance.</p>
+<p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/orders/{{ object.id }}">Open the order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
         <record id="mail_template_vendor_bank_change_requested" model="mail.template">
             <field name="name">Marketplace: Payout account change requested (security notice, always sent)</field>
             <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_bank_change"/>
@@ -526,6 +539,10 @@
         </record>
         <record id="param_notify_vendor_bank_change_approved" model="ir.config_parameter">
             <field name="key">leaders_marketplace.notify_vendor_bank_change_approved</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_order_late" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_order_late</field>
             <field name="value">True</field>
         </record>
         <record id="param_notify_vendor_bank_change_rejected" model="ir.config_parameter">

@@ -9,6 +9,7 @@
                 <field name="commission_rate"/>
                 <field name="product_limit"/>
                 <field name="payout_frequency"/>
+                <field name="ship_sla_days"/>
             </list>
         </field>
     </record>

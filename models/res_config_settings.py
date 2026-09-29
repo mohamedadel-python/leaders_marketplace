@@ -1,7 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
-NOTIFICATION_EVENTS = [('vendor_order_confirmed', 'Vendor: new order confirmed'), ('vendor_return_requested', 'Vendor: return requested'), ('vendor_return_escalated', 'Vendor: return escalated'), ('vendor_return_decided', 'Vendor: return decided by the marketplace'), ('vendor_dispute_opened', 'Vendor: dispute opened'), ('vendor_dispute_escalated', 'Vendor: dispute escalated'), ('vendor_dispute_resolved', 'Vendor: dispute resolved'), ('vendor_settlement_approved', 'Vendor: settlement approved'), ('vendor_settlement_paid', 'Vendor: settlement paid'), ('vendor_settlement_debt', 'Vendor: settlement debt to pay'), ('vendor_offer_approved', 'Vendor: offer approved'), ('vendor_offer_rejected', 'Vendor: offer rejected'), ('vendor_product_approved', 'Vendor: product approved'), ('vendor_product_rejected', 'Vendor: product rejected'), ('vendor_application_approved', 'Vendor: application approved'), ('vendor_application_rejected', 'Vendor: application rejected'), ('vendor_penalty_applied', 'Vendor: penalty applied'), ('vendor_penalty_lifted', 'Vendor: penalty lifted'), ('customer_order_shipped', 'Customer: order shipped'), ('customer_order_delivered', 'Customer: order delivered'), ('customer_return_approved', 'Customer: return approved'), ('customer_return_rejected', 'Customer: return rejected'), ('customer_return_refunded', 'Customer: return refunded'), ('customer_order_cancelled', 'Customer: order cancelled'), ('customer_order_cancelled_by_customer', 'Customer: cancellation confirmed'), ('vendor_order_cancelled_by_customer', 'Vendor: order cancelled by the customer'), ('vendor_bank_change_approved', 'Vendor: payout account change approved'), ('vendor_bank_change_rejected', 'Vendor: payout account change rejected')]
+NOTIFICATION_EVENTS = [('vendor_order_confirmed', 'Vendor: new order confirmed'), ('vendor_return_requested', 'Vendor: return requested'), ('vendor_return_escalated', 'Vendor: return escalated'), ('vendor_return_decided', 'Vendor: return decided by the marketplace'), ('vendor_dispute_opened', 'Vendor: dispute opened'), ('vendor_dispute_escalated', 'Vendor: dispute escalated'), ('vendor_dispute_resolved', 'Vendor: dispute resolved'), ('vendor_settlement_approved', 'Vendor: settlement approved'), ('vendor_settlement_paid', 'Vendor: settlement paid'), ('vendor_settlement_debt', 'Vendor: settlement debt to pay'), ('vendor_offer_approved', 'Vendor: offer approved'), ('vendor_offer_rejected', 'Vendor: offer rejected'), ('vendor_product_approved', 'Vendor: product approved'), ('vendor_product_rejected', 'Vendor: product rejected'), ('vendor_application_approved', 'Vendor: application approved'), ('vendor_application_rejected', 'Vendor: application rejected'), ('vendor_penalty_applied', 'Vendor: penalty applied'), ('vendor_penalty_lifted', 'Vendor: penalty lifted'), ('customer_order_shipped', 'Customer: order shipped'), ('customer_order_delivered', 'Customer: order delivered'), ('customer_return_approved', 'Customer: return approved'), ('customer_return_rejected', 'Customer: return rejected'), ('customer_return_refunded', 'Customer: return refunded'), ('customer_order_cancelled', 'Customer: order cancelled'), ('customer_order_cancelled_by_customer', 'Customer: cancellation confirmed'), ('vendor_order_cancelled_by_customer', 'Vendor: order cancelled by the customer'), ('vendor_bank_change_approved', 'Vendor: payout account change approved'), ('vendor_bank_change_rejected', 'Vendor: payout account change rejected'), ('vendor_order_late', 'Vendor: order not shipped by its ship-by date')]
 
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
@@ -164,6 +164,26 @@ class ResConfigSettings(models.TransientModel):
         config_parameter="leaders_marketplace.kpi_cancellation_threshold",
         default=20.0,
         help="Monthly cancellation rate above which a draft warning is prepared.",
+    )
+    marketplace_ship_sla_days = fields.Integer(
+        string="Ship Within (days)",
+        config_parameter="leaders_marketplace.ship_sla_days",
+        default=2,
+        help="Days after a vendor order is confirmed by which it must ship. A "
+             "vendor tier can override it (tier value 0 = use this one).",
+    )
+    marketplace_late_shipment_auto_warning = fields.Boolean(
+        string="Flag High Late-Shipment Rates",
+        config_parameter="leaders_marketplace.late_shipment_auto_warning",
+        default=False,
+        help="When a vendor's monthly late-shipment rate passes the threshold "
+             "below, prepare a DRAFT warning penalty for a manager to review.",
+    )
+    marketplace_late_shipment_rate_threshold = fields.Float(
+        string="Late-Shipment Rate Threshold (%)",
+        config_parameter="leaders_marketplace.late_shipment_rate_threshold",
+        default=20.0,
+        help="Monthly late-shipment rate above which a draft warning is prepared.",
     )
     marketplace_enforce_returns_reserve = fields.Boolean(
         string="Withhold a Returns Reserve",

@@ -77,4 +77,10 @@
         <field name="state">code</field><field name="code">model.cron_sync_vendor_ratings()</field>
         <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
     </record>
+    <record id="cron_late_shipments" model="ir.cron">
+        <field name="name">Marketplace: Late shipments</field>
+        <field name="model_id" ref="model_leaders_vendor_order"/>
+        <field name="state">code</field><field name="code">model.cron_late_shipments()</field>
+        <field name="interval_number">1</field><field name="interval_type">hours</field><field name="active">True</field>
+    </record>
 </odoo>

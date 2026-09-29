@@ -13,6 +13,7 @@
                 <field name="order_count" sum="Orders"/>
                 <field name="completion_rate" widget="percentage" string="Completion"/>
                 <field name="cancellation_rate" widget="percentage" string="Cancellation"/>
+                <field name="late_shipment_rate" widget="percentage" string="Late Shipments"/>
                 <field name="avg_ship_hours" string="Avg Ship (h)"/>
                 <field name="avg_rating" string="Rating"/>
                 <button name="action_recompute_kpis" type="object" icon="fa-refresh" title="Recompute this month"
@@ -30,6 +31,7 @@
                 <field name="order_count" type="measure"/>
                 <field name="completion_rate" type="measure"/>
                 <field name="cancellation_rate" type="measure"/>
+                <field name="late_shipment_rate" type="measure"/>
             </pivot>
         </field>
     </record>
@@ -50,6 +52,7 @@
             <search>
                 <field name="vendor_id"/>
                 <filter name="kpi_high_cancellation" string="High Cancellation" domain="[('cancellation_rate', '&gt;', 20)]"/>
+                <filter name="kpi_high_late" string="High Late Shipments" domain="[('late_shipment_rate', '&gt;', 20)]"/>
                 <filter name="kpi_has_orders" string="With Orders" domain="[('order_count', '&gt;', 0)]"/>
                 <group expand="0" string="Group By">
                     <filter name="kpi_group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>

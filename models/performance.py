@@ -15,6 +15,8 @@ class VendorKPI(models.Model):
     cancellation_rate = fields.Float()
     avg_rating = fields.Float()
     avg_ship_hours = fields.Float()
+    late_shipment_rate = fields.Float(
+        help="Percent of the month's orders shipped after their ship-by date, or still unshipped past it.")
 
     _sql_constraints = [
         ("vendor_period_uniq", "unique(vendor_id, period)",
@@ -53,6 +55,12 @@ class VendorKPI(models.Model):
         shipped = orders.filtered(lambda o: o.date_shipped and o.date_order)
         ship_hours = [
             (o.date_shipped - o.date_order).total_seconds() / 3600.0 for o in shipped]
+        # Orders carrying a ship-by date (not cancelled): late = first shipment
+        # after the deadline, or no shipment yet and the deadline has passed.
+        now = fields.Datetime.now()
+        timed = orders.filtered(lambda o: o.ship_by_date and o.state != "cancelled")
+        late = timed.filtered(lambda o: (
+            o.date_shipped > o.ship_by_date if o.date_shipped else o.ship_by_date < now))
         ratings = self.env["leaders.marketplace.offer"].sudo().search([
             ("vendor_id", "=", vendor.id), ("state", "=", "active"),
         ]).mapped("rating")
@@ -61,6 +69,7 @@ class VendorKPI(models.Model):
             "completion_rate": (completed / count * 100.0) if count else 0.0,
             "cancellation_rate": (cancelled / count * 100.0) if count else 0.0,
             "avg_ship_hours": (sum(ship_hours) / len(ship_hours)) if ship_hours else 0.0,
+            "late_shipment_rate": (len(late) / len(timed) * 100.0) if timed else 0.0,
             "avg_rating": (sum(ratings) / len(ratings)) if ratings else 0.0,
         }
 
@@ -98,6 +107,7 @@ class VendorKPI(models.Model):
         ])
         snapshots = self._recompute_vendors(vendors)
         snapshots._check_cancellation_warning()
+        snapshots._check_late_shipment_warning()
         return True
 
     def action_recompute_kpis(self):
@@ -106,6 +116,7 @@ class VendorKPI(models.Model):
         for snapshot in self:
             self._upsert_for_period(snapshot.vendor_id, snapshot.period)
         self._check_cancellation_warning()
+        self._check_late_shipment_warning()
         return True
 
     @api.model
@@ -139,6 +150,44 @@ class VendorKPI(models.Model):
             reference = _(
                 "Cancellation rate of %(rate).2f%% in %(period)s (threshold %(limit).2f%%).",
                 rate=snapshot.cancellation_rate, period=snapshot.period,
+                limit=threshold)
+            if Penalty.search_count([
+                ("vendor_id", "=", snapshot.vendor_id.id),
+                ("level", "=", "warning"), ("state", "=", "draft"),
+                ("reason", "=", reference),
+            ]):
+                continue
+            created |= Penalty.create({
+                "vendor_id": snapshot.vendor_id.id,
+                "level": "warning",
+                "reason": reference,
+            })
+        return created
+
+    def _check_late_shipment_warning(self):
+        """Raise a DRAFT warning penalty when late shipments run high.
+
+        Same rules as the cancellation warning: its own setting (off by
+        default), only ever a draft, one per vendor and month.
+        """
+        get = self.env["ir.config_parameter"].sudo().get_param
+        enabled = str(get("leaders_marketplace.late_shipment_auto_warning")).strip().lower()
+        if enabled in ("", "false", "0", "none"):
+            return False
+        try:
+            threshold = float(get("leaders_marketplace.late_shipment_rate_threshold", 20.0) or 0.0)
+        except (TypeError, ValueError):
+            threshold = 20.0
+        if threshold <= 0:
+            return False
+        Penalty = self.env["leaders.vendor.penalty"].sudo()
+        created = Penalty.browse()
+        for snapshot in self:
+            if snapshot.late_shipment_rate <= threshold or not snapshot.order_count:
+                continue
+            reference = _(
+                "Late shipment rate of %(rate).2f%% in %(period)s (threshold %(limit).2f%%).",
+                rate=snapshot.late_shipment_rate, period=snapshot.period,
                 limit=threshold)
             if Penalty.search_count([
                 ("vendor_id", "=", snapshot.vendor_id.id),

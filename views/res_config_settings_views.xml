@@ -74,6 +74,7 @@
                             <div><field name="marketplace_notify_vendor_order_cancelled_by_customer"/></div>
                             <div><field name="marketplace_notify_vendor_bank_change_approved"/></div>
                             <div><field name="marketplace_notify_vendor_bank_change_rejected"/></div>
+                            <div><field name="marketplace_notify_vendor_order_late"/></div>
                         </setting>
                         <setting string="Vendor Return Response" help="Days the vendor has to answer a return request before it escalates to the marketplace.">
                             <field name="marketplace_return_vendor_sla_days"/>
@@ -86,6 +87,15 @@
                         </setting>
                         <setting string="Flag High Cancellation Rates" help="Prepare a draft warning penalty when a vendor's monthly cancellation rate passes the threshold. Never applied automatically.">
                             <field name="marketplace_kpi_auto_warning"/>
+                        </setting>
+                        <setting string="Ship-by SLA" help="Days after confirmation by which a vendor must ship. Orders past it are flagged Late, reviewers get an activity and the vendor an email (notification switch). A vendor tier can override the value.">
+                            <field name="marketplace_ship_sla_days"/>
+                        </setting>
+                        <setting string="Flag High Late-Shipment Rates" help="Prepare a draft warning penalty when a vendor's monthly late-shipment rate passes the threshold. Never applied automatically.">
+                            <field name="marketplace_late_shipment_auto_warning"/>
+                        </setting>
+                        <setting string="Late-Shipment Rate Threshold (%)" help="Monthly late-shipment rate above which a draft warning is prepared." invisible="not marketplace_late_shipment_auto_warning">
+                            <field name="marketplace_late_shipment_rate_threshold"/>
                         </setting>
                         <setting string="Create Settlements Automatically" help="Open a draft settlement per vendor at the end of each period of their tier's payout frequency. Approval and payment stay manual.">
                             <field name="marketplace_auto_settlements"/>

@@ -450,6 +450,17 @@ class VendorOrder(models.Model):
                                       help="Amount refunded to the customer through returns.")
     vendor_net = fields.Monetary(currency_field="currency_id")
     date_shipped = fields.Datetime(readonly=True, copy=False, help="First shipment date; starts the return window.")
+    ship_by_date = fields.Datetime(
+        string="Ship By", readonly=True, copy=False, index=True,
+        help="Deadline to ship this order: confirmation time plus the ship-by SLA "
+             "(the vendor tier's, else the marketplace setting).")
+    is_late = fields.Boolean(
+        string="Late", compute="_compute_is_late", store=True, index=True,
+        help="Not shipped yet and past its ship-by date. Time passing cannot "
+             "trigger a stored compute, so the hourly cron refreshes it.")
+    late_notified = fields.Boolean(
+        copy=False, readonly=True,
+        help="The reviewers and the vendor were already told this order is late.")
     return_ids = fields.One2many("leaders.vendor.return", "vendor_order_id", string="Returns")
     return_count = fields.Integer(compute="_compute_return_count")
     credit_note_ids = fields.One2many("leaders.vendor.invoice", "vendor_order_id", string="Vendor Documents")
@@ -525,6 +536,7 @@ class VendorOrder(models.Model):
             if not rec.line_ids:
                 raise UserError(_("Vendor order %s has no lines.", rec.name))
             rec.state = "confirmed"
+            rec.ship_by_date = rec._compute_ship_by_date()
             rec._create_fulfillment_groups()
             rec._apply_fulfillment_fees()
             rec._recompute_amounts()
@@ -568,6 +580,64 @@ class VendorOrder(models.Model):
                     group.fee_amount = 0.0
                     continue
                 group.fee_amount = Fee._compute_fulfillment_fee(group)
+
+    # -------------------------------------------------------------------------
+    # Ship-by SLA
+    # -------------------------------------------------------------------------
+    def _ship_sla_days(self):
+        """Days allowed to ship: the vendor tier's value, else the setting (default 2)."""
+        self.ensure_one()
+        days = self.vendor_id.commercial_partner_id.vendor_tier_id.ship_sla_days
+        if days and days > 0:
+            return days
+        raw = self.env["ir.config_parameter"].sudo().get_param("leaders_marketplace.ship_sla_days")
+        try:
+            return int(raw) if raw not in (None, False, "") else 2
+        except (TypeError, ValueError):
+            return 2
+
+    def _compute_ship_by_date(self, start=None):
+        """Confirmation time (now) plus the SLA; False when the SLA is 0 or less."""
+        self.ensure_one()
+        days = self._ship_sla_days()
+        if days <= 0:
+            return False
+        return (start or fields.Datetime.now()) + timedelta(days=days)
+
+    @api.depends("ship_by_date", "state", "fulfillment_group_ids.state")
+    def _compute_is_late(self):
+        now = fields.Datetime.now()
+        for rec in self:
+            rec.is_late = bool(
+                rec.ship_by_date and rec.ship_by_date < now
+                and rec.state in ("confirmed", "processing")
+                and not any(g.state in _SHIPPED_GROUP_STATES for g in rec.fulfillment_group_ids))
+
+    @api.model
+    def cron_late_shipments(self):
+        """Hourly: flag orders that just became late, tell reviewers and vendor once."""
+        now = fields.Datetime.now()
+        # Nothing recomputes a stored compute when only the clock moves.
+        stale = self.sudo().search([
+            ("state", "in", ("confirmed", "processing")),
+            ("ship_by_date", "!=", False), ("ship_by_date", "<", now),
+            ("is_late", "=", False)])
+        if stale:
+            self.env.add_to_compute(self._fields["is_late"], stale)
+            stale.flush_recordset(["is_late"])
+        Notification = self.env["leaders.notification"]
+        if not Notification._enabled("vendor_order_late"):
+            return True
+        group = self.env.ref("leaders_marketplace.group_marketplace_reviewer")
+        reviewers = self.env["res.users"].sudo().search([("groups_id", "in", group.id)])
+        for rec in self.sudo().search([("is_late", "=", True), ("late_notified", "=", False)]):
+            for user in reviewers:
+                rec.activity_schedule(
+                    "mail.mail_activity_data_todo", user_id=user.id,
+                    summary=_("Order %s was not shipped by its ship-by date", rec.name))
+            Notification.notify_vendor("vendor_order_late", rec, rec.vendor_id)
+            rec.late_notified = True
+        return True
 
     def _sync_state_from_groups(self):
         for rec in self:
