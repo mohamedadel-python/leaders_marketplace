@@ -115,8 +115,6 @@ class TestFblDisabledModels(FblModeCommon):
 
     def test_turning_off_allowed_once_fbl_is_unused(self):
         self._clear_all_fbl_usage()
-        self.env["stock.quant"]._leaders_adjust_vendor_stock(
-            self.fbl_product, self.vendor.vendor_fbl_location_id, self.vendor, -3)
         self._settings_off()
         self.assertFalse(self.env["res.partner"]._leaders_fbl_enabled())
         # ... and back on.
