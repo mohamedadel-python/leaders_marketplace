@@ -353,6 +353,32 @@
             </field>
             <field name="auto_delete" eval="True"/>
         </record>
+        <record id="mail_template_customer_order_cancelled_by_customer" model="mail.template">
+            <field name="name">Marketplace: Cancellation confirmed (customer)</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_order"/>
+            <field name="subject">Your cancellation of order {{ object.name }} is confirmed</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>We cancelled order <strong t-out="object.name"/> as you asked.</p><p t-if="object.cancel_reason">Reason: <t t-out="object.cancel_reason"/></p>
+<p t-if="object.payment_method != 'cod'">If you already paid online, a refund of <t t-out="object.amount_total" t-options="{'widget': 'monetary', 'display_currency': object.currency_id}"/> is being processed.</p><p t-else="">You had chosen Cash on Delivery, so nothing was charged.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/marketplace/orders/{{ object.id }}">See your order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_order_cancelled_by_customer" model="mail.template">
+            <field name="name">Marketplace: Order cancelled by the customer (vendor)</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_order"/>
+            <field name="subject">Order {{ object.name }} was cancelled by the customer: do not ship</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>The customer cancelled order <strong t-out="object.name"/>. <strong>Do not ship it.</strong></p><p t-if="object.cancel_reason">Reason: <t t-out="object.cancel_reason"/></p>
+<p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/orders/{{ object.id }}">Open the order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
         <record id="param_notify_vendor_order_confirmed" model="ir.config_parameter">
             <field name="key">leaders_marketplace.notify_vendor_order_confirmed</field>
             <field name="value">True</field>
@@ -447,6 +473,14 @@
         </record>
         <record id="param_notify_customer_order_cancelled" model="ir.config_parameter">
             <field name="key">leaders_marketplace.notify_customer_order_cancelled</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_customer_order_cancelled_by_customer" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_customer_order_cancelled_by_customer</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_order_cancelled_by_customer" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_order_cancelled_by_customer</field>
             <field name="value">True</field>
         </record>
     </data>

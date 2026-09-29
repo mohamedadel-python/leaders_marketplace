@@ -65,6 +65,18 @@
                             <field name="cod_cash_confirmed_date" invisible="payment_method != 'cod' or not cod_cash_confirmed"/>
                         </group>
                     </group>
+                    <group string="Cancellation" name="cancellation" invisible="state != 'cancelled'">
+                        <group>
+                            <field name="cancelled_by_type"/>
+                            <field name="cancel_reason_id"/>
+                            <field name="cancel_date"/>
+                        </group>
+                        <group>
+                            <field name="cancel_reason"/>
+                            <field name="cancel_note"/>
+                            <field name="cancelled_by"/>
+                        </group>
+                    </group>
                     <notebook>
                         <page string="Lines" name="lines">
                             <field name="line_ids" readonly="state != 'pending'">
@@ -135,6 +147,7 @@
                 <field name="partner_id"/>
                 <filter name="to_process" string="To Process" domain="[('state', 'in', ('confirmed', 'processing', 'partially_fulfilled'))]"/>
                 <filter name="cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <filter name="cancelled_by_customer" string="Cancelled by the customer" domain="[('cancelled_by_type', '=', 'customer')]"/>
                 <group expand="0" string="Group By">
                     <filter name="group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
                     <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>

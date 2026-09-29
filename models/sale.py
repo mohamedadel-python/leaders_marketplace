@@ -642,6 +642,12 @@ class VendorOrder(models.Model):
                 continue
             if rec.fulfillment_group_ids.filtered(lambda g: g.state in _SHIPPED_GROUP_STATES):
                 raise UserError(_("Vendor order %s is already shipped; use a return instead.", rec.name))
+            if not rec.cancelled_by_type:
+                # Nobody said who cancelled: the back-office did (a vendor or a
+                # customer cancellation stores its own type before getting here).
+                rec.cancelled_by_type = "platform"
+            if not rec.cancel_date:
+                rec.cancel_date = fields.Datetime.now()
             rec.picking_ids.filtered(lambda p: p.state not in ("done", "cancel")).action_cancel()
             rec.fulfillment_group_ids.write({"state": "cancelled"})
             self.env["leaders.commission.line"].search([("vendor_order_id", "=", rec.id)]).write({"state": "cancelled"})
@@ -654,7 +660,8 @@ class VendorOrder(models.Model):
                 Accounting.create_cancellation_refund_payment(rec)
             rec.state = "cancelled"
             rec._recompute_amounts()
-            self.env["leaders.notification"].notify_customer("customer_order_cancelled", rec, rec.partner_id)
+            if not self.env.context.get("leaders_customer_cancel"):
+                self.env["leaders.notification"].notify_customer("customer_order_cancelled", rec, rec.partner_id)
         return True
 
     def _marketplace_submit_rating(self, rating, feedback=None):
@@ -704,7 +711,8 @@ class VendorOrder(models.Model):
                 lambda g: g.state in _SHIPPED_GROUP_STATES):
             raise UserError(_("Vendor order %s is already shipped and can no longer be cancelled.", self.name))
         # The reason is stored first so the customer's email can quote it.
-        self.sudo().write({"cancel_reason": reason, "cancelled_by": (user or self.env.user).id})
+        self.sudo().write({"cancel_reason": reason, "cancelled_by": (user or self.env.user).id,
+                           "cancelled_by_type": "vendor", "cancel_date": fields.Datetime.now()})
         self.sudo().action_cancel()
         self.sudo().message_post(body=_(
             "Order cancelled by the vendor. Reason: %(reason)s", reason=reason))

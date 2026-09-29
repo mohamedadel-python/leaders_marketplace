@@ -16,6 +16,13 @@
                         <setting string="Vendor Order Cancellation" help="Let a vendor owner cancel an unshipped order from the portal.">
                             <field name="marketplace_vendor_can_cancel_orders"/>
                         </setting>
+                        <setting string="Customer Order Cancellation" help="Let customers cancel a whole checkout or one seller's part from their order page while nothing has shipped. 0 hours = no time limit.">
+                            <field name="marketplace_customer_can_cancel_orders"/>
+                            <div class="mt-2" invisible="not marketplace_customer_can_cancel_orders">
+                                <label for="marketplace_cancel_window_hours" class="o_light_label"/>
+                                <field name="marketplace_cancel_window_hours"/>
+                            </div>
+                        </setting>
                         <setting string="Vendor-Only Checkouts" help="Hide vendor-only checkouts from the customer's Orders list, show the real total on the confirmation page and send one Marketplace order confirmation email.">
                             <field name="marketplace_vendor_only_presentation"/>
                         </setting>
@@ -60,6 +67,8 @@
                             <div><field name="marketplace_notify_customer_return_rejected"/></div>
                             <div><field name="marketplace_notify_customer_return_refunded"/></div>
                             <div><field name="marketplace_notify_customer_order_cancelled"/></div>
+                            <div><field name="marketplace_notify_customer_order_cancelled_by_customer"/></div>
+                            <div><field name="marketplace_notify_vendor_order_cancelled_by_customer"/></div>
                         </setting>
                         <setting string="Vendor Return Response" help="Days the vendor has to answer a return request before it escalates to the marketplace.">
                             <field name="marketplace_return_vendor_sla_days"/>

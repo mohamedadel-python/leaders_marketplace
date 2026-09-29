@@ -1,0 +1,63 @@
+<odoo>
+    <record id="view_cancel_reason_list" model="ir.ui.view">
+        <field name="name">leaders.cancel.reason.list</field>
+        <field name="model">leaders.cancel.reason</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="applies_to"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_cancel_reason_form" model="ir.ui.view">
+        <field name="name">leaders.cancel.reason.form</field>
+        <field name="model">leaders.cancel.reason</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <field name="name"/>
+                        <field name="applies_to"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_cancel_reason_search" model="ir.ui.view">
+        <field name="name">leaders.cancel.reason.search</field>
+        <field name="model">leaders.cancel.reason</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="inactive" string="Archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_cancel_reason" model="ir.actions.act_window">
+        <field name="name">Cancellation Reasons</field>
+        <field name="res_model">leaders.cancel.reason</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="view_order_form_customer_cancel" model="ir.ui.view">
+        <field name="name">sale.order.form.customer.cancel</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='sale_header']" position="after">
+                <group name="leaders_cancellation" string="Cancellation" invisible="not leaders_cancelled_by_type">
+                    <field name="leaders_cancelled_by_type"/>
+                    <field name="leaders_cancel_reason_id"/>
+                    <field name="leaders_cancel_note"/>
+                    <field name="leaders_cancel_date"/>
+                    <field name="leaders_refund_payment_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    <menuitem id="menu_cancel_reasons" name="Cancellation Reasons" parent="menu_configuration" action="action_cancel_reason" sequence="40"/>
+</odoo>

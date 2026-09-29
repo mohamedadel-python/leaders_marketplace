@@ -6,6 +6,7 @@ from . import vendor_core
 from . import buybox
 from . import product
 from . import sale
+from . import customer_cancel
 from . import vendor_invoice
 from . import payment_transaction
 from . import account_payment

@@ -19,6 +19,7 @@
         "data/delivery_carrier_data.xml",
         "data/mail_template_data.xml",
         "data/fbl_setting_data.xml",
+        "data/cancel_reason_data.xml",
         "data/commission_invoice_products.xml",
         "views/res_partner_views.xml",
         "views/vendor_application_views.xml",
@@ -39,7 +40,8 @@
         "views/portal_templates.xml",
         "views/checkout_templates.xml",
         "views/vendor_apply_templates.xml",
-        "views/menu_views.xml"
+        "views/menu_views.xml",
+        "views/cancel_reason_views.xml"
     ],
     "assets": {
         "web.assets_backend": [

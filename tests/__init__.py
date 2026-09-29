@@ -32,3 +32,4 @@ from . import test_translation
 from . import test_e2e_flows
 from . import test_release_readiness
 from . import test_fbl_disabled
+from . import test_customer_cancel

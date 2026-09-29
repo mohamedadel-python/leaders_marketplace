@@ -42,6 +42,8 @@ class VendorKPI(models.Model):
         orders = self.env["leaders.vendor.order"].sudo().search([
             ("vendor_id", "=", vendor.id),
             ("state", "!=", "pending"),
+            # A customer changing their mind says nothing about the vendor.
+            ("cancelled_by_type", "!=", "customer"),
             ("date_order", ">=", fields.Datetime.to_datetime(month_start)),
             ("date_order", "<", fields.Datetime.to_datetime(month_end)),
         ])

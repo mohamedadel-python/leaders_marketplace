@@ -1104,6 +1104,10 @@ class MarketplacePortal(CustomerPortal):
             "returnable_lines": returnable if in_window and order.state in ("fulfilled", "completed", "partially_fulfilled") else [],
             "error": kw.get("error"),
             "return_requested": kw.get("return_requested"),
+            "lm_cancel": order._customer_cancel_info(),
+            "lm_cancel_reasons": request.env["leaders.cancel.reason"].sudo().search([
+                ("applies_to", "in", ("customer", "both"))]),
+            "lm_cancelled_now": kw.get("cancelled"),
             "delivery_confirmed": kw.get("delivery_confirmed"),
             "delivery_disputed": kw.get("delivery_disputed"),
             "disputes": request.env["leaders.vendor.dispute"].sudo().search(
@@ -1129,6 +1133,23 @@ class MarketplacePortal(CustomerPortal):
         except UserError as error:
             return request.redirect(f"{url}?error={quote(str(error.args[0]))}")
         return request.redirect(f"{url}?rated=1")
+
+    @http.route("/my/marketplace/orders/<int:order_id>/cancel", type="http", auth="user",
+                website=True, methods=["POST"], csrf=True)
+    def customer_cancel_order(self, order_id, **post):
+        """Cancel the whole checkout (scope=all) or just this seller's part (scope=vendor)."""
+        order = self._customer_vendor_order(order_id)
+        if not order._customer_cancel_enabled():
+            raise NotFound()
+        url = f"/my/marketplace/orders/{order.id}"
+        scope = "all" if post.get("scope") == "all" else "vendor"
+        try:
+            with request.env.cr.savepoint():
+                order.action_customer_cancel(
+                    post.get("reason_id"), post.get("note"), scope=scope)
+        except UserError as error:
+            return request.redirect(f"{url}?error={quote(str(error.args[0]))}")
+        return request.redirect(f"{url}?cancelled={scope}")
 
     @http.route("/my/marketplace/orders/<int:order_id>/return", type="http", auth="user",
                 website=True, methods=["POST"], csrf=True)

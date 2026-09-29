@@ -10,6 +10,11 @@ class AccountPayment(models.Model):
         string="Cancelled Marketplace Order",
         help="Vendor order this payment refunds after its cancellation.")
 
+    leaders_cancelled_sale_id = fields.Many2one(
+        "sale.order", index=True, copy=False, readonly=True,
+        string="Cancelled Company Order",
+        help="Company sales order this payment refunds after the customer cancelled it.")
+
     def action_post(self):
         res = super().action_post()
         for payment in self.filtered("leaders_cancelled_order_id"):
@@ -20,6 +25,22 @@ class AccountPayment(models.Model):
                 lambda l: l.account_id.account_type == "asset_receivable" and not l.reconciled)
             pay_lines = payment.move_id.line_ids.filtered(
                 lambda l: l.account_id in credit.account_id and not l.reconciled)
+            if credit and pay_lines:
+                (credit + pay_lines).reconcile()
+        for payment in self.filtered("leaders_cancelled_sale_id"):
+            # Match the refund with the customer's credit: the posted credit note
+            # of the cancelled invoice, else what the online payment left open.
+            sale = payment.leaders_cancelled_sale_id
+            credit_notes = self.env["account.move"].search([
+                ("reversed_entry_id", "in", sale.invoice_ids.ids),
+                ("move_type", "=", "out_refund"), ("state", "=", "posted")])
+            payments = sale.transaction_ids.filtered(lambda t: t.state == "done").payment_id
+            credit = (credit_notes | payments.move_id).line_ids.filtered(
+                lambda l: l.account_id.account_type == "asset_receivable"
+                and not l.reconciled and l.credit)
+            pay_lines = payment.move_id.line_ids.filtered(
+                lambda l: l.account_id in credit.account_id and not l.reconciled)
+            credit = credit.filtered(lambda l: l.account_id in pay_lines.account_id)
             if credit and pay_lines:
                 (credit + pay_lines).reconcile()
         for payment in self.filtered("leaders_return_id"):

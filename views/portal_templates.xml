@@ -1078,9 +1078,72 @@
                         <i class="fa fa-file-pdf-o"/> Invoice <t t-esc="order.invoice_id.name"/>
                     </a>
                 </div>
-                <div t-if="order.state == 'cancelled' and order.cancel_reason" class="alert alert-warning mt-3">
+                <div t-if="order.state == 'cancelled' and order.cancel_reason and order.cancelled_by_type != 'customer'" class="alert alert-warning mt-3">
                     This order was cancelled by the seller. Reason: <t t-esc="order.cancel_reason"/>
                 </div>
+                <div t-if="order.state == 'cancelled' and order.cancelled_by_type == 'customer'" class="alert alert-warning mt-3" id="lm_cancelled_by_customer">
+                    <div>You cancelled this order. Reason: <t t-esc="order.cancel_reason"/></div>
+                    <div t-if="order.payment_method != 'cod' and order.refund_payment_id" class="mt-1"><i class="fa fa-clock-o"/> Your refund is being processed.</div>
+                    <div t-elif="order.payment_method == 'cod'" class="mt-1">You chose Cash on Delivery, so nothing was charged.</div>
+                </div>
+                <div t-if="lm_cancelled_now" class="alert alert-success" id="lm_cancel_done">
+                    <t t-if="lm_cancelled_now == 'all'">Your order was cancelled.</t>
+                    <t t-else="">This seller's part of your order was cancelled.</t>
+                </div>
+                <t t-if="lm_cancel and lm_cancel['enabled'] and order.state != 'cancelled'">
+                    <div class="card mt-3" id="lm_cancel_card" t-if="lm_cancel['all'] is None or lm_cancel['vendor'] is None">
+                        <div class="card-body">
+                            <h5 class="card-title">Cancel</h5>
+                            <form t-if="lm_cancel['all'] is None" method="post" t-att-action="'/my/marketplace/orders/%s/cancel' % order.id" class="mb-3" id="lm_cancel_all_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="scope" value="all"/>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-12 col-md-4">
+                                        <label class="form-label small" for="lm_cancel_all_reason">Reason</label>
+                                        <select name="reason_id" id="lm_cancel_all_reason" class="form-select" required="required">
+                                            <option value="">Choose a reason</option>
+                                            <option t-foreach="lm_cancel_reasons" t-as="r" t-att-value="r.id" t-esc="r.name"/>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-5">
+                                        <label class="form-label small" for="lm_cancel_all_note">Note (optional)</label>
+                                        <input type="text" name="note" id="lm_cancel_all_note" class="form-control"/>
+                                    </div>
+                                    <div class="col-12 col-md-3">
+                                        <button class="btn btn-outline-danger w-100"><i class="fa fa-times"/> Cancel order</button>
+                                    </div>
+                                </div>
+                                <div class="form-text">Cancels every seller's part of this purchase.</div>
+                            </form>
+                            <form t-if="lm_cancel['vendor'] is None and lm_cancel['has_other_parts']" method="post" t-att-action="'/my/marketplace/orders/%s/cancel' % order.id" id="lm_cancel_part_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="scope" value="vendor"/>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-12 col-md-4">
+                                        <label class="form-label small" for="lm_cancel_part_reason">Reason</label>
+                                        <select name="reason_id" id="lm_cancel_part_reason" class="form-select" required="required">
+                                            <option value="">Choose a reason</option>
+                                            <option t-foreach="lm_cancel_reasons" t-as="r" t-att-value="r.id" t-esc="r.name"/>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-5">
+                                        <label class="form-label small" for="lm_cancel_part_note">Note (optional)</label>
+                                        <input type="text" name="note" id="lm_cancel_part_note" class="form-control"/>
+                                    </div>
+                                    <div class="col-12 col-md-3">
+                                        <button class="btn btn-outline-danger w-100"><i class="fa fa-times"/> Cancel this seller's part</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div t-if="lm_cancel['all'] == 'shipped' or lm_cancel['vendor'] == 'shipped'" class="alert alert-info mt-3" id="lm_cancel_shipped">
+                        <i class="fa fa-truck"/> Part of this order has already shipped and cannot be cancelled. Request a return after delivery.
+                    </div>
+                    <div t-if="lm_cancel['all'] == 'window' or lm_cancel['vendor'] == 'window'" class="alert alert-info mt-3" id="lm_cancel_window">
+                        The time to cancel this order has passed.
+                    </div>
+                </t>
                 <table class="table align-middle mt-3">
                     <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Total</th></tr></thead>
                     <tbody>
