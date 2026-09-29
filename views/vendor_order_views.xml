@@ -1,0 +1,187 @@
+<odoo>
+    <record id="view_vendor_order_tree" model="ir.ui.view">
+        <field name="name">leaders.vendor.order.tree</field>
+        <field name="model">leaders.vendor.order</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancelled'" decoration-info="state in ('confirmed', 'processing')" decoration-success="state == 'completed'">
+                <field name="name"/>
+                <field name="date_order"/>
+                <field name="vendor_id"/>
+                <field name="partner_id"/>
+                <field name="sale_order_id" optional="hide"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="commission_amount" sum="Commission"/>
+                <field name="vendor_net" sum="Net"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_vendor_order_form" model="ir.ui.view">
+        <field name="name">leaders.vendor.order.form</field>
+        <field name="model">leaders.vendor.order</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm" class="btn-primary" invisible="state != 'pending'"/>
+                    <button name="action_mark_completed" type="object" string="Mark Completed" invisible="state != 'fulfilled'"/>
+                    <button name="action_confirm_cod_payment" type="object" string="Confirm Cash Collected" class="btn-success"
+                            invisible="payment_method != 'cod' or state != 'completed' or cod_cash_confirmed"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('fulfilled', 'completed', 'cancelled')"
+                            confirm="Cancel this vendor order? Deliveries are cancelled and the escrow collection is reversed."/>
+                    <field name="state" widget="statusbar" statusbar_visible="confirmed,processing,fulfilled,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_pickings" type="object" class="oe_stat_button" icon="fa-truck" invisible="not picking_count">
+                            <field name="picking_count" widget="statinfo" string="Deliveries"/>
+                        </button>
+                        <button name="action_view_returns" type="object" class="oe_stat_button" icon="fa-undo" invisible="not return_count">
+                            <field name="return_count" widget="statinfo" string="Returns"/>
+                        </button>
+                    </div>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group string="Vendor &amp; Customer">
+                            <field name="vendor_id" readonly="state != 'pending'"/>
+                            <field name="partner_id" readonly="state != 'pending'"/>
+                            <field name="partner_shipping_id" readonly="state != 'pending'"/>
+                            <field name="date_order" readonly="state != 'pending'"/>
+                            <field name="sale_order_id"/>
+                            <field name="invoice_id"/>
+                        </group>
+                        <group string="Amounts">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_untaxed"/>
+                            <field name="amount_tax"/>
+                            <field name="amount_total"/>
+                            <field name="commission_amount"/>
+                            <field name="fulfillment_fee_amount"/>
+                            <field name="refunded_amount"/>
+                            <field name="vendor_net"/>
+                            <field name="payment_method"/>
+                            <field name="cod_cash_confirmed" invisible="payment_method != 'cod'"/>
+                            <field name="cod_cash_confirmed_date" invisible="payment_method != 'cod' or not cod_cash_confirmed"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids" readonly="state != 'pending'">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="name" optional="hide"/>
+                                    <field name="offer_id" optional="show"/>
+                                    <field name="fulfillment_type"/>
+                                    <field name="product_uom_qty"/>
+                                    <field name="qty_delivered"/>
+                                    <field name="qty_returned" optional="show"/>
+                                    <field name="product_uom" optional="hide"/>
+                                    <field name="price_unit"/>
+                                    <field name="discount" optional="hide"/>
+                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="price_total"/>
+                                    <field name="commission_amount" optional="show"/>
+                                    <field name="is_delivery" optional="hide"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Fulfillment" name="fulfillment">
+                            <field name="fulfillment_group_ids">
+                                <list create="false" delete="false">
+                                    <field name="name"/>
+                                    <field name="fulfillment_type"/>
+                                    <field name="source_location_id"/>
+                                    <field name="picking_ids" widget="many2many_tags"/>
+                                    <field name="tracking_ref"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="delivered_reported_by" optional="hide"/>
+                                    <field name="delivered_reported_date" optional="hide"/>
+                                    <field name="delivered_confirmed_by" optional="hide"/>
+                                    <field name="delivered_date" optional="hide"/>
+                                    <field name="delivery_proof" filename="delivery_proof_name" optional="hide"/>
+                                    <field name="delivery_proof_name" column_invisible="1"/>
+                                    <button name="action_ship" type="object" string="Ship" icon="fa-truck" invisible="state in ('shipped', 'delivery_reported', 'delivered', 'cancelled')"/>
+                                    <button name="action_delivered" type="object" string="Delivered" icon="fa-check" invisible="state not in ('shipped', 'delivery_reported')"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Accounting" name="accounting" groups="leaders_marketplace.group_marketplace_finance,leaders_marketplace.group_marketplace_manager">
+                            <group>
+                                <field name="cod_payment_id" readonly="1" invisible="not cod_payment_id"/>
+                                <field name="refund_payment_id" readonly="1" invisible="not refund_payment_id"/>
+                                <field name="collection_move_id"/>
+                                <field name="collection_reversal_move_id"/>
+                                <field name="earning_move_id"/>
+                                <field name="cod_due_move_id"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_vendor_order_search" model="ir.ui.view">
+        <field name="name">leaders.vendor.order.search</field>
+        <field name="model">leaders.vendor.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="vendor_id"/>
+                <field name="partner_id"/>
+                <filter name="to_process" string="To Process" domain="[('state', 'in', ('confirmed', 'processing', 'partially_fulfilled'))]"/>
+                <filter name="cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_month" string="Order Month" context="{'group_by': 'date_order:month'}"/>
+                    <filter name="group_payment_method" string="Payment Method" context="{'group_by': 'payment_method'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_vendor_order" model="ir.actions.act_window">
+        <field name="name">Vendor Orders</field>
+        <field name="res_model">leaders.vendor.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_vendor_order_search"/>
+    </record>
+
+    <record id="view_vendor_order_pivot" model="ir.ui.view">
+        <field name="name">leaders.vendor.order.pivot</field>
+        <field name="model">leaders.vendor.order</field>
+        <field name="arch" type="xml">
+            <pivot string="Marketplace Sales" sample="1">
+                <field name="vendor_id" type="row"/>
+                <field name="date_order" interval="month" type="col"/>
+                <field name="amount_total" type="measure"/>
+                <field name="vendor_net" type="measure"/>
+                <field name="commission_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_vendor_order_graph" model="ir.ui.view">
+        <field name="name">leaders.vendor.order.graph</field>
+        <field name="model">leaders.vendor.order</field>
+        <field name="arch" type="xml">
+            <graph string="Marketplace Sales" type="bar" sample="1">
+                <field name="date_order" interval="month"/>
+                <field name="amount_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_vendor_order_report" model="ir.actions.act_window">
+        <field name="name">Marketplace Sales</field>
+        <field name="res_model">leaders.vendor.order</field>
+        <field name="view_mode">pivot,graph,list,form</field>
+        <field name="search_view_id" ref="view_vendor_order_search"/>
+        <field name="context">{'search_default_group_vendor': 1}</field>
+    </record>
+</odoo>

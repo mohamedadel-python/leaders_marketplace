@@ -1,0 +1,200 @@
+<odoo>
+    <record id="view_vendor_return_tree" model="ir.ui.view">
+        <field name="name">leaders.vendor.return.tree</field>
+        <field name="model">leaders.vendor.return</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-danger="state == 'escalated'" decoration-muted="state in ('closed', 'cancelled')" decoration-success="state == 'refunded'">
+                <field name="name"/>
+                <field name="request_date"/>
+                <field name="vendor_order_id"/>
+                <field name="vendor_id"/>
+                <field name="partner_id"/>
+                <field name="vendor_deadline" optional="show"/>
+                <field name="refund_amount" sum="Refunds"/>
+                <field name="commission_refund" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_vendor_return_form" model="ir.ui.view">
+        <field name="name">leaders.vendor.return.form</field>
+        <field name="model">leaders.vendor.return</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <button name="action_platform_approve" type="object" string="Approve Return" class="btn-primary" invisible="state not in ('requested', 'rejected', 'escalated')" groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_manager"/>
+                    <button name="action_platform_reject" type="object" string="Reject Return" invisible="state not in ('requested', 'rejected', 'escalated')" groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_manager"/>
+                    <button name="action_receive" type="object" string="Goods Received" class="btn-primary" invisible="state != 'approved'" confirm="Confirm the returned goods arrived? The customer is refunded right away."/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('received', 'refunded', 'closed', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="requested,approved,received,refunded"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="vendor_order_id"/>
+                            <field name="vendor_id"/>
+                            <field name="partner_id"/>
+                            <field name="request_date"/>
+                            <field name="vendor_deadline"/>
+                            <field name="approved_by"/>
+                        </group>
+                        <group string="Refund">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="refund_amount"/>
+                            <field name="commission_refund"/>
+                            <field name="vendor_deduction"/>
+                            <field name="credit_note_id"/>
+                            <field name="refund_payment_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="reason" readonly="1"/>
+                        <field name="vendor_note" readonly="1"/>
+                        <field name="decision_note" readonly="state not in ('requested', 'rejected', 'escalated')" placeholder="Required to reject; explain the marketplace decision."/>
+                    </group>
+                    <notebook>
+                        <page string="Products" name="lines">
+                            <field name="line_ids" readonly="1">
+                                <list>
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="refund_amount"/>
+                                    <field name="commission_refund"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Return Receipts" name="pickings">
+                            <field name="picking_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="location_dest_id"/>
+                                    <field name="scheduled_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Accounting" name="accounting" groups="leaders_marketplace.group_marketplace_finance,leaders_marketplace.group_marketplace_manager">
+                            <group>
+                                <field name="refund_move_id"/>
+                                <field name="wallet_transaction_id"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_vendor_return_search" model="ir.ui.view">
+        <field name="name">leaders.vendor.return.search</field>
+        <field name="model">leaders.vendor.return</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="vendor_order_id"/>
+                <field name="vendor_id"/>
+                <field name="partner_id"/>
+                <filter name="needs_decision" string="Needs Marketplace Decision" domain="[('state', 'in', ('escalated', 'rejected'))]"/>
+                <filter name="awaiting_goods" string="Awaiting Goods" domain="[('state', '=', 'approved')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_vendor_return" model="ir.actions.act_window">
+        <field name="name">Returns</field>
+        <field name="res_model">leaders.vendor.return</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_vendor_return_search"/>
+        <field name="context">{'search_default_needs_decision': 1}</field>
+    </record>
+    <record id="view_vendor_dispute_list" model="ir.ui.view">
+        <field name="name">leaders.vendor.dispute.list</field>
+        <field name="model">leaders.vendor.dispute</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-danger="state == 'escalated'" decoration-warning="state == 'open'" decoration-muted="state in ('resolved', 'closed')">
+                <field name="name"/>
+                <field name="vendor_order_id"/>
+                <field name="vendor_id"/>
+                <field name="partner_id"/>
+                <field name="reason"/>
+                <field name="vendor_deadline"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_vendor_dispute_form" model="ir.ui.view">
+        <field name="name">leaders.vendor.dispute.form</field>
+        <field name="model">leaders.vendor.dispute</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_escalate" type="object" string="Escalate"
+                            invisible="state not in ('open', 'vendor_reply')"/>
+                    <button name="action_resolve" type="object" string="Resolve" class="btn-primary"
+                            invisible="state in ('resolved', 'closed')"
+                            groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_manager"/>
+                    <button name="action_close" type="object" string="Close"
+                            invisible="state == 'closed'"
+                            groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <div class="alert alert-danger" role="alert" invisible="state != 'escalated'">
+                        Waiting for a marketplace decision.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="vendor_order_id"/>
+                            <field name="vendor_id"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="vendor_deadline" readonly="1"/>
+                        </group>
+                    </group>
+                    <label for="reason"/>
+                    <field name="reason" readonly="1"/>
+                    <label for="decision"/>
+                    <field name="decision" placeholder="Required to resolve; the customer and the vendor both see this."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_vendor_dispute_search" model="ir.ui.view">
+        <field name="name">leaders.vendor.dispute.search</field>
+        <field name="model">leaders.vendor.dispute</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="vendor_id"/>
+                <field name="partner_id"/>
+                <filter name="dsp_needs_decision" string="Needs Decision" domain="[('state', '=', 'escalated')]"/>
+                <filter name="dsp_open" string="Open" domain="[('state', 'in', ('open', 'vendor_reply'))]"/>
+                <filter name="dsp_overdue" string="Past Deadline" domain="[('state', '=', 'open'), ('vendor_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="dsp_group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="dsp_group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_vendor_dispute" model="ir.actions.act_window">
+        <field name="name">Disputes</field>
+        <field name="res_model">leaders.vendor.dispute</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_vendor_dispute_search"/>
+        <field name="context">{'search_default_dsp_needs_decision': 1}</field>
+    </record>
+</odoo>

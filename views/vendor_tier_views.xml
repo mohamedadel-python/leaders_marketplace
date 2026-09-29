@@ -1,0 +1,20 @@
+<odoo>
+    <record id="view_vendor_tier_tree" model="ir.ui.view">
+        <field name="name">leaders.vendor.tier.tree</field>
+        <field name="model">leaders.vendor.tier</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence"/>
+                <field name="name"/>
+                <field name="commission_rate"/>
+                <field name="product_limit"/>
+                <field name="payout_frequency"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_vendor_tier" model="ir.actions.act_window">
+        <field name="name">Vendor Tiers</field>
+        <field name="res_model">leaders.vendor.tier</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

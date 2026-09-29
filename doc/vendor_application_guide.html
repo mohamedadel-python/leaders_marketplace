@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<title>دليل موديول طلبات انضمام البائعين</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm; }
+  body { font-family: "Noto Naskh Arabic", "Noto Sans Arabic", "Amiri", serif; font-size: 12.5pt; line-height: 1.75; color: #1f2328; direction: rtl; }
+  h1, h2, h3 { font-family: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif; color: #3b2a4d; }
+  h1 { font-size: 26pt; margin: 0 0 6px; }
+  h2 { font-size: 17pt; border-bottom: 3px solid #714b67; padding-bottom: 4px; margin-top: 26px; page-break-after: avoid; }
+  h3 { font-size: 13.5pt; margin: 18px 0 6px; color: #714b67; page-break-after: avoid; }
+  p { margin: 6px 0; }
+  code, .en { font-family: "DejaVu Sans Mono", monospace; font-size: 9.5pt; direction: ltr; unicode-bidi: embed; color: #0b5394; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; page-break-inside: auto; font-size: 11pt; }
+  tr { page-break-inside: avoid; }
+  thead { display: table-header-group; }
+  th code, th .en { color: #fff; }
+  td code { word-break: break-all; }
+  th { background: #714b67; color: #fff; font-family: "Noto Sans Arabic", sans-serif; font-weight: 700; padding: 6px 8px; text-align: right; }
+  td { border-bottom: 1px solid #e3e0e6; padding: 6px 8px; vertical-align: top; }
+  tr:nth-child(even) td { background: #faf8fb; }
+  .cover { text-align: center; padding-top: 170px; page-break-after: always; }
+  .cover .sub { font-size: 14pt; color: #6c757d; }
+  .cover .meta { margin-top: 60px; font-size: 11pt; color: #6c757d; }
+  .box { border: 1px solid #e3e0e6; border-right: 5px solid #714b67; background: #faf8fb; padding: 8px 14px; margin: 10px 0; page-break-inside: avoid; }
+  .warn { border-right-color: #d9480f; background: #fff6ee; }
+  .ok { border-right-color: #198754; background: #effaf3; }
+  .flow { display: table; width: 100%; margin: 12px 0; direction: rtl; }
+  .step { display: table-cell; text-align: center; vertical-align: middle; }
+  .step span { display: inline-block; background: #714b67; color: #fff; border-radius: 8px; padding: 8px 10px; font-family: "Noto Sans Arabic", sans-serif; font-size: 11pt; }
+  .step.alt span { background: #dc3545; }
+  .arrow { display: table-cell; text-align: center; vertical-align: middle; color: #714b67; font-size: 16pt; width: 26px; }
+  pre { direction: ltr; text-align: left; background: #1f2328; color: #e6edf3; padding: 10px 12px; border-radius: 6px; font-family: "DejaVu Sans Mono", monospace; font-size: 9pt; line-height: 1.45; white-space: pre-wrap; page-break-inside: avoid; }
+  .pb { page-break-before: always; }
+  ul { margin: 4px 0 8px; padding-right: 22px; }
+  li { margin: 2px 0; }
+  .tag { display: inline-block; padding: 0 8px; border-radius: 10px; font-size: 10pt; font-family: "Noto Sans Arabic", sans-serif; }
+  .req { background: #fde2e1; color: #a61b1b; }
+  .opt { background: #e9ecef; color: #495057; }
+  .auto { background: #e0f2fe; color: #075985; }
+  .toc li { margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>دليل موديول طلبات انضمام البائعين</h1>
+  <div class="sub">Vendor Application — <span class="en">leaders.vendor.application</span></div>
+  <div class="sub">موديول <span class="en">leaders_marketplace</span> — Odoo 18</div>
+  <div class="meta">مرجع للتعديل: الدور، المراحل، الحقول، القواعد، وأماكن الكود<br/>سبتمبر 2026</div>
+</div>
+
+<h2>المحتويات</h2>
+<ol class="toc">
+  <li>دور الموديول في دورة الماركت بليس</li>
+  <li>مراحل الطلب (Workflow)</li>
+  <li>حقول الطلب حقل حقل</li>
+  <li>المستندات والتحقق منها</li>
+  <li>الأزرار وما يحدث عند كل زرار</li>
+  <li>قواعد الموافقة والمستندات المطلوبة</li>
+  <li>ما يتم إنشاؤه تلقائياً عند الموافقة</li>
+  <li>خريطة الكود: أين تعدّل ماذا</li>
+  <li>أمثلة تعديلات شائعة خطوة بخطوة</li>
+  <li>التيستات والسكريبتات</li>
+  <li>نقاط مفتوحة للنقاش</li>
+</ol>
+
+<h2>1) دور الموديول في دورة الماركت بليس</h2>
+<p>طلب الانضمام هو <strong>بوابة دخول أي بائع</strong> للمنصة. لا يوجد بائع في النظام إلا من خلاله.
+المراجع يُدخل بيانات النشاط وصاحب الحساب والممثل القانوني والبنك، ويرفع مستندات KYC ويراجعها،
+وعند الموافقة يقوم الطلب نفسه بإنشاء كل ما يحتاجه البائع ليبدأ البيع.</p>
+<div class="box">
+  <strong>ترتيب الدورة الكاملة:</strong>
+  طلب الانضمام ← العروض (منتجات البائع) ← المخزون / FBL ← الشراء وفصل طلبات البائعين ← الشحن والتسليم ← المرتجعات ← المالية (العمولة، المحفظة، التسويات) ← الأداء.
+</div>
+<p>المنيو: <strong>Marketplace ← Operations ← Vendor Applications</strong>.
+الصلاحيات: <em>Marketplace Reviewer</em> (قراءة/كتابة/إنشاء) و<em>Marketplace Manager</em> (كل الصلاحيات).</p>
+
+<h2>2) مراحل الطلب (Workflow)</h2>
+<div class="flow">
+  <div class="step"><span>Draft<br/>مسودة</span></div><div class="arrow">←</div>
+  <div class="step"><span>Submitted<br/>مُقدَّم</span></div><div class="arrow">←</div>
+  <div class="step"><span>Under Review<br/>قيد المراجعة</span></div><div class="arrow">←</div>
+  <div class="step"><span>Approved<br/>مقبول</span></div>
+  <div class="arrow">|</div>
+  <div class="step alt"><span>Rejected<br/>مرفوض</span></div>
+</div>
+<table>
+  <thead><tr><th style="width:22%">المرحلة</th><th>معناها</th><th style="width:30%">حالة شركة البائع <span class="en">vendor_state</span></th></tr></thead>
+  <tr><td>Draft</td><td>الطلب قيد الإدخال، لم يُنشأ أي كونتاكت بعد.</td><td>— (لا توجد شركة)</td></tr>
+  <tr><td>Submitted</td><td>تم التقديم؛ أُنشئ كونتاكت شركة البائع.</td><td>submitted</td></tr>
+  <tr><td>Under Review</td><td>المراجع استلم الطلب ويراجع البيانات والمستندات.</td><td>under_review</td></tr>
+  <tr><td>Approved</td><td>البائع مفعّل: شركة + مخزن + يوزر + حساب بنكي.</td><td>approved</td></tr>
+  <tr><td>Rejected</td><td>الطلب مرفوض مع سبب مكتوب.</td><td>rejected</td></tr>
+</table>
+<div class="box warn">الطلب المرفوض حالياً <strong>لا يمكن إرجاعه لـ Draft</strong>. (نقطة مفتوحة في القسم 11)</div>
+
+<h2 class="pb">3) حقول الطلب حقل حقل</h2>
+<p>الوسوم: <span class="tag req">إجباري للحفظ</span> <span class="tag opt">اختياري</span> <span class="tag auto">تلقائي</span>.
+«مطلوب للموافقة» يعني أن الحفظ مسموح لكن زر Approve لن يعمل بدونه.</p>
+
+<h3>أ) بيانات عامة</h3>
+<table>
+  <thead><tr><th style="width:26%">الحقل</th><th style="width:24%">الاسم التقني</th><th>الوصف والسلوك</th></tr></thead>
+  <tr><td>رقم الطلب <span class="tag auto">تلقائي</span></td><td><code>name</code></td><td>يُولَّد من التسلسل <code>leaders.vendor.application</code> بالشكل <code>VAPP/00001</code>.</td></tr>
+  <tr><td>الحالة <span class="tag auto">تلقائي</span></td><td><code>state</code></td><td>تتغير بالأزرار فقط (القسم 5).</td></tr>
+  <tr><td>حالة KYC <span class="tag auto">تلقائي</span></td><td><code>kyc_state</code></td><td>Not Started / Pending / Verified / Failed. تصبح Verified بزر Verify KYC أو عند الموافقة، وتتحول Pending/Failed إذا تغيّر أو رُفض مستند.</td></tr>
+  <tr><td>المراجع</td><td><code>reviewer_id</code></td><td>يُملأ تلقائياً بمن ضغط Start Review.</td></tr>
+  <tr><td>الناقص قبل الموافقة <span class="tag auto">تلقائي</span></td><td><code>missing_requirements</code></td><td>حقل محسوب (غير مخزّن) يعرض قائمة كل ما يمنع الموافقة؛ يظهر كتنبيه أصفر أعلى الفورم في مرحلتي Submitted و Under Review.</td></tr>
+  <tr><td>الخطوة</td><td><code>step</code></td><td><strong>غير مستخدم</strong> حالياً في أي منطق.</td></tr>
+</table>
+
+<h3>ب) النشاط التجاري (Business)</h3>
+<table>
+  <thead><tr><th style="width:26%">الحقل</th><th style="width:24%">الاسم التقني</th><th>الوصف والسلوك</th></tr></thead>
+  <tr><td>اسم النشاط <span class="tag req">إجباري</span></td><td><code>business_name</code></td><td>يصبح اسم كونتاكت شركة البائع.</td></tr>
+  <tr><td>اسم المتجر <span class="tag opt">اختياري</span></td><td><code>store_name</code></td><td>الاسم الظاهر للعملاء وعلى فاتورة البائع؛ إن كان فارغاً يُستخدم اسم النشاط.</td></tr>
+  <tr><td>نوع الكيان — مطلوب للموافقة</td><td><code>legal_type</code></td><td>Individual / Sole Proprietorship / Company. يحدد المستندات المطلوبة، و«فرد» يُنشئ الكونتاكت كشخص وليس شركة.</td></tr>
+  <tr><td>الاسم القانوني — مطلوب للموافقة</td><td><code>legal_name</code></td><td>الاسم المسجّل رسمياً.</td></tr>
+  <tr><td>رقم السجل التجاري</td><td><code>commercial_registration_number</code></td><td>مطلوب للمؤسسة والشركة، ومخفي للفرد. يُنسخ إلى <code>company_registry</code> على كونتاكت الشركة.</td></tr>
+  <tr><td>الرقم الضريبي / VAT</td><td><code>tax_number</code></td><td>مطلوب للشركة. يُنسخ إلى <code>vat</code> ويظهر على فاتورة البائع. وجوده يجعل شهادة VAT مطلوبة.</td></tr>
+  <tr><td>النشاط التجاري — مطلوب للموافقة</td><td><code>business_activity</code></td><td>وصف نصي لما يبيعه البائع.</td></tr>
+  <tr><td>فئات المنتجات — مطلوب للموافقة</td><td><code>product_category_ids</code></td><td>من فئات الموقع <code>product.public.category</code>.</td></tr>
+  <tr><td>إيميل / تليفون النشاط <span class="tag opt">اختياري</span></td><td><code>business_email</code>, <code>business_phone</code></td><td>على كونتاكت الشركة؛ إن كانا فارغين يُستخدم إيميل/تليفون صاحب الحساب.</td></tr>
+  <tr><td>العنوان <span class="tag opt">اختياري</span></td><td><code>street</code>, <code>city</code>, <code>country_id</code></td><td>عنوان الشركة، ويظهر على فاتورة البائع.</td></tr>
+</table>
+
+<h3>ج) صاحب الحساب (Vendor Owner)</h3>
+<table>
+  <thead><tr><th style="width:26%">الحقل</th><th style="width:24%">الاسم التقني</th><th>الوصف والسلوك</th></tr></thead>
+  <tr><td>الاسم <span class="tag req">إجباري</span></td><td><code>owner_name</code></td><td>اسم كونتاكت الشخص الذي يُنشأ تحت شركة البائع.</td></tr>
+  <tr><td>الإيميل <span class="tag req">إجباري</span></td><td><code>owner_email</code></td><td><strong>Login البائع في البورتال.</strong> يُحفظ بحروف صغيرة وبدون مسافات. لو مستخدم ليوزر آخر يظهر خطأ عند Submit وعند الموافقة.</td></tr>
+  <tr><td>التليفون <span class="tag opt">اختياري</span></td><td><code>owner_phone</code></td><td>تليفون كونتاكت الشخص.</td></tr>
+  <tr><td>كونتاكت صاحب الحساب <span class="tag auto">تلقائي</span></td><td><code>owner_partner_id</code></td><td>يُنشأ عند الموافقة.</td></tr>
+  <tr><td>يوزر البورتال <span class="tag auto">تلقائي</span></td><td><code>portal_user_id</code></td><td>يُنشأ عند الموافقة بصلاحية Vendor Owner.</td></tr>
+  <tr><td>شركة البائع <span class="tag auto">تلقائي</span></td><td><code>partner_id</code></td><td>تُنشأ عند Submit.</td></tr>
+</table>
+
+<h3>د) الممثل القانوني (Legal Representative) — كلها مطلوبة للموافقة</h3>
+<table>
+  <thead><tr><th style="width:26%">الحقل</th><th style="width:24%">الاسم التقني</th><th>الوصف</th></tr></thead>
+  <tr><td>الاسم</td><td><code>representative_name</code></td><td>الشخص المخوّل قانونياً عن البائع.</td></tr>
+  <tr><td>المنصب</td><td><code>representative_position</code></td><td>مثال: مدير عام، مالك.</td></tr>
+  <tr><td>رقم الهوية / الجواز</td><td><code>representative_id_number</code></td><td>يجب أن يطابق مستند ID / Passport.</td></tr>
+</table>
+
+<h3>هـ) البيانات البنكية (Bank Information) — كلها مطلوبة للموافقة</h3>
+<table>
+  <thead><tr><th style="width:26%">الحقل</th><th style="width:24%">الاسم التقني</th><th>الوصف</th></tr></thead>
+  <tr><td>اسم البنك</td><td><code>bank_name</code></td><td>يُبحث عنه في <code>res.bank</code> بالاسم أو يُنشأ.</td></tr>
+  <tr><td>اسم صاحب الحساب</td><td><code>bank_account_holder</code></td><td>يُحفظ في <code>acc_holder_name</code> على الحساب البنكي.</td></tr>
+  <tr><td>رقم الحساب / IBAN</td><td><code>bank_account_number</code></td><td>يُحفظ بدون مسافات وبحروف كبيرة. <strong>لا يوجد تحقق من صحة الـ IBAN</strong> حالياً.</td></tr>
+</table>
+
+<h3>و) المراجعة (Review)</h3>
+<table>
+  <thead><tr><th style="width:26%">الحقل</th><th style="width:24%">الاسم التقني</th><th>الوصف</th></tr></thead>
+  <tr><td>قبول الشروط والأحكام — مطلوب للموافقة</td><td><code>terms_accepted</code></td><td>علامة صح. غير مرتبط حالياً بإصدار محدد من الشروط.</td></tr>
+  <tr><td>قبول اتفاقية البائع — مطلوب للموافقة</td><td><code>seller_agreement_accepted</code></td><td>علامة صح.</td></tr>
+  <tr><td>ملاحظات المراجع</td><td><code>reviewer_notes</code></td><td>ملاحظات داخلية حرة.</td></tr>
+  <tr><td>سبب الرفض</td><td><code>reject_reason</code></td><td>إجباري للضغط على Reject.</td></tr>
+</table>
+
+<h2 class="pb">4) المستندات والتحقق منها</h2>
+<p>الموديل: <code>leaders.vendor.document</code> — سطور في تبويب <strong>Documents</strong>. الحذف تلقائي مع حذف الطلب.</p>
+<table>
+  <thead><tr><th style="width:26%">الحقل</th><th style="width:24%">الاسم التقني</th><th>الوصف والسلوك</th></tr></thead>
+  <tr><td>نوع المستند <span class="tag req">إجباري</span></td><td><code>document_type</code></td><td>من القائمة أدناه.</td></tr>
+  <tr><td>الاسم <span class="tag req">إجباري</span></td><td><code>name</code></td><td>وصف المستند.</td></tr>
+  <tr><td>رقم المستند</td><td><code>number</code></td><td>—</td></tr>
+  <tr><td>تاريخ الإصدار / الانتهاء</td><td><code>issue_date</code>, <code>expiry_date</code></td><td>لا يُسمح بتاريخ انتهاء قبل الإصدار. المستند المنتهي لا يُعتمد.</td></tr>
+  <tr><td>الملف <span class="tag req">إجباري</span></td><td><code>file</code> + <code>file_name</code></td><td>رفع مباشر، ويُخزَّن كمرفق.</td></tr>
+  <tr><td>حالة التحقق <span class="tag auto">تلقائي</span></td><td><code>verification_status</code></td><td>Pending / Verified / Rejected / Expired — تتغير بالأزرار فقط.</td></tr>
+  <tr><td>تحقق بواسطة / التاريخ <span class="tag auto">تلقائي</span></td><td><code>verified_by</code>, <code>verified_date</code></td><td>من ضغط Verify أو Reject.</td></tr>
+  <tr><td>ملاحظات</td><td><code>notes</code></td><td>إجبارية قبل Reject.</td></tr>
+</table>
+
+<h3>أنواع المستندات المدعومة (<code>DOCUMENT_TYPES</code>)</h3>
+<table>
+  <thead><tr><th>القيمة التقنية</th><th>الاسم</th><th>القيمة التقنية</th><th>الاسم</th></tr></thead>
+  <tr><td><code>commercial_register</code></td><td>سجل تجاري</td><td><code>bank_proof</code></td><td>إثبات بنكي</td></tr>
+  <tr><td><code>tax_certificate</code></td><td>شهادة ضريبية</td><td><code>address_proof</code></td><td>إثبات عنوان</td></tr>
+  <tr><td><code>vat_certificate</code></td><td>شهادة VAT</td><td><code>power_of_attorney</code></td><td>توكيل</td></tr>
+  <tr><td><code>id_passport</code></td><td>هوية / جواز</td><td><code>brand_authorization</code></td><td>تفويض علامة تجارية / توزيع</td></tr>
+</table>
+
+<h3>قواعد التحقق من المستند</h3>
+<ul>
+  <li><strong>Verify:</strong> يجعل الحالة Verified ويسجل المراجع والتاريخ. لو المستند منتهي يصبح <strong>Expired</strong> ويظهر تنبيه بدلاً من الخطأ.</li>
+  <li><strong>Reject:</strong> يحتاج ملاحظة، والحالة تصبح Rejected، ولو كان KYC للطلب Verified يصبح Failed.</li>
+  <li><strong>تعديل مستند سبق التحقق منه</strong> (النوع/الرقم/التواريخ/الملف) يعيده إلى <strong>Pending</strong> ويُرجع KYC إلى Pending.</li>
+  <li>قبل الموافقة يتم تحويل كل مستند منتهي إلى Expired تلقائياً.</li>
+</ul>
+
+<h2 class="pb">5) الأزرار وما يحدث عند كل زرار</h2>
+<table>
+  <thead><tr><th style="width:18%">الزرار</th><th style="width:18%">يظهر في</th><th style="width:22%">الدالة</th><th>ما يحدث</th></tr></thead>
+  <tr><td>Submit</td><td>Draft</td><td><code>action_submit</code></td><td>يتأكد من وجود مستند واحد على الأقل وأن إيميل صاحب الحساب غير مستخدم، ثم <strong>يُنشئ كونتاكت شركة البائع</strong> (حالته submitted) والطلب يصبح Submitted.</td></tr>
+  <tr><td>Start Review</td><td>Submitted</td><td><code>action_start_review</code></td><td>الطلب Under Review، المراجع = المستخدم الحالي، الشركة under_review.</td></tr>
+  <tr><td>Verify KYC</td><td>Submitted / Under Review</td><td><code>verify_kyc</code></td><td>ينجح فقط لو كل المستندات <em>المطلوبة</em> Verified وغير منتهية؛ وإلا خطأ بقائمة الناقص. عند النجاح: KYC = Verified على الطلب والشركة.</td></tr>
+  <tr><td>Verify / Reject (سطر مستند)</td><td>Submitted / Under Review</td><td><code>action_verify</code> / <code>action_reject</code></td><td>انظر القسم 4.</td></tr>
+  <tr><td>Approve</td><td>Under Review</td><td><code>action_approve</code></td><td>يشغّل <code>_check_ready_for_approval</code>؛ لو فيه أي ناقص يظهر خطأ بالقائمة ولا يتغير شيء. عند النجاح: انظر القسم 7.</td></tr>
+  <tr><td>Reject</td><td>Under Review</td><td><code>action_reject</code></td><td>يحتاج سبب الرفض؛ الطلب والشركة Rejected.</td></tr>
+  <tr><td>Resend Portal Invitation</td><td>Approved</td><td><code>action_create_portal_user</code></td><td>يعيد إرسال دعوة الباسورد لنفس اليوزر دون إنشاء يوزر جديد.</td></tr>
+</table>
+
+<h2>6) قواعد الموافقة والمستندات المطلوبة</h2>
+<p>كل القواعد في الدالة <code>_get_missing_requirements</code>، والمستندات المطلوبة في <code>_required_document_types</code>.</p>
+<h3>البيانات المطلوبة</h3>
+<table>
+  <thead><tr><th>للجميع</th><th>مؤسسة فردية</th><th>شركة</th></tr></thead>
+  <tr>
+    <td>نوع الكيان، الاسم القانوني، النشاط، فئات المنتجات، اسم وإيميل صاحب الحساب، الممثل القانوني (3 حقول)، البنك (3 حقول)، قبول الشروط، قبول الاتفاقية</td>
+    <td>+ رقم السجل التجاري</td>
+    <td>+ رقم السجل التجاري<br/>+ الرقم الضريبي / VAT</td>
+  </tr>
+</table>
+<h3>المستندات المطلوبة (يجب أن تكون Verified وغير منتهية)</h3>
+<table>
+  <thead><tr><th style="width:25%">نوع الكيان</th><th>المستندات</th></tr></thead>
+  <tr><td>فرد</td><td>هوية/جواز + إثبات بنكي + إثبات عنوان</td></tr>
+  <tr><td>مؤسسة فردية</td><td>ما سبق + سجل تجاري</td></tr>
+  <tr><td>شركة</td><td>ما سبق + سجل تجاري + شهادة ضريبية</td></tr>
+  <tr><td>أي نوع لديه رقم VAT</td><td>+ شهادة VAT</td></tr>
+</table>
+<div class="box">التوكيل وتفويض العلامة التجارية <strong>اختياريان</strong>. وأي مستند منتهي في الطلب — حتى لو غير مطلوب — يمنع الموافقة.</div>
+
+<h2 class="pb">7) ما يتم إنشاؤه تلقائياً عند الموافقة</h2>
+<table>
+  <thead><tr><th style="width:5%">#</th><th style="width:28%">ما يُنشأ / يتحدّث</th><th>التفاصيل</th><th style="width:25%">الدالة</th></tr></thead>
+  <tr><td>1</td><td>كونتاكت شركة البائع</td><td>الاسم، اسم المتجر، VAT، السجل التجاري، الإيميل، التليفون، العنوان. <code>is_company</code> = لا للفرد.</td><td><code>_ensure_vendor_partner</code></td></tr>
+  <tr><td>2</td><td>الحساب البنكي</td><td><code>res.partner.bank</code> على الشركة (البنك، رقم الحساب، اسم صاحبه). لا يتكرر لو موجود.</td><td><code>_ensure_vendor_bank_account</code></td></tr>
+  <tr><td>3</td><td>تفعيل البائع</td><td><code>is_marketplace_vendor</code> = نعم، الحالة approved، KYC verified، الفئة Bronze لو لا توجد فئة.</td><td><code>action_approve</code></td></tr>
+  <tr><td>4</td><td>مخزن البائع (FBM)</td><td>Warehouse خاص بكود مثل <code>V1T</code>، والمخزون فيه مملوك للبائع.</td><td><code>res.partner._marketplace_ensure_vendor_stock</code></td></tr>
+  <tr><td>5</td><td>موقع FBL</td><td><code>Marketplace FBL/&lt;اسم البائع&gt;</code> داخل مخزن الشركة وخارج <code>WH/Stock</code>.</td><td>نفس الدالة السابقة</td></tr>
+  <tr><td>6</td><td>كونتاكت صاحب الحساب</td><td>شخص تحت شركة البائع بالاسم والإيميل والتليفون.</td><td><code>_ensure_vendor_owner_user</code></td></tr>
+  <tr><td>7</td><td>يوزر البورتال</td><td>Login = إيميل صاحب الحساب، صلاحية Vendor Owner (تشمل Vendor Staff و Portal)، ودعوة لتعيين الباسورد. <strong>فشل سيرفر الإيميل لا يوقف الموافقة</strong> ويُسجَّل كملاحظة.</td><td><code>_ensure_vendor_owner_user</code></td></tr>
+</table>
+
+<h2>8) خريطة الكود: أين تعدّل ماذا</h2>
+<table>
+  <thead><tr><th style="width:36%">الملف</th><th>المحتوى</th></tr></thead>
+  <tr><td><code>models/vendor_core.py</code></td><td><code>DOCUMENT_TYPES</code>، الطلب <code>VendorApplication</code>، المستند <code>VendorDocument</code>، وأيضاً <code>VendorTier</code> و <code>VendorTerms</code> و <code>VendorContract</code>.</td></tr>
+  <tr><td><code>views/vendor_application_views.xml</code></td><td>شاشة القائمة، الفورم (التنبيه، الجروبات، سطور المستندات، تبويب المراجعة)، والـ action.</td></tr>
+  <tr><td><code>views/menu_views.xml</code></td><td>عنصر المنيو <code>menu_vendor_applications</code>.</td></tr>
+  <tr><td><code>security/ir.model.access.csv</code></td><td>صلاحيات Reviewer و Manager على الطلب والمستند.</td></tr>
+  <tr><td><code>data/sequence_data.xml</code></td><td>تسلسل <code>VAPP/</code>.</td></tr>
+  <tr><td><code>data/vendor_tier_data.xml</code></td><td>الفئة الافتراضية <code>vendor_tier_bronze</code>.</td></tr>
+  <tr><td><code>models/res_partner.py</code></td><td>حقول البائع على الكونتاكت، وإنشاء المخزن وموقع FBL.</td></tr>
+  <tr><td><code>migrations/18.0.4.0.1</code>, <code>18.0.4.0.2</code></td><td>نقل ملفات المستندات القديمة وتحويل أنواعها.</td></tr>
+  <tr><td><code>tests/test_vendor_application.py</code></td><td>6 تيستات تغطي الدورة والقواعد.</td></tr>
+</table>
+
+<table>
+  <thead><tr><th style="width:36%">الدالة</th><th>تعدّلها لما تريد…</th></tr></thead>
+  <tr><td><code>_required_document_types</code></td><td>تغيير المستندات المطلوبة حسب نوع الكيان.</td></tr>
+  <tr><td><code>_get_missing_requirements</code></td><td>إضافة/إزالة حقل إجباري للموافقة أو تغيير رسائل الناقص.</td></tr>
+  <tr><td><code>_ensure_vendor_partner</code></td><td>نقل حقل جديد من الطلب إلى كونتاكت الشركة.</td></tr>
+  <tr><td><code>_ensure_vendor_owner_user</code></td><td>تغيير صلاحيات اليوزر أو طريقة الدعوة.</td></tr>
+  <tr><td><code>action_approve</code></td><td>تغيير الفئة الافتراضية أو إضافة خطوة عند الموافقة.</td></tr>
+  <tr><td><code>VendorDocument.write</code></td><td>تغيير الحقول التي تعيد المستند إلى Pending (<code>_REVERIFY_FIELDS</code>).</td></tr>
+</table>
+
+<h2>9) أمثلة تعديلات شائعة خطوة بخطوة</h2>
+
+<h3>مثال 1: جعل «التوكيل» مطلوباً للشركات</h3>
+<p>في <code>models/vendor_core.py</code> داخل <code>_required_document_types</code>:</p>
+<pre>if self.legal_type == "company":
+    required.append("tax_certificate")
+    required.append("power_of_attorney")   # new</pre>
+<p>لا يحتاج تعديل شاشة. رسالة «Document not uploaded: Power of Attorney» ستظهر تلقائياً.</p>
+
+<h3>مثال 2: إضافة حقل إجباري جديد (مثلاً رقم الجوال الرسمي)</h3>
+<ol>
+  <li>أضف الحقل في <code>VendorApplication</code>:
+<pre>official_mobile = fields.Char(string="Official Mobile", tracking=True)</pre></li>
+  <li>أضفه للشاشة داخل الجروب المناسب في <code>vendor_application_views.xml</code>:
+<pre>&lt;field name="official_mobile" readonly="state == 'approved'"/&gt;</pre></li>
+  <li>أضفه لقائمة <code>mandatory</code> في <code>_get_missing_requirements</code>:
+<pre>("official_mobile", _("Official Mobile")),</pre></li>
+  <li>أضفه لـ <code>@api.depends</code> فوق <code>_compute_missing_requirements</code> حتى يتحدّث التنبيه فوراً.</li>
+  <li>اعمل upgrade: <code>odoo-bin -d &lt;db&gt; -u leaders_marketplace</code>.</li>
+</ol>
+
+<h3>مثال 3: إضافة نوع مستند جديد</h3>
+<pre>DOCUMENT_TYPES = [
+    ...
+    ("municipality_license", "Municipality License"),   # new
+]</pre>
+<p>ثم أضفه في <code>_required_document_types</code> إن كان مطلوباً.</p>
+
+<h3>مثال 4: اختيار الفئة بدلاً من Bronze الثابتة</h3>
+<ol>
+  <li>أضف <code>tier_id = fields.Many2one("leaders.vendor.tier")</code> للطلب وضعه في الشاشة.</li>
+  <li>في <code>action_approve</code> استبدل القيمة الافتراضية بـ <code>rec.tier_id.id or bronze.id</code>.</li>
+</ol>
+
+<div class="box warn"><strong>بعد أي تعديل:</strong> شغّل التيستات:<br/>
+<code>odoo-bin -d &lt;db&gt; -u leaders_marketplace --test-enable --test-tags /leaders_marketplace --stop-after-init</code><br/>
+وحدّث <code>tests/test_vendor_application.py</code> لو غيّرت قاعدة موافقة، وكذلك سكريبت الديمو.</div>
+
+<h2>10) التيستات والسكريبتات</h2>
+<table>
+  <thead><tr><th style="width:40%">التيست</th><th>يتأكد من</th></tr></thead>
+  <tr><td><code>test_complete_application_creates_vendor_contact_user_and_bank</code></td><td>الدورة كاملة: المنع قبل التحقق، ثم إنشاء الشركة واليوزر والحساب البنكي والمخزن.</td></tr>
+  <tr><td><code>test_approval_blocked_by_missing_data_and_documents</code></td><td>ظهور الناقص ومنع الموافقة.</td></tr>
+  <tr><td><code>test_individual_needs_fewer_documents</code></td><td>الفرد يُقبل بمستندات أقل ويُنشأ كشخص.</td></tr>
+  <tr><td><code>test_expired_and_changed_documents_block_approval</code></td><td>تعديل مستند يعيده Pending، والمنتهي يصبح Expired ويمنع الموافقة.</td></tr>
+  <tr><td><code>test_kyc_and_document_rejection</code></td><td>Verify KYC ورفض المستند بملاحظة وإعادة التحقق.</td></tr>
+  <tr><td><code>test_owner_email_must_be_free</code></td><td>منع إيميل مستخدم.</td></tr>
+</table>
+<p><strong>سكريبتات (خارج الموديول، تُشغَّل من odoo shell):</strong></p>
+<ul>
+  <li><code>scripts/generate_marketplace_demo_data.py</code> — ينشئ بائعين عبر طلبات انضمام كاملة ومستندات متحقق منها.</li>
+  <li><code>scripts/reset_marketplace_test_data.py</code> — يمسح بيانات الماركت بليس التجريبية القديمة.</li>
+</ul>
+
+<h2>11) نقاط مفتوحة للنقاش</h2>
+<table>
+  <thead><tr><th style="width:5%">#</th><th style="width:30%">النقطة</th><th>الوضع الحالي</th></tr></thead>
+  <tr><td>1</td><td>الطلب المرفوض</td><td>لا يرجع Draft ولا يمكن إعادة تقديمه.</td></tr>
+  <tr><td>2</td><td>وقت إنشاء كونتاكت الشركة</td><td>عند Submit — يبقى كونتاكت حتى لو رُفض الطلب.</td></tr>
+  <tr><td>3</td><td>الفئة الافتراضية</td><td>Bronze دائماً.</td></tr>
+  <tr><td>4</td><td>تكرار الرقم الضريبي / السجل التجاري</td><td>لا يوجد منع لتكرارها مع بائع آخر.</td></tr>
+  <tr><td>5</td><td>التحقق من الـ IBAN</td><td>تنظيف المسافات فقط، بدون تحقق من الصحة.</td></tr>
+  <tr><td>6</td><td>الشروط والاتفاقية</td><td>علامتا صح فقط؛ موديلا <code>leaders.vendor.terms</code> و <code>leaders.vendor.contract</code> موجودان بدون شاشات ولا ربط.</td></tr>
+  <tr><td>7</td><td>إيميلات للمتقدم</td><td>لا يوجد إشعار بالتقديم/القبول/الرفض (عدا دعوة الباسورد).</td></tr>
+  <tr><td>8</td><td>حقل <code>step</code></td><td>غير مستخدم — يمكن حذفه.</td></tr>
+  <tr><td>9</td><td>تنبيه المستندات قبل انتهائها</td><td>لا يوجد تنبيه للمستندات القريبة من الانتهاء بعد الموافقة.</td></tr>
+</table>
+
+</body>
+</html>

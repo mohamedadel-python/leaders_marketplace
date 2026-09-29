@@ -1,0 +1,44 @@
+<odoo noupdate="1">
+    <record id="seq_vendor_application" model="ir.sequence">
+        <field name="name">Vendor Application</field>
+        <field name="code">leaders.vendor.application</field>
+        <field name="prefix">VAPP/</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_vendor_order" model="ir.sequence">
+        <field name="name">Vendor Order</field>
+        <field name="code">leaders.vendor.order</field>
+        <field name="prefix">VO/</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="seq_fulfillment_group" model="ir.sequence">
+        <field name="name">Fulfillment Group</field>
+        <field name="code">leaders.fulfillment.group</field>
+        <field name="prefix">FG/</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="seq_settlement" model="ir.sequence">
+        <field name="name">Vendor Settlement</field>
+        <field name="code">leaders.settlement</field>
+        <field name="prefix">SET/</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="seq_fulfillment_inbound" model="ir.sequence">
+        <field name="name">FBL Inbound</field>
+        <field name="code">leaders.fulfillment.inbound</field>
+        <field name="prefix">FBL-IN/</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="seq_vendor_return" model="ir.sequence">
+        <field name="name">Marketplace Return</field>
+        <field name="code">leaders.vendor.return</field>
+        <field name="prefix">RET/</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="seq_vendor_dispute" model="ir.sequence">
+        <field name="name">Marketplace Dispute</field>
+        <field name="code">leaders.vendor.dispute</field>
+        <field name="prefix">DSP/</field>
+        <field name="padding">6</field>
+    </record>
+</odoo>

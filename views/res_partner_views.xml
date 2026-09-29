@@ -1,0 +1,33 @@
+<odoo>
+    <record id="view_partner_form_marketplace" model="ir.ui.view">
+        <field name="name">res.partner.form.marketplace</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Marketplace Vendor">
+                    <group>
+                        <group>
+                            <field name="is_marketplace_vendor"/>
+                            <field name="vendor_state"/>
+                            <field name="vendor_tier_id"/>
+                            <field name="vendor_kyc_state"/>
+                        </group>
+                        <group>
+                            <field name="vendor_store_name"/>
+                            <field name="vendor_store_slug"/>
+                            <field name="vendor_location_id"/>
+                            <field name="vendor_market_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="vendor_hold_days"/>
+                        <field name="vendor_min_payout"/>
+                        <field name="vendor_wallet_balance" readonly="1"/>
+                        <field name="vendor_wallet_hold" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

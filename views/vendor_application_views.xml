@@ -1,0 +1,141 @@
+<odoo>
+    <record id="view_vendor_application_tree" model="ir.ui.view">
+        <field name="name">leaders.vendor.application.tree</field>
+        <field name="model">leaders.vendor.application</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="business_name"/>
+                <field name="owner_name"/>
+                <field name="owner_email"/>
+                <field name="partner_id" optional="show"/>
+                <field name="kyc_state" optional="show"/>
+                <field name="reviewer_id" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-danger="state == 'rejected'" decoration-info="state in ('submitted', 'under_review')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_vendor_application_form" model="ir.ui.view">
+        <field name="name">leaders.vendor.application.form</field>
+        <field name="model">leaders.vendor.application</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" string="Submit" type="object" invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_start_review" string="Start Review" type="object" invisible="state != 'submitted'" class="btn-primary"/>
+                    <button name="verify_kyc" string="Verify KYC" type="object" invisible="state not in ('submitted', 'under_review') or kyc_state == 'verified'"/>
+                    <button name="action_approve" string="Approve" type="object" invisible="state != 'under_review'" class="btn-primary"
+                            confirm="Approve this vendor? The vendor company, its warehouse and the owner's portal user will be created."/>
+                    <button name="action_reject" string="Reject" type="object" invisible="state != 'under_review'"/>
+                    <button name="action_create_portal_user" string="Resend Portal Invitation" type="object" invisible="state != 'approved'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,under_review,approved"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="alert" invisible="state not in ('submitted', 'under_review') or not missing_requirements">
+                        <strong>Before approval:</strong>
+                        <field name="missing_requirements" class="d-block" style="white-space: pre-line"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="business_name"/>
+                        <h1><field name="business_name" placeholder="e.g. Al Nour Electronics" readonly="state == 'approved'"/></h1>
+                        <field name="name" readonly="1"/>
+                    </div>
+                    <group>
+                        <group string="Business">
+                            <field name="store_name" placeholder="Shown to customers" readonly="state == 'approved'"/>
+                            <field name="legal_type" readonly="state == 'approved'"/>
+                            <field name="legal_name" readonly="state == 'approved'"/>
+                            <field name="commercial_registration_number" invisible="legal_type == 'individual'" readonly="state == 'approved'"/>
+                            <field name="tax_number" readonly="state == 'approved'"/>
+                            <field name="business_activity" placeholder="What the vendor sells" readonly="state == 'approved'"/>
+                            <field name="product_category_ids" widget="many2many_tags" readonly="state == 'approved'"/>
+                            <field name="business_email" widget="email" readonly="state == 'approved'"/>
+                            <field name="business_phone" widget="phone" readonly="state == 'approved'"/>
+                            <field name="street" readonly="state == 'approved'"/>
+                            <field name="city" readonly="state == 'approved'"/>
+                            <field name="country_id" readonly="state == 'approved'"/>
+                        </group>
+                        <group string="Vendor Owner (portal login)">
+                            <field name="owner_name" readonly="state == 'approved'"/>
+                            <field name="owner_email" widget="email" readonly="state == 'approved'"/>
+                            <field name="owner_phone" widget="phone" readonly="state == 'approved'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Legal Representative">
+                            <field name="representative_name" readonly="state == 'approved'"/>
+                            <field name="representative_position" readonly="state == 'approved'"/>
+                            <field name="representative_id_number" readonly="state == 'approved'"/>
+                        </group>
+                        <group string="Bank Information">
+                            <field name="bank_name" readonly="state == 'approved'"/>
+                            <field name="bank_account_holder" readonly="state == 'approved'"/>
+                            <field name="bank_account_number" placeholder="e.g. SA03 8000 0000 6080 1016 7519" readonly="state == 'approved'"/>
+                        </group>
+                    </group>
+                    <group string="Created Automatically" invisible="not partner_id and not portal_user_id">
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="owner_partner_id"/>
+                        </group>
+                        <group>
+                            <field name="portal_user_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="kyc_state"/>
+                            <field name="reviewer_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Documents" name="documents">
+                            <field name="document_ids" readonly="state == 'approved'">
+                                <list editable="bottom" decoration-success="verification_status == 'verified'"
+                                      decoration-danger="verification_status in ('rejected', 'expired')">
+                                    <field name="document_type"/>
+                                    <field name="name"/>
+                                    <field name="number"/>
+                                    <field name="issue_date" optional="show"/>
+                                    <field name="expiry_date"/>
+                                    <field name="file" filename="file_name" widget="binary"/>
+                                    <field name="file_name" column_invisible="1"/>
+                                    <field name="verification_status" widget="badge"
+                                           decoration-success="verification_status == 'verified'"
+                                           decoration-danger="verification_status in ('rejected', 'expired')"
+                                           decoration-warning="verification_status == 'pending'"/>
+                                    <field name="verified_by" optional="show"/>
+                                    <field name="notes" optional="show"/>
+                                    <button name="action_verify" type="object" string="Verify" icon="fa-check"
+                                            invisible="verification_status == 'verified' or parent.state not in ('submitted', 'under_review')"/>
+                                    <button name="action_reject" type="object" string="Reject" icon="fa-times"
+                                            invisible="verification_status == 'rejected' or parent.state not in ('submitted', 'under_review')"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Review" name="review">
+                            <group>
+                                <group>
+                                    <field name="terms_accepted" readonly="state == 'approved'"/>
+                                    <field name="seller_agreement_accepted" readonly="state == 'approved'"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="reviewer_notes" placeholder="Internal notes about this review."/>
+                                <field name="reject_reason" placeholder="Required to reject the application."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vendor_application" model="ir.actions.act_window">
+        <field name="name">Vendor Applications</field>
+        <field name="res_model">leaders.vendor.application</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,158 @@
+<odoo>
+    <record id="view_vendor_kpi_list" model="ir.ui.view">
+        <field name="name">leaders.vendor.kpi.list</field>
+        <field name="model">leaders.vendor.kpi</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-danger="cancellation_rate &gt; 20" decoration-success="completion_rate &gt;= 90">
+                <header>
+                    <button name="action_recompute_all_kpis" type="object" string="Recompute KPIs"
+                            groups="leaders_marketplace.group_marketplace_manager"/>
+                </header>
+                <field name="period"/>
+                <field name="vendor_id"/>
+                <field name="order_count" sum="Orders"/>
+                <field name="completion_rate" widget="percentage" string="Completion"/>
+                <field name="cancellation_rate" widget="percentage" string="Cancellation"/>
+                <field name="avg_ship_hours" string="Avg Ship (h)"/>
+                <field name="avg_rating" string="Rating"/>
+                <button name="action_recompute_kpis" type="object" icon="fa-refresh" title="Recompute this month"
+                        groups="leaders_marketplace.group_marketplace_manager"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_vendor_kpi_pivot" model="ir.ui.view">
+        <field name="name">leaders.vendor.kpi.pivot</field>
+        <field name="model">leaders.vendor.kpi</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="vendor_id" type="row"/>
+                <field name="period" type="col" interval="month"/>
+                <field name="order_count" type="measure"/>
+                <field name="completion_rate" type="measure"/>
+                <field name="cancellation_rate" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_vendor_kpi_graph" model="ir.ui.view">
+        <field name="name">leaders.vendor.kpi.graph</field>
+        <field name="model">leaders.vendor.kpi</field>
+        <field name="arch" type="xml">
+            <graph type="line">
+                <field name="period" interval="month"/>
+                <field name="cancellation_rate" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_vendor_kpi_search" model="ir.ui.view">
+        <field name="name">leaders.vendor.kpi.search</field>
+        <field name="model">leaders.vendor.kpi</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="vendor_id"/>
+                <filter name="kpi_high_cancellation" string="High Cancellation" domain="[('cancellation_rate', '&gt;', 20)]"/>
+                <filter name="kpi_has_orders" string="With Orders" domain="[('order_count', '&gt;', 0)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="kpi_group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
+                    <filter name="kpi_group_period" string="Month" context="{'group_by': 'period:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_vendor_kpi" model="ir.actions.act_window">
+        <field name="name">Vendor KPIs</field>
+        <field name="res_model">leaders.vendor.kpi</field>
+        <field name="view_mode">list,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_vendor_kpi_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No KPI snapshot yet.</p>
+            <p>Snapshots are computed nightly, or on demand with the Recompute KPIs button.</p>
+        </field>
+    </record>
+    <record id="view_vendor_penalty_list" model="ir.ui.view">
+        <field name="name">leaders.vendor.penalty.list</field>
+        <field name="model">leaders.vendor.penalty</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state == 'applied' and level == 'ban'" decoration-warning="state == 'applied' and level == 'freeze'" decoration-muted="state == 'lifted'">
+                <field name="vendor_id"/>
+                <field name="level"/>
+                <field name="reason"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="amount" sum="Fines"/>
+                <field name="state"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_vendor_penalty_form" model="ir.ui.view">
+        <field name="name">leaders.vendor.penalty.form</field>
+        <field name="model">leaders.vendor.penalty</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_apply" string="Apply" type="object" class="btn-primary"
+                            invisible="state != 'draft'"
+                            confirm="Apply this penalty? A freeze or ban suspends the vendor's offers immediately."
+                            groups="leaders_marketplace.group_marketplace_manager"/>
+                    <button name="action_lift" string="Lift" type="object"
+                            invisible="state != 'applied'"
+                            groups="leaders_marketplace.group_marketplace_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="vendor_id"/>
+                            <field name="level"/>
+                            <field name="date_start"/>
+                            <field name="date_end" help="Left empty the penalty stays until it is lifted by hand."/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="wallet_transaction_id" readonly="1" invisible="not wallet_transaction_id"/>
+                            <field name="applied_by" readonly="1" invisible="not applied_by"/>
+                            <field name="applied_date" readonly="1" invisible="not applied_date"/>
+                            <field name="lifted_by" readonly="1" invisible="not lifted_by"/>
+                            <field name="lifted_date" readonly="1" invisible="not lifted_date"/>
+                        </group>
+                    </group>
+                    <label for="reason"/>
+                    <field name="reason" placeholder="What the vendor did, in words they will be shown."/>
+                    <group string="Restored on lift" invisible="state != 'applied'">
+                        <field name="deactivated_user_ids" widget="many2many_tags" readonly="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_vendor_penalty_search" model="ir.ui.view">
+        <field name="name">leaders.vendor.penalty.search</field>
+        <field name="model">leaders.vendor.penalty</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="vendor_id"/>
+                <field name="reason"/>
+                <filter name="pen_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="pen_applied" string="Applied" domain="[('state', '=', 'applied')]"/>
+                <filter name="pen_lifted" string="Lifted" domain="[('state', '=', 'lifted')]"/>
+                <separator/>
+                <filter name="pen_ban" string="Bans" domain="[('level', '=', 'ban')]"/>
+                <filter name="pen_freeze" string="Freezes" domain="[('level', '=', 'freeze')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="pen_group_vendor" string="Vendor" context="{'group_by': 'vendor_id'}"/>
+                    <filter name="pen_group_level" string="Level" context="{'group_by': 'level'}"/>
+                    <filter name="pen_group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_vendor_penalty" model="ir.actions.act_window">
+        <field name="name">Vendor Penalties</field>
+        <field name="res_model">leaders.vendor.penalty</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_vendor_penalty_search"/>
+    </record>
+</odoo>

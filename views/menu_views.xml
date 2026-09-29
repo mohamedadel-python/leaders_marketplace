@@ -1,0 +1,29 @@
+<odoo>
+    <menuitem id="menu_marketplace_root" name="Marketplace" sequence="30" groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_finance,leaders_marketplace.group_marketplace_manager"/>
+    <menuitem id="menu_marketplace_operations" name="Operations" parent="menu_marketplace_root" sequence="10"/>
+    <menuitem id="menu_vendor_applications" name="Vendor Applications" parent="menu_marketplace_operations" action="action_vendor_application" sequence="10"/>
+    <menuitem id="menu_products_to_review" name="Products to Review" parent="menu_marketplace_operations" action="action_product_marketplace_review" sequence="15"/>
+    <menuitem id="menu_offers" name="Offers" parent="menu_marketplace_operations" action="action_marketplace_offer" sequence="20"/>
+    <menuitem id="menu_vendor_orders" name="Vendor Orders" parent="menu_marketplace_operations" action="action_vendor_order" sequence="30"/>
+    <menuitem id="menu_vendor_invoices" name="Vendor Invoices" parent="menu_marketplace_operations" action="action_vendor_invoice" sequence="35"/>
+    <menuitem id="menu_returns" name="Returns" parent="menu_marketplace_operations" action="action_vendor_return" sequence="40"/>
+    <menuitem id="menu_disputes" name="Disputes" parent="menu_marketplace_operations" action="action_vendor_dispute" sequence="50"/>
+    <menuitem id="menu_finance" name="Finance" parent="menu_marketplace_root" sequence="20"/>
+    <menuitem id="menu_commission_rules" name="Commission Plans" parent="menu_finance" action="action_commission_rule"/>
+    <menuitem id="menu_commission_achievements" name="Plan Achievements" parent="menu_finance" action="action_commission_achievement"/>
+    <menuitem id="menu_settlements" name="Settlements" parent="menu_finance" action="action_settlement"/>
+    <menuitem id="menu_cod_orders" name="Cash on Delivery" parent="menu_finance" action="action_cod_vendor_order" sequence="40"/>
+    <menuitem id="menu_fulfillment" name="Fulfillment" parent="menu_marketplace_root" sequence="30"/>
+    <menuitem id="menu_fbl_inbound" name="FBL Inbounds" parent="menu_fulfillment" action="action_fulfillment_inbound"/>
+    <menuitem id="menu_fulfillment_fee" name="Fulfillment Fees" parent="menu_fulfillment" action="action_fulfillment_fee"/>
+    <menuitem id="menu_fulfillment_policy" name="Fulfillment Policies" parent="menu_fulfillment" action="action_fulfillment_policy"/>
+    <menuitem id="menu_performance" name="Performance" parent="menu_marketplace_root" sequence="40"/>
+    <menuitem id="menu_vendor_kpi" name="Vendor KPIs" parent="menu_performance" action="action_vendor_kpi"/>
+    <menuitem id="menu_vendor_penalty" name="Penalties" parent="menu_performance" action="action_vendor_penalty"/>
+    <menuitem id="menu_marketplace_reporting" name="Reporting" parent="menu_marketplace_root" sequence="50" groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_finance,leaders_marketplace.group_marketplace_manager"/>
+    <menuitem id="menu_marketplace_sales_report" name="Marketplace Sales" parent="menu_marketplace_reporting" action="action_vendor_order_report" sequence="10"/>
+    <menuitem id="menu_configuration" name="Configuration" parent="menu_marketplace_root" sequence="90" groups="leaders_marketplace.group_marketplace_manager"/>
+    <menuitem id="menu_vendor_tiers" name="Vendor Tiers" parent="menu_configuration" action="action_vendor_tier"/>
+    <menuitem id="menu_buybox_config" name="Buy Box Policy" parent="menu_configuration" action="action_buybox_config" sequence="20"/>
+    <menuitem id="menu_vendor_delivery_zones" name="Delivery Zones" parent="menu_configuration" action="action_vendor_delivery_zone" sequence="30"/>
+</odoo>

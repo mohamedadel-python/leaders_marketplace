@@ -1,0 +1,52 @@
+<odoo>
+    <record id="rule_offer_vendor" model="ir.rule">
+        <field name="name">Vendor: own offers</field><field name="model_id" ref="model_leaders_marketplace_offer"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_staff'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+    <record id="rule_vendor_order_vendor" model="ir.rule">
+        <field name="name">Vendor: own vendor orders</field><field name="model_id" ref="model_leaders_vendor_order"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_staff'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+    <record id="rule_fulfillment_vendor" model="ir.rule">
+        <field name="name">Vendor: own fulfillment groups</field><field name="model_id" ref="model_leaders_fulfillment_group"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_staff'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+    <record id="rule_wallet_vendor" model="ir.rule">
+        <field name="name">Vendor owner: own wallet</field><field name="model_id" ref="model_leaders_wallet_transaction"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_owner'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+    <record id="rule_settlement_vendor" model="ir.rule">
+        <field name="name">Vendor owner: own settlements</field><field name="model_id" ref="model_leaders_settlement"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_owner'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+    <record id="rule_vendor_order_line_vendor" model="ir.rule">
+        <field name="name">Vendor: own vendor order lines</field><field name="model_id" ref="model_leaders_vendor_order_line"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_staff'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+    <record id="rule_vendor_invoice_vendor" model="ir.rule">
+        <field name="name">Vendor: own vendor invoices</field><field name="model_id" ref="model_leaders_vendor_invoice"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_staff'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+    <record id="rule_vendor_return_vendor" model="ir.rule">
+        <field name="name">Vendor: own returns</field><field name="model_id" ref="model_leaders_vendor_return"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_staff'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+    <record id="rule_vendor_invoice_line_vendor" model="ir.rule">
+        <field name="name">Vendor: own vendor invoice lines</field><field name="model_id" ref="model_leaders_vendor_invoice_line"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_staff'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+    <record id="rule_vendor_delivery_zone_vendor" model="ir.rule">
+        <field name="name">Vendor: own delivery zones</field><field name="model_id" ref="model_leaders_vendor_delivery_zone"/>
+        <field name="groups" eval="[(4, ref('leaders_marketplace.group_vendor_staff'))]"/>
+        <field name="domain_force">[('vendor_id','=',user.partner_id.commercial_partner_id.id)]</field>
+    </record>
+</odoo>

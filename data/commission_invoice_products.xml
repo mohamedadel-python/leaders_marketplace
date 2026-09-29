@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Services billed on the marketplace invoice to the vendor (commission_invoicing = invoice).
+         The income account of each line comes from the marketplace settings, not from these products. -->
+    <record id="product_commission" model="product.product">
+        <field name="name">Marketplace Commission</field>
+        <field name="type">service</field>
+        <field name="sale_ok" eval="True"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_fulfilment_fee" model="product.product">
+        <field name="name">Fulfilment Fee</field>
+        <field name="type">service</field>
+        <field name="sale_ok" eval="True"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_storage_fee" model="product.product">
+        <field name="name">Storage Fee</field>
+        <field name="type">service</field>
+        <field name="sale_ok" eval="True"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+    <record id="product_penalty" model="product.product">
+        <field name="name">Penalty</field>
+        <field name="type">service</field>
+        <field name="sale_ok" eval="True"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
+</odoo>

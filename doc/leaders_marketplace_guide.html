@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<title>دليل موديول Leaders Marketplace</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm; }
+  body { font-family: "Noto Naskh Arabic", "Noto Sans Arabic", "Amiri", serif; font-size: 12pt; line-height: 1.75; color: #1f2328; direction: rtl; }
+  h1, h2, h3 { font-family: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif; color: #3b2a4d; }
+  h1 { font-size: 26pt; margin: 0 0 6px; }
+  h2 { font-size: 17pt; border-bottom: 3px solid #714b67; padding-bottom: 4px; margin-top: 24px; page-break-after: avoid; }
+  h3 { font-size: 13pt; margin: 16px 0 6px; color: #714b67; page-break-after: avoid; }
+  p { margin: 6px 0; }
+  code, .en { font-family: "DejaVu Sans Mono", monospace; font-size: 9pt; direction: ltr; unicode-bidi: embed; color: #0b5394; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 10.5pt; }
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; }
+  th { background: #714b67; color: #fff; font-family: "Noto Sans Arabic", sans-serif; font-weight: 700; padding: 6px 8px; text-align: right; }
+  th code, th .en { color: #fff; }
+  td { border-bottom: 1px solid #e3e0e6; padding: 5px 8px; vertical-align: top; }
+  td code { word-break: break-all; }
+  tr:nth-child(even) td { background: #faf8fb; }
+  .cover { text-align: center; padding-top: 160px; page-break-after: always; }
+  .cover .sub { font-size: 14pt; color: #6c757d; }
+  .cover .meta { margin-top: 60px; font-size: 11pt; color: #6c757d; }
+  .box { border: 1px solid #e3e0e6; border-right: 5px solid #714b67; background: #faf8fb; padding: 8px 14px; margin: 10px 0; page-break-inside: avoid; }
+  .warn { border-right-color: #d9480f; background: #fff6ee; }
+  .ok { border-right-color: #198754; background: #effaf3; }
+  .flow { text-align: center; margin: 12px 0; line-height: 2.6; }
+  .flow span { display: inline-block; background: #714b67; color: #fff; border-radius: 8px; padding: 2px 10px; font-family: "Noto Sans Arabic", sans-serif; font-size: 10.5pt; line-height: 1.6; }
+  .flow span.alt { background: #dc3545; }
+  .flow span.company { background: #198754; }
+  .flow b { color: #714b67; margin: 0 4px; }
+  pre { direction: ltr; text-align: left; background: #1f2328; color: #e6edf3; padding: 9px 12px; border-radius: 6px; font-family: "DejaVu Sans Mono", monospace; font-size: 8.8pt; line-height: 1.45; white-space: pre-wrap; page-break-inside: avoid; }
+  .pb { page-break-before: always; }
+  ul, ol { margin: 4px 0 8px; padding-right: 22px; }
+  li { margin: 2px 0; }
+  .toc { columns: 2; column-gap: 30px; }
+  .toc li { margin: 3px 0; }
+  .dr { color: #0b5394; font-weight: 700; }
+  .cr { color: #a61b1b; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>دليل موديول Leaders Marketplace</h1>
+  <div class="sub">سوق متعدد البائعين على Odoo 18 Community</div>
+  <div class="sub"><span class="en">leaders_marketplace</span> — version <span class="en">18.0.4.0.2</span></div>
+  <div class="meta">مرجع كامل للتعديل: الدورة، الموديلات، الحقول المهمة، القواعد، القيود المحاسبية، البورتال، وأماكن الكود<br/>سبتمبر 2026</div>
+</div>
+
+<h2>المحتويات</h2>
+<ol class="toc">
+  <li>نظرة عامة ومبدأ التصميم</li>
+  <li>الأدوار والصلاحيات</li>
+  <li>المنيو والإعدادات</li>
+  <li>طلبات انضمام البائعين</li>
+  <li>بيانات البائع والفئات</li>
+  <li>المنتجات والعروض و Buy Box</li>
+  <li>مخزون البائع: FBM و FBL</li>
+  <li>الشراء وفصل الطلب</li>
+  <li>طلب البائع وفاتورة البائع</li>
+  <li>الشحن والتسليم</li>
+  <li>المرتجعات والنزاعات</li>
+  <li>العمولة والمحفظة والتسويات</li>
+  <li>القيود المحاسبية</li>
+  <li>الأداء والجزاءات</li>
+  <li>البورتال والـ API</li>
+  <li>المهام المجدولة والتسلسلات</li>
+  <li>خريطة الكود</li>
+  <li>التيستات والسكريبتات والـ Migrations</li>
+  <li>الثغرات والنقاط المفتوحة</li>
+</ol>
+
+<h2>1) نظرة عامة ومبدأ التصميم</h2>
+<p>الموديول يحوّل Odoo إلى <strong>ماركت بليس متعدد البائعين</strong>: بائعون مستقلون يعرضون منتجاتهم على موقع الشركة، والعميل يشتري من سلة واحدة ويدفع مرة واحدة.</p>
+<div class="box ok">
+  <strong>المبدأ الأساسي:</strong> منتجات البائع <strong>ليست مبيعات للشركة</strong>.
+  <ul>
+    <li>منتجات الشركة ← Sale Order عادي من Odoo، من مخزن الشركة، بفاتورة الشركة.</li>
+    <li>منتجات البائع (FBM أو FBL) ← <strong>طلب بائع</strong> منفصل، من مخزون مملوك للبائع، بفاتورة باسم البائع.</li>
+    <li>الشركة تحصّل الفلوس نيابة عن البائع (Escrow)، وتسجّل <strong>عمولتها ورسومها فقط</strong> كإيراد، وتحوّل للبائع صافيه بالتسويات.</li>
+  </ul>
+</div>
+<h3>الدورة الكاملة</h3>
+<div class="flow">
+  <span>1. طلب انضمام</span><b>←</b><span>2. موافقة: شركة + يوزر + مخزن</span><b>←</b><span>3. عرض منتج + مراجعة</span><b>←</b><span>4. مخزون FBM / FBL</span><br/>
+  <span>5. شراء من الموقع</span><b>←</b><span class="company">6. فصل: طلب شركة + طلبات بائعين</span><b>←</b><span>7. شحن وتسليم</span><b>←</b><span>8. أرباح في المحفظة</span><br/>
+  <span class="alt">مرتجع (اختياري)</span><b>←</b><span>9. تسوية وتحويل للبائع</span><b>←</b><span>10. أداء وجزاءات</span>
+</div>
+<h3>الاعتماديات (depends)</h3>
+<p><code>base, mail, portal, website, auth_signup, sale_management, sale_stock, stock, account, payment, delivery, website_sale, website_sale_stock, rating</code></p>
+
+<h2 class="pb">2) الأدوار والصلاحيات</h2>
+<table>
+  <thead><tr><th style="width:24%">الجروب</th><th style="width:16%">النوع</th><th>الدور</th></tr></thead>
+  <tr><td>Vendor Staff <code>group_vendor_staff</code></td><td>بورتال</td><td>موظف عند البائع: منتجات، مخزون، طلبات، مرتجعات. يشمل Portal.</td></tr>
+  <tr><td>Vendor Owner <code>group_vendor_owner</code></td><td>بورتال</td><td>صاحب حساب البائع: كل ما سبق + المالية + دعوة الموظفين. يشمل Vendor Staff.</td></tr>
+  <tr><td>Marketplace Reviewer</td><td>داخلي</td><td>مراجعة طلبات الانضمام والعروض والمرتجعات والنزاعات.</td></tr>
+  <tr><td>Marketplace Finance</td><td>داخلي</td><td>قواعد العمولة، المحفظة، التسويات. يشمل Accounting User.</td></tr>
+  <tr><td>Marketplace Manager</td><td>داخلي</td><td>كل شيء + الإعدادات. يشمل Reviewer و Finance.</td></tr>
+</table>
+<p><strong>عزل البائعين (Record Rules):</strong> البائع يرى فقط سجلاته — العروض، طلبات البائع وسطورها، مجموعات الشحن، الفواتير وسطورها، المرتجعات، المحفظة والتسويات (للـ Owner) — بشرط <code>vendor_id = commercial_partner_id</code> لليوزر.
+صفحات البورتال تقرأ بـ <code>sudo()</code> مع فلتر البائع يدوياً في الكنترولر.</p>
+
+<h2>3) المنيو والإعدادات</h2>
+<table>
+  <thead><tr><th style="width:24%">المنيو</th><th>العناصر</th></tr></thead>
+  <tr><td>Operations</td><td>Vendor Applications، Offers، Vendor Orders، Vendor Invoices، Returns، Disputes</td></tr>
+  <tr><td>Finance</td><td>Commission Rules، Settlements</td></tr>
+  <tr><td>Fulfillment</td><td>FBL Inbounds، Fulfillment Fees، Fulfillment Policies</td></tr>
+  <tr><td>Performance</td><td>Vendor KPIs، Penalties</td></tr>
+  <tr><td>Configuration (Manager)</td><td>Vendor Tiers، Buy Box Policy</td></tr>
+</table>
+<h3>الإعدادات: Settings ← Marketplace</h3>
+<table>
+  <thead><tr><th style="width:34%">الإعداد</th><th style="width:30%">المفتاح <code>leaders_marketplace.*</code></th><th>الاستخدام</th></tr></thead>
+  <tr><td>Return Window</td><td><code>return_window_days</code></td><td>أيام بعد الشحن يُسمح فيها بطلب مرتجع.</td></tr>
+  <tr><td>Vendor Return Response</td><td><code>return_vendor_sla_days</code></td><td>مهلة رد البائع قبل تصعيد المرتجع.</td></tr>
+  <tr><td>Escrow / Commission Income / Fee Income / Vendor Payable / Journal</td><td><code>escrow_account_id</code> …</td><td>حسابات القيود. <strong>بدونها لا يُسجَّل أي قيد</strong> (رسالة في الشاتر فقط).</td></tr>
+  <tr><td>Default Hold Days، Dispute SLA، Commission Recognition</td><td>—</td><td><strong>غير مستخدمة في الكود حالياً.</strong></td></tr>
+</table>
+
+<h2 class="pb">4) طلبات انضمام البائعين — <code>leaders.vendor.application</code></h2>
+<p>بوابة دخول أي بائع. التفاصيل الكاملة في «دليل طلبات الانضمام» المنفصل؛ ملخص هنا:</p>
+<div class="flow"><span>Draft</span><b>←</b><span>Submitted</span><b>←</b><span>Under Review</span><b>←</b><span>Approved</span> <b>|</b> <span class="alt">Rejected</span></div>
+<table>
+  <thead><tr><th style="width:22%">المجموعة</th><th>الحقول الأساسية</th></tr></thead>
+  <tr><td>النشاط</td><td>اسم النشاط، اسم المتجر، نوع الكيان (فرد/مؤسسة/شركة)، الاسم القانوني، السجل التجاري، الرقم الضريبي، النشاط، الفئات، الإيميل، التليفون، العنوان</td></tr>
+  <tr><td>صاحب الحساب</td><td>الاسم، <strong>الإيميل = Login البورتال</strong>، التليفون</td></tr>
+  <tr><td>الممثل القانوني</td><td>الاسم، المنصب، الهوية/الجواز</td></tr>
+  <tr><td>البنك</td><td>البنك، صاحب الحساب، IBAN</td></tr>
+  <tr><td>المستندات</td><td>8 أنواع، رفع ملف، تواريخ، حالة تحقق Pending/Verified/Rejected/Expired</td></tr>
+  <tr><td>المراجعة</td><td>ملاحظات، سبب الرفض، قبول الشروط، قبول اتفاقية البائع</td></tr>
+</table>
+<ul>
+  <li><strong>Submit:</strong> يُنشئ كونتاكت شركة البائع.</li>
+  <li><strong>Approve:</strong> ممنوع حتى تكتمل البيانات الإجبارية وتُعتمد المستندات المطلوبة حسب نوع الكيان (<code>_get_missing_requirements</code>). عند النجاح يُنشئ: الحساب البنكي، تفعيل البائع + فئة Bronze، مخزن FBM، موقع FBL، كونتاكت صاحب الحساب، يوزر Vendor Owner + دعوة.</li>
+</ul>
+
+<h2>5) بيانات البائع والفئات</h2>
+<h3>حقول البائع على الكونتاكت — <code>res.partner</code></h3>
+<table>
+  <thead><tr><th style="width:30%">الحقل</th><th>المعنى</th></tr></thead>
+  <tr><td><code>is_marketplace_vendor</code>, <code>vendor_state</code></td><td>هل هو بائع، وحالته: draft/submitted/under_review/approved/rejected/frozen/banned. البورتال يعمل فقط لو approved.</td></tr>
+  <tr><td><code>vendor_store_name</code></td><td>الاسم الظاهر للعملاء وعلى الفواتير.</td></tr>
+  <tr><td><code>vendor_tier_id</code></td><td>الفئة (تحدد سياسة الإفراج عن الأرباح والاحتياطي وحد المنتجات).</td></tr>
+  <tr><td><code>vendor_warehouse_id</code>, <code>vendor_location_id</code></td><td>مخزن البائع الخاص (FBM) وموقع مخزونه.</td></tr>
+  <tr><td><code>vendor_fbl_location_id</code></td><td>موقع FBL الخاص به داخل مخزن الشركة.</td></tr>
+  <tr><td><code>vendor_invoice_seq</code></td><td>عدّاد ترقيم فواتير البائع (مقفول بـ FOR UPDATE ضد التكرار).</td></tr>
+  <tr><td><code>vendor_wallet_balance</code>, <code>vendor_wallet_hold</code></td><td>محسوبة: مجموع حركات المحفظة المتاحة / المعلّقة.</td></tr>
+  <tr><td><code>vendor_hold_days</code></td><td>أيام الإفراج الافتراضية لو الفئة لا تحدد.</td></tr>
+</table>
+<h3>الفئات — <code>leaders.vendor.tier</code> (بيانات جاهزة: Bronze، Silver، Gold، Platinum)</h3>
+<table>
+  <thead><tr><th style="width:30%">الحقل</th><th>الاستخدام الفعلي</th></tr></thead>
+  <tr><td><code>escrow_release_policy</code></td><td>on_ship: الأرباح تُسجَّل عند الشحن ومتاحة فوراً. on_deliver: عند اكتمال التسليم ومتاحة فوراً. deliver_plus_days: عند اكتمال التسليم ومعلّقة X يوم.</td></tr>
+  <tr><td><code>escrow_release_days</code></td><td>عدد أيام التعليق في deliver_plus_days.</td></tr>
+  <tr><td><code>reserve_percent</code></td><td>نسبة احتياطي مرتجعات من الصافي (سجل في <code>leaders.vendor.reserve</code>).</td></tr>
+  <tr><td><code>return_policy</code></td><td>reserve_first: المرتجع بعد الإفراج يستهلك الاحتياطي أولاً (تسجيلياً).</td></tr>
+  <tr><td><code>product_limit</code></td><td>حد عدد العروض النشطة عند إضافة منتج من البورتال.</td></tr>
+  <tr><td><code>commission_rate</code>, <code>payout_frequency</code>, <code>min_months/min_sales/min_rating</code></td><td><strong>غير مستخدمة</strong> — العمولة الفعلية من Commission Rules.</td></tr>
+</table>
+
+<h2 class="pb">6) المنتجات والعروض و Buy Box</h2>
+<h3>العرض — <code>leaders.marketplace.offer</code></h3>
+<p>العرض = <strong>بائع يبيع منتجاً بسعر وطريقة شحن</strong>. أكثر من بائع يمكنه عرض نفس المنتج.</p>
+<table>
+  <thead><tr><th style="width:28%">الحقل</th><th>المعنى</th></tr></thead>
+  <tr><td><code>product_tmpl_id</code>, <code>product_id</code></td><td>المنتج.</td></tr>
+  <tr><td><code>vendor_id</code>, <code>seller_sku</code></td><td>البائع وكوده (فريد لكل بائع).</td></tr>
+  <tr><td><code>price</code>, <code>currency_id</code></td><td>سعر البائع.</td></tr>
+  <tr><td><code>fulfillment_type</code></td><td>FBM (من مخزن البائع) أو FBL (من مخزن الشركة، ملك البائع).</td></tr>
+  <tr><td><code>stock_location_id</code></td><td>موقع مخزون العرض (يُضبط تلقائياً حسب النوع).</td></tr>
+  <tr><td><code>state</code></td><td>draft ← pending ← active / rejected / suspended.</td></tr>
+  <tr><td><code>rating</code>, <code>buybox_score</code>, <code>is_buybox_winner</code></td><td>تقييم، سكور، والفائز.</td></tr>
+  <tr><td><code>market_ids</code></td><td>المواقع المسموح بها (<strong>مخزّن فقط، لا يفلتر العرض على الموقع</strong>).</td></tr>
+</table>
+<h3>المنتج — إضافات على <code>product.template</code></h3>
+<p><code>marketplace_state</code> (draft/pending/published/rejected/suspended)، <code>marketplace_publish_date</code>، <code>marketplace_reject_reason</code>، <code>marketplace_offer_ids</code>.
+الدالة <code>action_marketplace_approve</code> تنشر المنتج على الموقع (<code>is_published</code>).</p>
+<h3>دورة المنتج من البورتال</h3>
+<ol>
+  <li><code>/my/vendor/products/new</code>: البائع يُدخل الاسم، SKU، الوصف، الفئة، السعر، العملة، FBM/FBL، المواقع، الصورة ← يُنشأ منتج (storable، غير منشور، draft) + عرض draft. يُفحص <code>product_limit</code> للفئة.</li>
+  <li><strong>Submit</strong>: المنتج pending والعرض pending.</li>
+  <li>المراجع في الباك إند: <strong>Approve</strong> على العرض ← active. (نشر المنتج نفسه — انظر الثغرات.)</li>
+  <li>أي تعديل من البورتال يعيد العرض والمنتج إلى draft وغير منشور.</li>
+</ol>
+<h3>Buy Box — <code>leaders.buybox.config</code></h3>
+<p>السكور = مجموع موزون لـ: السعر (الأرخص أعلى)، التقييم، توفر المخزون، سرعة الشحن (مكافأة FBL/FBM)، ورتبة الفئة. الأوزان قابلة للتعديل من Configuration ← Buy Box Policy.</p>
+<ul>
+  <li>الفائز يُعاد حسابه عند تغيير السعر/التقييم/الحالة/النوع/الموقع/البائع (<code>_recompute_buybox_winner</code>).</li>
+  <li>مع <code>require_stock</code> العرض بدون مخزون لا يفوز (إلا لو كل العروض بدون مخزون).</li>
+  <li><strong>سعر الموقع = سعر العرض الفائز</strong> (يُكتب في <code>list_price</code> بعد تحويل العملة).</li>
+  <li><strong>المخزون الظاهر على الموقع = مخزون العرض الفائز</strong> (<code>models/website.py</code>).</li>
+</ul>
+
+<h2>7) مخزون البائع: FBM و FBL</h2>
+<table>
+  <thead><tr><th style="width:14%"></th><th>FBM — يشحنه البائع</th><th>FBL — يشحنه مخزن الشركة</th></tr></thead>
+  <tr><td>المكان</td><td>مخزن خاص بالبائع <code>V1T/Stock</code> (Warehouse كامل بكود V+id)</td><td><code>WH ← Marketplace FBL ← &lt;البائع&gt;</code> داخل مخزن الشركة وخارج <code>WH/Stock</code></td></tr>
+  <tr><td>الإضافة</td><td>البائع من البورتال (زر Add في المنتجات)</td><td>FBL Inbound ← Receive في الباك إند</td></tr>
+  <tr><td>الحركة</td><td colspan="2">تسوية مخزون حقيقية <code>_leaders_adjust_vendor_stock</code> مع <strong>Owner = البائع</strong></td></tr>
+  <tr><td>الشحن</td><td>Delivery من مخزن البائع</td><td>Delivery من مخزن الشركة، مصدرها موقع FBL</td></tr>
+</table>
+<div class="box ok"><strong>لماذا الملكية مهمة:</strong>
+<ul>
+  <li><strong>لا يدخل في تقييم مخزون الشركة</strong> (Odoo يستثني الكميات ذات Owner غير الشركة).</li>
+  <li><strong>طلبات الشركة لا تحجزه</strong>: تسليمات الشركة تسحب من <code>WH/Stock</code>، وحركات البائع مقيّدة بـ <code>restrict_partner_id</code> = البائع.</li>
+</ul></div>
+
+<h2 class="pb">8) الشراء وفصل الطلب</h2>
+<ol>
+  <li><strong>السلة:</strong> عند إضافة منتج يُربط السطر بالعرض الفائز (<code>marketplace_offer_id</code>) عبر <code>_prepare_order_line_values</code>.</li>
+  <li><strong>الدفع:</strong> Odoo يقارن مبلغ الدفع بإجمالي السلة ثم يستدعي <code>action_confirm</code>.</li>
+  <li><strong>الفصل قبل التأكيد</strong> (<code>_marketplace_split_vendor_lines</code>): سطور منتجات البائعين تُنقل إلى <strong>طلب بائع لكل بائع</strong> ثم تُحذف من الـ Sale Order (قبل التأكيد لأن Odoo يمنع حذف سطور طلب مؤكد). أي سطر بدون عرض لكن منتجه له عرض فائز يُعامل كمنتج بائع.</li>
+  <li><strong>الشحن:</strong> لو لم يتبقَ منتجات للشركة، سطر الشحن ينتقل لطلب البائع الأول.</li>
+  <li><strong>سلة كلها منتجات بائعين:</strong> الـ Sale Order يُلغى ويبقى سجلاً مربوطاً بالدفع (بدون سطور، بدون تسليم، بدون فاتورة).</li>
+  <li>الـ Sale Order المتبقي يُؤكد عادياً، وطلبات البائعين تُؤكد (<code>action_confirm</code> على طلب البائع).</li>
+  <li><strong>صفحة التأكيد:</strong> تعرض «Marketplace vendor orders»، وحالة الدفع تقارن الدفع بـ <code>_marketplace_checkout_total</code> (طلب الشركة + طلبات البائعين).</li>
+  <li><strong>بعد الدفع:</strong> <code>payment.transaction._post_process</code> يسوّي دفعة العميل مع قيود التحصيل.</li>
+</ol>
+
+<h2>9) طلب البائع وفاتورة البائع</h2>
+<h3>طلب البائع — <code>leaders.vendor.order</code> (<code>VO/000001</code>)</h3>
+<table>
+  <thead><tr><th style="width:30%">الحقل</th><th>المعنى</th></tr></thead>
+  <tr><td><code>sale_order_id</code></td><td>الـ Checkout الذي انفصل منه (ليس بيعاً للشركة).</td></tr>
+  <tr><td><code>vendor_id</code>, <code>partner_id</code>, <code>partner_shipping_id</code></td><td>البائع، العميل، عنوان التسليم.</td></tr>
+  <tr><td><code>line_ids</code></td><td>سطور <code>leaders.vendor.order.line</code>: المنتج، الكمية، السعر، الخصم، الضرائب، الإجماليات، العمولة، المسلّم، المرتجع.</td></tr>
+  <tr><td><code>fulfillment_group_ids</code>, <code>picking_ids</code></td><td>مجموعات الشحن (حسب النوع والموقع) وتسليمات المخزن.</td></tr>
+  <tr><td>المبالغ</td><td><code>amount_total</code>، <code>commission_amount</code>، <code>fulfillment_fee_amount</code>، <code>refunded_amount</code>، <code>vendor_net</code> = الإجمالي − المرتجع − العمولة − الرسوم.</td></tr>
+  <tr><td>القيود</td><td><code>collection_move_id</code>، <code>collection_reversal_move_id</code>، <code>earning_move_id</code>.</td></tr>
+  <tr><td><code>invoice_id</code>, <code>return_ids</code></td><td>فاتورة البائع والمرتجعات.</td></tr>
+</table>
+<h3>الحالات</h3>
+<table>
+  <thead><tr><th style="width:22%">الحالة</th><th>متى</th></tr></thead>
+  <tr><td>pending</td><td>أُنشئ ولم يُؤكد.</td></tr>
+  <tr><td>confirmed</td><td>تأكيد: عمولة + مجموعات شحن + رسوم FBL + تسليمات + فاتورة بائع + قيد تحصيل.</td></tr>
+  <tr><td>processing</td><td>التسليمات محجوزة وجاهزة.</td></tr>
+  <tr><td>partially_fulfilled / fulfilled</td><td>بعض / كل المجموعات اتشحنت.</td></tr>
+  <tr><td>completed</td><td>كل المجموعات اتسلمت ← أرباح البائع.</td></tr>
+  <tr><td>cancelled</td><td>إلغاء قبل الشحن: إلغاء التسليمات والعمولة والفاتورة + عكس قيد التحصيل.</td></tr>
+</table>
+<h3>فاتورة البائع — <code>leaders.vendor.invoice</code></h3>
+<ul>
+  <li>مستند ماركت بليس <strong>ليس فاتورة محاسبية للشركة</strong>، بسطور مستقلة <code>leaders.vendor.invoice.line</code>.</li>
+  <li>نوعان: <code>out_invoice</code> فاتورة (<code>V1T/INV/2026/00001</code>) و <code>out_refund</code> إشعار دائن للمرتجع (<code>V1T/RINV/2026/00002</code>) — نفس عدّاد البائع.</li>
+  <li><code>payment_state</code>: Paid عندما تُسوّى دفعة العميل مع قيد التحصيل (أو عند وجود دفع بدون حسابات).</li>
+  <li>PDF: <code>report/vendor_invoice_report.xml</code> — بدون هيدر الشركة، البائع هو المُصدر، مع ملاحظة أن الشركة حصّلت نيابة عنه.</li>
+</ul>
+
+<h2 class="pb">10) الشحن والتسليم — <code>leaders.fulfillment.group</code></h2>
+<table>
+  <thead><tr><th style="width:24%">الخطوة</th><th>FBM</th><th>FBL</th></tr></thead>
+  <tr><td>إنشاء التسليم</td><td colspan="2">تلقائي عند تأكيد طلب البائع، ويُحجز فوراً من مخزون البائع.</td></tr>
+  <tr><td>الشحن</td><td>البائع من البورتال: رقم تتبع (إجباري) ← Ship ← Validate للتسليم.</td><td>المخزن يعمل Validate للتسليم من شاشات المخزون (أو زر Ship في طلب البائع).</td></tr>
+  <tr><td>التسليم</td><td>البائع: Mark as Delivered.</td><td>زر Delivered في الباك إند.</td></tr>
+</table>
+<ul>
+  <li><code>action_ship</code> يرفض الشحن لو المحجوز أقل من المطلوب.</li>
+  <li>أي Validate لتسليم مرتبط يحدّث المجموعة ثم حالة الطلب (<code>stock.picking._action_done</code> ← <code>_sync_from_pickings</code> ← <code>_sync_state_from_groups</code>).</li>
+  <li>أول شحن يسجّل <code>date_shipped</code> وهو بداية مدة المرتجع.</li>
+  <li><strong>رسوم FBL</strong> (<code>leaders.fulfillment.fee</code>): fixed / per_kg / percent تُحسب لمجموعات FBL عند التأكيد، وتُخصم من صافي البائع.</li>
+</ul>
+
+<h2>11) المرتجعات والنزاعات</h2>
+<h3>المرتجع — <code>leaders.vendor.return</code> (<code>RET/000001</code>)</h3>
+<div class="flow"><span>requested</span><b>←</b><span>approved</span><b>←</b><span>received</span><b>←</b><span>refunded</span><br/>
+<span class="alt">rejected</span><b>←</b><span class="alt">escalated</span><b>←</b><span>approved / closed</span></div>
+<ol>
+  <li><strong>العميل</strong> من صفحة طلبه: يختار الكميات ويكتب السبب (خلال Return Window، ولا يتجاوز المسلّم ناقص المرتجع المفتوح).</li>
+  <li><strong>البائع</strong> من البورتال: موافقة، أو رفض بسبب إجباري. لا رد قبل الموعد ← تصعيد تلقائي (Cron كل ساعة). العميل يمكنه تصعيد الرفض.</li>
+  <li><strong>المنصة</strong>: Approve أو Reject (بسبب مكتوب) من الباك إند.</li>
+  <li><strong>الموافقة</strong> تُنشئ إذن استلام إلى <strong>نفس موقع مخزون البائع</strong> وبملكيته.</li>
+  <li><strong>الاستلام</strong>: FBM يؤكده البائع من البورتال، FBL يؤكده مخزن الشركة بـ Validate.</li>
+  <li><strong>رد الفلوس تلقائياً</strong>: عمولة سالبة (العمولة ترجع للبائع)، <code>refunded_amount</code> يزيد، إشعار دائن، وقيد رد (القسم 13). لو الأرباح أُفرج عنها: خصم من المحفظة + استهلاك الاحتياطي + سند صرف Draft للعميل لو كان دافع.</li>
+</ol>
+<p>المبالغ: <code>refund_amount</code> (السعر شامل الضريبة × النسبة)، <code>commission_refund</code>، <code>vendor_deduction</code> = الرد − العمولة. رسوم FBL والشحن لا تُرد.</p>
+<h3>النزاعات — <code>leaders.vendor.dispute</code></h3>
+<p>حقول فقط (طلب، سبب، قرار، حالة open/vendor_reply/escalated/resolved/closed). <strong>لا يوجد منطق أو أزرار أو شاشات مخصصة.</strong></p>
+
+<h2 class="pb">12) العمولة والمحفظة والتسويات</h2>
+<h3>قواعد العمولة — <code>leaders.commission.rule</code></h3>
+<ul>
+  <li>النطاق بالأولوية: <strong>vendor ← category ← tier ← global</strong>؛ داخل كل نطاق حسب <code>priority</code>.</li>
+  <li>النوع: percent / fixed / compound (نسبة + ثابت).</li>
+  <li>الأساس: صافي السطر قبل الضريبة؛ <code>tax_included</code> يستخدم الإجمالي؛ <code>include_shipping</code> يضيف الشحن مرة واحدة على أول سطر.</li>
+  <li><code>date_from</code> / <code>date_to</code> <strong>غير مستخدمين</strong> في المطابقة.</li>
+  <li>بدون قاعدة مطابقة: عمولة صفر.</li>
+</ul>
+<p>سطور العمولة <code>leaders.commission.line</code> تُنشأ لكل سطر طلب بائع عند التأكيد، وسطور سالبة عند المرتجع، وتُلغى عند إلغاء الطلب.</p>
+
+<h3>المحفظة — <code>leaders.wallet.transaction</code></h3>
+<table>
+  <thead><tr><th style="width:24%">البند</th><th>التفاصيل</th></tr></thead>
+  <tr><td>الأنواع</td><td>earning، return، storage_fee، settlement، commission، penalty، fulfillment_fee، adjustment</td></tr>
+  <tr><td>الحالات</td><td>hold ← available ← settled</td></tr>
+  <tr><td>غير قابلة للتعديل</td><td>ممنوع تعديل المبلغ/النوع/البائع/الطلب وممنوع الحذف — التصحيح بحركة adjustment.</td></tr>
+  <tr><td>الأرباح</td><td><code>create_vendor_earning</code>: مرة واحدة لكل طلب = <code>vendor_net</code>، تاريخ الإتاحة حسب سياسة الفئة، + احتياطي، + قيد الأرباح.</td></tr>
+  <tr><td>الإفراج</td><td>Cron يومي: hold ← available عند حلول <code>available_date</code>.</td></tr>
+</table>
+<h3>الاحتياطي — <code>leaders.vendor.reserve</code></h3>
+<p>نسبة من الصافي حسب الفئة. <strong>تسجيلي فقط</strong>: لا يُخصم من رصيد المحفظة، ويُستهلك تسجيلياً في المرتجعات.</p>
+<h3>التسويات — <code>leaders.settlement</code> (<code>SET/000001</code>)</h3>
+<ol>
+  <li>إنشاء تسوية لبائع وفترة.</li>
+  <li><strong>Collect Transactions</strong>: يسحب الحركات المتاحة غير المسوّاة بتاريخ إتاحة داخل الفترة.</li>
+  <li><strong>Approve</strong> ثم <strong>Mark Paid</strong>: قيد صرف (Vendor Payable ← البنك) والحركات تصبح settled.</li>
+</ol>
+<p>إجمالي/خصومات/صافي محسوبة من الحركات الموجبة والسالبة. <strong>لا يوجد إنشاء تلقائي للتسويات</strong> حسب <code>payout_frequency</code>.</p>
+
+<h2 class="pb">13) القيود المحاسبية — <code>leaders.marketplace.accounting</code></h2>
+<p>تُسجَّل فقط لو حسابات الإعدادات مضبوطة. <span class="dr">مدين</span> / <span class="cr">دائن</span>.</p>
+<table>
+  <thead><tr><th style="width:20%">الحدث</th><th style="width:22%">الدالة</th><th>القيد</th></tr></thead>
+  <tr><td>تأكيد طلب البائع (تحصيل)</td><td><code>post_collection_entry</code></td><td><span class="dr">مدين</span> ذمم العميل (الإجمالي) / <span class="cr">دائن</span> Escrow</td></tr>
+  <tr><td>دفع العميل</td><td><code>reconcile_collection</code></td><td>تسوية سطر الذمم مع دفعة العميل ← فاتورة البائع Paid</td></tr>
+  <tr><td>أرباح البائع</td><td><code>post_earning_entry</code></td><td><span class="dr">مدين</span> Escrow (الإجمالي − المرتجع) / <span class="cr">دائن</span> إيراد عمولة + <span class="cr">دائن</span> إيراد رسوم (أو العمولة لو لا يوجد حساب رسوم) + <span class="cr">دائن</span> Vendor Payable (الصافي)</td></tr>
+  <tr><td>إلغاء قبل الشحن</td><td><code>reverse_collection_entry</code></td><td><span class="dr">مدين</span> Escrow / <span class="cr">دائن</span> ذمم العميل</td></tr>
+  <tr><td>مرتجع قبل الإفراج</td><td><code>post_return_refund_entry</code></td><td><span class="dr">مدين</span> Escrow / <span class="cr">دائن</span> ذمم العميل</td></tr>
+  <tr><td>مرتجع بعد الإفراج</td><td><code>post_return_refund_entry</code></td><td><span class="dr">مدين</span> Vendor Payable (خصم البائع) + <span class="dr">مدين</span> إيراد عمولة (العمولة المردودة) / <span class="cr">دائن</span> ذمم العميل</td></tr>
+  <tr><td>رد فلوس لعميل دافع</td><td><code>create_customer_refund_payment</code></td><td>سند صرف Draft؛ عند Post يُسوّى مع سطر الرد والإشعار الدائن Paid</td></tr>
+  <tr><td>تحويل للبائع</td><td><code>post_settlement_payment</code></td><td><span class="dr">مدين</span> Vendor Payable / <span class="cr">دائن</span> حساب البنك</td></tr>
+</table>
+<div class="box">النتيجة: مبيعات البائع لا تظهر كإيراد للشركة؛ الإيراد = العمولة + رسوم FBL فقط، و Escrow يرجع صفراً بعد اكتمال الدورة.</div>
+
+<h2>14) الأداء والجزاءات</h2>
+<ul>
+  <li><strong>KPIs</strong> — <code>leaders.vendor.kpi</code>: لقطة لكل فترة (عدد الطلبات، الإتمام، الإلغاء، التقييم، ساعات الشحن). <strong>لا يوجد حساب تلقائي</strong>؛ تُدخل يدوياً.</li>
+  <li><strong>Penalties</strong> — <code>leaders.vendor.penalty</code>: warning / freeze / ban. <code>action_apply</code>: freeze ← البائع frozen وكل عروضه suspended؛ ban ← البائع banned ويوزراته موقوفة. <strong>لا يوجد زر في الشاشة</strong> لتطبيق الجزاء.</li>
+</ul>
+
+<h2 class="pb">15) البورتال والـ API</h2>
+<h3>صفحة My Account <code>/my/home</code></h3>
+<p>البائع المعتمد يرى كروت الماركت بليس فقط (متجري، ما بعد البيع، الأعمال للـ Owner، الحساب) مع عدادات، وكروت Odoo مخفية. العميل العادي يرى كروت Odoo + «Marketplace Orders».</p>
+<h3>صفحات البائع (يجب أن يكون approved)</h3>
+<table>
+  <thead><tr><th style="width:42%">الرابط</th><th>الوظيفة</th></tr></thead>
+  <tr><td><code>/my/vendor</code></td><td>الداشبورد: أرقام، آخر الطلبات، المخزون، ما يحتاج انتباه.</td></tr>
+  <tr><td><code>/my/vendor/products</code>, <code>/new</code>, <code>/&lt;id&gt;/edit</code>, <code>/submit</code>, <code>/stock</code></td><td>المنتجات والعروض، إنشاء وتعديل، إرسال للمراجعة، إضافة مخزون FBM.</td></tr>
+  <tr><td><code>/my/vendor/orders</code>, <code>/&lt;id&gt;</code>, <code>/&lt;id&gt;/invoice</code></td><td>الطلبات، التفاصيل، PDF الفاتورة.</td></tr>
+  <tr><td><code>/my/vendor/fulfillment/&lt;id&gt;/ship</code>, <code>/delivered</code></td><td>شحن FBM برقم تتبع، وتأكيد التسليم.</td></tr>
+  <tr><td><code>/my/vendor/returns</code>, <code>/&lt;id&gt;</code>, <code>/&lt;id&gt;/approve|reject|receive</code></td><td>المرتجعات وقرارات البائع.</td></tr>
+  <tr><td><code>/my/vendor/finance</code> (Owner)</td><td>حركات المحفظة والتسويات.</td></tr>
+  <tr><td><code>/my/vendor/staff</code> (Owner)</td><td>دعوة موظفين (Vendor Staff).</td></tr>
+  <tr><td><code>/my/vendor/disputes</code>, <code>/my/vendor/performance</code></td><td>عرض فقط.</td></tr>
+</table>
+<h3>صفحات العميل</h3>
+<table>
+  <thead><tr><th style="width:42%">الرابط</th><th>الوظيفة</th></tr></thead>
+  <tr><td><code>/my/marketplace/orders</code></td><td>مشتريات الماركت بليس (طلبات البائعين).</td></tr>
+  <tr><td><code>/my/marketplace/orders/&lt;id&gt;</code></td><td>التفاصيل، الشحنات، طلب مرتجع، المرتجعات، التصعيد.</td></tr>
+  <tr><td><code>/my/marketplace/vendor-invoices/&lt;id&gt;</code></td><td>PDF الفاتورة أو الإشعار الدائن (للعميل أو البائع).</td></tr>
+</table>
+<h3>REST API — <code>controllers/api.py</code></h3>
+<table>
+  <thead><tr><th style="width:42%">Endpoint</th><th>الوصف</th></tr></thead>
+  <tr><td><code>GET /api/v1/vendor/dashboard</code> (bearer)</td><td>أرقام البائع والمحفظة.</td></tr>
+  <tr><td><code>GET /api/v1/vendor/orders</code> (bearer)</td><td>آخر 100 طلب بائع.</td></tr>
+  <tr><td><code>GET /api/v1/catalog/offers/&lt;product_id&gt;</code> (public)</td><td>العروض النشطة لمنتج مرتبة بالـ Buy Box.</td></tr>
+</table>
+
+<h2>16) المهام المجدولة والتسلسلات</h2>
+<table>
+  <thead><tr><th style="width:36%">Cron</th><th style="width:14%">التكرار</th><th>الوظيفة</th></tr></thead>
+  <tr><td>Release Vendor Wallet Holds</td><td>يومي</td><td>hold ← available عند حلول التاريخ.</td></tr>
+  <tr><td>Apply Monthly FBL Storage Fees</td><td>شهري</td><td>رسوم تخزين حسب الحجم ← حركة storage_fee سالبة.</td></tr>
+  <tr><td>Escalate Unanswered Returns</td><td>كل ساعة</td><td>تصعيد المرتجعات التي تجاوزت مهلة البائع.</td></tr>
+</table>
+<p><strong>التسلسلات:</strong> <code>VAPP/</code> طلبات الانضمام، <code>VO/</code> طلبات البائعين، <code>FG/</code> مجموعات الشحن، <code>SET/</code> التسويات، <code>FBL-IN/</code> الاستلامات، <code>RET/</code> المرتجعات. فواتير البائع بعدّاد لكل بائع.</p>
+
+<h2 class="pb">17) خريطة الكود</h2>
+<table>
+  <thead><tr><th style="width:34%">الملف</th><th>المحتوى</th></tr></thead>
+  <tr><td><code>models/vendor_core.py</code></td><td>الفئات، طلب الانضمام، المستندات، الشروط، العقد.</td></tr>
+  <tr><td><code>models/res_partner.py</code></td><td>حقول البائع، إنشاء المخزن وموقع FBL، ترقيم الفواتير.</td></tr>
+  <tr><td><code>models/stock.py</code></td><td>تسوية مخزون البائع، ربط التسليمات بالمجموعات والمرتجعات.</td></tr>
+  <tr><td><code>models/product.py</code></td><td>المنتج، العرض، Buy Box، مزامنة السعر، migration المخزون.</td></tr>
+  <tr><td><code>models/buybox.py</code></td><td>أوزان Buy Box.</td></tr>
+  <tr><td><code>models/sale.py</code></td><td>ربط السلة بالعرض، فصل الطلب، طلب البائع وسطوره، مجموعات الشحن.</td></tr>
+  <tr><td><code>models/vendor_invoice.py</code></td><td>فاتورة البائع والإشعار الدائن.</td></tr>
+  <tr><td><code>models/website.py</code></td><td>المخزون الظاهر على الموقع للمنتجات ذات العروض.</td></tr>
+  <tr><td><code>models/payment_transaction.py</code>, <code>account_payment.py</code></td><td>تسوية الدفع مع التحصيل، وتسوية سند رد الفلوس.</td></tr>
+  <tr><td><code>models/commission.py</code></td><td>قواعد وسطور العمولة.</td></tr>
+  <tr><td><code>models/settlement.py</code></td><td>الاحتياطي، المحفظة، التسويات.</td></tr>
+  <tr><td><code>models/accounting.py</code></td><td>كل القيود المحاسبية.</td></tr>
+  <tr><td><code>models/fulfillment.py</code></td><td>رسوم الشحن والتخزين، السياسات، استلام FBL.</td></tr>
+  <tr><td><code>models/returns.py</code></td><td>المرتجعات وسطورها، النزاعات.</td></tr>
+  <tr><td><code>models/performance.py</code></td><td>KPIs والجزاءات.</td></tr>
+  <tr><td><code>controllers/portal.py</code>, <code>api.py</code></td><td>كل صفحات البورتال، والـ API.</td></tr>
+  <tr><td><code>views/portal_templates.xml</code></td><td>قوالب البورتال، صفحة My Account، صفحة التأكيد وحالة الدفع.</td></tr>
+  <tr><td><code>views/*_views.xml</code>, <code>report/</code></td><td>شاشات الباك إند والمنيو وتقرير الفاتورة.</td></tr>
+  <tr><td><code>static/src/scss/portal.scss</code></td><td>تصميم البورتال.</td></tr>
+</table>
+
+<h2>18) التيستات والسكريبتات والـ Migrations</h2>
+<table>
+  <thead><tr><th style="width:34%">الملف</th><th>يغطي</th></tr></thead>
+  <tr><td><code>tests/test_vendor_application.py</code></td><td>الانضمام: البيانات، المستندات، KYC، الموافقة، إنشاء الشركة واليوزر والبنك.</td></tr>
+  <tr><td><code>tests/test_vendor_split.py</code></td><td>عزل المخزون، سعر الموقع، الفصل، الشحن، الأرباح، الإلغاء، العمولة، القيود، الدفع أونلاين.</td></tr>
+  <tr><td><code>tests/test_vendor_returns.py</code></td><td>الصلاحية والمدة، الموافقة والتصعيد، FBL، قبل/بعد الإفراج، الاحتياطي، القيود وسند الرد.</td></tr>
+</table>
+<pre>odoo-bin -c /etc/odoo/odoo18.conf -d &lt;db&gt; -u leaders_marketplace \
+  --test-enable --test-tags /leaders_marketplace --stop-after-init</pre>
+<p><strong>سكريبتات</strong> (تُشغَّل بـ <code>odoo-bin shell ... &lt; script</code>): <code>scripts/generate_marketplace_demo_data.py</code> بيانات ديمو كاملة، و <code>scripts/reset_marketplace_test_data.py</code> مسح بيانات الماركت بليس التجريبية.</p>
+<p><strong>Migrations:</strong> <code>18.0.4.0.0</code> نقل مخزون البائعين القديم لمواقعهم المملوكة، <code>18.0.4.0.1</code> نقل ملفات المستندات، <code>18.0.4.0.2</code> تحويل أنواع المستندات.</p>
+
+<h2 class="pb">19) الثغرات والنقاط المفتوحة</h2>
+<p>مرتبة حسب تأثيرها على الدورة.</p>
+<table>
+  <thead><tr><th style="width:4%">#</th><th style="width:26%">النقطة</th><th>الوضع الحالي</th></tr></thead>
+  <tr><td>1</td><td><strong>نشر منتج البائع</strong></td><td>الموافقة على العرض لا تنشر المنتج، ولا يوجد زر في شاشة المنتج لـ <code>action_marketplace_approve</code> ← <strong>منتجات البائع الجديدة لا تظهر على الموقع</strong> من الواجهة.</td></tr>
+  <tr><td>2</td><td>رسوم تخزين FBL</td><td>الـ Cron يحسبها على <code>vendor_location_id</code> (مخزن FBM) بدلاً من <code>vendor_fbl_location_id</code>.</td></tr>
+  <tr><td>3</td><td>دعوة موظف البائع</td><td>تفشل بالكامل لو سيرفر الإيميل غير متاح (عكس موافقة الانضمام التي تتحمل الفشل).</td></tr>
+  <tr><td>4</td><td>إيميل تأكيد للعميل</td><td>سلة كلها منتجات بائعين لا تُرسل إيميل تأكيد (الـ Sale Order لا يُؤكد).</td></tr>
+  <tr><td>5</td><td>التسويات</td><td>يدوية بالكامل؛ لا تستخدم <code>payout_frequency</code> ولا <code>vendor_min_payout</code>.</td></tr>
+  <tr><td>6</td><td>الاحتياطي</td><td>تسجيلي، لا يُخصم من المحفظة ولا يُفرج عنه تلقائياً.</td></tr>
+  <tr><td>7</td><td>النزاعات</td><td>بدون منطق ولا أزرار.</td></tr>
+  <tr><td>8</td><td>KPIs والجزاءات</td><td>لا حساب تلقائي للـ KPIs، ولا زر لتطبيق الجزاء.</td></tr>
+  <tr><td>9</td><td>إعدادات غير مستخدمة</td><td>Default Hold Days، Dispute SLA، Commission Recognition، <code>commission_rate</code> للفئة، <code>date_from/to</code> للعمولة، <code>market_ids</code>، Fulfillment Policies.</td></tr>
+  <tr><td>10</td><td>الشروط والعقد</td><td>موديلات بدون شاشات ولا ربط بطلب الانضمام.</td></tr>
+  <tr><td>11</td><td>طلب الانضمام</td><td>المرفوض لا يُعاد تقديمه، الكونتاكت يُنشأ عند Submit، الفئة Bronze دائماً، لا منع لتكرار الرقم الضريبي، لا تحقق من الـ IBAN، <code>step</code> غير مستخدم.</td></tr>
+  <tr><td>12</td><td>مصاريف الشحن</td><td>في سلة كلها منتجات بائعين تذهب لأول بائع فقط؛ ولا تُرد في المرتجع.</td></tr>
+  <tr><td>13</td><td>رد الفلوس</td><td>سند صرف Draft يدوي؛ لا رد تلقائي على بوابة الدفع.</td></tr>
+  <tr><td>14</td><td>README.md</td><td>قديم، يصف تصميم «Master Sale Order» السابق.</td></tr>
+</table>
+
+</body>
+</html>

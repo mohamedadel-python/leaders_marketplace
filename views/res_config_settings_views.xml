@@ -1,0 +1,137 @@
+<odoo>
+    <record id="res_config_settings_view_form_marketplace" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.marketplace</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Marketplace" name="leaders_marketplace">
+                    <block title="Vendor Finance &amp; Returns">
+                        <setting string="Default Vendor Hold Days">
+                            <field name="marketplace_default_hold_days"/>
+                        </setting>
+                        <setting string="Return Window" help="Days after shipping during which a customer can request a return.">
+                            <field name="marketplace_return_window_days"/>
+                        </setting>
+                        <setting string="Vendor Order Cancellation" help="Let a vendor owner cancel an unshipped order from the portal.">
+                            <field name="marketplace_vendor_can_cancel_orders"/>
+                        </setting>
+                        <setting string="Vendor-Only Checkouts" help="Hide vendor-only checkouts from the customer's Orders list, show the real total on the confirmation page and send one Marketplace order confirmation email.">
+                            <field name="marketplace_vendor_only_presentation"/>
+                        </setting>
+                        <setting string="Public Vendor Application" help="Let visitors apply to sell at /vendor/apply.">
+                            <field name="marketplace_vendor_apply_enabled"/>
+                            <div class="content-group" invisible="not marketplace_vendor_apply_enabled">
+                                <div class="mt8"><label for="marketplace_vendor_apply_daily_limit"/> <field name="marketplace_vendor_apply_daily_limit"/></div>
+                                <div class="mt8"><label for="marketplace_vendor_document_max_mb"/> <field name="marketplace_vendor_document_max_mb"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Catalog Offers, Storefronts and Ratings" help="Sell existing products, show sellers on the product page, seller storefronts and customer ratings.">
+                            <field name="marketplace_catalog_offers_enabled"/>
+                            <div class="content-group" invisible="not marketplace_catalog_offers_enabled">
+                                <div class="mt8"><label for="marketplace_vendor_rating_min_count"/> <field name="marketplace_vendor_rating_min_count"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Email Notifications" help="Switch off the notifications you do not want the marketplace to send.">
+                            <div><field name="marketplace_notify_vendor_order_confirmed"/></div>
+                            <div><field name="marketplace_notify_vendor_return_requested"/></div>
+                            <div><field name="marketplace_notify_vendor_return_escalated"/></div>
+                            <div><field name="marketplace_notify_vendor_return_decided"/></div>
+                            <div><field name="marketplace_notify_vendor_dispute_opened"/></div>
+                            <div><field name="marketplace_notify_vendor_dispute_escalated"/></div>
+                            <div><field name="marketplace_notify_vendor_dispute_resolved"/></div>
+                            <div><field name="marketplace_notify_vendor_settlement_approved"/></div>
+                            <div><field name="marketplace_notify_vendor_settlement_paid"/></div>
+                            <div><field name="marketplace_notify_vendor_settlement_debt"/></div>
+                            <div><field name="marketplace_notify_vendor_offer_approved"/></div>
+                            <div><field name="marketplace_notify_vendor_offer_rejected"/></div>
+                            <div><field name="marketplace_notify_vendor_product_approved"/></div>
+                            <div><field name="marketplace_notify_vendor_product_rejected"/></div>
+                            <div><field name="marketplace_notify_vendor_application_approved"/></div>
+                            <div><field name="marketplace_notify_vendor_application_rejected"/></div>
+                            <div><field name="marketplace_notify_vendor_penalty_applied"/></div>
+                            <div><field name="marketplace_notify_vendor_penalty_lifted"/></div>
+                            <div><field name="marketplace_notify_customer_order_shipped"/></div>
+                            <div><field name="marketplace_notify_customer_order_delivered"/></div>
+                            <div><field name="marketplace_notify_customer_return_approved"/></div>
+                            <div><field name="marketplace_notify_customer_return_rejected"/></div>
+                            <div><field name="marketplace_notify_customer_return_refunded"/></div>
+                            <div><field name="marketplace_notify_customer_order_cancelled"/></div>
+                        </setting>
+                        <setting string="Vendor Return Response" help="Days the vendor has to answer a return request before it escalates to the marketplace.">
+                            <field name="marketplace_return_vendor_sla_days"/>
+                        </setting>
+                        <setting string="Dispute SLA">
+                            <field name="marketplace_dispute_sla_days"/>
+                        </setting>
+                        <setting string="Withhold a Returns Reserve" help="Hold back the vendor tier's reserve percentage from each earning until the return window closes. Off, the reserve is only recorded.">
+                            <field name="marketplace_enforce_returns_reserve"/>
+                        </setting>
+                        <setting string="Flag High Cancellation Rates" help="Prepare a draft warning penalty when a vendor's monthly cancellation rate passes the threshold. Never applied automatically.">
+                            <field name="marketplace_kpi_auto_warning"/>
+                        </setting>
+                        <setting string="Create Settlements Automatically" help="Open a draft settlement per vendor at the end of each period of their tier's payout frequency. Approval and payment stay manual.">
+                            <field name="marketplace_auto_settlements"/>
+                        </setting>
+                        <setting string="Upgrade Vendor Tiers Automatically" help="Monthly, move vendors up to the highest tier whose seniority, sales and rating thresholds they meet. Never moves anyone down.">
+                            <field name="marketplace_auto_tier_upgrade"/>
+                        </setting>
+                        <setting string="Cancellation Rate Threshold (%)" help="Monthly cancellation rate above which a draft warning is prepared." invisible="not marketplace_kpi_auto_warning">
+                            <field name="marketplace_kpi_cancellation_threshold"/>
+                        </setting>
+                        <setting string="Vendors Without a Commission Plan" help="A vendor not covered by any commission plan pays nothing by default. Switch to the tier rate to deduct their vendor-tier percentage from each settlement instead.">
+                            <field name="marketplace_no_plan_commission_mode"/>
+                        </setting>
+                        <setting string="Default Commission Rate (%)" help="Used for vendors with no tier rate of their own. Only applied when vendors without a plan are charged the tier rate.">
+                            <field name="marketplace_default_commission_rate"/>
+                        </setting>
+                        <setting string="FBL Delivery Charge" help="FBL orders ship from the marketplace warehouse. Choose whether the delivery charge is paid to the vendor or kept by the marketplace.">
+                            <field name="marketplace_fbl_delivery_income"/>
+                        </setting>
+                        <setting string="Split Delivery Between Vendors" help="Only for carriers other than the per-governorate marketplace one. Off, the whole charge goes to the first vendor of the checkout.">
+                            <field name="marketplace_split_delivery_proportional"/>
+                        </setting>
+                        <setting string="Allow Cash on Delivery" help="Shows a Cash on Delivery option at checkout, alongside online payment.">
+                            <field name="marketplace_cod_enabled"/>
+                        </setting>
+                        <setting string="Vendor Image Max Size (MB)" help="Largest product image a vendor may upload from the portal. Non-image files are always refused.">
+                            <field name="marketplace_vendor_image_max_mb"/>
+                        </setting>
+                        <setting string="COD Cash Journal" help="Where the cash collected on delivery is received for platform-delivered (FBL) orders. Empty, nothing is booked and a chatter note is left instead.">
+                            <field name="marketplace_cod_cash_journal_id"/>
+                        </setting>
+                        <setting string="FBM Delivery Confirmation" help="Whether a vendor marking their own shipment delivered completes the order, or only reports it for the customer to confirm.">
+                            <field name="marketplace_fbm_delivery_mode"/>
+                        </setting>
+                        <setting string="Auto-confirm Delivery After (Days)" help="Only used when the customer confirms deliveries. Zero waits for the customer forever." invisible="marketplace_fbm_delivery_mode != 'customer_confirm'">
+                            <field name="marketplace_fbm_auto_confirm_days"/>
+                        </setting>
+                    </block>
+                    <block title="Marketplace Ledger Accounts" help="Real journal entries are posted for the escrow money flow. Configure the accounts and journal below.">
+                        <setting string="Escrow (Vendor Holdings)">
+                            <field name="marketplace_escrow_account_id"/>
+                        </setting>
+                        <setting string="Commission Income">
+                            <field name="marketplace_commission_income_account_id"/>
+                        </setting>
+                        <setting string="Fulfilment Fee Income">
+                            <field name="marketplace_fee_income_account_id"/>
+                        </setting>
+                        <setting string="Vendor Payable">
+                            <field name="marketplace_vendor_payable_account_id"/>
+                        </setting>
+                        <setting string="Commission Invoicing" help="Journal keeps today's entries. Invoice issues a tax invoice to the vendor when a settlement is approved, netted against the vendor payable. Ask your accountant to validate the account mapping before enabling it.">
+                            <field name="marketplace_commission_invoicing"/>
+                            <div class="content-group" invisible="marketplace_commission_invoicing != 'invoice'">
+                                <div class="mt8"><label for="marketplace_commission_tax_ids"/> <field name="marketplace_commission_tax_ids" widget="many2many_tags"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Marketplace Journal">
+                            <field name="marketplace_journal_id"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

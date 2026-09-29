@@ -1,0 +1,181 @@
+<odoo>
+    <record id="view_commission_rule_tree" model="ir.ui.view">
+        <field name="name">leaders.commission.rule.tree</field>
+        <field name="model">leaders.commission.rule</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="vendor_ids" widget="many2many_tags"/>
+                <field name="target_amount"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_commission_rule_form" model="ir.ui.view">
+        <field name="name">leaders.commission.rule.form</field>
+        <field name="model">leaders.commission.rule</field>
+        <field name="arch" type="xml">
+            <form string="Commission Plan">
+                <header>
+                    <button string="Approve" class="btn-primary" name="action_approve" type="object" invisible="state != 'draft'"/>
+                    <button string="Cancel" class="btn-secondary" name="action_cancel" type="object" invisible="state != 'draft'"/>
+                    <button string="Mark as done" class="btn-secondary" name="action_mark_done" type="object" invisible="state != 'approved'"/>
+                    <button string="Reset to draft" class="btn-secondary" name="action_reset_to_draft" type="object" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,done"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="action_view_commissions" type="object" class="oe_stat_button" icon="fa-dollar" invisible="state in ['draft', 'cancel']">
+                            <field name="commission_order_count" widget="statinfo" string="Achievements"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Commission Plan"/>
+                        <h1>
+                            <field name="name" placeholder="i.e. Vendor targets 2026" readonly="state != 'draft'" class="d-block"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <label for="type" string="Based on"/>
+                            <div>
+                                <field name="type" class="oe_inline" readonly="state != 'draft'"/>
+                            </div>
+                            <field name="achieve_type" readonly="state != 'draft'" required="type == 'achieve'" invisible="type == 'target'"/>
+                            <field name="commission_amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="state != 'draft'" invisible="1"/>
+                            <field name="plan_effect" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <label for="date_from" string="Effective Period"/>
+                            <div>
+                                <field name="date_from" class="oe_inline" readonly="state != 'draft'"/>
+                                <span> to </span>
+                                <field name="date_to" class="oe_inline" readonly="state != 'draft'"/>
+                            </div>
+                            <field name="periodicity" string="Target Frequency" readonly="state != 'draft'" invisible="type == 'achieve'"/>
+                        </group>
+                    </group>
+                    <group invisible="type == 'target'">
+                        <group>
+                            <field name="achieve_is_tiered" readonly="state != 'draft'"/>
+                            <field name="achieve_rate" readonly="state != 'draft'" invisible="achieve_is_tiered"/>
+                            <field name="achieve_target_amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="state != 'draft'" invisible="not achieve_is_tiered"/>
+                        </group>
+                    </group>
+                    <group invisible="type == 'achieve' and not achieve_is_tiered">
+                        <group>
+                            <field name="target_commission_ids" readonly="state != 'draft'" nolabel="1">
+                                <list editable="bottom" default_order="target_rate">
+                                    <control>
+                                        <create string="Add a new commission level"/>
+                                    </control>
+                                    <field name="target_rate" widget="percentage"/>
+                                    <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="amount_rate" widget="percentage" optional="hide"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="target_commission_graph" widget="commission_graph" nolabel="1" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook name="main_book">
+                        <page string="Targets" invisible="type == 'achieve'">
+                            <field name="target_ids" readonly="state != 'draft'">
+                                <list create="0" delete="0" editable="bottom">
+                                    <field name="name" force_save="1"/>
+                                    <field name="date_from" optional="hide"/>
+                                    <field name="date_to" optional="hide"/>
+                                    <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Sales People">
+                            <field name="vendor_plan_ids">
+                                <list editable="bottom">
+                                    <control>
+                                        <create string="Add a new Vendor"/>
+                                    </control>
+                                    <field name="vendor_id"/>
+                                    <field name="date_from" required="True"/>
+                                    <field name="date_to"/>
+                                    <field name="other_plans" widget="many2many_tags" readonly="True"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_commission_plan_line_graph" model="ir.ui.view">
+        <field name="name">leaders.commission.plan.line.graph</field>
+        <field name="model">leaders.commission.plan.line</field>
+        <field name="arch" type="xml">
+            <graph string="Commission Plan" type="line">
+                <field name="target_completion" type="row"/>
+                <field name="commission_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_commission_achievement_tree" model="ir.ui.view">
+        <field name="name">leaders.commission.achievement.list</field>
+        <field name="model">leaders.commission.achievement</field>
+        <field name="arch" type="xml">
+            <list string="Plan Achievements" create="0">
+                <field name="rule_id"/>
+                <field name="vendor_id"/>
+                <field name="settlement_id"/>
+                <field name="period_from"/>
+                <field name="period_to"/>
+                <field name="sales_amount"/>
+                <field name="cumulative_sales" optional="show"/>
+                <field name="target_amount"/>
+                <field name="achievement_percent" optional="show"/>
+                <field name="target_id" optional="show"/>
+                <field name="already_charged" optional="hide"/>
+                <field name="effect"/>
+                <field name="commission_amount" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_commission_achievement" model="ir.actions.act_window">
+        <field name="name">Plan Achievements</field>
+        <field name="res_model">leaders.commission.achievement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="view_commission_line_tree" model="ir.ui.view">
+        <field name="name">leaders.commission.line.tree</field>
+        <field name="model">leaders.commission.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="vendor_order_id"/>
+                <field name="vendor_id"/>
+                <field name="rule_id"/>
+                <field name="base_amount"/>
+                <field name="commission_amount"/>
+                <field name="vendor_amount"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_commission_line" model="ir.actions.act_window">
+        <field name="name">Commissions</field>
+        <field name="res_model">leaders.commission.line</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="action_commission_rule" model="ir.actions.act_window">
+        <field name="name">Commission Plans</field>
+        <field name="res_model">leaders.commission.rule</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

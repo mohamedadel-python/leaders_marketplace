@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="mail_template_marketplace_order_confirmation" model="mail.template">
+            <field name="name">Marketplace order confirmation</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Your marketplace order {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+    <p>Hello <t t-out="object.partner_id.name or ''"/>,</p>
+    <p>Thank you for your order <strong t-out="object.name"/>. It has been split into the following orders, each prepared by its seller:</p>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="text-align: left;">Order</th>
+                <th style="text-align: left;">Seller</th>
+                <th style="text-align: left;">Payment</th>
+                <th style="text-align: right;">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr t-foreach="object.sudo().vendor_order_ids" t-as="vo">
+                <td t-out="vo.name"/>
+                <td t-out="vo.vendor_id.vendor_store_name or vo.vendor_id.name"/>
+                <td><t t-if="vo.payment_method == 'cod'">Cash on Delivery</t><t t-else="">Online Payment</t></td>
+                <td style="text-align: right;" t-out="vo.amount_total" t-options="{'widget': 'monetary', 'display_currency': vo.currency_id}"/>
+            </tr>
+        </tbody>
+    </table>
+    <p>You can follow every shipment under Marketplace Orders in your account.</p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_application_submitted" model="mail.template">
+            <field name="name">Vendor application received</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_application"/>
+            <field name="subject">Your vendor application {{ object.name }}</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.owner_email }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+    <p>Hello <t t-out="object.owner_name or ''"/>,</p>
+    <p>We received your application to sell on our marketplace. Your reference is <strong t-out="object.name"/>.</p>
+    <p>You can follow its progress, see what is still missing and re-upload documents here:</p>
+    <p><a t-attf-href="{{ object.get_base_url() }}/vendor/apply/status/{{ object.access_token }}">Application status</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_order_confirmed" model="mail.template">
+            <field name="name">Marketplace: New vendor order confirmed</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_order"/>
+            <field name="subject">New order {{ object.name }}</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>You have a new order <strong t-out="object.name"/> worth <t t-out="object.amount_total" t-options="{'widget': 'monetary', 'display_currency': object.currency_id}"/>.</p>
+<ul>
+<t t-foreach="object.line_ids" t-as="l"><li t-if="not l.is_delivery"><t t-out="'%g' % l.product_uom_qty"/> x <t t-out="l.name"/></li></t>
+</ul>
+<p>Fulfilment: <t t-foreach="object.fulfillment_group_ids" t-as="g"><t t-out="g.name"/> (<t t-out="(g.fulfillment_type or '').upper()"/>) </t></p>
+<p>Ship-by: please prepare it now and, for vendor-fulfilled (FBM) shipments, enter the tracking reference as soon as it leaves. Leaders-fulfilled (FBL) shipments are handled by our warehouse.</p>
+<p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/orders/{{ object.id }}">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_return_requested" model="mail.template">
+            <field name="name">Marketplace: Return requested</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_return"/>
+            <field name="subject">Return request {{ object.name }}</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>A customer requested a return <strong t-out="object.name"/> for order <t t-out="object.vendor_order_id.name"/>.</p>
+<p>Reason: <t t-out="object.reason"/></p><p>Please answer before <t t-out="object.vendor_deadline"/>, otherwise it is escalated to the marketplace.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/returns/{{ object.id }}">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_return_escalated" model="mail.template">
+            <field name="name">Marketplace: Return escalated</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_return"/>
+            <field name="subject">Return {{ object.name }} escalated</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>The return <strong t-out="object.name"/> was escalated to the marketplace for a decision.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/returns/{{ object.id }}">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_return_decided" model="mail.template">
+            <field name="name">Marketplace: Return decided by the marketplace</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_return"/>
+            <field name="subject">Marketplace decision on return {{ object.name }}</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>The marketplace decided on return <strong t-out="object.name"/>: <strong><t t-if="object.state == 'closed'">rejected</t><t t-else="">approved</t></strong>.</p>
+<p t-if="object.decision_note">Decision: <t t-out="object.decision_note"/></p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/returns/{{ object.id }}">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_dispute_opened" model="mail.template">
+            <field name="name">Marketplace: Dispute opened</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_dispute"/>
+            <field name="subject">Dispute {{ object.name }} opened</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>A dispute <strong t-out="object.name"/> was opened on order <t t-out="object.vendor_order_id.name"/>.</p><p>Reason: <t t-out="object.reason"/></p>
+<p>Please reply before <t t-out="object.vendor_deadline"/>.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/disputes/{{ object.id }}">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_dispute_escalated" model="mail.template">
+            <field name="name">Marketplace: Dispute escalated</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_dispute"/>
+            <field name="subject">Dispute {{ object.name }} escalated</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>The dispute <strong t-out="object.name"/> was escalated to the marketplace.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/disputes/{{ object.id }}">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_dispute_resolved" model="mail.template">
+            <field name="name">Marketplace: Dispute resolved</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_dispute"/>
+            <field name="subject">Dispute {{ object.name }} resolved</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>The marketplace resolved dispute <strong t-out="object.name"/>.</p><p>Decision: <t t-out="object.decision"/></p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/disputes/{{ object.id }}">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_settlement_approved" model="mail.template">
+            <field name="name">Marketplace: Settlement approved</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_settlement"/>
+            <field name="subject">Settlement {{ object.name }} approved</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your settlement <strong t-out="object.name"/> was approved. Net amount: <t t-out="object.net_amount" t-options="{'widget': 'monetary', 'display_currency': object.currency_id}"/>.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/settlements">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_settlement_paid" model="mail.template">
+            <field name="name">Marketplace: Settlement paid</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_settlement"/>
+            <field name="subject">Settlement {{ object.name }} paid</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your settlement <strong t-out="object.name"/> was paid. Amount: <t t-out="object.net_amount" t-options="{'widget': 'monetary', 'display_currency': object.currency_id}"/>.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/settlements">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_settlement_debt" model="mail.template">
+            <field name="name">Marketplace: Settlement: amount due from the vendor</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_settlement"/>
+            <field name="subject">Settlement {{ object.name }}: amount due</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your settlement <strong t-out="object.name"/> closes with an amount you owe the marketplace: <strong><t t-out="-object.net_amount" t-options="{'widget': 'monetary', 'display_currency': object.currency_id}"/></strong> (cash collected on delivery exceeds your other earnings for the period). Please transfer it to the marketplace.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/settlements">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_offer_approved" model="mail.template">
+            <field name="name">Marketplace: Offer approved</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_marketplace_offer"/>
+            <field name="subject">Offer {{ object.seller_sku }} approved</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your offer <strong t-out="object.seller_sku"/> on <t t-out="object.product_id.display_name"/> was approved.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/products/{{ object.id }}/edit">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_offer_rejected" model="mail.template">
+            <field name="name">Marketplace: Offer rejected</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_marketplace_offer"/>
+            <field name="subject">Offer {{ object.seller_sku }} rejected</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your offer <strong t-out="object.seller_sku"/> on <t t-out="object.product_id.display_name"/> was rejected.</p><p>Reason: <t t-out="object.reject_reason"/></p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/products/{{ object.id }}/edit">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_product_approved" model="mail.template">
+            <field name="name">Marketplace: Product approved</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="subject">Product {{ object.name }} approved</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your product <strong t-out="object.name"/> was approved and is now published.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/products">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_product_rejected" model="mail.template">
+            <field name="name">Marketplace: Product rejected</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="subject">Product {{ object.name }} rejected</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your product <strong t-out="object.name"/> was rejected.</p><p>Reason: <t t-out="object.marketplace_reject_reason"/></p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/products">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_application_approved" model="mail.template">
+            <field name="name">Marketplace: Vendor application approved</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_application"/>
+            <field name="subject">Your vendor application {{ object.name }} was approved</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Congratulations! Your application <strong t-out="object.name"/> was approved.</p>
+<p>You will receive a separate email to set your password. Then sign in to manage your store.</p><p><a t-attf-href="{{ object.get_base_url() }}/my">Go to your account</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_application_rejected" model="mail.template">
+            <field name="name">Marketplace: Vendor application rejected</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_application"/>
+            <field name="subject">Your vendor application {{ object.name }}</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>We are sorry: your application <strong t-out="object.name"/> was rejected.</p><p>Reason: <t t-out="object.reject_reason"/></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_penalty_applied" model="mail.template">
+            <field name="name">Marketplace: Penalty applied</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_penalty"/>
+            <field name="subject">Marketplace penalty: {{ object.level }}</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>A <strong t-out="dict(object._fields['level']._description_selection(object.env)).get(object.level)"/> was applied to your store.</p><p>Reason: <t t-out="object.reason"/></p>
+<p t-if="object.amount">Fine: <t t-out="object.amount" t-options="{'widget': 'monetary', 'display_currency': object.currency_id}"/></p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_penalty_lifted" model="mail.template">
+            <field name="name">Marketplace: Penalty lifted</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_penalty"/>
+            <field name="subject">Marketplace penalty lifted</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>The <strong t-out="dict(object._fields['level']._description_selection(object.env)).get(object.level)"/> on your store was lifted.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/vendor">Open in your vendor portal</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_customer_order_shipped" model="mail.template">
+            <field name="name">Marketplace: Order shipped</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_fulfillment_group"/>
+            <field name="subject">Your order {{ object.vendor_order_id.name }} has shipped</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Good news: shipment <strong t-out="object.name"/> of your order <t t-out="object.vendor_order_id.name"/> is on its way.</p>
+<p t-if="object.tracking_ref">Tracking reference: <strong t-out="object.tracking_ref"/></p><p t-if="object.carrier_id">Carrier: <t t-out="object.carrier_id.name"/></p><p><a t-attf-href="{{ object.get_base_url() }}/my/marketplace/orders/{{ object.vendor_order_id.id }}">Follow your order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_customer_order_delivered" model="mail.template">
+            <field name="name">Marketplace: Order delivered</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_fulfillment_group"/>
+            <field name="subject">Your order {{ object.vendor_order_id.name }} was delivered</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Shipment <strong t-out="object.name"/> of your order <t t-out="object.vendor_order_id.name"/> was delivered. Thank you!</p><p><a t-attf-href="{{ object.get_base_url() }}/my/marketplace/orders/{{ object.vendor_order_id.id }}">Follow your order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_customer_return_approved" model="mail.template">
+            <field name="name">Marketplace: Return approved</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_return"/>
+            <field name="subject">Your return {{ object.name }} was approved</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your return <strong t-out="object.name"/> for order <t t-out="object.vendor_order_id.name"/> was approved. Please send the goods back as instructed by the seller.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/marketplace/orders/{{ object.vendor_order_id.id }}">Follow your order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_customer_return_rejected" model="mail.template">
+            <field name="name">Marketplace: Return rejected</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_return"/>
+            <field name="subject">Your return {{ object.name }} was not accepted</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your return <strong t-out="object.name"/> for order <t t-out="object.vendor_order_id.name"/> was not accepted.</p>
+<p t-if="object.vendor_note or object.decision_note">Reason: <t t-out="object.decision_note or object.vendor_note"/></p><p><a t-attf-href="{{ object.get_base_url() }}/my/marketplace/orders/{{ object.vendor_order_id.id }}">Follow your order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_customer_return_refunded" model="mail.template">
+            <field name="name">Marketplace: Return refunded</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_return"/>
+            <field name="subject">Your return {{ object.name }} was refunded</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your return <strong t-out="object.name"/> was processed. Refund amount: <t t-out="object.refund_amount" t-options="{'widget': 'monetary', 'display_currency': object.currency_id}"/>.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/marketplace/orders/{{ object.vendor_order_id.id }}">Follow your order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_customer_order_cancelled" model="mail.template">
+            <field name="name">Marketplace: Order cancelled</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_order"/>
+            <field name="subject">Your order {{ object.name }} was cancelled</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your order <strong t-out="object.name"/> was cancelled.</p><p t-if="object.cancel_reason">Reason: <t t-out="object.cancel_reason"/></p>
+<p t-if="object.payment_method != 'cod'">If you already paid online, a refund of <t t-out="object.amount_total" t-options="{'widget': 'monetary', 'display_currency': object.currency_id}"/> is being prepared.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/marketplace/orders/{{ object.id }}">Follow your order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="param_notify_vendor_order_confirmed" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_order_confirmed</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_return_requested" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_return_requested</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_return_escalated" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_return_escalated</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_return_decided" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_return_decided</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_dispute_opened" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_dispute_opened</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_dispute_escalated" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_dispute_escalated</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_dispute_resolved" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_dispute_resolved</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_settlement_approved" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_settlement_approved</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_settlement_paid" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_settlement_paid</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_settlement_debt" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_settlement_debt</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_offer_approved" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_offer_approved</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_offer_rejected" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_offer_rejected</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_product_approved" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_product_approved</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_product_rejected" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_product_rejected</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_application_approved" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_application_approved</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_application_rejected" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_application_rejected</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_penalty_applied" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_penalty_applied</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_penalty_lifted" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_penalty_lifted</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_customer_order_shipped" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_customer_order_shipped</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_customer_order_delivered" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_customer_order_delivered</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_customer_return_approved" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_customer_return_approved</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_customer_return_rejected" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_customer_return_rejected</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_customer_return_refunded" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_customer_return_refunded</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_customer_order_cancelled" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_customer_order_cancelled</field>
+            <field name="value">True</field>
+        </record>
+    </data>
+</odoo>

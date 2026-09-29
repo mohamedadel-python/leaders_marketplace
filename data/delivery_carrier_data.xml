@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="product_product_marketplace_delivery" model="product.product">
+        <field name="name">Marketplace Delivery</field>
+        <field name="default_code">MKT_DELIVERY</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="delivery.product_category_deliveries"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+        <field name="invoice_policy">order</field>
+    </record>
+    <record id="marketplace_zone_delivery_carrier" model="delivery.carrier">
+        <field name="name">Marketplace Delivery (Per Governorate)</field>
+        <field name="sequence">1</field>
+        <field name="delivery_type">marketplace_zone</field>
+        <field name="product_id" ref="product_product_marketplace_delivery"/>
+        <field name="is_published" eval="True"/>
+        <field name="country_ids" eval="[(6, 0, [ref('base.eg')])]"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,80 @@
+<odoo noupdate="1">
+    <record id="cron_release_vendor_wallet_holds" model="ir.cron">
+        <field name="name">Marketplace: Release Vendor Wallet Holds</field>
+        <field name="model_id" ref="model_leaders_wallet_transaction"/>
+        <field name="state">code</field><field name="code">model.cron_release_holds()</field>
+        <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
+    </record>
+    <record id="cron_apply_storage_fees" model="ir.cron">
+        <field name="name">Marketplace: Apply Monthly FBL Storage Fees</field>
+        <field name="model_id" ref="model_leaders_fulfillment_fee"/>
+        <field name="state">code</field><field name="code">model.cron_apply_storage_fees()</field>
+        <field name="interval_number">1</field><field name="interval_type">months</field><field name="active">True</field>
+    </record>
+    <record id="cron_escalate_overdue_returns" model="ir.cron">
+        <field name="name">Marketplace: Escalate Unanswered Returns</field>
+        <field name="model_id" ref="model_leaders_vendor_return"/>
+        <field name="state">code</field><field name="code">model.cron_escalate_overdue()</field>
+        <field name="interval_number">1</field><field name="interval_type">hours</field><field name="active">True</field>
+    </record>
+    <record id="cron_track_published_days" model="ir.cron">
+        <field name="name">Marketplace: Track Offer Listing Days</field>
+        <field name="model_id" ref="model_leaders_marketplace_offer_publish_log"/>
+        <field name="state">code</field><field name="code">model.cron_track_published_days()</field>
+        <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
+    </record>
+    <record id="cron_auto_confirm_fbm_delivery" model="ir.cron">
+        <field name="name">Marketplace: Auto-confirm Reported FBM Deliveries</field>
+        <field name="model_id" ref="model_leaders_fulfillment_group"/>
+        <field name="state">code</field><field name="code">model.cron_auto_confirm_delivery()</field>
+        <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
+    </record>
+    <record id="cron_refresh_buybox" model="ir.cron">
+        <field name="name">Marketplace: Refresh Buy Box</field>
+        <field name="model_id" ref="model_leaders_marketplace_offer"/>
+        <field name="state">code</field><field name="code">model.cron_refresh_buybox()</field>
+        <field name="interval_number">30</field><field name="interval_type">minutes</field><field name="active">True</field>
+    </record>
+    <record id="cron_release_returns_reserves" model="ir.cron">
+        <field name="name">Marketplace: Release Returns Reserves</field>
+        <field name="model_id" ref="model_leaders_vendor_reserve"/>
+        <field name="state">code</field><field name="code">model.cron_release_reserves()</field>
+        <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
+    </record>
+    <record id="cron_lift_expired_penalties" model="ir.cron">
+        <field name="name">Marketplace: Lift Expired Vendor Penalties</field>
+        <field name="model_id" ref="model_leaders_vendor_penalty"/>
+        <field name="state">code</field><field name="code">model.cron_lift_expired_penalties()</field>
+        <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
+    </record>
+    <record id="cron_compute_vendor_kpis" model="ir.cron">
+        <field name="name">Marketplace: Compute Vendor KPIs</field>
+        <field name="model_id" ref="model_leaders_vendor_kpi"/>
+        <field name="state">code</field><field name="code">model.cron_compute_kpis()</field>
+        <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
+    </record>
+    <record id="cron_auto_create_settlements" model="ir.cron">
+        <field name="name">Marketplace: Open Scheduled Settlements</field>
+        <field name="model_id" ref="model_leaders_settlement"/>
+        <field name="state">code</field><field name="code">model.cron_auto_create_settlements()</field>
+        <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
+    </record>
+    <record id="cron_auto_upgrade_tiers" model="ir.cron">
+        <field name="name">Marketplace: Upgrade Vendor Tiers</field>
+        <field name="model_id" ref="model_leaders_vendor_tier"/>
+        <field name="state">code</field><field name="code">model.cron_auto_upgrade_tiers()</field>
+        <field name="interval_number">1</field><field name="interval_type">months</field><field name="active">True</field>
+    </record>
+    <record id="cron_escalate_overdue_disputes" model="ir.cron">
+        <field name="name">Marketplace: Escalate Unanswered Disputes</field>
+        <field name="model_id" ref="model_leaders_vendor_dispute"/>
+        <field name="state">code</field><field name="code">model.cron_escalate_overdue_disputes()</field>
+        <field name="interval_number">1</field><field name="interval_type">hours</field><field name="active">True</field>
+    </record>
+    <record id="cron_sync_vendor_ratings" model="ir.cron">
+        <field name="name">Marketplace: Sync Vendor Ratings to Offers</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field><field name="code">model.cron_sync_vendor_ratings()</field>
+        <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
+    </record>
+</odoo>

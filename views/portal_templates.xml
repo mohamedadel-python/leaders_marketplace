@@ -1,0 +1,1360 @@
+<odoo>
+    <!-- Portal home: approved vendors see only the marketplace cards; Odoo's default cards are hidden. -->
+    <template id="portal_my_home_marketplace" inherit_id="portal.portal_my_home" name="Marketplace Portal Home" priority="99">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <div t-if="lm_is_vendor" class="lm-vendor-home">
+                <div class="lm-vh-hero">
+                    <div class="lm-vh-avatar"><t t-esc="(lm_vendor.vendor_store_name or lm_vendor.name or '?')[:1].upper()"/></div>
+                    <div class="flex-grow-1 min-w-0">
+                        <div class="lm-vh-welcome">Welcome back</div>
+                        <h4 class="mb-1 text-truncate" t-esc="lm_vendor.vendor_store_name or lm_vendor.name"/>
+                        <span t-if="lm_vendor.vendor_tier_id" class="lm-vh-tier"><i class="fa fa-star"/> <t t-esc="lm_vendor.vendor_tier_id.name"/></span>
+                    </div>
+                    <a href="/my/vendor" class="btn btn-light lm-vh-cta"><i class="fa fa-tachometer"/> Open Dashboard</a>
+                </div>
+
+                <h6 class="lm-vh-section">My Store</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6">
+                        <a href="/my/vendor" class="lm-hc lm-hc-blue">
+                            <span class="lm-hc-icon"><i class="fa fa-tachometer"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Vendor Dashboard</span>
+                                <span class="lm-hc-text">Sales, wallet and marketplace overview</span>
+                            </span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a href="/my/vendor/products" class="lm-hc lm-hc-purple">
+                            <span class="lm-hc-icon"><i class="fa fa-cube"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Products &amp; Offers</span>
+                                <span class="lm-hc-text">Create, edit, stock and submit products</span>
+                            </span>
+                            <span t-if="lm_offers_count" class="lm-hc-badge" title="Products"><t t-esc="lm_offers_count"/></span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a href="/my/vendor/orders" class="lm-hc lm-hc-teal">
+                            <span class="lm-hc-icon"><i class="fa fa-shopping-cart"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Vendor Orders</span>
+                                <span class="lm-hc-text">Prepare, ship and track your orders</span>
+                            </span>
+                            <span t-if="lm_orders_to_process" class="lm-hc-badge" title="To process"><t t-esc="lm_orders_to_process"/></span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a href="/my/vendor/performance" class="lm-hc lm-hc-indigo">
+                            <span class="lm-hc-icon"><i class="fa fa-line-chart"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Performance</span>
+                                <span class="lm-hc-text">KPI, tier and penalty history</span>
+                            </span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                </div>
+
+                <h6 class="lm-vh-section">After-Sales</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6">
+                        <a href="/my/vendor/returns" class="lm-hc lm-hc-orange">
+                            <span class="lm-hc-icon"><i class="fa fa-undo"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Returns</span>
+                                <span class="lm-hc-text">Review marketplace return requests</span>
+                            </span>
+                            <span t-if="lm_returns_open" class="lm-hc-badge" title="Open"><t t-esc="lm_returns_open"/></span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a href="/my/vendor/disputes" class="lm-hc lm-hc-red">
+                            <span class="lm-hc-icon"><i class="fa fa-gavel"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Disputes</span>
+                                <span class="lm-hc-text">Customer disputes and escalation status</span>
+                            </span>
+                            <span t-if="lm_disputes_open" class="lm-hc-badge" title="Open"><t t-esc="lm_disputes_open"/></span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                </div>
+
+                <t t-if="lm_is_vendor_owner">
+                    <h6 class="lm-vh-section">Business</h6>
+                    <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6">
+                        <a href="/my/vendor/finance" class="lm-hc lm-hc-green">
+                            <span class="lm-hc-icon"><i class="fa fa-money"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Wallet &amp; Settlements</span>
+                                <span class="lm-hc-text">Commissions, holds and payouts</span>
+                            </span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a href="/my/vendor/staff" class="lm-hc lm-hc-slate">
+                            <span class="lm-hc-icon"><i class="fa fa-users"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Vendor Staff</span>
+                                <span class="lm-hc-text">Invite portal users for your company</span>
+                            </span>
+                            <span t-if="lm_staff_count" class="lm-hc-badge" title="Staff members"><t t-esc="lm_staff_count"/></span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                    </div>
+                </t>
+
+                <h6 class="lm-vh-section">Account</h6>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <a href="/my/account" class="lm-hc lm-hc-slate">
+                            <span class="lm-hc-icon"><i class="fa fa-user"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Account Details</span>
+                                <span class="lm-hc-text">Update your contact and address information</span>
+                            </span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a href="/my/security" class="lm-hc lm-hc-slate">
+                            <span class="lm-hc-icon"><i class="fa fa-shield"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">Connection &amp; Security</span>
+                                <span class="lm-hc-text">Change your password and security settings</span>
+                            </span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a href="/my/marketplace/orders" class="lm-hc lm-hc-teal">
+                            <span class="lm-hc-icon"><i class="fa fa-shopping-bag"/></span>
+                            <span class="lm-hc-body">
+                                <span class="lm-hc-title">My Purchases</span>
+                                <span class="lm-hc-text">Orders you placed as a customer</span>
+                            </span>
+                            <i class="fa fa-angle-right lm-hc-arrow"/>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        <!-- Keep Odoo's docs grid in the DOM (the counters widget relies on it) but hide it for vendors. -->
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="attributes">
+            <attribute name="t-att-class">'o_portal_docs row g-2' + (' d-none' if lm_is_vendor else '')</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-if="not lm_is_vendor" t-call="portal.portal_docs_entry">
+                <t t-set="title">Marketplace Orders</t>
+                <t t-set="text">View vendor shipments inside your customer order</t>
+                <t t-set="url" t-value="'/my/marketplace/orders'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_vendor_nav" name="Vendor Portal Navigation">
+        <t t-set="lm_path" t-value="request.httprequest.path"/>
+        <div t-if="freeze_notice" class="alert alert-warning" role="alert">
+            <i class="fa fa-lock"/> <t t-esc="freeze_notice"/>
+            <div class="small mt-1">You can still ship your open orders, answer returns and follow your settlements. New or changed listings are on hold.</div>
+        </div>
+        <nav class="lm-vendor-nav mb-4">
+            <a href="/my/vendor" t-attf-class="lm-vendor-nav-link #{'active' if lm_path == '/my/vendor' else ''}"><i class="fa fa-tachometer"/> Dashboard</a>
+            <a href="/my/vendor/products" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/products') else ''}"><i class="fa fa-cube"/> Products</a>
+            <a href="/my/vendor/orders" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/orders') else ''}"><i class="fa fa-shopping-cart"/> Orders</a>
+            <a href="/my/vendor/returns" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/returns') else ''}"><i class="fa fa-undo"/> Returns</a>
+            <a href="/my/vendor/disputes" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/disputes') else ''}"><i class="fa fa-gavel"/> Disputes</a>
+            <a href="/my/vendor/performance" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/performance') else ''}"><i class="fa fa-line-chart"/> Performance</a>
+            <t t-if="request.env.user.has_group('leaders_marketplace.group_vendor_owner')">
+                <a href="/my/vendor/finance" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/finance') else ''}"><i class="fa fa-money"/> Finance</a>
+                <a href="/my/vendor/delivery-zones" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/delivery-zones') else ''}"><i class="fa fa-map-marker"/> Delivery Zones</a>
+                <a href="/my/vendor/staff" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/staff') else ''}"><i class="fa fa-users"/> Staff</a>
+            </t>
+        </nav>
+    </template>
+
+    <template id="portal_vendor_state_badge" name="Vendor Portal State Badge">
+        <t t-set="lm_badge_class" t-value="{
+            'pending': 'text-bg-warning', 'confirmed': 'text-bg-info', 'processing': 'text-bg-info',
+            'partially_fulfilled': 'text-bg-primary', 'fulfilled': 'text-bg-primary',
+            'completed': 'text-bg-success', 'cancelled': 'text-bg-danger',
+            'draft': 'text-bg-light', 'active': 'text-bg-success', 'rejected': 'text-bg-danger', 'suspended': 'text-bg-dark',
+        }.get(record.state, 'text-bg-secondary')"/>
+        <span t-attf-class="badge rounded-pill #{lm_badge_class}" t-esc="dict(record._fields['state']._description_selection(record.env)).get(record.state)"/>
+    </template>
+
+    <template id="portal_vendor_dashboard" name="Vendor Dashboard">
+        <t t-call="portal.portal_layout">
+            <t t-set="no_breadcrumbs" t-value="True"/>
+            <div class="container my-4 lm-portal lm-dashboard">
+                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+
+                <!-- Header -->
+                <div class="lm-dash-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="lm-avatar"><t t-esc="(vendor.vendor_store_name or vendor.name or '?')[:1].upper()"/></div>
+                        <div>
+                            <h2 class="mb-0">Vendor Dashboard</h2>
+                            <div class="text-muted">
+                                <span t-esc="vendor.vendor_store_name or vendor.display_name"/>
+                                <span t-if="vendor.vendor_tier_id" class="badge rounded-pill lm-tier-badge ms-2">
+                                    <i class="fa fa-star"/> <t t-esc="vendor.vendor_tier_id.name"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="/my/vendor/orders" class="btn btn-outline-secondary"><i class="fa fa-list"/> All Orders</a>
+                        <a href="/my/vendor/products/new" class="btn btn-primary"><i class="fa fa-plus"/> Add Product</a>
+                    </div>
+                </div>
+
+                <div t-if="cod_pending_confirmation" class="alert alert-warning d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                    <div>
+                        <i class="fa fa-exclamation-triangle"/>
+                        <strong><t t-esc="len(cod_pending_confirmation)"/></strong>
+                        Cash on Delivery order<t t-if="len(cod_pending_confirmation) != 1">s</t> delivered and waiting for you to confirm you collected the cash.
+                        Your commission on <t t-if="len(cod_pending_confirmation) != 1">them</t><t t-else="">it</t> is only charged once confirmed.
+                    </div>
+                    <a t-att-href="'/my/vendor/orders/%s' % cod_pending_confirmation[0].id" class="btn btn-sm btn-warning">Review &amp; Confirm</a>
+                </div>
+
+                <!-- KPI cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-lg-3">
+                        <a href="/my/vendor/orders" class="lm-kpi lm-kpi-blue">
+                            <span class="lm-kpi-icon"><i class="fa fa-shopping-cart"/></span>
+                            <span class="lm-kpi-label">Orders</span>
+                            <span class="lm-kpi-value" t-esc="orders_count"/>
+                            <span class="lm-kpi-sub"><t t-esc="orders_to_process"/> to process</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <a href="/my/vendor/products" class="lm-kpi lm-kpi-purple">
+                            <span class="lm-kpi-icon"><i class="fa fa-cube"/></span>
+                            <span class="lm-kpi-label">Offers</span>
+                            <span class="lm-kpi-value" t-esc="offers_count"/>
+                            <span class="lm-kpi-sub">Products listed</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <a t-att-href="is_vendor_owner and '/my/vendor/finance' or None" class="lm-kpi lm-kpi-green">
+                            <span class="lm-kpi-icon"><i class="fa fa-money"/></span>
+                            <span class="lm-kpi-label">Available Balance</span>
+                            <span class="lm-kpi-value" t-out="wallet_available" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            <span class="lm-kpi-sub">Ready for payout</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <a t-att-href="is_vendor_owner and '/my/vendor/finance' or None" class="lm-kpi lm-kpi-orange">
+                            <span class="lm-kpi-icon"><i class="fa fa-lock"/></span>
+                            <span class="lm-kpi-label">On Hold</span>
+                            <span class="lm-kpi-value" t-out="wallet_hold" t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            <span class="lm-kpi-sub">Pending release</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Main column -->
+                    <div class="col-lg-8">
+                        <div class="lm-panel mb-4">
+                            <div class="lm-panel-header">
+                                <h5 class="mb-0"><i class="fa fa-shopping-cart"/> Recent Orders</h5>
+                                <a href="/my/vendor/orders" class="small">View all <i class="fa fa-angle-right"/></a>
+                            </div>
+                            <div t-if="orders" class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead><tr><th>Order</th><th>Status</th><th class="text-end">Total</th><th class="text-end">Commission</th><th class="text-end">Net</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="orders" t-as="o">
+                                            <td>
+                                                <a class="fw-semibold" t-att-href="'/my/vendor/orders/%s' % o.id" t-esc="o.name"/>
+                                                <div class="small text-muted" t-esc="o.create_date" t-options="{'widget': 'date'}"/>
+                                            </td>
+                                            <td><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                                            <td class="text-end text-nowrap" t-out="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            <td class="text-end text-nowrap text-muted" t-out="o.commission_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            <td class="text-end text-nowrap fw-semibold" t-out="o.vendor_net" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div t-else="" class="lm-empty">
+                                <i class="fa fa-inbox"/>
+                                <p class="mb-0">No orders yet.</p>
+                            </div>
+                        </div>
+
+                        <div class="lm-panel">
+                            <div class="lm-panel-header">
+                                <h5 class="mb-0"><i class="fa fa-cubes"/> Inventory</h5>
+                                <a href="/my/vendor/products" class="small">Manage stock <i class="fa fa-angle-right"/></a>
+                            </div>
+                            <div t-if="stock_offers" class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead><tr><th>Product</th><th>Status</th><th>Fulfillment</th><th class="text-end">Available</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="stock_offers" t-as="o">
+                                            <t t-set="qty" t-value="o.available_qty()"/>
+                                            <td>
+                                                <a class="fw-semibold" t-att-href="'/my/vendor/products/%s/edit' % o.id" t-esc="o.product_id.display_name"/>
+                                                <div class="small text-muted">SKU: <t t-esc="o.seller_sku"/></div>
+                                            </td>
+                                            <td><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                                            <td><span class="badge rounded-pill text-bg-light border" t-esc="o.fulfillment_type.upper()"/></td>
+                                            <td class="text-end">
+                                                <span t-attf-class="fw-semibold #{'text-danger' if qty &lt;= 0 else ('text-warning' if qty &lt; 5 else '')}" t-esc="'%g' % qty"/>
+                                                <div t-if="qty &lt;= 0" class="small text-danger">Out of stock</div>
+                                                <div t-elif="qty &lt; 5" class="small text-warning">Low stock</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div t-else="" class="lm-empty">
+                                <i class="fa fa-cube"/>
+                                <p>You have no products yet.</p>
+                                <a href="/my/vendor/products/new" class="btn btn-sm btn-primary"><i class="fa fa-plus"/> Add your first product</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Side column -->
+                    <div class="col-lg-4">
+                        <div class="lm-panel mb-4">
+                            <div class="lm-panel-header"><h5 class="mb-0"><i class="fa fa-bell"/> Needs Attention</h5></div>
+                            <div class="lm-attention">
+                                <a href="/my/vendor/orders" class="lm-attention-row">
+                                    <span><i class="fa fa-truck text-primary"/> Orders to process</span>
+                                    <span t-attf-class="badge rounded-pill #{'text-bg-primary' if orders_to_process else 'text-bg-light'}" t-esc="orders_to_process"/>
+                                </a>
+                                <a href="/my/vendor/returns" class="lm-attention-row">
+                                    <span><i class="fa fa-undo text-warning"/> Open returns</span>
+                                    <span t-attf-class="badge rounded-pill #{'text-bg-warning' if returns_open else 'text-bg-light'}" t-esc="returns_open"/>
+                                </a>
+                                <a href="/my/vendor/disputes" class="lm-attention-row">
+                                    <span><i class="fa fa-gavel text-danger"/> Open disputes</span>
+                                    <span t-attf-class="badge rounded-pill #{'text-bg-danger' if disputes_open else 'text-bg-light'}" t-esc="disputes_open"/>
+                                </a>
+                            </div>
+                            <div class="lm-panel-footer small text-muted">
+                                Total: <t t-esc="returns_count"/> returns · <t t-esc="disputes_count"/> disputes
+                            </div>
+                        </div>
+
+                        <div class="lm-panel mb-4">
+                            <div class="lm-panel-header"><h5 class="mb-0"><i class="fa fa-tags"/> Offers by Status</h5></div>
+                            <div class="lm-attention">
+                                <div t-foreach="offer_state_counts" t-as="sc" class="lm-attention-row">
+                                    <span t-esc="sc[0]"/>
+                                    <span class="badge rounded-pill text-bg-light border" t-esc="sc[2]"/>
+                                </div>
+                                <div t-if="not offer_state_counts" class="lm-attention-row text-muted">No offers yet</div>
+                            </div>
+                        </div>
+
+                        <div class="lm-panel">
+                            <div class="lm-panel-header"><h5 class="mb-0"><i class="fa fa-bolt"/> Quick Links</h5></div>
+                            <div class="lm-quick-links">
+                                <a href="/my/vendor/products/new"><i class="fa fa-plus"/> New product</a>
+                                <a href="/my/vendor/performance"><i class="fa fa-line-chart"/> Performance</a>
+                                <t t-if="is_vendor_owner">
+                                    <a href="/my/vendor/finance"><i class="fa fa-money"/> Wallet</a>
+                                    <a href="/my/vendor/staff"><i class="fa fa-users"/> Staff</a>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_products" name="Vendor Products">
+        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
+            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+            <div class="d-flex justify-content-between align-items-center mb-3"><h2>Products &amp; Offers</h2><a href="/my/vendor/products/new" class="btn btn-primary">+ Add Product</a></div>
+            <div t-if="error" class="alert alert-danger" t-esc="error"/>
+            <div class="alert alert-info">FBM stock can be updated here. FBL stock is updated through warehouse inbound receipts.</div>
+            <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Product</th><th>SKU</th><th>Price</th><th>Fulfillment</th><th>Status</th><th>Buy Box</th><th>Stock</th><th></th></tr></thead>
+            <tbody><tr t-foreach="offers" t-as="o">
+                <td>
+                    <span t-esc="o.product_id.display_name"/>
+                    <div class="small text-danger" t-if="o.reject_reason">Offer rejected: <t t-esc="o.reject_reason"/></div>
+                    <div class="small text-danger" t-if="o.product_tmpl_id.marketplace_reject_reason and o.product_tmpl_id.marketplace_state == 'rejected'">Product rejected: <t t-esc="o.product_tmpl_id.marketplace_reject_reason"/></div>
+                    <div class="small text-muted" t-if="o.state == 'active' and o.product_tmpl_id.marketplace_state != 'published'">
+                        Your offer is approved, but the product is still
+                        <t t-esc="dict(o.product_tmpl_id._fields['marketplace_state']._description_selection(o.env)).get(o.product_tmpl_id.marketplace_state)"/>
+                        and is not on the website yet.
+                    </div>
+                </td>
+                <td t-esc="o.seller_sku"/><td><span t-esc="o.price"/> <span t-esc="o.currency_id.name"/></td><td t-esc="o.fulfillment_type.upper()"/><td t-esc="o.state"/><td><span t-if="o.is_buybox_winner" class="badge text-bg-success">Winner</span></td>
+                <td>
+                    <t t-if="o.fulfillment_type == 'fbm'">
+                        <form t-att-action="'/my/vendor/products/%s/stock' % o.id" method="post" class="d-flex gap-1">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <span class="small align-self-center text-nowrap">Available: <strong t-esc="o.available_qty()"/></span>
+                            <select name="mode" class="form-select form-select-sm" style="width:80px" aria-label="Stock update mode">
+                                <option value="add">Add</option>
+                                <option value="set">Set</option>
+                            </select>
+                            <input type="number" name="quantity" min="0" step="0.01" value="0" class="form-control form-control-sm" style="width:90px" aria-label="Quantity"/>
+                            <button class="btn btn-sm btn-outline-secondary">Update</button>
+                        </form>
+                    </t><t t-else=""><span class="badge text-bg-info">Warehouse controlled</span></t>
+                </td>
+                <td class="text-nowrap"><a t-att-href="'/my/vendor/products/%s/edit' % o.id" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <form t-if="o.state in ('draft','rejected')" t-att-action="'/my/vendor/products/%s/submit' % o.id" method="post" class="d-inline"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-sm btn-primary">Submit</button></form>
+                </td>
+            </tr></tbody></table></div>
+        </div></t>
+    </template>
+
+    <template id="portal_vendor_product_form" name="Vendor Product Form">
+        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
+            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+            <div class="d-flex justify-content-between"><h2><t t-if="offer">Edit Product</t><t t-else="">Add Product</t></h2><a href="/my/vendor/products" class="btn btn-outline-secondary">Back</a></div>
+            <div t-if="error" class="alert alert-danger mt-3" t-esc="error"/>
+            <div t-if="catalog_enabled and not offer" class="card p-3 mt-3">
+                <h5>Sell an existing product</h5>
+                <form method="get" action="/my/vendor/products/new" class="d-flex gap-2">
+                    <input class="form-control" name="q" t-att-value="catalog_query" placeholder="Search the catalog by product name"/>
+                    <button class="btn btn-outline-primary">Search</button>
+                </form>
+                <div t-if="catalog_query and not catalog_results" class="text-muted mt-2">No published product matches your search.</div>
+                <div t-foreach="catalog_results" t-as="cp" class="border-top mt-3 pt-3">
+                    <form method="post" action="/my/vendor/products/sell-existing" class="row g-2 align-items-end">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="product_id" t-att-value="cp.id"/>
+                        <input type="hidden" name="q" t-att-value="catalog_query"/>
+                        <div class="col-md-3"><strong t-esc="cp.display_name"/></div>
+                        <div class="col-md-2"><input class="form-control" name="seller_sku" placeholder="Seller SKU" required="required"/></div>
+                        <div class="col-md-2"><input class="form-control" type="number" min="0" step="0.01" name="price" placeholder="Price" required="required"/></div>
+                        <div class="col-md-2"><select class="form-select" name="currency_id"><option t-foreach="currencies" t-as="c" t-att-value="c.id" t-att-selected="c == request.env.company.currency_id" t-esc="c.name"/></select></div>
+                        <div class="col-md-2"><select class="form-select" name="fulfillment_type"><option value="fbm">FBM</option><option value="fbl">FBL</option></select></div>
+                        <div class="col-md-1"><button class="btn btn-primary">Sell</button></div>
+                    </form>
+                </div>
+            </div>
+            <div t-if="created" class="alert alert-success mt-3">Product created. Review the details then submit it for approval.</div>
+            <div t-if="offer and not vendor_owns_content" class="alert alert-info mt-3">
+                <i class="fa fa-info-circle"/> Product details are managed by the marketplace; you can edit your offer only.
+            </div>
+            <form t-att-action="offer and ('/my/vendor/products/%s/edit' % offer.id) or '/my/vendor/products/new'" method="post" enctype="multipart/form-data" class="card p-4 mt-3">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="row g-3">
+                    <div class="col-md-8"><label class="form-label">Product Name</label><input class="form-control" name="name" required="required" t-att-value="offer and offer.product_tmpl_id.name or ''" t-att-readonly="'readonly' if not vendor_owns_content else None"/></div>
+                    <div class="col-md-4"><label class="form-label">Seller SKU</label><input class="form-control" name="seller_sku" required="required" t-att-value="offer and offer.seller_sku or ''"/></div>
+                    <div class="col-12"><label class="form-label">Description</label><textarea class="form-control" name="description_sale" rows="4" t-att-readonly="'readonly' if not vendor_owns_content else None"><t t-esc="offer and offer.product_tmpl_id.description_sale or ''"/></textarea></div>
+                    <div class="col-md-6"><label class="form-label">Website Category</label><select class="form-select" name="public_category_id" t-att-disabled="'disabled' if not vendor_owns_content else None"><option value="">Select</option><option t-foreach="categories" t-as="c" t-att-value="c.id" t-att-selected="offer and c in offer.product_tmpl_id.public_categ_ids" t-esc="c.display_name"/></select></div>
+                    <div class="col-md-3"><label class="form-label">Price</label><input class="form-control" type="number" min="0" step="0.01" name="price" required="required" t-att-value="offer and offer.price or 0"/></div>
+                    <div class="col-md-3"><label class="form-label">Currency</label><select class="form-select" name="currency_id"><option t-foreach="currencies" t-as="c" t-att-value="c.id" t-att-selected="offer and offer.currency_id == c or (not offer and c == request.env.company.currency_id)" t-esc="c.name"/></select></div>
+                    <div class="col-md-4"><label class="form-label">Fulfillment</label>
+                        <select class="form-select" name="fulfillment_type" t-att-disabled="'disabled' if forced_fulfillment else None">
+                            <option value="fbm" t-att-selected="(forced_fulfillment == 'fbm') if forced_fulfillment else (not offer or offer.fulfillment_type == 'fbm')">FBM - Fulfilled by Vendor</option>
+                            <option value="fbl" t-att-selected="(forced_fulfillment == 'fbl') if forced_fulfillment else (offer and offer.fulfillment_type == 'fbl')">FBL - Fulfilled by Leaders</option>
+                        </select>
+                        <div t-if="forced_fulfillment" class="form-text">
+                            Set by the marketplace policy "<t t-esc="forced_fulfillment_name"/>" for this vendor or category; it cannot be changed here.
+                        </div>
+                    </div>
+                    <div class="col-md-8"><label class="form-label">Markets</label><div class="d-flex flex-wrap gap-3 border rounded p-2"><label t-foreach="websites" t-as="w"><input type="checkbox" name="market_ids" t-att-value="w.id" t-att-checked="offer and w in offer.market_ids"/> <span t-esc="w.name"/></label></div></div>
+                    <div class="col-12"><label class="form-label">Main Image</label><input class="form-control" type="file" name="image_1920" accept="image/*" t-att-disabled="'disabled' if not vendor_owns_content else None"/></div>
+                </div>
+                <div class="mt-4 d-flex gap-2"><button class="btn btn-primary">Save Draft</button><a href="/my/vendor/products" class="btn btn-outline-secondary">Cancel</a></div>
+            </form>
+            <div t-if="offer" class="mt-3"><form t-if="offer.state in ('draft','rejected')" t-att-action="'/my/vendor/products/%s/submit' % offer.id" method="post"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-success">Submit for Review</button></form></div>
+        </div></t>
+    </template>
+
+    <template id="portal_vendor_orders" name="Vendor Orders">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4 lm-portal lm-dashboard">
+                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                <h2 class="mb-3">Vendor Orders</h2>
+                <div class="lm-panel">
+                    <div t-if="orders" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Payment</th><th class="text-end">Total</th><th class="text-end">Commission</th><th class="text-end">Net</th><th>Invoice</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="orders" t-as="o">
+                                    <td>
+                                        <a class="fw-semibold" t-att-href="'/my/vendor/orders/%s' % o.id" t-esc="o.name"/>
+                                        <div class="small text-muted" t-esc="o.date_order" t-options="{'widget': 'date'}"/>
+                                    </td>
+                                    <td t-esc="o.partner_id.display_name"/>
+                                    <td><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                                    <td>
+                                        <span t-if="o.payment_method == 'cod'" class="badge text-bg-secondary">Cash on Delivery</span>
+                                        <span t-else="" class="badge text-bg-light border">Online</span>
+                                        <br t-if="o.payment_method == 'cod'"/>
+                                        <a t-if="o.payment_method == 'cod' and o.state == 'completed' and not o.cod_cash_confirmed and o.fulfillment_group_ids and all(g.fulfillment_type == 'fbm' for g in o.fulfillment_group_ids)"
+                                           t-att-href="'/my/vendor/orders/%s' % o.id" class="badge text-bg-warning text-decoration-none">
+                                            <i class="fa fa-exclamation-triangle"/> Confirm cash collected
+                                        </a>
+                                        <span t-elif="o.payment_method == 'cod' and o.cod_cash_confirmed" class="badge text-bg-success">
+                                            <i class="fa fa-check"/> Cash confirmed
+                                        </span>
+                                    </td>
+                                    <td class="text-end text-nowrap" t-out="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                    <td class="text-end text-nowrap text-muted" t-out="o.commission_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                    <td class="text-end text-nowrap fw-semibold" t-out="o.vendor_net" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                    <td><a t-if="o.invoice_id" t-att-href="'/my/vendor/orders/%s/invoice' % o.id" target="_blank"><i class="fa fa-file-pdf-o"/> <t t-esc="o.invoice_id.name"/></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div t-else="" class="lm-empty"><i class="fa fa-inbox"/><p class="mb-0">No orders yet.</p></div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_order_detail" name="Vendor Order Detail">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4 lm-portal lm-dashboard">
+                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                    <div>
+                        <h2 class="mb-1"><span t-esc="order.name"/> <t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="order"/></t></h2>
+                        <div class="text-muted">Customer: <span t-esc="order.partner_id.display_name"/></div>
+                    </div>
+                    <form t-if="order.state == 'pending'" t-att-action="'/my/vendor/orders/%s/confirm' % order.id" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button class="btn btn-primary"><i class="fa fa-check"/> Confirm Order</button>
+                    </form>
+                    <form t-if="vendor_can_cancel and lm_is_vendor_owner and order.state in ('pending', 'confirmed', 'processing', 'partially_fulfilled') and not any(g.state in ('shipped', 'delivery_reported', 'delivered') for g in order.fulfillment_group_ids)"
+                          t-att-action="'/my/vendor/orders/%s/cancel' % order.id" method="post" class="d-flex gap-1">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="text" name="reason" required="required" class="form-control" placeholder="Reason for cancelling" aria-label="Cancellation reason"/>
+                        <button class="btn btn-outline-danger text-nowrap"><i class="fa fa-times"/> Cancel Order</button>
+                    </form>
+                    <form t-if="order.payment_method == 'cod' and order.state == 'completed' and not order.cod_cash_confirmed and order.fulfillment_group_ids and all(g.fulfillment_type == 'fbm' for g in order.fulfillment_group_ids)"
+                          t-att-action="'/my/vendor/orders/%s/confirm-cod-payment' % order.id" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button class="btn btn-success"><i class="fa fa-money"/> Confirm Cash Collected</button>
+                    </form>
+                    <span t-if="order.cod_cash_confirmed" class="badge text-bg-success align-self-center">
+                        <i class="fa fa-check"/> Cash Collected
+                    </span>
+                    <a t-if="order.invoice_id" t-att-href="'/my/vendor/orders/%s/invoice' % order.id" target="_blank" class="btn btn-outline-primary">
+                        <i class="fa fa-file-pdf-o"/> Invoice <t t-esc="order.invoice_id.name"/>
+                    </a>
+                </div>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <div t-if="order.payment_method == 'cod' and order.state == 'completed' and not order.cod_cash_confirmed and order.fulfillment_group_ids and all(g.fulfillment_type == 'fbm' for g in order.fulfillment_group_ids)"
+                     class="alert alert-warning">
+                    This order was delivered Cash on Delivery. Confirm above once you have collected the cash from the customer --
+                    your commission for it is only charged once you confirm.
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-lg-3"><div class="lm-kpi"><span class="lm-kpi-label">Total</span><span class="lm-kpi-value" t-out="order.amount_total" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div></div>
+                    <div class="col-6 col-lg-3"><div class="lm-kpi"><span class="lm-kpi-label">Commission</span><span class="lm-kpi-value" t-out="order.commission_amount" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div></div>
+                    <div class="col-6 col-lg-3"><div class="lm-kpi"><span class="lm-kpi-label">Fulfillment Fees</span><span class="lm-kpi-value" t-out="order.fulfillment_fee_amount" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div></div>
+                    <div class="col-6 col-lg-3"><div class="lm-kpi lm-kpi-green"><span class="lm-kpi-label">Your Net</span><span class="lm-kpi-value" t-out="order.vendor_net" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div></div>
+                </div>
+
+                <div class="lm-panel mb-4">
+                    <div class="lm-panel-header"><h5 class="mb-0"><i class="fa fa-list"/> Items</h5></div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead><tr><th>Product</th><th>Fulfillment</th><th class="text-end">Qty</th><th class="text-end">Delivered</th><th class="text-end">Unit Price</th><th class="text-end">Total</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="order.line_ids" t-as="l">
+                                    <td t-esc="l.product_id.display_name"/>
+                                    <td><span t-if="l.fulfillment_type" class="badge rounded-pill text-bg-light border" t-esc="l.fulfillment_type.upper()"/><span t-elif="l.is_delivery" class="badge rounded-pill text-bg-light border">Shipping</span></td>
+                                    <td class="text-end" t-esc="'%g' % l.product_uom_qty"/>
+                                    <td class="text-end" t-esc="'%g' % l.qty_delivered"/>
+                                    <td class="text-end text-nowrap" t-out="l.price_unit" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                    <td class="text-end text-nowrap" t-out="l.price_total" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <h5 class="mb-3"><i class="fa fa-truck"/> Shipments</h5>
+                <div class="row g-3">
+                    <div class="col-md-6" t-foreach="order.fulfillment_group_ids" t-as="g">
+                        <div class="lm-panel h-100">
+                            <div class="lm-panel-header">
+                                <strong><t t-esc="g.name"/> · <t t-esc="g.fulfillment_type.upper()"/></strong>
+                                <span class="badge rounded-pill text-bg-secondary" t-esc="dict(g._fields['state']._description_selection(g.env)).get(g.state)"/>
+                            </div>
+                            <div class="p-3">
+                                <div class="small text-muted">Ships from: <t t-esc="g.source_location_id.complete_name"/></div>
+                                <div t-foreach="g.picking_ids" t-as="p" class="small">Delivery <t t-esc="p.name"/>: <t t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)"/></div>
+                                <div class="small">Tracking: <t t-esc="g.tracking_ref or '-'"/></div>
+                                <t t-if="g.fulfillment_type == 'fbm'">
+                                    <form t-if="g.state not in ('shipped', 'delivery_reported', 'delivered', 'cancelled')" t-att-action="'/my/vendor/fulfillment/%s/ship' % g.id" method="post" class="row g-2 mt-2">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <div class="col-8"><input class="form-control" name="tracking_ref" placeholder="Tracking number" required="required"/></div>
+                                        <div class="col-4"><button class="btn btn-primary w-100"><i class="fa fa-truck"/> Ship</button></div>
+                                    </form>
+                                    <form t-if="g.state == 'shipped'" t-att-action="'/my/vendor/fulfillment/%s/delivered' % g.id" method="post" enctype="multipart/form-data" class="mt-2">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <label class="form-label small mb-1">Proof of delivery (optional)</label>
+                                        <input class="form-control form-control-sm mb-2" type="file" name="delivery_proof"/>
+                                        <button class="btn btn-success"><i class="fa fa-check"/> Mark as Delivered</button>
+                                    </form>
+                                    <div t-if="g.state == 'delivery_reported'" class="alert alert-info small mt-2 mb-0">
+                                        <i class="fa fa-hourglass-half"/> Delivery reported
+                                        <t t-if="g.delivered_reported_date"> on <t t-esc="g.delivered_reported_date" t-options="{'widget': 'datetime'}"/></t>.
+                                        Waiting for the customer to confirm they received it.
+                                    </div>
+                                </t>
+                                <div t-else="" class="small text-info mt-2">Shipped by the Leaders warehouse (FBL).</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_finance" name="Vendor Finance">
+        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal"><t t-call="leaders_marketplace.portal_vendor_nav"/><h2>Wallet &amp; Settlements</h2>
+        <div class="row g-3 mb-4"><div class="col-md-6"><div class="card p-3"><small>Available</small><strong t-esc="vendor.vendor_wallet_balance"/></div></div><div class="col-md-6"><div class="card p-3"><small>On Hold</small><strong t-esc="vendor.vendor_wallet_hold"/></div></div></div>
+        <div t-if="reserve_enforced and held_reserves" class="card p-3 mb-4">
+            <h5 class="mb-2">Returns Reserve</h5>
+            <p class="small text-muted mb-2">
+                Held back against possible returns and paid to you once the return window closes.
+                Currently reserved: <strong t-out="reserved_total" t-options="{'widget': 'monetary', 'display_currency': reserved_currency}"/>.
+            </p>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Order</th><th class="text-end">Reserved</th><th class="text-end">Used by returns</th><th>Released on</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="held_reserves" t-as="r">
+                            <td t-esc="r.vendor_order_id.name or '-'"/>
+                            <td class="text-end text-nowrap" t-out="r.amount" t-options="{'widget': 'monetary', 'display_currency': r.currency_id}"/>
+                            <td class="text-end text-nowrap" t-out="r.consumed_amount" t-options="{'widget': 'monetary', 'display_currency': r.currency_id}"/>
+                            <td><t t-if="r.release_date" t-esc="r.release_date" t-options="{'widget': 'date'}"/><t t-else="">after shipping</t></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div t-if="settlement_error" class="alert alert-danger" t-esc="settlement_error"/>
+        <div t-if="settlement_requested" class="alert alert-success">Settlement requested. It is in Draft until the marketplace approves it.</div>
+        <div class="card p-3 mb-4">
+            <h5>Request a Settlement</h5>
+            <form method="post" action="/my/vendor/finance/settlement/request" class="row g-2 align-items-end">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="col-auto"><label class="form-label">From</label><input type="date" name="period_from" class="form-control" required="required"/></div>
+                <div class="col-auto"><label class="form-label">To</label><input type="date" name="period_to" class="form-control" required="required"/></div>
+                <div class="col-auto"><button type="submit" class="btn btn-primary">Request Settlement</button></div>
+            </form>
+        </div>
+        <h4>Commission Plans</h4>
+        <div t-if="plans" class="row g-3 mb-4">
+            <div t-foreach="plans" t-as="plan" class="col-lg-6">
+                <div class="card p-3 h-100">
+                    <div class="d-flex justify-content-between"><strong t-esc="plan.name"/><span class="badge text-bg-success" t-esc="dict(plan._fields['state']._description_selection(plan.env)).get(plan.state)"/></div>
+                    <div class="small text-muted mt-1">Period: <t t-esc="plan.date_from"/> - <t t-esc="plan.date_to"/> · <t t-esc="plan.periodicity"/></div>
+                    <t t-if="plan.type == 'target'">
+                    <div class="row mt-3"><div class="col-6"><small>On Target Commission</small><div class="fw-semibold" t-out="plan.commission_amount" t-options="{'widget': 'monetary', 'display_currency': plan.currency_id}"/></div><div class="col-6"><small>Target</small><div class="fw-semibold" t-out="plan.target_amount" t-options="{'widget': 'monetary', 'display_currency': plan.currency_id}"/></div></div>
+                    <table class="table table-sm mt-3 mb-0"><thead><tr><th>Achievement</th><th class="text-end">Commission</th></tr></thead><tbody><tr t-foreach="plan.target_commission_ids" t-as="tier"><td><t t-esc="tier.target_rate * 100"/>%</td><td class="text-end" t-out="tier.amount" t-options="{'widget': 'monetary', 'display_currency': plan.currency_id}"/></tr></tbody></table>
+                    </t>
+                    <t t-else="">
+                    <div class="row mt-3">
+                        <div class="col-12"><small>Metric</small><div class="fw-semibold" t-esc="dict(plan._fields['achieve_type']._description_selection(plan.env)).get(plan.achieve_type)"/></div>
+                    </div>
+                    <div t-if="not plan.achieve_is_tiered" class="row mt-2">
+                        <div class="col-12"><small>Rate</small><div class="fw-semibold">
+                            <t t-if="plan.achieve_type == 'amount_sold'"><t t-esc="'%.2f' % (plan.achieve_rate * 100)"/>%</t>
+                            <t t-else=""><t t-esc="plan.achieve_rate"/> / unit</t>
+                        </div></div>
+                    </div>
+                    <table t-if="plan.achieve_is_tiered" class="table table-sm mt-3 mb-0"><thead><tr><th>Achievement</th><th class="text-end">Commission</th></tr></thead><tbody><tr t-foreach="plan.target_commission_ids" t-as="tier"><td><t t-esc="tier.target_rate * 100"/>%</td><td class="text-end" t-out="tier.amount" t-options="{'widget': 'monetary', 'display_currency': plan.currency_id}"/></tr></tbody></table>
+                    </t>
+                </div>
+            </div>
+        </div>
+        <div t-else="" class="alert alert-info">
+            <t t-if="no_plan_commission_mode == 'rate'">
+                No commission plan assigned. The marketplace commission on your settled sales is
+                <strong><t t-esc="'%.2f' % no_plan_commission_percent"/>%</strong>.
+            </t>
+            <t t-else="">No commission plan assigned. No marketplace commission is deducted from your settlements.</t>
+        </div>
+        <h4>Commission Achievements</h4>
+        <div t-if="achievements" class="table-responsive mb-4"><table class="table"><thead><tr><th>Period</th><th class="text-end">Sales</th><th class="text-end">Target</th><th class="text-end">Achievement</th><th class="text-end">Commission</th><th>Effect</th></tr></thead><tbody><tr t-foreach="achievements" t-as="a"><td><t t-esc="a.period_from"/> - <t t-esc="a.period_to"/></td><td class="text-end" t-out="a.sales_amount" t-options="{'widget': 'monetary', 'display_currency': a.currency_id}"/><td class="text-end"><t t-if="a.rule_id.type == 'target' or a.rule_id.achieve_is_tiered" t-out="a.target_amount" t-options="{'widget': 'monetary', 'display_currency': a.currency_id}"/><t t-else="">—</t></td><td class="text-end"><t t-if="a.rule_id.type == 'target' or a.rule_id.achieve_is_tiered"><t t-esc="'%.2f' % a.achievement_percent"/>%</t><t t-else="">—</t></td><td class="text-end" t-out="a.commission_amount" t-options="{'widget': 'monetary', 'display_currency': a.currency_id}"/><td><span t-if="a.effect == 'bonus'" class="badge text-bg-success">Bonus</span><span t-else="" class="badge text-bg-secondary">Deduction</span></td></tr></tbody></table></div>
+        <h4>Orders &amp; Deliveries</h4>
+        <div t-if="orders" class="table-responsive mb-4"><table class="table"><thead><tr><th>Order</th><th>Date</th><th>Status</th><th class="text-end">Sales</th><th/></tr></thead><tbody><tr t-foreach="orders" t-as="o"><td><a t-att-href="'/my/vendor/orders/%s' % o.id" t-esc="o.name"/></td><td t-esc="o.date_order" t-options="{'widget': 'date'}"/><td t-esc="dict(o._fields['state']._description_selection(o.env)).get(o.state)"/><td class="text-end" t-out="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/><td class="text-end"><a class="btn btn-sm btn-outline-primary" t-att-href="'/my/vendor/orders/%s' % o.id">Track</a></td></tr></tbody></table></div>
+        <h4>Fulfillment Tracking</h4>
+        <div t-if="fulfillment_groups" class="table-responsive mb-4"><table class="table"><thead><tr><th>Order</th><th>Type</th><th>Status</th><th>Tracking</th><th>Delivery</th></tr></thead><tbody><tr t-foreach="fulfillment_groups" t-as="g"><td><a t-att-href="'/my/vendor/orders/%s' % g.vendor_order_id.id" t-esc="g.vendor_order_id.name"/></td><td t-esc="g.fulfillment_type.upper()"/><td t-esc="dict(g._fields['state']._description_selection(g.env)).get(g.state)"/><td t-esc="g.tracking_ref or '-'"/><td><span t-foreach="g.picking_ids" t-as="p" t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)" class="me-1"/></td></tr></tbody></table></div>
+        <h4>Wallet Transactions</h4><div class="table-responsive"><table class="table"><thead><tr><th>Date</th><th>Type</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead><tbody><tr t-foreach="transactions" t-as="t"><td t-esc="t.create_date"/><td t-esc="t.type"/><td t-esc="t.reference"/><td t-esc="t.amount"/><td t-esc="t.state"/></tr></tbody></table></div>
+        <h4>Settlements</h4><div class="table-responsive"><table class="table"><thead><tr><th>Settlement</th><th>Period</th><th>Gross</th><th>Deductions</th><th>Net</th><th>Status</th><th>Invoice</th></tr></thead><tbody><tr t-foreach="settlements" t-as="s"><td t-esc="s.name"/><td><span t-esc="s.period_from"/> - <span t-esc="s.period_to"/></td><td t-esc="s.gross_amount"/><td t-esc="s.deductions"/><td t-esc="s.net_amount"/><td t-esc="s.state"/><td><a t-if="s.commission_invoice_id" t-att-href="'/my/vendor/finance/settlement/%s/invoice' % s.id" target="_blank"><i class="fa fa-file-pdf-o"/> <t t-esc="s.commission_invoice_id.name"/></a></td></tr></tbody></table></div>
+        </div></t>
+    </template>
+
+    <template id="portal_vendor_delivery_zones" name="Vendor Delivery Zones">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4 lm-portal">
+                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                <h2>Delivery Zones</h2>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <p class="text-muted">Set your own delivery price per country and state/governorate. Customers are
+                    charged this price when your products ship there. A destination with no price blocks checkout
+                    for your products to that address.</p>
+                <div class="card p-3 mb-4">
+                    <h5>Add a Delivery Price</h5>
+                    <form id="lm_delivery_zone_form" method="post" action="/my/vendor/delivery-zones/new" class="row g-2 align-items-end">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="col-auto">
+                            <label class="form-label">Country</label>
+                            <select id="lm_zone_country" class="form-select" required="required">
+                                <option value="">select...</option>
+                                <t t-foreach="countries" t-as="c">
+                                    <option t-att-value="c.id" t-esc="c.name"/>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label">State / Governorate</label>
+                            <select id="lm_zone_state" name="state_id" class="form-select" required="required" disabled="disabled">
+                                <option value="">select a country first...</option>
+                                <t t-foreach="states" t-as="st">
+                                    <option t-att-value="st.id" t-att-data-country_id="st.country_id.id"
+                                            class="d-none" t-esc="st.name"/>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col-auto"><label class="form-label">Price</label><input type="number" step="0.01" min="0" name="price" class="form-control" required="required"/></div>
+                        <div class="col-auto"><button type="submit" class="btn btn-primary">Add</button></div>
+                    </form>
+                </div>
+                <script>
+                    (function () {
+                        var countrySelect = document.getElementById('lm_zone_country');
+                        var stateSelect = document.getElementById('lm_zone_state');
+                        if (!countrySelect || !stateSelect) return;
+                        var allOptions = Array.prototype.slice.call(stateSelect.querySelectorAll('option[data-country_id]'));
+                        countrySelect.addEventListener('change', function () {
+                            var countryId = countrySelect.value;
+                            stateSelect.innerHTML = '';
+                            if (!countryId) {
+                                var placeholder = document.createElement('option');
+                                placeholder.value = '';
+                                placeholder.textContent = 'select a country first...';
+                                stateSelect.appendChild(placeholder);
+                                stateSelect.disabled = true;
+                                return;
+                            }
+                            var matching = allOptions.filter(function (opt) {
+                                return opt.getAttribute('data-country_id') === countryId;
+                            });
+                            if (!matching.length) {
+                                var none = document.createElement('option');
+                                none.value = '';
+                                none.textContent = 'no states for this country';
+                                stateSelect.appendChild(none);
+                                stateSelect.disabled = true;
+                                return;
+                            }
+                            var blank = document.createElement('option');
+                            blank.value = '';
+                            blank.textContent = 'select...';
+                            stateSelect.appendChild(blank);
+                            matching.forEach(function (opt) {
+                                var clone = opt.cloneNode(true);
+                                clone.classList.remove('d-none');
+                                stateSelect.appendChild(clone);
+                            });
+                            stateSelect.disabled = false;
+                        });
+                    })();
+                </script>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead><tr><th>Country</th><th>Governorate</th><th>Price</th><th/></tr></thead>
+                        <tbody>
+                            <tr t-foreach="zones" t-as="z">
+                                <td t-esc="z.country_id.name"/>
+                                <td t-esc="z.state_id.name"/>
+                                <td>
+                                    <form method="post" t-attf-action="/my/vendor/delivery-zones/#{z.id}/update" class="d-flex gap-2">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="number" step="0.01" min="0" name="price" t-att-value="z.price" class="form-control form-control-sm" style="max-width:120px"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form method="post" t-attf-action="/my/vendor/delivery-zones/#{z.id}/delete">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_return_state_badge" name="Marketplace Return State Badge">
+        <t t-set="lm_return_badge" t-value="{
+            'requested': 'text-bg-warning', 'approved': 'text-bg-info', 'rejected': 'text-bg-danger',
+            'escalated': 'text-bg-danger', 'received': 'text-bg-primary', 'refunded': 'text-bg-success',
+            'closed': 'text-bg-secondary', 'cancelled': 'text-bg-light',
+        }.get(ret.state, 'text-bg-secondary')"/>
+        <span t-attf-class="badge rounded-pill #{lm_return_badge}" t-esc="dict(ret._fields['state']._description_selection(ret.env)).get(ret.state)"/>
+    </template>
+
+    <template id="portal_vendor_returns" name="Vendor Returns">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4 lm-portal lm-dashboard">
+                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                <h2 class="mb-3">Returns</h2>
+                <div class="lm-panel">
+                    <div t-if="records" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead><tr><th>Return</th><th>Order</th><th>Customer</th><th>Answer before</th><th class="text-end">Refund</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="records" t-as="ret">
+                                    <td><a class="fw-semibold" t-att-href="'/my/vendor/returns/%s' % ret.id" t-esc="ret.name"/></td>
+                                    <td t-esc="ret.vendor_order_id.name"/>
+                                    <td t-esc="ret.partner_id.display_name"/>
+                                    <td><span t-if="ret.state == 'requested'" t-esc="ret.vendor_deadline" t-options="{'widget': 'datetime'}"/></td>
+                                    <td class="text-end text-nowrap" t-out="ret.refund_amount" t-options="{'widget': 'monetary', 'display_currency': ret.currency_id}"/>
+                                    <td><t t-call="leaders_marketplace.portal_return_state_badge"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div t-else="" class="lm-empty"><i class="fa fa-undo"/><p class="mb-0">No return requests.</p></div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_return_detail" name="Vendor Return Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="ret" t-value="record"/>
+            <div class="container my-4 lm-portal lm-dashboard">
+                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                    <div>
+                        <h2 class="mb-1"><t t-esc="record.name"/> <t t-call="leaders_marketplace.portal_return_state_badge"/></h2>
+                        <div class="text-muted">
+                            Order <a t-att-href="'/my/vendor/orders/%s' % record.vendor_order_id.id" t-esc="record.vendor_order_id.name"/>
+                            · Customer: <t t-esc="record.partner_id.display_name"/>
+                        </div>
+                    </div>
+                    <a t-if="record.credit_note_id" t-att-href="'/my/marketplace/vendor-invoices/%s' % record.credit_note_id.id" target="_blank" class="btn btn-outline-primary">
+                        <i class="fa fa-file-pdf-o"/> Credit Note <t t-esc="record.credit_note_id.name"/>
+                    </a>
+                </div>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4"><div class="lm-kpi"><span class="lm-kpi-label">Refund to customer</span><span class="lm-kpi-value" t-out="record.refund_amount" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/></div></div>
+                    <div class="col-md-4"><div class="lm-kpi lm-kpi-green"><span class="lm-kpi-label">Commission given back</span><span class="lm-kpi-value" t-out="record.commission_refund" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/></div></div>
+                    <div class="col-md-4"><div class="lm-kpi lm-kpi-orange"><span class="lm-kpi-label">Deducted from you</span><span class="lm-kpi-value" t-out="record.vendor_deduction" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/></div></div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="lm-panel mb-4">
+                            <div class="lm-panel-header"><h5 class="mb-0"><i class="fa fa-list"/> Returned Products</h5></div>
+                            <table class="table align-middle mb-0">
+                                <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Refund</th></tr></thead>
+                                <tbody>
+                                    <tr t-foreach="record.line_ids" t-as="l">
+                                        <td t-esc="l.product_id.display_name"/>
+                                        <td class="text-end" t-esc="'%g' % l.quantity"/>
+                                        <td class="text-end text-nowrap" t-out="l.refund_amount" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="lm-panel">
+                            <div class="lm-panel-header"><h5 class="mb-0"><i class="fa fa-comment"/> Details</h5></div>
+                            <div class="p-3">
+                                <div class="mb-2"><strong>Customer reason:</strong><div t-esc="record.reason" style="white-space: pre-line"/></div>
+                                <div t-if="record.vendor_note" class="mb-2"><strong>Your response:</strong><div t-esc="record.vendor_note" style="white-space: pre-line"/></div>
+                                <div t-if="record.decision_note"><strong>Marketplace decision:</strong><div t-esc="record.decision_note" style="white-space: pre-line"/></div>
+                                <div t-foreach="record.picking_ids" t-as="p" class="small text-muted mt-2">
+                                    Return receipt <t t-esc="p.name"/> → <t t-esc="p.location_dest_id.complete_name"/>:
+                                    <t t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div t-if="record.state == 'requested'" class="lm-panel">
+                            <div class="lm-panel-header"><h5 class="mb-0"><i class="fa fa-gavel"/> Your Decision</h5></div>
+                            <div class="p-3">
+                                <p class="small text-muted">Answer before <t t-esc="record.vendor_deadline" t-options="{'widget': 'datetime'}"/>, otherwise the marketplace decides.</p>
+                                <form method="post" t-att-action="'/my/vendor/returns/%s/approve' % record.id" class="mb-3">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <textarea name="note" class="form-control mb-2" rows="2" placeholder="Optional message to the customer"/>
+                                    <button class="btn btn-success w-100"><i class="fa fa-check"/> Approve Return</button>
+                                </form>
+                                <form method="post" t-att-action="'/my/vendor/returns/%s/reject' % record.id">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <textarea name="note" class="form-control mb-2" rows="2" required="required" placeholder="Reason for rejection (required)"/>
+                                    <button class="btn btn-outline-danger w-100"><i class="fa fa-times"/> Reject Return</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div t-elif="record.state == 'approved'" class="lm-panel">
+                            <div class="lm-panel-header"><h5 class="mb-0"><i class="fa fa-inbox"/> Waiting for the goods</h5></div>
+                            <div class="p-3">
+                                <t t-if="vendor_can_receive">
+                                    <p class="small text-muted">Confirm once the products are back in your warehouse. The customer is refunded right away.</p>
+                                    <form method="post" t-att-action="'/my/vendor/returns/%s/receive' % record.id">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button class="btn btn-primary w-100"><i class="fa fa-inbox"/> Goods Received</button>
+                                    </form>
+                                </t>
+                                <p t-else="" class="small text-info mb-0">The products come back to the Leaders warehouse (FBL), which confirms receipt.</p>
+                            </div>
+                        </div>
+                        <div t-elif="record.state in ('rejected', 'escalated')" class="alert alert-warning">
+                            The customer can escalate this return; the marketplace will take the final decision.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_dispute_conversation" name="Dispute Conversation">
+        <div class="border rounded p-2 mb-2" style="max-height: 320px; overflow-y: auto;">
+            <div t-foreach="messages" t-as="m" class="mb-2 pb-2 border-bottom">
+                <div class="small text-muted">
+                    <strong t-esc="m.author_id.display_name or 'Marketplace'"/> ·
+                    <t t-esc="m.date" t-options="{'widget': 'datetime'}"/>
+                </div>
+                <div t-out="m.body"/>
+                <div t-if="m.attachment_ids" class="small">
+                    <a t-foreach="m.attachment_ids" t-as="att" class="me-2"
+                       t-att-href="'/web/content/%s?download=true' % att.id" t-esc="att.name"/>
+                </div>
+            </div>
+            <div t-if="not messages" class="text-muted small">No messages yet.</div>
+        </div>
+    </template>
+
+    <template id="portal_vendor_dispute_detail" name="Vendor Dispute Detail">
+        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
+            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h2 class="mb-0"><t t-esc="record.name"/>
+                    <span class="badge text-bg-secondary" t-esc="dict(record._fields['state']._description_selection(record.env)).get(record.state)"/>
+                </h2>
+                <a href="/my/vendor/disputes" class="btn btn-outline-secondary">Back</a>
+            </div>
+            <div t-if="error" class="alert alert-danger" t-esc="error"/>
+            <div t-if="replied" class="alert alert-success">Your reply was sent.</div>
+            <div class="card p-3 mb-3">
+                <div class="small text-muted">Order <t t-esc="record.vendor_order_id.name"/> · Customer <t t-esc="record.partner_id.display_name"/></div>
+                <div t-if="record.vendor_deadline and record.state == 'open'" class="small text-danger mt-1">
+                    Answer before <t t-esc="record.vendor_deadline" t-options="{'widget': 'datetime'}"/> or the marketplace takes over.
+                </div>
+                <div t-if="record.decision" class="alert alert-info mt-2 mb-0">
+                    <strong>Marketplace decision:</strong> <t t-esc="record.decision"/>
+                </div>
+            </div>
+            <h5>Conversation</h5>
+            <t t-call="leaders_marketplace.portal_dispute_conversation"/>
+            <form t-if="record.state not in ('resolved', 'closed')" method="post"
+                  t-att-action="'/my/vendor/disputes/%s/reply' % record.id">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <textarea class="form-control mb-2" name="message" rows="3" required="required"
+                          placeholder="Your reply to the customer"/>
+                <button class="btn btn-primary">Send reply</button>
+            </form>
+        </div></t>
+    </template>
+
+    <template id="portal_vendor_disputes" name="Vendor Disputes"><t t-call="portal.portal_layout"><div class="container my-4 lm-portal"><t t-call="leaders_marketplace.portal_vendor_nav"/><h2>Disputes</h2>
+            <div t-if="records" class="table-responsive"><table class="table align-middle">
+                <thead><tr><th>Dispute</th><th>Order</th><th>Reason</th><th>Answer by</th><th>Status</th><th/></tr></thead>
+                <tbody><tr t-foreach="records" t-as="r">
+                    <td><a t-att-href="'/my/vendor/disputes/%s' % r.id" t-esc="r.name"/></td>
+                    <td t-esc="r.vendor_order_id.name"/>
+                    <td class="small" t-esc="r.reason"/>
+                    <td class="small"><t t-if="r.state == 'open' and r.vendor_deadline" t-esc="r.vendor_deadline" t-options="{'widget': 'datetime'}"/><t t-else="">-</t></td>
+                    <td><span t-attf-class="badge #{'text-bg-danger' if r.state == 'escalated' else 'text-bg-secondary'}" t-esc="dict(r._fields['state']._description_selection(r.env)).get(r.state)"/></td>
+                    <td class="text-end"><a t-att-href="'/my/vendor/disputes/%s' % r.id" class="btn btn-sm btn-outline-primary">Open</a></td>
+                </tr></tbody>
+            </table></div>
+            <div t-else="" class="alert alert-info">No disputes. Good news.</div></div></t></template>
+    <template id="portal_vendor_performance" name="Vendor Performance"><t t-call="portal.portal_layout"><div class="container my-4 lm-portal"><t t-call="leaders_marketplace.portal_vendor_nav"/><h2>Performance</h2><div class="mb-3">Current tier: <strong t-esc="vendor.vendor_tier_id.name or '-'"/></div>
+                <div t-if="kpis" class="table-responsive"><table class="table align-middle">
+                    <thead><tr><th>Month</th><th class="text-end">Orders</th><th class="text-end">Completed</th><th class="text-end">Cancelled</th><th class="text-end">Rating</th><th class="text-end">Avg. time to ship</th></tr></thead>
+                    <tbody><tr t-foreach="kpis" t-as="k">
+                        <td t-esc="k.period" t-options="{'widget': 'date', 'format': 'MMMM yyyy'}"/>
+                        <td class="text-end" t-esc="k.order_count"/>
+                        <td class="text-end"><t t-esc="'%.2f' % k.completion_rate"/>%</td>
+                        <td class="text-end"><span t-attf-class="#{'text-danger fw-semibold' if k.cancellation_rate &gt; 20 else ''}"><t t-esc="'%.2f' % k.cancellation_rate"/>%</span></td>
+                        <td class="text-end"><t t-esc="'%.2f' % k.avg_rating"/></td>
+                        <td class="text-end"><t t-if="k.avg_ship_hours"><t t-esc="'%.1f' % k.avg_ship_hours"/> h</t><t t-else="">-</t></td>
+                    </tr></tbody>
+                </table></div>
+                <div t-else="" class="alert alert-info">No performance data yet. Your first monthly snapshot appears once you have orders.</div><h4>Penalties</h4><table class="table"><thead><tr><th>Level</th><th>Reason</th><th>Start</th><th>End</th></tr></thead><tbody><tr t-foreach="penalties" t-as="p"><td t-esc="p.level"/><td t-esc="p.reason"/><td t-esc="p.date_start"/><td t-esc="p.date_end or '-'"/></tr></tbody></table></div></t></template>
+
+    <template id="portal_vendor_staff" name="Vendor Staff"><t t-call="portal.portal_layout"><div class="container my-4 lm-portal"><t t-call="leaders_marketplace.portal_vendor_nav"/><h2>Vendor Staff</h2><div t-if="error" class="alert alert-danger" t-esc="error"/><div t-if="invited" class="alert alert-success">Invitation sent.</div><div t-if="resent" class="alert alert-success">Invitation sent again.</div><div t-if="updated" class="alert alert-success">Staff list updated.</div><div t-if="mail_failed" class="alert alert-warning">User created but invitation email could not be sent — use Resend.</div><form method="post" action="/my/vendor/staff" class="card p-3 mb-4"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><div class="row g-2"><div class="col-md-5"><input class="form-control" name="name" placeholder="Employee name" required="required"/></div><div class="col-md-5"><input class="form-control" type="email" name="email" placeholder="Email" required="required"/></div><div class="col-md-2"><button class="btn btn-primary w-100">Invite</button></div></div></form><div class="table-responsive"><table class="table align-middle">
+    <thead><tr><th>Name</th><th>Login</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+    <tbody>
+        <tr t-foreach="staff" t-as="u">
+            <td t-esc="u.name"/>
+            <td t-esc="u.login"/>
+            <td>
+                <span t-if="not u.active" class="badge text-bg-secondary">Deactivated</span>
+                <span t-elif="not u.has_group('base.group_portal') or u.login_date" class="badge text-bg-success">Active</span>
+                <span t-else="" class="badge text-bg-warning">Invitation pending</span>
+            </td>
+            <td class="text-end text-nowrap">
+                <form t-if="u.active" method="post" t-att-action="'/my/vendor/staff/%s/resend' % u.id" class="d-inline">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <button class="btn btn-sm btn-outline-secondary" title="Send the password invitation again">Resend</button>
+                </form>
+                <form t-if="u.active" method="post" t-att-action="'/my/vendor/staff/%s/deactivate' % u.id" class="d-inline">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                </form>
+                <form t-if="not u.active" method="post" t-att-action="'/my/vendor/staff/%s/reactivate' % u.id" class="d-inline">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <button class="btn btn-sm btn-outline-success">Reactivate</button>
+                </form>
+            </td>
+        </tr>
+        <tr t-if="not staff"><td colspan="4" class="text-muted">No staff yet. Invite someone above.</td></tr>
+    </tbody>
+</table></div></div></t></template>
+
+    <template id="portal_customer_marketplace_orders" name="Customer Marketplace Orders">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4">
+                <h2>Marketplace Purchases</h2>
+                <p class="text-muted">Products sold and invoiced by marketplace vendors.</p>
+                <div t-if="orders" class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>Order</th><th>Date</th><th>Sold by</th><th class="text-end">Total</th><th>Status</th><th>Invoice</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="orders" t-as="o">
+                                <td><a t-att-href="'/my/marketplace/orders/%s' % o.id" t-esc="o.name"/></td>
+                                <td t-esc="o.date_order" t-options="{'widget': 'date'}"/>
+                                <td t-esc="o.vendor_id.vendor_store_name or o.vendor_id.name"/>
+                                <td class="text-end text-nowrap" t-out="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                <td><span class="badge rounded-pill text-bg-secondary" t-esc="dict(o._fields['state']._description_selection(o.env)).get(o.state)"/></td>
+                                <td><a t-if="o.invoice_id and o.invoice_id.state == 'posted'" t-att-href="'/my/marketplace/vendor-invoices/%s' % o.invoice_id.id" target="_blank"><i class="fa fa-file-pdf-o"/> <t t-esc="o.invoice_id.name"/></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-else="" class="alert alert-info">You have no marketplace purchases yet.</div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_customer_marketplace_order_detail" name="Customer Marketplace Order Detail">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                    <div>
+                        <h2 class="mb-1" t-esc="order.name"/>
+                        <div class="text-muted">Sold by <strong t-esc="order.vendor_id.vendor_store_name or order.vendor_id.name"/></div>
+                    </div>
+                    <a t-if="order.invoice_id and order.invoice_id.state == 'posted'" t-att-href="'/my/marketplace/vendor-invoices/%s' % order.invoice_id.id" target="_blank" class="btn btn-outline-primary">
+                        <i class="fa fa-file-pdf-o"/> Invoice <t t-esc="order.invoice_id.name"/>
+                    </a>
+                </div>
+                <div t-if="order.state == 'cancelled' and order.cancel_reason" class="alert alert-warning mt-3">
+                    This order was cancelled by the seller. Reason: <t t-esc="order.cancel_reason"/>
+                </div>
+                <table class="table align-middle mt-3">
+                    <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Total</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="order.line_ids" t-as="l">
+                            <td t-esc="l.product_id.display_name"/>
+                            <td class="text-end" t-esc="'%g' % l.product_uom_qty"/>
+                            <td class="text-end text-nowrap" t-out="l.price_total" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                        </tr>
+                    </tbody>
+                    <tfoot><tr><th colspan="2" class="text-end">Total</th><th class="text-end text-nowrap" t-out="order.amount_total" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></tr></tfoot>
+                </table>
+                <div t-if="rated" class="alert alert-success">Thank you for rating this order.</div>
+                <div t-if="lm_rating" class="alert alert-light border">
+                    Your rating: <strong t-esc="int(lm_rating.rating)"/> / 5
+                    <span t-if="lm_rating.feedback" class="text-muted">- <t t-esc="lm_rating.feedback"/></span>
+                </div>
+                <form t-if="lm_can_rate" method="post" t-att-action="'/my/marketplace/orders/%s/rate' % order.id" class="card p-3 mb-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <h5>Rate this order</h5>
+                    <div class="d-flex flex-wrap gap-3 mb-2">
+                        <label t-foreach="range(1, 6)" t-as="n"><input type="radio" name="rating" t-att-value="n" required="required"/> <t t-esc="n"/></label>
+                    </div>
+                    <textarea name="feedback" class="form-control mb-2" rows="2" placeholder="Comment (optional)"/>
+                    <div><button class="btn btn-primary">Send rating</button></div>
+                </form>
+                <h5>Shipments</h5>
+                <div class="row g-3">
+                    <div class="col-md-6" t-foreach="order.fulfillment_group_ids" t-as="g">
+                        <div class="card p-3 h-100">
+                            <div class="d-flex justify-content-between"><strong t-esc="g.name"/><span class="badge text-bg-secondary" t-esc="dict(g._fields['state']._description_selection(g.env)).get(g.state)"/></div>
+                            <div class="small mt-1">Tracking: <t t-esc="g.tracking_ref or '-'"/></div>
+                            <t t-if="g.state == 'delivery_reported'">
+                                <div class="small text-muted mt-2">The seller reported this shipment as delivered. Please tell us whether it arrived.</div>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    <form method="post" t-att-action="'/my/marketplace/fulfillment/%s/confirm-delivery' % g.id">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button class="btn btn-sm btn-success"><i class="fa fa-check"/> Confirm I received it</button>
+                                    </form>
+                                    <form method="post" t-att-action="'/my/marketplace/fulfillment/%s/not-received' % g.id">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fa fa-times"/> I did not receive it</button>
+                                    </form>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <div t-if="error" class="alert alert-danger mt-4" t-esc="error"/>
+                <div t-if="return_requested" class="alert alert-success mt-4">Your return request was sent to the vendor.</div>
+                <div t-if="delivery_confirmed" class="alert alert-success mt-4">Thank you for confirming you received your shipment.</div>
+                <div t-if="delivery_disputed" class="alert alert-warning mt-4">We opened a case with the marketplace about your missing shipment. You will hear back shortly.</div>
+                <div t-if="dispute_opened" class="alert alert-success mt-4">Your problem was reported. The seller will answer shortly.</div>
+                <div t-if="dispute_updated" class="alert alert-success mt-4">Your message was sent.</div>
+
+                <t t-if="disputes">
+                    <h5 class="mt-4">Reported problems</h5>
+                    <div t-foreach="disputes" t-as="d" class="card p-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <strong t-esc="d.name"/>
+                            <span t-attf-class="badge #{'text-bg-danger' if d.state == 'escalated' else 'text-bg-secondary'}" t-esc="dict(d._fields['state']._description_selection(d.env)).get(d.state)"/>
+                        </div>
+                        <div t-if="d.decision" class="alert alert-info mt-2 mb-2">
+                            <strong>Marketplace decision:</strong> <t t-esc="d.decision"/>
+                        </div>
+                        <div class="mt-2">
+                            <t t-set="messages" t-value="dispute_messages.get(d.id)"/>
+                            <t t-call="leaders_marketplace.portal_dispute_conversation"/>
+                        </div>
+                        <div t-if="d.state not in ('resolved', 'closed')" class="d-flex flex-wrap gap-2 align-items-start">
+                            <form method="post" t-att-action="'/my/marketplace/disputes/%s/message' % d.id" class="flex-grow-1">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="input-group">
+                                    <input class="form-control" name="message" placeholder="Add a message" required="required"/>
+                                    <button class="btn btn-outline-primary">Send</button>
+                                </div>
+                            </form>
+                            <form t-if="d.state in ('open', 'vendor_reply')" method="post" t-att-action="'/my/marketplace/disputes/%s/escalate' % d.id">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <button class="btn btn-outline-warning">Ask the marketplace to decide</button>
+                            </form>
+                        </div>
+                    </div>
+                </t>
+
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Report a problem</h5>
+                        <p class="text-muted small">Something wrong with this order? Tell the seller. If you do not get a satisfying answer you can ask the marketplace to decide.</p>
+                        <form method="post" enctype="multipart/form-data" t-att-action="'/my/marketplace/orders/%s/dispute' % order.id">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <textarea class="form-control mb-2" name="reason" rows="3" required="required" placeholder="What went wrong?"/>
+                            <input class="form-control form-control-sm mb-2" type="file" name="attachments" multiple="multiple"/>
+                            <button class="btn btn-outline-danger">Report a problem</button>
+                        </form>
+                    </div>
+                </div>
+
+                <t t-if="order.return_ids">
+                    <h5 class="mt-4">Returns</h5>
+                    <table class="table align-middle">
+                        <thead><tr><th>Return</th><th>Products</th><th class="text-end">Refund</th><th>Status</th><th/></tr></thead>
+                        <tbody>
+                            <tr t-foreach="order.return_ids" t-as="ret">
+                                <td t-esc="ret.name"/>
+                                <td><div t-foreach="ret.line_ids" t-as="rl" class="small"><t t-esc="'%g' % rl.quantity"/> × <t t-esc="rl.product_id.display_name"/></div></td>
+                                <td class="text-end text-nowrap" t-out="ret.refund_amount" t-options="{'widget': 'monetary', 'display_currency': ret.currency_id}"/>
+                                <td>
+                                    <t t-call="leaders_marketplace.portal_return_state_badge"/>
+                                    <div t-if="ret.vendor_note and ret.state == 'rejected'" class="small text-muted" t-esc="ret.vendor_note"/>
+                                    <div t-if="ret.decision_note and ret.state == 'closed'" class="small text-muted" t-esc="ret.decision_note"/>
+                                </td>
+                                <td class="text-end">
+                                    <form t-if="ret.state == 'rejected'" method="post" t-att-action="'/my/marketplace/returns/%s/escalate' % ret.id">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button class="btn btn-sm btn-outline-warning">Ask the marketplace to review</button>
+                                    </form>
+                                    <a t-if="ret.credit_note_id" t-att-href="'/my/marketplace/vendor-invoices/%s' % ret.credit_note_id.id" target="_blank" class="small"><i class="fa fa-file-pdf-o"/> Credit Note</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+
+                <div t-if="returnable_lines" class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Return products</h5>
+                        <form method="post" t-att-action="'/my/marketplace/orders/%s/return' % order.id">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <table class="table table-sm align-middle">
+                                <thead><tr><th>Product</th><th class="text-end">Can return</th><th style="width: 140px">Quantity</th></tr></thead>
+                                <tbody>
+                                    <tr t-foreach="returnable_lines" t-as="item">
+                                        <td t-esc="item[0].product_id.display_name"/>
+                                        <td class="text-end" t-esc="'%g' % item[1]"/>
+                                        <td><input type="number" class="form-control form-control-sm" min="0" step="1" t-att-max="item[1]" value="0" t-att-name="'qty_%s' % item[0].id"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <textarea name="reason" class="form-control mb-2" rows="3" required="required" placeholder="Why are you returning these products?"/>
+                            <button class="btn btn-primary"><i class="fa fa-undo"/> Request Return</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Payment status: the payment covers the company order AND the vendor orders split from it. -->
+    <template id="website_sale_payment_status_marketplace" inherit_id="website_sale.payment_confirmation_status" name="Marketplace Payment Status">
+        <xpath expr="//t[@t-set='tx_sudo']" position="after">
+            <t t-set="lm_checkout_total" t-value="order._marketplace_checkout_total()"/>
+        </xpath>
+        <xpath expr="//div[hasclass('oe_website_sale_tx_status')]/div" position="attributes">
+            <attribute name="t-attf-class">card #{
+                (tx_sudo.state == 'pending' and 'bg-info') or
+                (tx_sudo.state == 'done' and order.currency_id.compare_amounts(lm_checkout_total, tx_sudo.amount) == 0 and 'alert-success') or
+                (tx_sudo.state == 'done' and 'bg-warning') or
+                (tx_sudo.state == 'authorized' and 'alert-success') or
+                'bg-danger'}</attribute>
+        </xpath>
+        <xpath expr="//t[@t-if=&quot;tx_sudo.state == 'done' and order.amount_total != tx_sudo.amount&quot;]" position="attributes">
+            <attribute name="t-if">tx_sudo.state == 'done' and order.currency_id.compare_amounts(lm_checkout_total, tx_sudo.amount) != 0</attribute>
+        </xpath>
+    </template>
+
+    <!-- Checkout confirmation: show the vendor orders the purchase was split into. -->
+    <template id="website_sale_confirmation_vendor_orders" inherit_id="website_sale.confirmation" name="Marketplace Vendor Orders on Confirmation">
+        <xpath expr="//div[@id='oe_structure_website_sale_confirmation_1']" position="before">
+            <div t-if="order.sudo().vendor_order_ids" class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Marketplace vendor orders</h5>
+                    <p class="text-muted small">These products are sold, shipped and invoiced by marketplace vendors.</p>
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            <tr t-foreach="order.sudo().vendor_order_ids" t-as="vo">
+                                <td t-esc="vo.name"/>
+                                <td t-esc="vo.vendor_id.vendor_store_name or vo.vendor_id.name"/>
+                                <td class="text-end" t-out="vo.amount_total" t-options="{'widget': 'monetary', 'display_currency': vo.currency_id}"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Vendor-only checkouts: the company order is empty, so the summary shows the checkout total instead. -->
+    <template id="checkout_layout_marketplace_total" inherit_id="website_sale.checkout_layout" name="Marketplace Checkout Summary">
+        <xpath expr="//span[@id='amount_total_summary']" position="attributes">
+            <attribute name="t-if">not lm_conf_total</attribute>
+        </xpath>
+        <xpath expr="//span[@id='amount_total_summary']" position="after">
+            <span t-if="lm_conf_total" id="amount_total_summary" class="monetary_field ms-1"
+                  t-out="lm_conf_total" t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+        </xpath>
+        <xpath expr="//div[@name='cart_summary_info']" position="attributes">
+            <attribute name="t-if">not lm_vendor_only and (not website_sale_order or not website_sale_order.website_order_line)</attribute>
+        </xpath>
+        <xpath expr="//div[@id='o_wsale_accordion_item']/div[1]" position="attributes">
+            <attribute name="t-if">not lm_vendor_only</attribute>
+        </xpath>
+        <xpath expr="//div[@id='o_wsale_total_accordion_item']/t[@t-call='website_sale.total']" position="attributes">
+            <attribute name="t-if">not lm_vendor_only</attribute>
+        </xpath>
+    </template>
+
+    <!-- Product page: who sells it, and the other sellers of the same product. -->
+    <template id="product_page_marketplace_sellers" inherit_id="website_sale.product" name="Marketplace Sellers on Product Page">
+        <xpath expr="//div[@id='product_details']/h1[@itemprop='name']" position="after">
+            <t t-set="lm_sellers" t-value="product._leaders_seller_display()"/>
+            <div t-if="lm_sellers and lm_sellers.get('winner')" class="mb-2 small">
+                Sold by
+                <a t-if="lm_sellers['winner'].vendor_id.vendor_store_slug" t-attf-href="/seller/#{lm_sellers['winner'].vendor_id.vendor_store_slug}"
+                   t-esc="lm_sellers['winner'].vendor_id.vendor_store_name or lm_sellers['winner'].vendor_id.name"/>
+                <span t-else="" t-esc="lm_sellers['winner'].vendor_id.vendor_store_name or lm_sellers['winner'].vendor_id.name"/>
+                <span t-if="lm_sellers['winner'].fulfillment_type == 'fbl'" class="badge text-bg-success ms-1">Fulfilled by Leaders</span>
+                <span t-else="" class="badge text-bg-light border ms-1">Fulfilled by seller</span>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='o_product_terms_and_share']" position="after">
+            <div t-if="lm_sellers and lm_sellers.get('others')" id="lm_other_sellers" class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Other sellers</h5>
+                    <table class="table table-sm align-middle mb-0">
+                        <tbody>
+                            <tr t-foreach="lm_sellers['others']" t-as="o">
+                                <td>
+                                    <a t-if="o.vendor_id.vendor_store_slug" t-attf-href="/seller/#{o.vendor_id.vendor_store_slug}" t-esc="o.vendor_id.vendor_store_name or o.vendor_id.name"/>
+                                    <span t-else="" t-esc="o.vendor_id.vendor_store_name or o.vendor_id.name"/>
+                                    <span t-if="o.fulfillment_type == 'fbl'" class="badge text-bg-success ms-1">Fulfilled by Leaders</span>
+                                    <div t-if="lm_sellers.get('multi_variant')" class="small text-muted" t-esc="o.product_id.display_name"/>
+                                </td>
+                                <td class="text-end" t-out="o.price" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                <td class="text-end">
+                                    <form action="/shop/cart/update" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" t-nocache="The csrf token must always be up to date."/>
+                                        <input type="hidden" name="product_id" t-att-value="o.product_id.id"/>
+                                        <input type="hidden" name="add_qty" value="1"/>
+                                        <input type="hidden" name="offer_id" t-att-value="o.id"/>
+                                        <button class="btn btn-sm btn-primary">Add to cart</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="seller_store_page" name="Seller Storefront">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container my-5">
+                    <h1 t-esc="vendor.vendor_store_name or vendor.name"/>
+                    <p t-if="vendor.vendor_rating_count" class="text-muted">
+                        <i class="fa fa-star text-warning"/> <span t-esc="'%.1f' % vendor.vendor_rating_avg"/> / 5
+                        (<span t-esc="vendor.vendor_rating_count"/> ratings)
+                    </p>
+                    <p t-else="" class="text-muted">No ratings yet.</p>
+                    <div class="row g-3">
+                        <div class="col-6 col-md-3" t-foreach="offers" t-as="o">
+                            <a class="card h-100 text-decoration-none" t-att-href="o.product_tmpl_id.website_url">
+                                <img class="card-img-top" t-att-src="'/web/image/product.product/%s/image_256' % o.product_id.id" t-att-alt="o.product_id.display_name"/>
+                                <div class="card-body">
+                                    <div t-esc="o.product_id.display_name"/>
+                                    <strong t-out="o.price" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <p t-if="not offers" class="text-muted">This store has no published products yet.</p>
+                    <div class="mt-4" t-call="website.pager"/>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

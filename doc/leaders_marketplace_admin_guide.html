@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<title>دليل استخدام موديول Leaders Marketplace</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm; }
+  body { font-family: "Noto Naskh Arabic", "Noto Sans Arabic", "Amiri", serif; font-size: 12pt; line-height: 1.8; color: #1f2328; direction: rtl; }
+  h1, h2, h3, h4 { font-family: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif; color: #3b2a4d; }
+  h1 { font-size: 26pt; margin: 0 0 6px; }
+  h2 { font-size: 17pt; border-bottom: 3px solid #714b67; padding-bottom: 4px; margin-top: 26px; page-break-after: avoid; }
+  h3 { font-size: 13.5pt; margin: 16px 0 6px; color: #714b67; page-break-after: avoid; }
+  h4 { font-size: 12pt; margin: 12px 0 4px; color: #4b3557; page-break-after: avoid; }
+  p { margin: 6px 0; }
+  code, .en { font-family: "DejaVu Sans Mono", monospace; font-size: 9pt; direction: ltr; unicode-bidi: embed; color: #0b5394; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 10.5pt; }
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; }
+  th { background: #714b67; color: #fff; font-family: "Noto Sans Arabic", sans-serif; font-weight: 700; padding: 6px 8px; text-align: right; }
+  th code, th .en { color: #fff; }
+  td { border-bottom: 1px solid #e3e0e6; padding: 5px 8px; vertical-align: top; }
+  td code { word-break: break-all; }
+  tr:nth-child(even) td { background: #faf8fb; }
+  .cover { text-align: center; padding-top: 150px; page-break-after: always; }
+  .cover .sub { font-size: 14pt; color: #6c757d; }
+  .cover .meta { margin-top: 60px; font-size: 11pt; color: #6c757d; }
+  .box { border: 1px solid #e3e0e6; border-right: 5px solid #714b67; background: #faf8fb; padding: 8px 14px; margin: 10px 0; page-break-inside: avoid; }
+  .warn { border-right-color: #d9480f; background: #fff6ee; }
+  .ok { border-right-color: #198754; background: #effaf3; }
+  .example { border-right-color: #0b5394; background: #eef6ff; }
+  .flow { text-align: center; margin: 12px 0; line-height: 2.6; }
+  .flow span { display: inline-block; background: #714b67; color: #fff; border-radius: 8px; padding: 2px 10px; font-family: "Noto Sans Arabic", sans-serif; font-size: 10.5pt; line-height: 1.6; }
+  .flow span.alt { background: #dc3545; }
+  .flow span.company { background: #198754; }
+  .flow b { color: #714b67; margin: 0 4px; }
+  .steps { margin: 4px 0 10px; padding-right: 22px; }
+  .steps li { margin: 5px 0; }
+  .pb { page-break-before: always; }
+  ul, ol { margin: 4px 0 8px; padding-right: 22px; }
+  li { margin: 2px 0; }
+  .toc { columns: 2; column-gap: 30px; }
+  .toc li { margin: 3px 0; }
+  .dr { color: #0b5394; font-weight: 700; }
+  .cr { color: #a61b1b; font-weight: 700; }
+  .badge { display:inline-block; background:#714b67; color:#fff; border-radius: 5px; padding: 1px 8px; font-size: 9.5pt; font-family:"Noto Sans Arabic",sans-serif; }
+  .btn { display:inline-block; border:1px solid #714b67; color:#714b67; border-radius: 5px; padding: 0 7px; font-size: 10pt; font-family:"Noto Sans Arabic",sans-serif; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>دليل استخدام موديول Leaders Marketplace</h1>
+  <div class="sub">دليل عملي خطوة بخطوة لإدارة السوق متعدد البائعين على Odoo 18</div>
+  <div class="sub"><span class="en">leaders_marketplace</span> — version <span class="en">18.0.4.0.27</span></div>
+  <div class="meta">
+    هذا الدليل موجّه لمن يشغّل ويهيّئ الموديول من الناحية الإدارية والتشغيلية<br/>
+    (الإعدادات، إدخال الموردين، بناء خطط العمولة، تشغيل التسويات)<br/>
+    وليس دليلاً برمجياً لتعديل الكود.<br/>
+    سبتمبر 2026
+  </div>
+</div>
+
+<h2>المحتويات</h2>
+<ol class="toc">
+  <li>مين يستخدم هذا الدليل، ومين يحتاج صلاحية إيه</li>
+  <li>جولة سريعة في قائمة الموديول</li>
+  <li>الإعدادات (Settings) خطوة بخطوة</li>
+  <li>إضافة مورد جديد (والثاني والثالث…) خطوة بخطوة كامل</li>
+  <li>درجات الموردين (Vendor Tiers)</li>
+  <li>خطط العمولة (Commission Plans) بالتفصيل والفروقات بينها + أمثلة محسوبة</li>
+  <li>كيف تسير الطلبات وتتوزع على الموردين</li>
+  <li>التسويات المالية (Settlements) خطوة بخطوة مع مثال كامل</li>
+  <li>الأداء والجزاءات</li>
+  <li>أسئلة شائعة وتنبيهات مهمة لازم تعرفها</li>
+</ol>
+
+<h2>1) مين يستخدم هذا الدليل، ومين يحتاج صلاحية إيه</h2>
+<p>عشان تقدر تنفّذ كل خطوة في هذا الدليل (الإعدادات، الموردين، خطط العمولة، التسويات)، لازم يوزر الأودو بتاعك يكون داخل جروب:</p>
+<div class="box ok">
+  <strong>Marketplace Manager</strong> — الاسم التقني <code>leaders_marketplace.group_marketplace_manager</code><br/>
+  يتضاف من: <span class="badge">Settings</span> ← <span class="badge">Users &amp; Companies</span> ← <span class="badge">Users</span> ← افتح اليوزر ← قسم "Marketplace" في الصلاحيات ← فعّل <strong>Marketplace Manager</strong>.
+</div>
+<p>باقي الجروبات (للمعرفة فقط، مش هتحتاجها إنت شخصياً كأدمن):</p>
+<table>
+  <thead><tr><th style="width:26%">الجروب</th><th style="width:14%">النوع</th><th>بيقدر يعمل إيه</th></tr></thead>
+  <tr><td>Vendor Staff</td><td>بورتال</td><td>موظف عند المورد: يدير المنتجات والمخزون والطلبات الخاصة بمورده فقط.</td></tr>
+  <tr><td>Vendor Owner</td><td>بورتال</td><td>صاحب حساب المورد: كل ما سبق + الماليات (المحفظة، التسويات الخاصة به) + دعوة موظفين.</td></tr>
+  <tr><td>Marketplace Reviewer</td><td>داخلي</td><td>مراجعة طلبات الانضمام، التحقق من المستندات، متابعة المرتجعات والنزاعات.</td></tr>
+  <tr><td>Marketplace Finance</td><td>داخلي</td><td>خطط العمولة والتسويات فقط.</td></tr>
+  <tr><td>Marketplace Manager</td><td>داخلي</td><td>كل ما سبق (Reviewer + Finance) + وحده القادرة على فتح قائمة <strong>Configuration</strong> (درجات الموردين، سياسة Buy Box، مناطق الشحن).</td></tr>
+</table>
+
+<h2>2) جولة سريعة في قائمة الموديول</h2>
+<p>بعد تفعيل الموديول هتلاقي قائمة رئيسية اسمها <strong>Marketplace</strong> فيها 5 مجموعات:</p>
+<div class="flow">
+  <span>Operations</span><b>·</b><span>Finance</span><b>·</b><span>Fulfillment</span><b>·</b><span>Performance</span><b>·</b><span class="company">Configuration</span>
+</div>
+<table>
+  <thead><tr><th style="width:22%">المجموعة</th><th>تحتوي على</th></tr></thead>
+  <tr><td>Operations</td><td>طلبات انضمام الموردين، العروض (Offers)، طلبات الموردين، فواتير الموردين، المرتجعات، النزاعات.</td></tr>
+  <tr><td>Finance</td><td>خطط العمولة، سجل تحقيق الأهداف (Plan Achievements)، التسويات.</td></tr>
+  <tr><td>Fulfillment</td><td>الشحنات الواردة لمخزن الشركة (FBL)، رسوم التنفيذ، سياسات التنفيذ.</td></tr>
+  <tr><td>Performance</td><td>مؤشرات أداء الموردين (KPIs)، الجزاءات.</td></tr>
+  <tr><td>Configuration <span class="badge">Manager فقط</span></td><td>درجات الموردين، سياسة Buy Box، مناطق الشحن.</td></tr>
+</table>
+
+<h2 class="pb">3) الإعدادات (Settings) خطوة بخطوة</h2>
+<p>روح على <span class="badge">Settings</span> هتلاقي تبويب جديد اسمه <strong>Marketplace</strong> على الشمال. فيه بلوكين:</p>
+
+<h3>أ) بلوك "Marketplace Ledger Accounts" — لازم تعمله الأول</h3>
+<div class="box warn">
+  <strong>مهم جداً:</strong> طالما الـ 5 حقول دي فاضية، الموديول <u>مش هيسجل أي قيد محاسبي حقيقي</u> (لا تحصيل، لا عمولة، لا تحويل للمورد) — حتى لو الطلبات والتسويات شغالة عادي. لازم تظبطهم قبل ما تبدأ تشتغل فعلياً.
+</div>
+<table>
+  <thead><tr><th style="width:30%">الحقل</th><th>الوظيفة</th></tr></thead>
+  <tr><td>Escrow (Vendor Holdings)</td><td>حساب التزامات (liability) بيمسك فلوس العملاء اللي لسه مديونة للموردين.</td></tr>
+  <tr><td>Commission Income</td><td>حساب إيراد عمولة الشركة.</td></tr>
+  <tr><td>Fulfilment Fee Income</td><td>حساب إيراد رسوم التنفيذ (لو الشركة بتشحن نيابة عن المورد FBL).</td></tr>
+  <tr><td>Vendor Payable</td><td>حساب مستحقات الموردين (اللي الشركة مدينة بيه للمورد).</td></tr>
+  <tr><td>Marketplace Journal</td><td>اليومية (Journal) اللي هتتسجل فيها كل قيود الماركت بليس.</td></tr>
+</table>
+
+<h3>ب) بلوك "Vendor Finance &amp; Returns"</h3>
+<table>
+  <thead><tr><th style="width:30%">الحقل</th><th style="width:12%">افتراضي</th><th>الوظيفة</th></tr></thead>
+  <tr><td>Default Vendor Hold Days</td><td>14 يوم</td><td>لو درجة المورد (Tier) مفيهاش عدد أيام حجز محدد، بيستخدم الرقم ده.</td></tr>
+  <tr><td>Return Window</td><td>14 يوم</td><td>عدد الأيام اللي يقدر فيها العميل يطلب إرجاع بعد الشحن.</td></tr>
+  <tr><td>Vendor Return Response</td><td>3 أيام</td><td>مهلة المورد للرد على طلب إرجاع قبل ما يتصعّد للماركت بليس.</td></tr>
+  <tr><td>Dispute SLA</td><td>3 أيام</td><td>مهلة الرد على نزاع قبل التصعيد.</td></tr>
+  <tr><td>Allow Cash on Delivery</td><td>مطفي</td><td>لو مفعّل، يظهر خيار "الدفع عند الاستلام" في صفحة الدفع بجانب الدفع أونلاين.</td></tr>
+</table>
+<div class="box">
+  فيه حقل "Commission Recognition" (Accrual / Cash) موجود بس مجرد إعداد محاسبي وصفي — مش بيغيّر أي رقم محسوب فعلياً في النسخة الحالية.
+</div>
+
+<h2 class="pb">4) إضافة مورد جديد (والثاني والثالث…) خطوة بخطوة كامل</h2>
+<p>
+الطريقة الوحيدة المعتمدة لإدخال مورد جديد هي عبر <strong>طلب انضمام (Vendor Application)</strong>. وبما إن كل طلب مستقل تماماً، فإن إضافة "مورد ثاني" أو "مورد ثالث" هي <u>بالضبط نفس الخطوات</u> اللي هتعملها لأول مورد — الفرق الوحيد إن إيميل صاحب الحساب (owner email) لازم يكون مختلف ومش مستخدم قبل كده.
+</p>
+<div class="flow">
+  <span>1. إنشاء الطلب</span><b>←</b><span>2. Submit</span><b>←</b><span>3. Start Review</span><b>←</b><span>4. توثيق المستندات</span><b>←</b><span class="company">5. Approve</span>
+</div>
+
+<h3>مرجع حقول الطلب (Vendor Application)</h3>
+<p>قبل ما تبدأ التعبئة، ده كل حقل هتشوفه في الطلب مجمّع حسب المجموعة، مع مثال لكل واحد:</p>
+<table>
+  <thead><tr><th style="width:22%">المجموعة</th><th style="width:24%">الحقل</th><th>الوصف / مثال</th></tr></thead>
+  <tr><td rowspan="7">النشاط التجاري</td><td>Business Name</td><td>إلزامي. مثال: "شركة النور للإلكترونيات".</td></tr>
+  <tr><td>Store Name</td><td>الاسم الظاهر للعميل على الموقع. لو فاضي بياخد Business Name.</td></tr>
+  <tr><td>Legal Type</td><td>فرد / مؤسسة فردية / شركة — بيحدد المستندات المطلوبة لاحقاً.</td></tr>
+  <tr><td>Commercial Registration No.</td><td>يختفي لو Legal Type = فرد.</td></tr>
+  <tr><td>Tax Number</td><td>لو اتملأ، بيبقى مستند "شهادة ضريبة القيمة المضافة" إلزامي.</td></tr>
+  <tr><td>Product Category Ids</td><td>إلزامي قبل الموافقة — فئات المنتجات اللي المورد هيبيعها.</td></tr>
+  <tr><td>Business Email / Phone / Address</td><td>بيانات تواصل النشاط (مش نفس إيميل تسجيل الدخول).</td></tr>
+  <tr><td>صاحب الحساب</td><td>Owner Name / Owner Email / Owner Phone</td><td>Owner Email إلزامي وهو نفسه لوجين البورتال — مينفعش يتكرر مع مورد تاني.</td></tr>
+  <tr><td>الممثل القانوني</td><td>Representative Name / Position / ID Number</td><td>الثلاثة إلزاميين قبل الموافقة.</td></tr>
+  <tr><td>البيانات البنكية</td><td>Bank Name / Account Holder / Account Number (IBAN)</td><td>مثال IBAN: <span class="en">SA03 8000 0000 6080 1016 7519</span>. الثلاثة إلزاميين قبل الموافقة.</td></tr>
+  <tr><td rowspan="2">المستندات</td><td>Document Type</td><td>8 أنواع: سجل تجاري، شهادة ضريبية، شهادة VAT، هوية/جواز، إثبات بنكي، إثبات عنوان، توكيل قانوني، توكيل توزيع.</td></tr>
+  <tr><td>Number / Issue Date / Expiry Date / File</td><td>المستند المنتهي لا يمكن توثيقه.</td></tr>
+  <tr><td>المراجعة</td><td>Terms Accepted / Seller Agreement Accepted</td><td>مربعين إلزاميين قبل الـ Submit.</td></tr>
+</table>
+
+<h3>الخطوة 1 — إنشاء الطلب</h3>
+<p><span class="badge">Marketplace</span> ← <span class="badge">Operations</span> ← <span class="badge">Vendor Applications</span> ← زرار <span class="btn">New</span></p>
+<ol class="steps">
+  <li><strong>بيانات النشاط التجاري:</strong> اسم النشاط (Business Name) — إلزامي، اسم المتجر الظاهر للعميل (Store Name) — لو سبته فاضي بياخد نفس اسم النشاط، نوع الكيان القانوني (فرد / مؤسسة فردية / شركة)، الاسم القانوني، رقم السجل التجاري (بيختفي لو النوع "فرد")، الرقم الضريبي، نشاط العمل، فئات المنتجات (إلزامية قبل الموافقة)، إيميل وتليفون النشاط، والعنوان.</li>
+  <li><strong>بيانات صاحب الحساب (البورتال):</strong> الاسم — إلزامي، الإيميل — إلزامي وهو نفسه اللي هيدخل بيه المورد على البورتال، التليفون.</li>
+  <li><strong>الممثل القانوني:</strong> الاسم، المنصب، رقم الهوية — الثلاثة إلزاميين قبل الموافقة.</li>
+  <li><strong>البيانات البنكية:</strong> اسم البنك، اسم صاحب الحساب، رقم الحساب/الآيبان — إلزاميين قبل الموافقة.</li>
+</ol>
+
+<h3>الخطوة 2 — تبويب "Documents": رفع المستندات</h3>
+<p>لازم مستند واحد على الأقل عشان تقدر تعمل Submit. أنواع المستندات المتاحة:</p>
+<p>السجل التجاري، الشهادة الضريبية، شهادة ضريبة القيمة المضافة، هوية/جواز سفر، إثبات حساب بنكي، إثبات عنوان، توكيل قانوني، توكيل توزيع/علامة تجارية.</p>
+<div class="box">
+  <strong>إيه اللي إلزامي فعلاً؟</strong> دايماً: هوية/جواز سفر + إثبات حساب بنكي + إثبات عنوان.<br/>
+  + سجل تجاري لو النوع "مؤسسة فردية" أو "شركة".<br/>
+  + شهادة ضريبية لو النوع "شركة".<br/>
+  + شهادة ضريبة القيمة المضافة لو دخلت رقم ضريبي.
+</div>
+
+<h3>الخطوة 3 — تبويب "Review"</h3>
+<p>فعّل مربعي: <strong>الموافقة على الشروط والأحكام</strong> و<strong>الموافقة على اتفاقية البائع</strong> — إلزاميين.</p>
+
+<h3>الخطوة 4 — Submit ثم Start Review ثم توثيق المستندات</h3>
+<ol class="steps">
+  <li>زرار <span class="btn">Submit</span> — يتأكد إن فيه مستند واحد على الأقل، وينشئ سجل شركة (Partner) للمورد تلقائياً، وتتحول حالة الطلب لـ "Submitted".</li>
+  <li>زرار <span class="btn">Start Review</span> — تتحول الحالة لـ "Under Review" ويتسجل المراجع الحالي.</li>
+  <li>جوه تبويب Documents: لكل مستند اضغط ✔ (Verify) أو ✘ (Reject — لازم تكتب سبب). المستند المنتهي الصلاحية بيترفض توثيقه تلقائياً برسالة تحذير.</li>
+  <li>زرار <span class="btn">Verify KYC</span> بالأعلى — مش هيشتغل غير لو كل نوع مستند مطلوب اتوثّق (verified) ومش منتهي الصلاحية.</li>
+  <li>هتلاقي صندوق أصفر فوق النموذج بيسرد "Missing Requirements" — كل حاجة ناقصة (حقول، مستندات، مربعات اختيار) — ده أسرع طريقة تعرف إيه الناقص قبل الموافقة.</li>
+</ol>
+<div class="box warn">
+  تنبيه: أي تعديل على مستند بعد ما اتوثّق (النوع، الرقم، تاريخ الانتهاء، أو رفع ملف جديد) بيرجّع حالته "غير موثّق" تلقائياً، وبيرجّع KYC الطلب كله لحالة "Pending" من جديد.
+</div>
+
+<h3>الخطوة 5 — Approve (الموافقة)</h3>
+<p>زرار <span class="btn">Approve</span> يظهر بس لما الحالة "Under Review"، وبيطلع رسالة تأكيد: "سيتم إنشاء شركة المورد ومخزنه ويوزر البورتال الخاص بصاحب الحساب". لما تأكّد، بيحصل تلقائياً:</p>
+<ol class="steps">
+  <li>فحص نهائي إن كل شيء مكتمل (لو ناقص حاجة هيوقف برسالة توضح إيه الناقص).</li>
+  <li>KYC يتحول لـ "Verified".</li>
+  <li>يتنشئ حساب بنكي (res.partner.bank) للمورد من البيانات البنكية.</li>
+  <li>الشركة (Partner) تتعلّم: <code>is_marketplace_vendor = True</code>، الحالة "Approved"، ودرجة المورد (Tier) تتظبط تلقائياً على <strong>Bronze</strong> (لو معندوش درجة من قبل).</li>
+  <li>يتنشئ للمورد <strong>مخزن FBM خاص بيه</strong> (اسمه "Vendor - اسم المتجر") وموقع مخزون FBL لو بيستخدم تنفيذ الشركة.</li>
+  <li>يتنشئ يوزر بورتال بإيميل صاحب الحساب، في جروب <strong>Vendor Owner</strong>، وترسله دعوة بريد إلكتروني لتفعيل كلمة السر (لو فشل إرسال الإيميل، الموافقة بتكمل عادي وهتلاقي تحذير في الـ Chatter — تقدر بعدين تضغط زرار <span class="btn">Resend Portal Invitation</span>).</li>
+</ol>
+<div class="box ok">
+  <strong>خلاصة:</strong> عشان تضيف مورد رقم 2، 3، 4... كرر بالظبط الخطوات 1 إلى 5 من جديد بطلب انضمام جديد. مفيش أي خطوة إضافية أو مختلفة.
+</div>
+<div class="box">
+  فيه طريقة بديلة (غير موصى بها): تفتح جهة الاتصال (Contact) بتاعت المورد مباشرة وتفعّل يدوياً تبويب "Marketplace Vendor" (is_marketplace_vendor، الحالة، الدرجة...). الطريقة دي بتتخطى إنشاء المخزن واليوزر والحساب البنكي والتحقق من المستندات — استخدمها فقط لتعديل بيانات مورد <u>متسجل بالفعل</u> (زي تغيير درجته، أو أيام الحجز، أو الأسواق المسموح له يبيع فيها)، مش لإدخال مورد جديد.
+</div>
+
+<h2 class="pb">5) درجات الموردين (Vendor Tiers)</h2>
+<p><span class="badge">Marketplace</span> ← <span class="badge">Configuration</span> ← <span class="badge">Vendor Tiers</span> (متاحة فقط لـ Marketplace Manager).</p>
+<h3>مرجع حقول الدرجة</h3>
+<table>
+  <thead><tr><th style="width:24%">الحقل</th><th style="width:16%">مثال (Bronze)</th><th>الوصف</th></tr></thead>
+  <tr><td>Name / Code / Sequence</td><td>Bronze / bronze / 10</td><td>الاسم والترتيب.</td></tr>
+  <tr><td>Commission Rate</td><td>15%</td><td><span class="cr">عرضي فقط، غير مطبّق فعلياً</span> — راجع التنبيه تحت.</td></tr>
+  <tr><td>Product Limit</td><td>50</td><td>حد عدد المنتجات (معلوماتي).</td></tr>
+  <tr><td>Payout Frequency</td><td>شهري</td><td>دورية الصرف المتوقعة (معلوماتي، مفيش جدولة تلقائية بيها).</td></tr>
+  <tr><td>Min Months / Min Sales / Min Rating</td><td>—</td><td>معايير مبدئية لترقية الدرجة (بدون ترقية تلقائية حالياً).</td></tr>
+  <tr><td>Escrow Release Policy</td><td>Delivery + Days</td><td>عند الشحن / عند التسليم / تسليم + مدة — بتحدد امتى فلوس المورد تبقى متاحة.</td></tr>
+  <tr><td>Escrow Release Days</td><td>15 يوم</td><td>يُستخدم فقط لما السياسة "تسليم + مدة".</td></tr>
+  <tr><td>Reserve Percent</td><td>10%</td><td>نسبة تُحجز كاحتياطي من صافي أرباح المورد لتغطية مرتجعات مستقبلية.</td></tr>
+  <tr><td>Return Policy</td><td>Reserve First</td><td>استخدم الاحتياطي أولاً، أو اخصم من التسوية القادمة مباشرة.</td></tr>
+</table>
+
+<h3>الدرجات الأربعة الجاهزة بالموديول</h3>
+<table>
+  <thead><tr><th>الدرجة</th><th>حد المنتجات</th><th>دورية الصرف</th><th>سياسة تحرير الرصيد</th><th>مدة الحجز</th><th>نسبة احتياطي</th><th>سياسة المرتجع</th></tr></thead>
+  <tr><td>Bronze</td><td>50</td><td>شهري</td><td>تسليم + مدة</td><td>15 يوم</td><td>10%</td><td>احتياطي أولاً</td></tr>
+  <tr><td>Silver</td><td>200</td><td>أسبوعي</td><td>تسليم + مدة</td><td>7 أيام</td><td>5%</td><td>احتياطي أولاً</td></tr>
+  <tr><td>Gold</td><td>500</td><td>أسبوعي</td><td>عند التسليم مباشرة</td><td>—</td><td>3%</td><td>احتياطي أولاً</td></tr>
+  <tr><td>Platinum</td><td>بلا حد</td><td>يومي</td><td>عند الشحن مباشرة</td><td>—</td><td>0%</td><td>خصم من التسوية القادمة</td></tr>
+</table>
+<div class="box warn">
+  <strong>تنبيه مهم جداً:</strong> "Commission Rate" (15% / 12% / 10% / 8%) — الرقم ده <u>عرضي فقط ومش مطبّق فعلياً</u> على أي طلب أو تسوية في النسخة الحالية. اللي بيحدد فعلياً خصم عمولة المورد هو <strong>خطة العمولة (Commission Plan)</strong> اللي هتتكلم عنها في الجزء الجاي، مش رقم الدرجة. متفترضش إن "مورد Platinum = عمولة 8%" بيتطبق تلقائياً.
+</div>
+<p>الحقل اللي بيأثر فعلياً هو <strong>سياسة تحرير الرصيد</strong>: بيحدد امتى فلوس المورد (بعد خصم أي شيء) تبقى متاحة للسحب — فور الشحن/التسليم، أو بعد X يوم من التسليم.</p>
+
+<h2 class="pb">6) خطط العمولة (Commission Plans) — الجزء الأهم</h2>
+<p><span class="badge">Marketplace</span> ← <span class="badge">Finance</span> ← <span class="badge">Commission Plans</span>.</p>
+<div class="box warn">
+  <strong>افهم النقطتين دول كويس قبل ما تكمل:</strong>
+  <ul>
+    <li>فيه حقول قديمة على النموذج زي "Percentage / Fixed / Compound" مش ظاهرة أصلاً في الشاشة، وحتى لو ظبطتها من الكود مش بتخصم حاجة من الطلب. <u>العمولة الحقيقية الوحيدة اللي بتتطبق فعلياً بتحصل مرة واحدة عند عمل التسوية (Settlement)</u>، عن طريق خطة العمولة اللي هتشرحها هنا.</li>
+    <li><strong>خطة العمولة دايماً وبس بتخصم من مستحقات المورد — مفيش أي طريقة تخلّيها تدّي المورد مكافأة أو فلوس إضافية.</strong> يعني أي رقم تحطه في جدول الدرجات (Completion Tiers) هو مبلغ هيتطرح من صافي التسوية، مش هيتضاف له.</li>
+  </ul>
+</div>
+
+<h3>القاعدة الذهبية: مورد واحد = خطة واحدة نشطة في نفس الوقت</h3>
+<p>ما تقدرش تحط على نفس المورد خطتين شغالتين (Approved/Done) في فترة متداخلة — النظام هيرفض بالخطأ: <em>"المورد مغطى بالفعل بخطة عمولة أخرى نشطة لفترة متداخلة"</em>. يعني الخطة اللي تختارها للمورد بتحكم كل حساباته لتلك الفترة، مش ممكن تجمع بين خطتين.</p>
+
+<h3>خطوات إنشاء خطة عمولة</h3>
+<ol class="steps">
+  <li>زرار <span class="btn">New</span> واكتب اسم الخطة، مثلاً "أهداف الربع الأول 2026".</li>
+  <li>حدد <strong>الفترة الفعّالة</strong> (من — إلى).</li>
+  <li>اختر <strong>Based on</strong>: <strong>Targets</strong> أو <strong>Achievements</strong> (شرحهم بالتفصيل تحت). لا يوجد أي اختيار آخر يخص "تأثير" الخطة — كل خطة هي خصم من مستحقات المورد بلا استثناء.</li>
+  <li>من تبويب "Sales People" اضغط "Add a new Vendor" وحدد المورد + تاريخ البداية (والنهاية اختياري). هتلاقي عمود بيوريك لو المورد ده أصلاً على خطة تانية شغالة — تنبيه لتفادي التعارض.</li>
+  <li>عبّي جدول <strong>Completion Tiers</strong> (لو محتاجه — شرح تحت) بالضغط على "Add a new commission level".</li>
+  <li>زرار <span class="btn">Approve</span> لتفعيل الخطة (لازم تكون Approved أو Done عشان تتحسب فعلياً).</li>
+</ol>
+
+<h3>مرجع حقول خطة العمولة</h3>
+<table>
+  <thead><tr><th style="width:24%">الحقل</th><th style="width:14%">افتراضي</th><th>الوصف / مثال</th></tr></thead>
+  <tr><td>Name</td><td>—</td><td>مثال: "أهداف الربع الأول 2026".</td></tr>
+  <tr><td>State</td><td>Draft</td><td>Draft ← Approved ← Done، أو Cancel. لازم Approved/Done عشان تتحسب فعلياً.</td></tr>
+  <tr><td>Effective Period (date_from / date_to)</td><td>—</td><td>مثال: 2026-01-01 إلى 2026-03-31.</td></tr>
+  <tr><td>Based on (type)</td><td>Targets</td><td>Targets (على إجمالي المبيعات) أو Achievements (على مقياس محدد) — تفصيل كامل وأمثلة تحت.</td></tr>
+  <tr><td>Target Frequency (periodicity)</td><td>Quarterly</td><td>شهري / ربع سنوي / سنوي — يظهر فقط في وضع Targets.</td></tr>
+  <tr><td>Target Amount</td><td>—</td><td>مبلغ المبيعات اللي يمثّل 100% إنجاز. مثال: 10,000.</td></tr>
+  <tr><td>Metric (achieve_type)</td><td>—</td><td>يظهر فقط في وضع Achievements: Amount Sold / Quantity Sold / Order Count / Listing Days.</td></tr>
+  <tr><td>Use Target Tiers (achieve_is_tiered)</td><td>مطفي</td><td>لو مطفي: يستخدم "Rate" ثابت. لو مفعّل: يستخدم جدول Completion Tiers (زي Targets). Listing Days ما ينفعش Tiered.</td></tr>
+  <tr><td>Rate (achieve_rate)</td><td>0.05</td><td>سعر لكل وحدة من المقياس، يُستخدم فقط لما Tiered مطفي.</td></tr>
+  <tr><td>Achieve Target Amount</td><td>—</td><td>قيمة المقياس اللي تمثل 100%، تُستخدم فقط لما Tiered مفعّل.</td></tr>
+  <tr><td>Completion Tiers (target_commission_ids)</td><td>—</td><td>جدول: Target Rate% + Amount. مثال: 0%→0، 50%→250، 100%→500، 150%→750.</td></tr>
+  <tr><td>Sales People (vendor_plan_ids)</td><td>—</td><td>جدول: Vendor + Date From (إلزامي) + Date To (اختياري) + عمود "Other Plans" التحذيري.</td></tr>
+  <tr><td>Plan Effect</td><td>Extra Deduction (ثابت)</td><td>الحقل موجود تقنياً لكنه دايماً "خصم إضافي" — لا يوجد خيار لدفع مكافأة للمورد.</td></tr>
+</table>
+
+<h3 class="pb">أ) وضع "Targets" — العمولة على إجمالي المبيعات مقابل هدف</h3>
+<p>الفكرة: بتحدد رقم مبيعات مستهدف للفترة (شهر/ربع/سنة)، وبتحدد "درجات إنجاز" (Tiers) كل درجة ليها نسبة إنجاز ومبلغ خصم ثابت. النظام بياخد <strong>أعلى درجة وصلها المورد</strong> فقط (مش تراكمي).</p>
+<div class="box example">
+  <strong>مثال محسوب:</strong> خطة ربع سنوية، الهدف = 10,000 ريال. جدول الدرجات (كل رقم هنا هو <u>مبلغ يُخصم</u> من صافي تسوية المورد عند بلوغ الدرجة، مش مكافأة تُضاف له):
+  <table>
+    <thead><tr><th>نسبة الإنجاز</th><th>الخصم</th></tr></thead>
+    <tr><td>0%</td><td>0 ريال</td></tr>
+    <tr><td>50%</td><td>250 ريال</td></tr>
+    <tr><td>100%</td><td>500 ريال</td></tr>
+    <tr><td>150%</td><td>750 ريال</td></tr>
+  </table>
+  <ul>
+    <li>مورد باع <strong>6,000 ريال</strong> في الربع → إنجاز 60% → أعلى درجة وصلها هي 50% → يتخصم منه <strong>250 ريال</strong> عند التسوية (مش تقاس بالنسبة والباقي، درجة كاملة أو لا حاجة).</li>
+    <li>مورد باع <strong>11,000 ريال</strong> → إنجاز 110% → أعلى درجة ≤110% هي 100% → يتخصم منه <strong>500 ريال</strong> فقط (مش 750، لازم يوصل 15,000 ريال بالظبط عشان توصله درجة الـ150%).</li>
+    <li>مورد باع <strong>3,000 ريال</strong> فقط → إنجاز 30% → معندوش درجة يستحقها غير 0% → يتخصم منه <strong>صفر</strong>. مفيش خصم جزئي أبداً؛ لازم توصل لعتبة درجة كاملة عشان الخصم يُطبّق.</li>
+  </ul>
+</div>
+
+<h3 class="pb">ب) وضع "Achievements" — الخصم على مقياس أداء محدد</h3>
+<p>هنا الخصم مش بالضرورة على إجمالي المبيعات، لكن على مقياس تختاره (Metric):</p>
+<table>
+  <thead><tr><th>المقياس</th><th>معناه</th></tr></thead>
+  <tr><td>Amount Sold</td><td>صافي المبيعات الفعلي بعد خصم المرتجعات، لبنود المورد (غير الشحن).</td></tr>
+  <tr><td>Quantity Sold</td><td>إجمالي الكمية المباعة ناقص المرتجعة.</td></tr>
+  <tr><td>Order Count</td><td>عدد طلبات المورد اللي لسه فيها كمية مباعة صافية (الطلب المرتجع بالكامل ما بيتحسبش).</td></tr>
+  <tr><td>Listing Days</td><td>عدد أيام ظهور منتجات المورد "متاحة" فعلياً خلال الفترة.</td></tr>
+</table>
+<p>ولكل مقياس اختيارين للحساب:</p>
+<h4>1. سعر ثابت لكل وحدة (Flat Rate) — الافتراضي</h4>
+<p>تحدد "Rate" وبيتضرب في قيمة المقياس مباشرة، والناتج هو المبلغ اللي هيتخصم من المورد عند التسوية. أمثلة محسوبة:</p>
+<table>
+  <thead><tr><th>المقياس</th><th>Rate</th><th>القيمة الفعلية</th><th>مبلغ الخصم</th></tr></thead>
+  <tr><td>Order Count</td><td>7</td><td>2 طلب</td><td>2 × 7 = <strong>14</strong></td></tr>
+  <tr><td>Quantity Sold</td><td>5</td><td>4 قطع</td><td>4 × 5 = <strong>20</strong></td></tr>
+  <tr><td>Amount Sold</td><td>0.10 (يعني 10%)</td><td>400 ريال مبيعات</td><td>400 × 0.10 = <strong>40</strong></td></tr>
+  <tr><td>Listing Days</td><td>3</td><td>5 أيام ضمن فترة الخطة</td><td>5 × 3 = <strong>15</strong></td></tr>
+</table>
+<div class="box warn">ملاحظة: "Listing Days" ما ينفعش يتحول لدرجات (Tiered) — يشتغل بسعر ثابت فقط.</div>
+
+<h4>2. درجات إنجاز (Tiered) — نفس منطق وضع Targets لكن على المقياس بدل المبيعات</h4>
+<p>تحدد "قيمة المقياس اللي تمثل 100%"، ونفس جدول Completion Tiers بيتحسب بنفس منطق "أعلى درجة وصلها".</p>
+<div class="box example">
+  <strong>مثال:</strong> مقياس Order Count، بنظام Tiered، الهدف = 4 طلبات، الدرجات {0%→0، 50%→20، 100%→50}. المورد نفّذ طلبين من أصل 4 → إنجاز 50% → أعلى درجة وصلها 50% → يتخصم منه <strong>20</strong> (مش 50 كاملة، ومش نسبة متناسبة 25).
+</div>
+
+<h3>مقارنة سريعة: أنهي وضع أستخدم؟</h3>
+<table>
+  <thead><tr><th style="width:20%">الحالة</th><th>الاختيار المناسب</th></tr></thead>
+  <tr><td>عايز تخصم حسب إجمالي مبيعات المورد مقابل رقم مستهدف</td><td>Targets</td></tr>
+  <tr><td>عايز تخصم حسب عدد الطلبات أو الكمية أو أيام العرض بغض النظر عن قيمة المبيعات</td><td>Achievements بسعر ثابت</td></tr>
+  <tr><td>عايز تدرّج الخصم على مقياس غير المبيعات (مثلاً عدد الطلبات) بدل سعر ثابت</td><td>Achievements + Tiered</td></tr>
+</table>
+<p>سجل كل خصم اتحسب فعلياً هتلاقيه في <span class="badge">Finance</span> ← <span class="badge">Plan Achievements</span> (سجل للقراءة فقط، بيوريك نسبة الإنجاز والدرجة اللي اتحققت والمبلغ).</p>
+
+<h2 class="pb">7) كيف تسير الطلبات وتتوزع على الموردين</h2>
+<p>العميل بيشتري من سلة واحدة فيها منتجات من موردين مختلفين + منتجات الشركة (لو موجودة). لحظة تأكيد الطلب، النظام تلقائياً:</p>
+<ol class="steps">
+  <li>يجمع بنود كل مورد على حدة، وينشئ لكل مورد <strong>"طلب مورد" (Vendor Order)</strong> مستقل برقم تسلسلي خاص.</li>
+  <li>يحسب رسوم الشحن الخاصة بكل مورد لو الشحن بيعتمد على "مناطق شحن" مختلفة، ويلحقها بطلب المورد المناسب.</li>
+  <li>يشيل بنود الموردين من الطلب الأصلي — لو الطلب كله كان منتجات موردين (مفيهوش حاجة للشركة نفسها)، الطلب الأصلي بيتلغى تلقائياً وبيتحول لمجرد سجل دفع، والمستندات الحقيقية اللي هتتابعها هي طلبات الموردين.</li>
+</ol>
+<div class="box">
+  عمولة كل طلب مورد بتفضل صفر لحظة التأكيد (لأنها بتتحسب مرة واحدة بس عند التسوية زي ما شرحنا فوق) — إلا في حالة مرتجع، وقتها بيتسجل سطر تسوية سالب لغرض المراجعة فقط.
+</div>
+
+<h2 class="pb">8) التسويات المالية (Settlements) — خطوة بخطوة مع مثال كامل</h2>
+<p><span class="badge">Marketplace</span> ← <span class="badge">Finance</span> ← <span class="badge">Settlements</span>.</p>
+<ol class="steps">
+  <li>اعمل سجل تسوية جديد: اختر المورد والفترة (من — إلى).</li>
+  <li>زرار <span class="btn">Collect Transactions</span>: يجمع كل معاملات محفظة المورد "المتاحة" فعلياً خلال الفترة، وفي نفس الوقت يطبّق خطة العمولة النشطة على المورد (لو موجودة) وينشئ سطر خصم إضافي زيادة على السطور المجمّعة.</li>
+  <li>النظام يحسب تلقائياً: <strong>الإجمالي</strong> (كل المبالغ الموجبة) ناقص <strong>الخصومات</strong> = <strong>الصافي</strong>.</li>
+  <li>زرار <span class="btn">Approve</span>.</li>
+  <li>لو الصافي ≥ 0: زرار <span class="btn">Mark Paid</span> — يسجل قيد التحويل الفعلي للمورد.</li>
+  <li>لو الصافي &lt; 0 (المورد بقى مديون للماركت بليس، زي حالة دفع عند الاستلام كانت أعلى من أرباحه): زرار <span class="btn">Register Vendor Payment</span> بدل Mark Paid — يسجل قيد تحصيل دين من المورد.</li>
+</ol>
+
+<h3>مرجع حقول التسوية</h3>
+<table>
+  <thead><tr><th style="width:24%">الحقل</th><th>الوصف / مثال</th></tr></thead>
+  <tr><td>Vendor / Period From / Period To</td><td>مثال: مورد "النور للإلكترونيات"، من 2026-01-01 إلى 2026-03-31.</td></tr>
+  <tr><td>Transaction Ids</td><td>جدول معاملات المحفظة المجمّعة: التاريخ، النوع (earning/commission/cod_collected)، المرجع، المبلغ، الحالة.</td></tr>
+  <tr><td>Commission Achievement Ids</td><td>جدول تاريخي: الخطة، المبيعات، الهدف، نسبة الإنجاز، الدرجة المحققة، مبلغ الخصم.</td></tr>
+  <tr><td>Gross Amount</td><td>مجموع كل المعاملات الموجبة (بدون Cash on Delivery).</td></tr>
+  <tr><td>Deductions</td><td>مجموع كل المعاملات السالبة (عمولة الخطة + أي مرتجعات).</td></tr>
+  <tr><td>Net Amount</td><td>الإجمالي − الخصومات. لو أقل من صفر، المورد بقى مديون للماركت بليس.</td></tr>
+  <tr><td>Commission Move Id</td><td>القيد المحاسبي الخاص بالعمولة/الخصم (بعد Approve).</td></tr>
+</table>
+
+<div class="box example">
+  <strong>مثال متكامل:</strong> مورد Gold (تحرير فوري عند التسليم)، عليه خطة "Targets" بالمثال اللي فوق (هدف 10,000، درجة 100%→500 خصم).<br/>
+  خلال الربع باع فعلياً بصافي 11,000 ريال (بعد خصم أي مرتجعات) → معاملات المحفظة "المتاحة" مجموعها = 11,000.<br/>
+  عند Collect Transactions: إنجاز = 110% → أعلى درجة محققة 100% → يضاف سطر "Commission" (خصم) بقيمة -500.<br/>
+  الإجمالي (Gross) = 11,000. الخصومات (Deductions) = 500 → الصافي (Net) = 11,000 − 500 = <strong>10,500</strong> → Approve ثم Mark Paid.
+</div>
+
+<h2 class="pb">9) الأداء والجزاءات</h2>
+<p><span class="badge">Marketplace</span> ← <span class="badge">Performance</span>.</p>
+<ul>
+  <li><strong>Vendor KPIs:</strong> لقطة مؤشرات (عدد طلبات، نسبة إتمام، نسبة إلغاء، متوسط تقييم، متوسط ساعات الشحن) — <u>تُدخل يدوياً</u>، لا يوجد حالياً حساب تلقائي لها.</li>
+  <li><strong>Penalties:</strong> ثلاث درجات — تحذير (Warning، بلا أثر تلقائي)، تجميد (Freeze: يوقف كل عروض المورد فوراً)، حظر (Ban: يعطّل كل حسابات يوزرز المورد فوراً). لازم تكتب سبب.</li>
+</ul>
+
+<h3>مرجع الحقول</h3>
+<table>
+  <thead><tr><th style="width:22%">النموذج</th><th style="width:24%">الحقل</th><th>الوصف / مثال</th></tr></thead>
+  <tr><td rowspan="5">Vendor KPI</td><td>Period</td><td>تاريخ اللقطة (شهر/ربع مثلاً).</td></tr>
+  <tr><td>Order Count / Completion Rate / Cancellation Rate</td><td>مثال: 40 طلب، 92% إتمام، 3% إلغاء.</td></tr>
+  <tr><td>Avg Rating</td><td>متوسط تقييم العملاء (من 5).</td></tr>
+  <tr><td>Avg Ship Hours</td><td>متوسط عدد ساعات الشحن.</td></tr>
+  <tr><td colspan="2"><span class="cr">تُدخل يدوياً</span> — لا يوجد حساب تلقائي لها حالياً.</td></tr>
+  <tr><td rowspan="3">Vendor Penalty</td><td>Level</td><td>تحذير (بلا أثر) / تجميد (يوقف كل عروضه) / حظر (يعطّل كل يوزرزه).</td></tr>
+  <tr><td>Reason</td><td>إلزامي — نص يوضح سبب الجزاء.</td></tr>
+  <tr><td>Date Start / Date End</td><td>فترة سريان الجزاء.</td></tr>
+</table>
+
+<h2 class="pb">10) أسئلة شائعة وتنبيهات مهمة لازم تعرفها</h2>
+<div class="box warn">
+  <strong>س: هل ممكن خطة عمولة تدّي المورد مكافأة (فلوس زيادة) بدل ما تخصم منه؟</strong><br/>
+  ج: لا، وممنوع تماماً. خطط العمولة في هذا الموديول <u>دايماً وبس بتخصم</u> من مستحقات المورد عند التسوية — مفيش أي إعداد أو اختيار يخلّيها تضيف له فلوس. أي رقم في جدول الدرجات (Completion Tiers) هو مبلغ مقتطع من صافي التسوية.
+</div>
+<div class="box warn">
+  <strong>س: ظبطت نسبة عمولة على درجة المورد (Vendor Tier) أو على حقل "Percentage" في خطة عمولة قديمة — ليه الرقم مش بيتخصم من الطلب؟</strong><br/>
+  ج: الحقلين دول (Tier commission_rate، وrule_type/Percentage/Fixed/Compound) مش متفعّلين فعلياً في هذه النسخة، هما أرقام عرض/توثيق بس. الخصم الحقيقي الوحيد بييجي من خطة عمولة (Commission Plan) بوضع Targets أو Achievements، وبتتطبق مرة واحدة عند عمل التسوية.
+</div>
+<div class="box warn">
+  <strong>س: عندي مورد على درجة Platinum، هل هيتحاسب أوتوماتيك بـ8%؟</strong><br/>
+  ج: لا. لازم تعمله خطة عمولة صريحة لو عايز تخصم أو تكافئ. رقم الدرجة معلوماتي فقط.
+</div>
+<div class="box">
+  <strong>س: أضيف مورد ثاني وخطة عمولة له نفسها اللي على المورد الأول؟</strong><br/>
+  ج: لأ، كل خطة بتتربط بمورد/موردين محددين من تبويب "Sales People". لو عايز نفس الأرقام لمورد جديد، اعمل خطة جديدة أو ضيفه كمورد إضافي على نفس الخطة (بشرط ما يكونش أصلاً على خطة تانية شغالة بنفس الفترة).
+</div>
+<div class="box">
+  <strong>س: نسيت أظبط حسابات المحاسبة في الإعدادات؟</strong><br/>
+  ج: العمليات (الطلبات، التسويات) هتفضل شغالة، لكن مفيش قيود محاسبية هتتسجل خالص. ظبطها بأسرع وقت قبل التشغيل الفعلي.
+</div>
+<div class="box">
+  <strong>س: عايز أعدّل بيانات مورد موجود (درجته، أيام الحجز، الأسواق المسموح له بيها)؟</strong><br/>
+  ج: من جهة الاتصال (Contact) الخاصة بالمورد، تبويب "Marketplace Vendor" — مش من طلب الانضمام (الطلب بيُستخدم فقط لإنشاء مورد جديد لأول مرة).
+</div>
+
+</body>
+</html>

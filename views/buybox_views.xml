@@ -1,0 +1,50 @@
+<odoo>
+    <record id="view_buybox_config_form" model="ir.ui.view">
+        <field name="name">leaders.buybox.config.form</field>
+        <field name="model">leaders.buybox.config</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                        <field name="sequence"/>
+                    </group>
+                    <group string="Signal Weights" help="Relative importance of each Buy Box signal.">
+                        <field name="price_weight"/>
+                        <field name="rating_weight"/>
+                        <field name="availability_weight"/>
+                        <field name="shipping_speed_weight"/>
+                        <field name="vendor_tier_weight"/>
+                    </group>
+                    <group string="Fulfilment / Stock">
+                        <field name="fbl_shipping_bonus"/>
+                        <field name="fbm_shipping_bonus"/>
+                        <field name="require_stock"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_buybox_config_tree" model="ir.ui.view">
+        <field name="name">leaders.buybox.config.tree</field>
+        <field name="model">leaders.buybox.config</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="price_weight"/>
+                <field name="rating_weight"/>
+                <field name="availability_weight"/>
+                <field name="shipping_speed_weight"/>
+                <field name="vendor_tier_weight"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_buybox_config" model="ir.actions.act_window">
+        <field name="name">Buy Box Policy</field>
+        <field name="res_model">leaders.buybox.config</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

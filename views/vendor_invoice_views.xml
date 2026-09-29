@@ -1,0 +1,90 @@
+<odoo>
+    <record id="view_vendor_invoice_tree" model="ir.ui.view">
+        <field name="name">leaders.vendor.invoice.tree</field>
+        <field name="model">leaders.vendor.invoice</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="move_type"/>
+                <field name="invoice_date"/>
+                <field name="vendor_id"/>
+                <field name="partner_id"/>
+                <field name="vendor_order_id"/>
+                <field name="amount_untaxed" sum="Untaxed"/>
+                <field name="amount_tax" sum="Tax"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="payment_state" widget="badge" decoration-success="payment_state == 'paid'"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_vendor_invoice_form" model="ir.ui.view">
+        <field name="name">leaders.vendor.invoice.form</field>
+        <field name="model">leaders.vendor.invoice</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false">
+                <header>
+                    <button name="action_print" type="object" string="Print" class="btn-primary"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Paid" invisible="payment_state != 'paid'"/>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="vendor_id"/>
+                            <field name="partner_id"/>
+                            <field name="vendor_order_id"/>
+                            <field name="move_type"/>
+                            <field name="return_id" invisible="not return_id"/>
+                            <field name="reversed_invoice_id" invisible="not reversed_invoice_id"/>
+                        </group>
+                        <group>
+                            <field name="invoice_date"/>
+                            <field name="payment_state"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <list>
+                            <field name="product_id"/>
+                            <field name="quantity"/>
+                            <field name="price_unit"/>
+                            <field name="discount" optional="hide"/>
+                            <field name="tax_ids" widget="many2many_tags"/>
+                            <field name="price_subtotal"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                    <group class="oe_subtotal_footer">
+                        <field name="amount_untaxed"/>
+                        <field name="amount_tax"/>
+                        <field name="amount_total" class="oe_subtotal_footer_separator"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vendor_invoice" model="ir.actions.act_window">
+        <field name="name">Vendor Invoices</field>
+        <field name="res_model">leaders.vendor.invoice</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_partner_form_marketplace_stock" model="ir.ui.view">
+        <field name="name">res.partner.form.marketplace.stock</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="leaders_marketplace.view_partner_form_marketplace"/>
+        <field name="arch" type="xml">
+            <field name="vendor_location_id" position="replace">
+                <field name="vendor_warehouse_id" readonly="1"/>
+                <field name="vendor_location_id" readonly="1"/>
+                <field name="vendor_fbl_location_id" readonly="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>

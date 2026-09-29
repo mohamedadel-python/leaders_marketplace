@@ -1,0 +1,211 @@
+<odoo>
+    <template id="vendor_apply_form" name="Apply to Sell">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container my-5" style="max-width: 900px;">
+                    <h1 class="mb-2">Apply to sell on our marketplace</h1>
+                    <p class="text-muted">Tell us about your business. Fields marked * are required.</p>
+                    <div t-if="errors" class="alert alert-danger" role="alert">
+                        <strong>Please fix the following:</strong>
+                        <ul class="mb-0"><li t-foreach="errors" t-as="e" t-esc="e"/></ul>
+                    </div>
+                    <form id="lm_apply_form" method="post" action="/vendor/apply" enctype="multipart/form-data" t-att-data-errors="'1' if errors else '0'">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div style="position:absolute; inset-inline-start:-9999px;" aria-hidden="true">
+                            <label>Leave this field empty <input type="text" name="website_url" tabindex="-1" autocomplete="off"/></label>
+                        </div>
+
+                        <section class="lm-step card mb-3"><div class="card-body">
+                            <h4>1. Business information</h4>
+                            <div class="row g-3">
+                                <div class="col-md-6"><label class="form-label">Business name *</label><input class="form-control" name="business_name" t-att-value="v.get('business_name')"/></div>
+                                <div class="col-md-6"><label class="form-label">Store name</label><input class="form-control" name="store_name" t-att-value="v.get('store_name')"/></div>
+                                <div class="col-12"><label class="form-label">Business activity *</label><textarea class="form-control" name="business_activity" rows="3" t-esc="v.get('business_activity')"/></div>
+                                <div class="col-md-6"><label class="form-label">Business email</label><input class="form-control" type="email" name="business_email" t-att-value="v.get('business_email')"/></div>
+                                <div class="col-md-6"><label class="form-label">Business phone</label><input class="form-control" name="business_phone" t-att-value="v.get('business_phone')"/></div>
+                                <div class="col-md-4"><label class="form-label">Street</label><input class="form-control" name="street" t-att-value="v.get('street')"/></div>
+                                <div class="col-md-4"><label class="form-label">City</label><input class="form-control" name="city" t-att-value="v.get('city')"/></div>
+                                <div class="col-md-4"><label class="form-label">Country</label>
+                                    <select class="form-select" name="country_id"><option value="">-</option>
+                                        <option t-foreach="countries" t-as="c" t-att-value="c.id" t-att-selected="str(c.id) == str(v.get('country_id'))" t-esc="c.name"/>
+                                    </select></div>
+                            </div>
+                        </div></section>
+
+                        <section class="lm-step card mb-3"><div class="card-body">
+                            <h4>2. Legal information</h4>
+                            <div class="row g-3">
+                                <div class="col-md-6"><label class="form-label">Legal type *</label>
+                                    <select class="form-select" name="legal_type" id="lm_legal_type"><option value="">-</option>
+                                        <option t-foreach="legal_types" t-as="lt" t-att-value="lt[0]" t-att-selected="lt[0] == v.get('legal_type')" t-esc="lt[1]"/>
+                                    </select></div>
+                                <div class="col-md-6"><label class="form-label">Legal business name *</label><input class="form-control" name="legal_name" t-att-value="v.get('legal_name')"/></div>
+                                <div class="col-md-6"><label class="form-label">Commercial registration number <span class="text-muted small">(sole proprietorship, company)</span></label><input class="form-control" name="commercial_registration_number" t-att-value="v.get('commercial_registration_number')"/></div>
+                                <div class="col-md-6"><label class="form-label">Tax / VAT registration number <span class="text-muted small">(required for companies)</span></label><input class="form-control" name="tax_number" id="lm_tax_number" t-att-value="v.get('tax_number')"/></div>
+                            </div>
+                        </div></section>
+
+                        <section class="lm-step card mb-3"><div class="card-body">
+                            <h4>3. Owner</h4>
+                            <p class="text-muted small">The owner receives the vendor portal login once the application is approved.</p>
+                            <div class="row g-3">
+                                <div class="col-md-4"><label class="form-label">Owner name *</label><input class="form-control" name="owner_name" t-att-value="v.get('owner_name')"/></div>
+                                <div class="col-md-4"><label class="form-label">Owner email *</label><input class="form-control" type="email" name="owner_email" t-att-value="v.get('owner_email')"/></div>
+                                <div class="col-md-4"><label class="form-label">Owner phone</label><input class="form-control" name="owner_phone" t-att-value="v.get('owner_phone')"/></div>
+                            </div>
+                        </div></section>
+
+                        <section class="lm-step card mb-3"><div class="card-body">
+                            <h4>4. Legal representative</h4>
+                            <div class="row g-3">
+                                <div class="col-md-4"><label class="form-label">Name *</label><input class="form-control" name="representative_name" t-att-value="v.get('representative_name')"/></div>
+                                <div class="col-md-4"><label class="form-label">Position *</label><input class="form-control" name="representative_position" t-att-value="v.get('representative_position')"/></div>
+                                <div class="col-md-4"><label class="form-label">National ID / passport number *</label><input class="form-control" name="representative_id_number" t-att-value="v.get('representative_id_number')"/></div>
+                            </div>
+                        </div></section>
+
+                        <section class="lm-step card mb-3"><div class="card-body">
+                            <h4>5. Bank account for payouts</h4>
+                            <div class="row g-3">
+                                <div class="col-md-4"><label class="form-label">Bank name *</label><input class="form-control" name="bank_name" t-att-value="v.get('bank_name')"/></div>
+                                <div class="col-md-4"><label class="form-label">Account holder *</label><input class="form-control" name="bank_account_holder" t-att-value="v.get('bank_account_holder')"/></div>
+                                <div class="col-md-4"><label class="form-label">Account number / IBAN *</label><input class="form-control" name="bank_account_number" t-att-value="v.get('bank_account_number')"/></div>
+                            </div>
+                        </div></section>
+
+                        <section class="lm-step card mb-3"><div class="card-body">
+                            <h4>6. Product categories *</h4>
+                            <div class="row">
+                                <div class="col-md-4" t-foreach="categories" t-as="cat">
+                                    <label class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="product_category_ids" t-att-value="cat.id" t-att-checked="cat.id in selected_categories"/>
+                                        <span class="form-check-label" t-esc="cat.display_name"/>
+                                    </label>
+                                </div>
+                            </div>
+                        </div></section>
+
+                        <section class="lm-step card mb-3"><div class="card-body">
+                            <h4>7. Documents</h4>
+                            <p class="text-muted small">PDF or image files. Pick your legal type to see which ones are required.</p>
+                            <div class="row g-3">
+                                <div class="col-md-6" t-foreach="document_types" t-as="dt">
+                                    <label class="form-label">
+                                        <t t-esc="dt[1]"/>
+                                        <span t-attf-class="lm-req lm-req-#{dt[0]} text-danger #{'' if dt[0] in required_types else 'd-none'}">*</span>
+                                    </label>
+                                    <input class="form-control" type="file" t-att-name="'doc_%s' % dt[0]" accept="application/pdf,image/*"/>
+                                </div>
+                            </div>
+                        </div></section>
+
+                        <section class="lm-step card mb-3"><div class="card-body">
+                            <h4>8. Terms</h4>
+                            <div t-if="terms" class="border rounded p-3 mb-3" style="max-height: 240px; overflow: auto;">
+                                <strong t-esc="terms.name"/>
+                                <div t-out="terms.body"/>
+                            </div>
+                            <label class="form-check d-block"><input class="form-check-input" type="checkbox" name="terms_accepted" value="1" t-att-checked="v.get('terms_accepted')"/><span class="form-check-label">I accept the terms and conditions *</span></label>
+                            <label class="form-check d-block"><input class="form-check-input" type="checkbox" name="seller_agreement_accepted" value="1" t-att-checked="v.get('seller_agreement_accepted')"/><span class="form-check-label">I accept the seller agreement *</span></label>
+                        </div></section>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" id="lm_prev" class="btn btn-outline-secondary d-none">Back</button>
+                            <button type="button" id="lm_next" class="btn btn-primary d-none">Next</button>
+                            <button type="submit" id="lm_submit" class="btn btn-primary">Submit application</button>
+                        </div>
+                    </form>
+                </div>
+                <script type="text/javascript">
+                    (function () {
+                        var form = document.getElementById('lm_apply_form');
+                        if (!form) { return; }
+                        var typeSel = document.getElementById('lm_legal_type');
+                        var tax = document.getElementById('lm_tax_number');
+                        function toggle(type, on) {
+                            var el = form.querySelector('.lm-req-' + type);
+                            if (el) { el.classList.toggle('d-none', !on); }
+                        }
+                        function refresh() {
+                            var t = typeSel.value;
+                            ['id_passport', 'bank_proof', 'address_proof'].forEach(function (d) { toggle(d, true); });
+                            toggle('commercial_register', t === 'sole_proprietorship' || t === 'company');
+                            toggle('tax_certificate', t === 'company');
+                            toggle('vat_certificate', !!tax.value.trim());
+                        }
+                        typeSel.addEventListener('change', refresh);
+                        tax.addEventListener('input', refresh);
+                        refresh();
+                        if (form.getAttribute('data-errors') === '1') { return; }
+                        var steps = [].slice.call(form.querySelectorAll('.lm-step'));
+                        var prev = document.getElementById('lm_prev');
+                        var next = document.getElementById('lm_next');
+                        var submit = document.getElementById('lm_submit');
+                        var i = 0;
+                        function show() {
+                            steps.forEach(function (s, n) { s.classList.toggle('d-none', n !== i); });
+                            prev.classList.toggle('d-none', i === 0);
+                            next.classList.toggle('d-none', i === steps.length - 1);
+                            submit.classList.toggle('d-none', i !== steps.length - 1);
+                        }
+                        prev.addEventListener('click', function () { i = Math.max(0, i - 1); show(); });
+                        next.addEventListener('click', function () { i = Math.min(steps.length - 1, i + 1); show(); });
+                        show();
+                    })();
+                </script>
+            </div>
+        </t>
+    </template>
+
+    <template id="vendor_apply_status" name="Vendor Application Status">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container my-5" style="max-width: 900px;">
+                    <div t-if="submitted" class="alert alert-success">
+                        Thank you! Your application <strong t-esc="application.name"/> was received. We sent you an email with this page's link.
+                    </div>
+                    <div t-if="reuploaded" class="alert alert-success">The document was replaced and will be checked again.</div>
+                    <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                    <h2>Application <span t-esc="application.name"/></h2>
+                    <p>Status: <span class="badge text-bg-info" t-esc="state_label"/></p>
+                    <div t-if="application.state == 'rejected' and application.reject_reason" class="alert alert-danger">
+                        Rejected: <t t-esc="application.reject_reason"/>
+                    </div>
+                    <div t-if="missing and application.state != 'approved'" class="card mb-4">
+                        <div class="card-body">
+                            <h5>Still needed</h5>
+                            <ul class="mb-0"><li t-foreach="missing" t-as="m" t-esc="m"/></ul>
+                        </div>
+                    </div>
+                    <h5>Documents</h5>
+                    <table class="table align-middle">
+                        <thead><tr><th>Document</th><th>File</th><th>Status</th><th>Note</th><th/></tr></thead>
+                        <tbody>
+                            <tr t-foreach="application.document_ids" t-as="d">
+                                <td t-esc="d.name"/>
+                                <td t-esc="d.file_name"/>
+                                <td t-esc="dict(d._fields['verification_status']._description_selection(d.env)).get(d.verification_status)"/>
+                                <td t-esc="d.notes if d.verification_status == 'rejected' else ''"/>
+                                <td>
+                                    <form t-if="can_reupload and d.verification_status == 'rejected'" method="post" enctype="multipart/form-data"
+                                          t-attf-action="/vendor/apply/status/#{application.access_token}/document/#{d.id}" class="d-flex gap-2">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="file" name="file" class="form-control form-control-sm" accept="application/pdf,image/*"/>
+                                        <button class="btn btn-sm btn-primary text-nowrap">Replace</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Optional footer link: enable it from the website's Customize menu. -->
+    <template id="footer_sell_link" inherit_id="website.footer_custom" name="Sell on Leaders link" active="False" customize_show="True">
+        <xpath expr="(//ul[hasclass('list-unstyled')])[1]" position="inside">
+            <li t-if="request.env['ir.config_parameter'].sudo().get_param('leaders_marketplace.vendor_apply_enabled') in ('True', 'true', '1')"><a href="/vendor/apply">Sell on Leaders</a></li>
+        </xpath>
+    </template>
+</odoo>

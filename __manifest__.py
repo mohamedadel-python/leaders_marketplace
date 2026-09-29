@@ -1,0 +1,55 @@
+{
+    "name": "Leaders Marketplace",
+    "version": "18.0.4.0.53",
+    "summary": "Multi-vendor marketplace core for Odoo 18 Community",
+    "category": "Sales/Marketplace",
+    "author": "MDARJ",
+    "license": "LGPL-3",
+    "depends": [
+        "base","mail","portal","website","auth_signup","sale_management",
+        "sale_stock","stock","account","payment","delivery","website_sale","website_sale_stock","rating"
+    ],
+    "data": [
+        "security/leaders_marketplace_groups.xml",
+        "security/ir.model.access.csv",
+        "security/leaders_marketplace_rules.xml",
+        "data/sequence_data.xml",
+        "data/vendor_tier_data.xml",
+        "data/cron_data.xml",
+        "data/delivery_carrier_data.xml",
+        "data/mail_template_data.xml",
+        "data/commission_invoice_products.xml",
+        "views/res_partner_views.xml",
+        "views/vendor_application_views.xml",
+        "views/vendor_tier_views.xml",
+        "views/product_template_views.xml",
+        "views/buybox_views.xml",
+        "views/marketplace_offer_views.xml",
+        "views/vendor_order_views.xml",
+        "views/vendor_invoice_views.xml",
+        "report/vendor_invoice_report.xml",
+        "views/commission_views.xml",
+        "views/settlement_views.xml",
+        "views/fulfillment_views.xml",
+        "views/vendor_return_dispute_views.xml",
+        "views/vendor_kpi_penalty_views.xml",
+        "views/delivery_zone_views.xml",
+        "views/res_config_settings_views.xml",
+        "views/portal_templates.xml",
+        "views/checkout_templates.xml",
+        "views/vendor_apply_templates.xml",
+        "views/menu_views.xml"
+    ],
+    "assets": {
+        "web.assets_backend": [
+            "leaders_marketplace/static/src/js/commission_plan_graph/commission_plan_graph.js",
+            "leaders_marketplace/static/src/js/commission_plan_graph/commission_plan_graph.xml",
+            "leaders_marketplace/static/src/js/commission_plan_graph/commission_plan_graph.scss",
+        ],
+        "web.assets_frontend": [
+            "leaders_marketplace/static/src/scss/portal.scss"
+        ]
+    },
+    "installable": True,
+    "application": True
+}

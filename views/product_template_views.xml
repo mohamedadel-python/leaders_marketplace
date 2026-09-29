@@ -1,0 +1,100 @@
+<odoo>
+    <record id="view_product_template_marketplace" model="ir.ui.view">
+        <field name="name">product.template.form.marketplace</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_marketplace_approve" type="object" string="Approve Product"
+                        class="btn-primary" invisible="marketplace_state in ('published', 'draft')"
+                        groups="leaders_marketplace.group_marketplace_reviewer"/>
+                <button name="action_marketplace_reject" type="object" string="Reject Product"
+                        invisible="marketplace_state in ('rejected', 'draft')"
+                        groups="leaders_marketplace.group_marketplace_reviewer"/>
+                <button name="action_marketplace_suspend" type="object" string="Suspend"
+                        invisible="marketplace_state != 'published'"
+                        groups="leaders_marketplace.group_marketplace_reviewer"/>
+                <button name="action_marketplace_reset" type="object" string="Back to Draft"
+                        invisible="marketplace_state in ('draft', 'pending')"
+                        groups="leaders_marketplace.group_marketplace_reviewer"/>
+                <field name="marketplace_state" widget="statusbar"
+                       statusbar_visible="draft,pending,published"
+                       groups="leaders_marketplace.group_marketplace_reviewer"/>
+            </xpath>
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Marketplace">
+                    <div class="alert alert-warning" role="alert"
+                         invisible="marketplace_state != 'pending'">
+                        This product is waiting for a marketplace review; it is not on the website yet.
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="marketplace_state != 'rejected'">
+                        Rejected: <field name="marketplace_reject_reason" readonly="1" nolabel="1" class="d-inline"/>
+                    </div>
+                    <group>
+                        <field name="marketplace_state"/>
+                        <field name="marketplace_owner_vendor_id"/>
+                        <field name="marketplace_publish_date"/>
+                        <field name="marketplace_reject_reason"
+                               placeholder="Required to reject the product; the vendor sees this on their portal."/>
+                    </group>
+                    <field name="marketplace_offer_ids">
+                        <list>
+                            <field name="vendor_id"/>
+                            <field name="seller_sku"/>
+                            <field name="price"/>
+                            <field name="fulfillment_type"/>
+                            <field name="state"/>
+                            <field name="is_buybox_winner"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_product_template_marketplace_review_list" model="ir.ui.view">
+        <field name="name">product.template.marketplace.review.list</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-warning="marketplace_state == 'pending'" decoration-danger="marketplace_state == 'rejected'" decoration-muted="marketplace_state == 'suspended'">
+                <field name="name"/>
+                <field name="marketplace_vendor_id"/>
+                <field name="marketplace_offer_count" string="Offers"/>
+                <field name="create_date" string="Submitted"/>
+                <field name="marketplace_state"/>
+                <field name="marketplace_reject_reason" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_product_template_marketplace_search" model="ir.ui.view">
+        <field name="name">product.template.marketplace.search</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="marketplace_owner_vendor_id"/>
+                <filter name="mp_pending" string="Pending Review" domain="[('marketplace_state', '=', 'pending')]"/>
+                <filter name="mp_rejected" string="Rejected" domain="[('marketplace_state', '=', 'rejected')]"/>
+                <filter name="mp_suspended" string="Suspended" domain="[('marketplace_state', '=', 'suspended')]"/>
+                <filter name="mp_published" string="Published" domain="[('marketplace_state', '=', 'published')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="mp_group_state" string="Marketplace Status" context="{'group_by': 'marketplace_state'}"/>
+                    <filter name="mp_group_vendor" string="Vendor" context="{'group_by': 'marketplace_owner_vendor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_product_marketplace_review" model="ir.actions.act_window">
+        <field name="name">Products to Review</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('marketplace_state', '!=', 'draft')]</field>
+        <field name="context">{'search_default_mp_pending': 1}</field>
+        <field name="view_id" ref="view_product_template_marketplace_review_list"/>
+        <field name="search_view_id" ref="view_product_template_marketplace_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing is waiting for review.</p>
+            <p>Products vendors submit from their portal land here.</p>
+        </field>
+    </record>
+</odoo>
