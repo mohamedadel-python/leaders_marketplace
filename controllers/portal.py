@@ -1062,6 +1062,49 @@ class MarketplacePortal(CustomerPortal):
             return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
         return request.redirect(url)
 
+    @http.route("/my/vendor/fulfillment/<int:group_id>/create-shipment", type="http", auth="user", website=True, methods=["POST"], csrf=True)
+    def vendor_fulfillment_create_shipment(self, group_id, **post):
+        vendor = self._require_vendor(allow_frozen=True)
+        Provider = request.env["leaders.shipping.provider"]
+        if not Provider._leaders_enabled():
+            raise NotFound()
+        group = request.env["leaders.fulfillment.group"].sudo().search([
+            ("id", "=", group_id), ("vendor_id", "=", vendor.id)
+        ], limit=1)
+        if not group:
+            raise AccessError(_("You cannot access this fulfillment group."))
+        if group.fulfillment_type != "fbm":
+            raise AccessError(_("FBL shipments are handled by the Leaders warehouse."))
+        url = f"/my/vendor/orders/{group.vendor_order_id.id}"
+        try:
+            with request.env.cr.savepoint():
+                provider = Provider._leaders_portal_providers().filtered(
+                    lambda p: str(p.id) == str(post.get("provider_id") or ""))
+                if not provider:
+                    raise UserError(_("Choose a shipping provider."))
+                group.sudo().shipping_provider_id = provider
+                group.sudo().action_create_shipment()
+        except UserError as e:
+            return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
+        return request.redirect(url)
+
+    @http.route("/my/vendor/fulfillment/<int:group_id>/label", type="http", auth="user", website=True, methods=["GET"])
+    def vendor_fulfillment_label(self, group_id, **kw):
+        vendor = self._require_vendor(allow_frozen=True)
+        if not request.env["leaders.shipping.provider"]._leaders_enabled():
+            raise NotFound()
+        group = request.env["leaders.fulfillment.group"].sudo().search([
+            ("id", "=", group_id), ("vendor_id", "=", vendor.id)
+        ], limit=1)
+        attachment = group.label_attachment_id
+        if not group or not attachment:
+            raise NotFound()
+        return request.make_response(attachment.raw, headers=[
+            ("Content-Type", attachment.mimetype or "application/pdf"),
+            ("Content-Disposition", 'attachment; filename="%s"' % (attachment.name or "label.pdf").replace('"', "")),
+            ("X-Content-Type-Options", "nosniff"),
+        ])
+
     @http.route("/my/vendor/fulfillment/<int:group_id>/delivered", type="http", auth="user", website=True, methods=["POST"], csrf=True)
     def vendor_fulfillment_delivered(self, group_id, **post):
         vendor = self._require_vendor(allow_frozen=True)

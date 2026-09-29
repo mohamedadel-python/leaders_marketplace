@@ -110,6 +110,7 @@
                                     <field name="source_location_id"/>
                                     <field name="picking_ids" widget="many2many_tags"/>
                                     <field name="tracking_ref"/>
+                                    <field name="shipping_status" optional="hide"/>
                                     <field name="state" widget="badge"/>
                                     <field name="delivered_reported_by" optional="hide"/>
                                     <field name="delivered_reported_date" optional="hide"/>

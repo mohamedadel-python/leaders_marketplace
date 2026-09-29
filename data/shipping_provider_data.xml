@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Default provider: today's behaviour (the vendor enters the tracking number). -->
+    <record id="shipping_provider_manual" model="leaders.shipping.provider">
+        <field name="name">Manual</field>
+        <field name="code">manual</field>
+        <field name="provider_type">manual</field>
+        <field name="sequence">1</field>
+    </record>
+    <!-- Test provider, inactive: activate it (and set a webhook secret) to try the framework. -->
+    <record id="shipping_provider_dummy" model="leaders.shipping.provider">
+        <field name="name">Dummy (tests)</field>
+        <field name="code">dummy</field>
+        <field name="provider_type">dummy</field>
+        <field name="sequence">99</field>
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

@@ -148,6 +148,9 @@
                         <setting string="API Calls per Minute" invisible="not marketplace_vendor_api_write_enabled" help="Per key. 0 = no limit.">
                             <field name="marketplace_vendor_api_rate_limit"/>
                         </setting>
+                        <setting string="Shipping Carrier Framework" help="Let vendors create shipments and labels with the active shipping providers (Marketplace > Configuration > Shipping Providers) and let carriers report pickup, delivery and refusal through a signed webhook.">
+                            <field name="marketplace_shipping_providers_enabled"/>
+                        </setting>
                         <setting string="Vendor Variants, Images and Specifications" help="Let vendors build variants from existing attributes (one offer per variant), add extra images and write specifications on products they own. Off keeps the single-variant product form.">
                             <field name="marketplace_vendor_variants_enabled"/>
                         </setting>

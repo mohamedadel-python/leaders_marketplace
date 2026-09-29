@@ -297,6 +297,15 @@ class ResConfigSettings(models.TransientModel):
         help="Calls a single vendor API key may make per minute (429 with Retry-After beyond). "
              "0 = no limit.",
     )
+    marketplace_shipping_providers_enabled = fields.Boolean(
+        string="Shipping Carrier Framework",
+        config_parameter="leaders_marketplace.shipping_providers_enabled",
+        default=False,
+        help="Off: shipping providers are ignored (vendors type the tracking number, the "
+             "carrier webhook answers 404). On: vendors can create shipments and labels with "
+             "the active providers and carriers can report status through "
+             "/api/v1/shipping/webhook/<provider code>.",
+    )
     marketplace_vendor_variants_enabled = fields.Boolean(
         string="Vendor Variants, Images and Specifications",
         config_parameter="leaders_marketplace.vendor_variants_enabled",

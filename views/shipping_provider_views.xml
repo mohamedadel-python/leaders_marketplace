@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_shipping_provider_list" model="ir.ui.view">
+        <field name="name">leaders.shipping.provider.list</field>
+        <field name="model">leaders.shipping.provider</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="provider_type"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_shipping_provider_form" model="ir.ui.view">
+        <field name="name">leaders.shipping.provider.form</field>
+        <field name="model">leaders.shipping.provider</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_generate_secret" type="object" string="Generate secret" invisible="provider_type == 'manual'"
+                            confirm="Generate a new webhook secret? The carrier must be updated with it." groups="leaders_marketplace.group_marketplace_manager"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="provider_type"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="webhook_url" widget="CopyClipboardChar" invisible="provider_type == 'manual'"/>
+                            <field name="webhook_secret" password="True" invisible="provider_type == 'manual'" groups="leaders_marketplace.group_marketplace_manager"/>
+                        </group>
+                    </group>
+                    <group string="Credentials" invisible="provider_type == 'manual'" groups="leaders_marketplace.group_marketplace_manager">
+                        <field name="credentials" nolabel="1" placeholder="{&quot;api_key&quot;: &quot;...&quot;}"/>
+                    </group>
+                    <notebook>
+                        <page string="Events" name="events">
+                            <field name="event_ids" readonly="1">
+                                <list>
+                                    <field name="received_at"/>
+                                    <field name="event_id"/>
+                                    <field name="awb"/>
+                                    <field name="group_id"/>
+                                    <field name="raw_status"/>
+                                    <field name="status"/>
+                                    <field name="processed"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_shipping_provider" model="ir.actions.act_window">
+        <field name="name">Shipping Providers</field>
+        <field name="res_model">leaders.shipping.provider</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+    <menuitem id="menu_shipping_providers" name="Shipping Providers" parent="menu_configuration" action="action_shipping_provider" sequence="45" groups="leaders_marketplace.group_marketplace_manager"/>
+
+    <record id="view_fulfillment_group_form" model="ir.ui.view">
+        <field name="name">leaders.fulfillment.group.form</field>
+        <field name="model">leaders.fulfillment.group</field>
+        <field name="arch" type="xml">
+            <form create="0" delete="0">
+                <header>
+                    <button name="action_create_shipment" type="object" string="Create shipment / label" class="btn-primary"
+                            invisible="awb or state not in ('allocated', 'picking', 'packing', 'ready')"/>
+                    <button name="action_download_label" type="object" string="Download label" invisible="not label_attachment_id"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="vendor_order_id"/>
+                            <field name="fulfillment_type"/>
+                            <field name="state"/>
+                            <field name="tracking_ref"/>
+                        </group>
+                        <group string="Shipping">
+                            <field name="shipping_provider_id" options="{'no_create': True}" readonly="awb"/>
+                            <field name="awb"/>
+                            <field name="tracking_url" widget="url"/>
+                            <field name="shipping_status"/>
+                            <field name="label_attachment_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Shipping Events" name="shipping_events">
+                            <field name="shipping_event_ids" readonly="1">
+                                <list>
+                                    <field name="received_at"/>
+                                    <field name="provider_id"/>
+                                    <field name="event_id"/>
+                                    <field name="raw_status"/>
+                                    <field name="status"/>
+                                    <field name="processed"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

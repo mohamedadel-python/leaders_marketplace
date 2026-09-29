@@ -57,6 +57,19 @@ Copy the `leaders_marketplace` folder to your custom addons path and run:
 
 Then restart Odoo and hard-refresh the browser.
 
+## Shipping carrier framework (provider-agnostic)
+Settings > Marketplace > "Shipping Carrier Framework" (default off: providers ignored, webhook answers 404).
+Providers live under Marketplace > Configuration > Shipping Providers (managers only): `manual` (default,
+vendor types the tracking) and an inactive `dummy` (tests). Carrier webhook:
+`POST /api/v1/shipping/webhook/<code>` with header `X-Signature` = hex HMAC-SHA256 of the raw body using the
+provider's webhook secret (optional `X-Timestamp`: then the signed text is `<ts>.<body>`, max 5 minutes old).
+Statuses: picked_up ships (FBM only), delivered reports/confirms delivery (customer-confirm mode: counts as
+confirmation), returned/refused runs the COD refusal flow when the group qualifies. Replays are ignored.
+
+Extension point for a carrier addon (see the commented stub in `models/shipping_provider.py`):
+`selection_add` on `provider_type`, then override `_create_shipment(group)` (returns awb, label_pdf,
+tracking_url) and `_parse_webhook(payload, headers)` (returns normalized events).
+
 ## Known limitations
 This list is maintained as the module is worked on; later tasks extend it.
 

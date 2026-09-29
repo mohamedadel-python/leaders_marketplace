@@ -697,6 +697,17 @@
                                 <div class="small text-muted">Ships from: <t t-esc="g.source_location_id.complete_name"/></div>
                                 <div t-foreach="g.picking_ids" t-as="p" class="small">Delivery <t t-esc="p.name"/>: <t t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)"/></div>
                                 <div class="small">Tracking: <t t-esc="g.tracking_ref or '-'"/></div>
+                                <t t-set="lm_providers" t-value="request.env['leaders.shipping.provider']._leaders_portal_providers()"/>
+                                <div t-if="lm_providers and g.awb" class="small" id="lm_shipment_info">
+                                    <span>AWB: <t t-esc="g.awb"/></span>
+                                    <a t-if="g.tracking_url and g.tracking_url.startswith('http')" t-att-href="g.tracking_url" target="_blank" rel="noopener" class="ms-2">Track</a>
+                                    <a t-if="g.label_attachment_id" t-att-href="'/my/vendor/fulfillment/%s/label' % g.id" class="ms-2"><i class="fa fa-download"/> Download label</a>
+                                </div>
+                                <form t-if="lm_providers and g.fulfillment_type == 'fbm' and not g.awb and g.state in ('allocated', 'picking', 'packing', 'ready')" t-att-action="'/my/vendor/fulfillment/%s/create-shipment' % g.id" method="post" class="row g-2 mt-2" id="lm_create_shipment_form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="col-8"><select class="form-select" name="provider_id" required="required"><option t-foreach="lm_providers" t-as="prov" t-att-value="prov.id" t-esc="prov.name"/></select></div>
+                                    <div class="col-4"><button class="btn btn-outline-primary w-100"><i class="fa fa-tag"/> Create shipment / label</button></div>
+                                </form>
                                 <t t-if="g.fulfillment_type == 'fbm'">
                                     <form t-if="g.state not in ('shipped', 'delivery_reported', 'delivered', 'cancelled')" t-att-action="'/my/vendor/fulfillment/%s/ship' % g.id" method="post" class="row g-2 mt-2" id="lm_ship_form">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
@@ -708,7 +719,7 @@
                                                 <input type="number" class="form-control form-control-sm" style="max-width: 6rem;" t-att-id="'lm_ship_qty_%s' % li[0].id" t-att-name="'qty_%s' % li[0].id" t-att-value="'%g' % li[1][1]" min="0" t-att-max="'%g' % li[1][1]" step="any"/>
                                             </div>
                                         </div>
-                                        <div class="col-8"><input class="form-control" name="tracking_ref" placeholder="Tracking number" required="required"/></div>
+                                        <div class="col-8"><input class="form-control" name="tracking_ref" placeholder="Tracking number" t-att-value="g.awb or None" required="required"/></div>
                                         <div class="col-4"><button class="btn btn-primary w-100"><i class="fa fa-truck"/> Ship</button></div>
                                     </form>
                                     <form t-if="g.state == 'shipped'" t-att-action="'/my/vendor/fulfillment/%s/delivered' % g.id" method="post" enctype="multipart/form-data" class="mt-2">
