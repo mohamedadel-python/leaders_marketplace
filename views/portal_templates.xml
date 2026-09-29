@@ -178,6 +178,7 @@
                 <a href="/my/vendor/finance" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/finance') else ''}"><i class="fa fa-money"/> Finance</a>
                 <a href="/my/vendor/delivery-zones" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/delivery-zones') else ''}"><i class="fa fa-map-marker"/> Delivery Zones</a>
                 <a href="/my/vendor/staff" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/staff') else ''}"><i class="fa fa-users"/> Staff</a>
+                <a href="/my/vendor/profile" t-attf-class="lm-vendor-nav-link #{'active' if lm_path.startswith('/my/vendor/profile') else ''}"><i class="fa fa-id-card-o"/> Profile</a>
             </t>
         </nav>
     </template>
@@ -702,7 +703,7 @@
         <h4>Fulfillment Tracking</h4>
         <div t-if="fulfillment_groups" class="table-responsive mb-4"><table class="table"><thead><tr><th>Order</th><th>Type</th><th>Status</th><th>Tracking</th><th>Delivery</th></tr></thead><tbody><tr t-foreach="fulfillment_groups" t-as="g"><td><a t-att-href="'/my/vendor/orders/%s' % g.vendor_order_id.id" t-esc="g.vendor_order_id.name"/></td><td t-esc="g.fulfillment_type.upper()"/><td t-esc="dict(g._fields['state']._description_selection(g.env)).get(g.state)"/><td t-esc="g.tracking_ref or '-'"/><td><span t-foreach="g.picking_ids" t-as="p" t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)" class="me-1"/></td></tr></tbody></table></div>
         <h4>Wallet Transactions</h4><div class="table-responsive"><table class="table"><thead><tr><th>Date</th><th>Type</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead><tbody><tr t-foreach="transactions" t-as="t"><td t-esc="t.create_date"/><td t-esc="t.type"/><td t-esc="t.reference"/><td t-esc="t.amount"/><td t-esc="t.state"/></tr></tbody></table></div>
-        <h4>Settlements</h4><div class="table-responsive"><table class="table"><thead><tr><th>Settlement</th><th>Period</th><th>Gross</th><th>Deductions</th><th>Net</th><th>Status</th><th>Invoice</th></tr></thead><tbody><tr t-foreach="settlements" t-as="s"><td t-esc="s.name"/><td><span t-esc="s.period_from"/> - <span t-esc="s.period_to"/></td><td t-esc="s.gross_amount"/><td t-esc="s.deductions"/><td t-esc="s.net_amount"/><td t-esc="s.state"/><td><a t-if="s.commission_invoice_id" t-att-href="'/my/vendor/finance/settlement/%s/invoice' % s.id" target="_blank"><i class="fa fa-file-pdf-o"/> <t t-esc="s.commission_invoice_id.name"/></a></td></tr></tbody></table></div>
+        <h4>Settlements</h4><div class="table-responsive"><table class="table"><thead><tr><th>Settlement</th><th>Period</th><th>Gross</th><th>Deductions</th><th>Net</th><th>Status</th><th>Payout account</th><th>Invoice</th></tr></thead><tbody><tr t-foreach="settlements" t-as="s"><td t-esc="s.name"/><td><span t-esc="s.period_from"/> - <span t-esc="s.period_to"/></td><td t-esc="s.gross_amount"/><td t-esc="s.deductions"/><td t-esc="s.net_amount"/><td t-esc="s.state"/><td dir="ltr"><t t-esc="vendor._leaders_masked_payout_account() or '-'"/></td><td><a t-if="s.commission_invoice_id" t-att-href="'/my/vendor/finance/settlement/%s/invoice' % s.id" target="_blank"><i class="fa fa-file-pdf-o"/> <t t-esc="s.commission_invoice_id.name"/></a></td></tr></tbody></table></div>
         </div></t>
     </template>
 
@@ -1046,6 +1047,59 @@
         <tr t-if="not staff"><td colspan="4" class="text-muted">No staff yet. Invite someone above.</td></tr>
     </tbody>
 </table></div></div></t></template>
+
+    <template id="portal_vendor_profile" name="Vendor Profile">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4 lm-portal">
+                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                <h2>Vendor Profile</h2>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <div t-if="requested" class="alert alert-success">Payout account change requested. We sent you a security email; the marketplace will review it and payouts are held until then.</div>
+                <div class="card p-3 mb-4">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Store</dt><dd class="col-sm-8" t-esc="vendor.vendor_store_name or vendor.name"/>
+                        <dt class="col-sm-4">Contact</dt><dd class="col-sm-8"><t t-esc="vendor.email or '-'"/><t t-if="vendor.phone"> / <t t-esc="vendor.phone"/></t></dd>
+                        <dt class="col-sm-4">Payout account</dt>
+                        <dd class="col-sm-8 mb-0">
+                            <t t-if="payout_account"><t t-esc="payout_bank_name"/> <span dir="ltr" t-esc="payout_account"/></t>
+                            <span t-else="" class="text-muted">Not set</span>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="card p-3 mb-4">
+                    <h5>Change payout account</h5>
+                    <div t-if="pending_change" class="alert alert-warning mb-0">
+                        Request <strong t-esc="pending_change.name"/> is waiting for review. You can send a new one after it is decided.
+                    </div>
+                    <form t-else="" method="post" action="/my/vendor/profile/bank-change" enctype="multipart/form-data" class="row g-2">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="col-md-4"><label class="form-label" for="lm_bank_name">Bank name</label><input id="lm_bank_name" class="form-control" name="bank_name" required="required" t-att-value="form.get('bank_name')"/></div>
+                        <div class="col-md-4"><label class="form-label" for="lm_account_holder">Account holder</label><input id="lm_account_holder" class="form-control" name="account_holder" required="required" t-att-value="form.get('account_holder')"/></div>
+                        <div class="col-md-4"><label class="form-label" for="lm_account_number">Account number / IBAN</label><input id="lm_account_number" class="form-control" dir="ltr" name="account_number" required="required" t-att-value="form.get('account_number')"/></div>
+                        <div class="col-12"><label class="form-label" for="lm_bank_proof">Bank proof (PDF or image)</label><input id="lm_bank_proof" class="form-control" type="file" name="proof" accept="application/pdf,image/*" required="required"/></div>
+                        <div class="col-12"><button class="btn btn-primary">Request change</button></div>
+                    </form>
+                </div>
+                <h5>Request history</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>Request</th><th>Date</th><th>Bank</th><th>Account</th><th>Status</th><th>Reason</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="changes" t-as="c">
+                                <td t-esc="c.name"/>
+                                <td><span t-esc="c.create_date" t-options="{'widget': 'date'}"/></td>
+                                <td t-esc="c.bank_name"/>
+                                <td dir="ltr" t-esc="c.masked_account_number"/>
+                                <td><span t-attf-class="badge #{'text-bg-success' if c.state == 'approved' else 'text-bg-danger' if c.state == 'rejected' else 'text-bg-warning'}" t-esc="dict(c._fields['state']._description_selection(request.env)).get(c.state)"/></td>
+                                <td t-esc="c.reject_reason or ''"/>
+                            </tr>
+                            <tr t-if="not changes"><td colspan="6" class="text-muted">No requests yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
 
     <template id="portal_customer_marketplace_orders" name="Customer Marketplace Orders">
         <t t-call="portal.portal_layout">

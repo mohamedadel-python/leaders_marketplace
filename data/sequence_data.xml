@@ -41,4 +41,10 @@
         <field name="prefix">DSP/</field>
         <field name="padding">6</field>
     </record>
+    <record id="seq_vendor_bank_change" model="ir.sequence">
+        <field name="name">Vendor Bank Change</field>
+        <field name="code">leaders.vendor.bank.change</field>
+        <field name="prefix">VBC/</field>
+        <field name="padding">5</field>
+    </record>
 </odoo>

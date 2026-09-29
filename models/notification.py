@@ -41,9 +41,13 @@ class MarketplaceNotification(models.AbstractModel):
         ]).partner_id
 
     @api.model
-    def notify(self, key, record, partners=None, email_to=None):
-        """Queue one mail for ``record`` to ``partners`` (and/or a raw address)."""
-        if not self._enabled(key):
+    def notify(self, key, record, partners=None, email_to=None, force=False):
+        """Queue one mail for ``record`` to ``partners`` (and/or a raw address).
+
+        ``force`` skips the on/off setting: only for security notices that must
+        always reach their recipient (see ``leaders.vendor.bank.change``).
+        """
+        if not force and not self._enabled(key):
             return False
         partners = partners.filtered("email") if partners else self.env["res.partner"]
         if not partners and not email_to:

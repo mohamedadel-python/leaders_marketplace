@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- A settlement cannot be marked paid while its vendor has a payout account
+         change pending (A4). On by default; seeded as "True" because a cleared
+         checkbox deletes its parameter, and only True/true/1 counts as on. -->
+    <record id="param_block_payout_on_pending_bank_change" model="ir.config_parameter">
+        <field name="key">leaders_marketplace.block_payout_on_pending_bank_change</field>
+        <field name="value">True</field>
+    </record>
+</odoo>

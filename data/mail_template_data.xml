@@ -379,6 +379,47 @@
             </field>
             <field name="auto_delete" eval="True"/>
         </record>
+        <record id="mail_template_vendor_bank_change_requested" model="mail.template">
+            <field name="name">Marketplace: Payout account change requested (security notice, always sent)</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_bank_change"/>
+            <field name="subject">Security notice: a payout account change was requested for {{ object.vendor_id.vendor_store_name or object.vendor_id.name }}</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p><strong>Security notice.</strong> A change of your payout bank account was requested<t t-if="object.requested_by"> by <t t-out="object.requested_by.name"/></t> (request <t t-out="object.name"/>).</p>
+<p>New account: <t t-out="object.bank_name"/>, <t t-out="object.account_holder"/>, <t t-out="object.masked_account_number"/>.</p>
+<p>The marketplace reviews it before it replaces your current account, and payouts are held meanwhile. If you did not make this request, contact the marketplace immediately and change your password.</p>
+<p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/profile">Open your profile</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_bank_change_approved" model="mail.template">
+            <field name="name">Marketplace: Payout account change approved (vendor)</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_bank_change"/>
+            <field name="subject">Your payout account change {{ object.name }} was approved</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your payout account change <strong t-out="object.name"/> was approved. Future payouts go to <t t-out="object.bank_name"/>, <t t-out="object.masked_account_number"/>.</p>
+<p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/profile">Open your profile</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_vendor_bank_change_rejected" model="mail.template">
+            <field name="name">Marketplace: Payout account change rejected (vendor)</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_bank_change"/>
+            <field name="subject">Your payout account change {{ object.name }} was rejected</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your payout account change <strong t-out="object.name"/> was not accepted. Your current payout account stays as it was.</p><p t-if="object.reject_reason">Reason: <t t-out="object.reject_reason"/></p>
+<p><a t-attf-href="{{ object.get_base_url() }}/my/vendor/profile">Open your profile</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
         <record id="param_notify_vendor_order_confirmed" model="ir.config_parameter">
             <field name="key">leaders_marketplace.notify_vendor_order_confirmed</field>
             <field name="value">True</field>
@@ -481,6 +522,14 @@
         </record>
         <record id="param_notify_vendor_order_cancelled_by_customer" model="ir.config_parameter">
             <field name="key">leaders_marketplace.notify_vendor_order_cancelled_by_customer</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_bank_change_approved" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_bank_change_approved</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_bank_change_rejected" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_bank_change_rejected</field>
             <field name="value">True</field>
         </record>
     </data>

@@ -303,6 +303,10 @@ class Settlement(models.Model):
         domain="[('type', 'in', ('bank', 'cash'))]",
         help="Journal used to pay this settlement. Left empty, the first "
              "bank or cash journal of the company is used, as before.")
+    payout_bank_id = fields.Many2one(
+        "res.partner.bank", string="Payout Bank Account",
+        related="vendor_id.commercial_partner_id.vendor_payout_bank_id", readonly=True,
+        help="The vendor's current payout account.")
     state = fields.Selection([
         ("draft","Draft"),("approved","Approved"),("paid","Paid"),("cancelled","Cancelled")
     ], default="draft", tracking=True)
@@ -693,6 +697,13 @@ class Settlement(models.Model):
 
     def action_mark_paid(self):
         self._leaders_check_backoffice("finance")
+        Change = self.env["leaders.vendor.bank.change"]
+        for rec in self:
+            if Change._blocks_payout(rec.vendor_id):
+                raise UserError(_(
+                    "%(vendor)s has a payout account change waiting for review. "
+                    "Approve or reject it before paying %(name)s.",
+                    vendor=rec.vendor_id.display_name, name=rec.name))
         for rec in self:
             if rec.net_amount < 0:
                 raise UserError(_(

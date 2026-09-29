@@ -32,6 +32,7 @@
                     <group>
                         <field name="vendor_hold_days"/>
                         <field name="vendor_min_payout"/>
+                        <field name="vendor_payout_bank_id"/>
                         <field name="vendor_wallet_balance" readonly="1"/>
                         <field name="vendor_wallet_hold" readonly="1"/>
                     </group>

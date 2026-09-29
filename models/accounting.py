@@ -494,10 +494,14 @@ class MarketplaceAccounting(models.AbstractModel):
             raise UserError(_("No bank/cash journal found to pay the settlement."))
         partner = settlement.vendor_id.commercial_partner_id
         net = settlement.net_amount
+        ref = _("Vendor settlement %s") % settlement.name
+        masked = partner._leaders_masked_payout_account()
+        if masked:
+            ref = "%s - %s" % (ref, _("account %s", masked))
         move = self.env["account.move"].create({
             "move_type": "entry",
             "journal_id": journal.id,
-            "ref": _("Vendor settlement %s") % settlement.name,
+            "ref": ref,
             "line_ids": [
                 (0, 0, {
                     "account_id": a["vendor_payable"], "name": _("Settle %s") % settlement.name,

@@ -1,4 +1,5 @@
 import base64
+import os
 from datetime import timedelta
 from urllib.parse import quote
 
@@ -10,6 +11,7 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import email_normalize
 from odoo.tools.float_utils import float_compare, float_is_zero
 from odoo.tools.mimetypes import guess_mimetype
+from odoo.addons.leaders_marketplace.controllers.vendor_apply import VendorApplyController
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.sale.controllers.portal import CustomerPortal as SaleCustomerPortal
 
@@ -963,6 +965,68 @@ class MarketplacePortal(CustomerPortal):
         kpis = request.env["leaders.vendor.kpi"].sudo().search([("vendor_id", "=", vendor.id)], order="period desc", limit=12)
         penalties = request.env["leaders.vendor.penalty"].sudo().search([("vendor_id", "=", vendor.id)], order="id desc", limit=30)
         return self._vendor_render("leaders_marketplace.portal_vendor_performance", {"kpis": kpis, "penalties": penalties, "vendor": vendor})
+
+    # -------------------------------------------------------------------------
+    # Vendor profile and payout account change (owner only)
+    # -------------------------------------------------------------------------
+    def _vendor_profile_values(self, vendor, **extra):
+        Change = request.env["leaders.vendor.bank.change"].sudo()
+        changes = Change.search([("vendor_id", "=", vendor.id)], order="id desc", limit=50)
+        values = {
+            "vendor": vendor,
+            "payout_account": vendor._leaders_masked_payout_account(),
+            "payout_bank_name": vendor.vendor_payout_bank_id.bank_id.name,
+            "changes": changes,
+            "pending_change": changes.filtered(lambda c: c.state == "pending")[:1],
+            "form": {},
+            "error": False,
+            "requested": request.params.get("requested"),
+        }
+        values.update(extra)
+        return values
+
+    @http.route("/my/vendor/profile", type="http", auth="user", website=True)
+    def vendor_profile(self, **kw):
+        vendor = self._require_vendor(allow_frozen=True)
+        if not self._is_vendor_owner():
+            raise AccessError(_("Only the vendor owner can access the vendor profile."))
+        return self._vendor_render("leaders_marketplace.portal_vendor_profile", self._vendor_profile_values(vendor))
+
+    @http.route("/my/vendor/profile/bank-change", type="http", auth="user", website=True,
+                methods=["POST"], csrf=True)
+    def vendor_bank_change_request(self, **post):
+        vendor = self._require_vendor(allow_frozen=True)
+        if not self._is_vendor_owner():
+            raise AccessError(_("Only the vendor owner can change the payout account."))
+        form = {key: (post.get(key) or "").strip() for key in ("bank_name", "account_holder", "account_number")}
+        Change = request.env["leaders.vendor.bank.change"].sudo()
+        error = False
+        proof, proof_name = False, False
+        if not all(form.values()):
+            error = _("Bank name, account holder and account number are required.")
+        elif Change.search_count([("vendor_id", "=", vendor.id), ("state", "=", "pending")]):
+            error = _("A payout account change is already waiting for review.")
+        else:
+            upload = request.httprequest.files.get("proof")
+            if not upload or not upload.filename:
+                error = _("A bank proof (statement or letter from the bank) is required.")
+            else:
+                proof, error = VendorApplyController()._document_error(upload)
+                proof_name = os.path.basename(upload.filename)[:100]
+        if not error:
+            try:
+                Change.create({
+                    "vendor_id": vendor.id, "requested_by": request.env.user.id,
+                    "bank_name": form["bank_name"][:100], "account_holder": form["account_holder"][:100],
+                    "account_number": form["account_number"][:64],
+                    "proof": proof, "proof_name": proof_name,
+                })
+            except (UserError, ValidationError) as exc:
+                error = exc.args[0] if exc.args else str(exc)
+        if error:
+            return self._vendor_render("leaders_marketplace.portal_vendor_profile", self._vendor_profile_values(
+                vendor, error=error, form=form))
+        return request.redirect("/my/vendor/profile?requested=1")
 
     # -------------------------------------------------------------------------
     # Vendor staff management (owner only)

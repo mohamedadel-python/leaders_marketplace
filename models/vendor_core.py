@@ -445,16 +445,19 @@ class VendorApplication(models.Model):
         self.ensure_one()
         Bank = self.env["res.partner.bank"].sudo().with_context(active_test=False)
         account = Bank.search([("partner_id", "=", partner.id), ("acc_number", "=", self.bank_account_number)], limit=1)
-        if account:
-            return account
-        bank = self.env["res.bank"].sudo().search([("name", "=ilike", self.bank_name)], limit=1) \
-            or self.env["res.bank"].sudo().create({"name": self.bank_name})
-        return Bank.create({
-            "partner_id": partner.id,
-            "bank_id": bank.id,
-            "acc_number": self.bank_account_number,
-            "acc_holder_name": self.bank_account_holder,
-        })
+        if not account:
+            bank = self.env["res.bank"].sudo().search([("name", "=ilike", self.bank_name)], limit=1) \
+                or self.env["res.bank"].sudo().create({"name": self.bank_name})
+            account = Bank.create({
+                "partner_id": partner.id,
+                "bank_id": bank.id,
+                "acc_number": self.bank_account_number,
+                "acc_holder_name": self.bank_account_holder,
+            })
+        # The payout account is set once; a later change goes through leaders.vendor.bank.change.
+        if not partner.vendor_payout_bank_id:
+            partner.sudo().vendor_payout_bank_id = account.id
+        return account
 
 class VendorDocument(models.Model):
     _name = "leaders.vendor.document"

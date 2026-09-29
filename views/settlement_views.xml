@@ -41,6 +41,7 @@
                         <field name="deductions"/>
                         <field name="net_amount"/>
                         <field name="payout_journal_id"/>
+                        <field name="payout_bank_id"/>
                         <field name="commission_move_id" readonly="1"/>
                         <field name="commission_invoice_id" readonly="1"/>
                         <field name="commission_invoice_offset_move_id" readonly="1"/>

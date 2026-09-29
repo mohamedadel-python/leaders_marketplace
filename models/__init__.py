@@ -21,3 +21,4 @@ from . import res_config_settings
 from . import ir_ui_menu
 from . import delivery
 from . import cod_protection
+from . import bank_change
