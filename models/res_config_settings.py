@@ -170,6 +170,29 @@ class ResConfigSettings(models.TransientModel):
         config_parameter="leaders_marketplace.cod_enabled",
         default=False,
     )
+    marketplace_cod_max_amount = fields.Float(
+        string="COD Maximum Amount",
+        config_parameter="leaders_marketplace.cod_max_amount",
+        default=0.0,
+        help="Cash on Delivery is hidden and refused for orders above this total "
+             "(company currency). 0 means no limit.",
+    )
+    marketplace_cod_require_otp = fields.Boolean(
+        string="Verify Phone for Cash on Delivery",
+        config_parameter="leaders_marketplace.cod_require_otp",
+        default=False,
+        help="The customer must confirm a 6-digit code sent to their phone "
+             "(SMS when the SMS module is installed, otherwise email) before "
+             "a Cash on Delivery order is accepted.",
+    )
+    marketplace_cod_refusal_block_count = fields.Integer(
+        string="Block COD After Refusals",
+        config_parameter="leaders_marketplace.cod_refusal_block_count",
+        default=0,
+        help="Cash on Delivery is hidden for a customer who refused this many "
+             "COD parcels at the door. 0 turns the block off. Managers can reset "
+             "the counter on the customer.",
+    )
     # --- FBM proof of delivery. The default keeps the vendor's word final,
     #     which is how the marketplace worked before this setting existed. ---
     marketplace_fbm_delivery_mode = fields.Selection(

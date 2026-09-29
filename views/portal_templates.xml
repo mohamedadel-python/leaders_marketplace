@@ -608,6 +608,12 @@
                                         <input class="form-control form-control-sm mb-2" type="file" name="delivery_proof"/>
                                         <button class="btn btn-success"><i class="fa fa-check"/> Mark as Delivered</button>
                                     </form>
+                                    <form t-if="g.state == 'shipped' and order.payment_method == 'cod'" t-att-action="'/my/vendor/fulfillment/%s/refused' % g.id" method="post" class="mt-2 border-top pt-2">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <label class="form-label small mb-1">The customer refused the parcel at the door</label>
+                                        <input class="form-control form-control-sm mb-2" name="reason" maxlength="500" placeholder="Note (optional)"/>
+                                        <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Cancel this order as refused by the customer? The goods return to your stock.');"><i class="fa fa-undo"/> Customer refused</button>
+                                    </form>
                                     <div t-if="g.state == 'delivery_reported'" class="alert alert-info small mt-2 mb-0">
                                         <i class="fa fa-hourglass-half"/> Delivery reported
                                         <t t-if="g.delivered_reported_date"> on <t t-esc="g.delivered_reported_date" t-options="{'widget': 'datetime'}"/></t>.

@@ -629,6 +629,24 @@ class MarketplacePortal(CustomerPortal):
             return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
         return request.redirect(url)
 
+    @http.route("/my/vendor/fulfillment/<int:group_id>/refused", type="http", auth="user", website=True, methods=["POST"], csrf=True)
+    def vendor_fulfillment_refused(self, group_id, **post):
+        """FBM + Cash on Delivery: the customer refused the parcel at the door."""
+        vendor = self._require_vendor(allow_frozen=True)
+        group = request.env["leaders.fulfillment.group"].sudo().search([
+            ("id", "=", group_id), ("vendor_id", "=", vendor.id), ("fulfillment_type", "=", "fbm"),
+        ], limit=1)
+        if not group:
+            raise AccessError(_("You cannot access this fulfillment group."))
+        url = f"/my/vendor/orders/{group.vendor_order_id.id}"
+        try:
+            with request.env.cr.savepoint():
+                group.action_customer_refused(
+                    reason=(post.get("reason") or "")[:500], by=request.env.user)
+        except UserError as e:
+            return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
+        return request.redirect(url)
+
     @http.route("/my/vendor/orders/<int:order_id>/invoice", type="http", auth="user", website=True)
     def vendor_order_invoice_pdf(self, order_id, **kw):
         vendor = self._require_vendor(allow_frozen=True)

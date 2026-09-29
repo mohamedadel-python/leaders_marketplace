@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Reason stored when a customer refuses a Cash on Delivery parcel at the door (A3).
+         applies_to vendor: it is not offered in the customer's cancel form. -->
+    <record id="cancel_reason_refused_at_delivery" model="leaders.cancel.reason">
+        <field name="name">Refused at delivery</field>
+        <field name="sequence">900</field>
+        <field name="applies_to">vendor</field>
+    </record>
+</odoo>

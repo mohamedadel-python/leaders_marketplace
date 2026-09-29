@@ -4,6 +4,15 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//notebook" position="before">
+                <group name="lm_cod_refusals" invisible="not leaders_cod_refusal_count" groups="leaders_marketplace.group_marketplace_manager">
+                    <label for="leaders_cod_refusal_count"/>
+                    <div class="o_row">
+                        <field name="leaders_cod_refusal_count"/>
+                        <button name="action_reset_cod_refusals" type="object" string="Reset COD refusals" class="btn btn-link" icon="fa-refresh" confirm="Reset the Cash on Delivery refusal counter of this customer?"/>
+                    </div>
+                </group>
+            </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="Marketplace Vendor">
                     <group>

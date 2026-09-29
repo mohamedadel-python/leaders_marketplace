@@ -106,6 +106,15 @@
                         <setting string="Allow Cash on Delivery" help="Shows a Cash on Delivery option at checkout, alongside online payment.">
                             <field name="marketplace_cod_enabled"/>
                         </setting>
+                        <setting string="COD Maximum Amount" invisible="not marketplace_cod_enabled" help="Cash on Delivery is hidden above this order total. 0 means no limit.">
+                            <field name="marketplace_cod_max_amount"/>
+                        </setting>
+                        <setting string="COD Phone Verification" invisible="not marketplace_cod_enabled" help="Customers confirm a 6-digit code sent to their phone before a Cash on Delivery order is accepted.">
+                            <field name="marketplace_cod_require_otp"/>
+                        </setting>
+                        <setting string="Block COD After Refusals" invisible="not marketplace_cod_enabled" help="Hide Cash on Delivery for customers who refused this many parcels at the door. 0 turns it off.">
+                            <field name="marketplace_cod_refusal_block_count"/>
+                        </setting>
                         <setting string="Vendor Image Max Size (MB)" help="Largest product image a vendor may upload from the portal. Non-image files are always refused.">
                             <field name="marketplace_vendor_image_max_mb"/>
                         </setting>

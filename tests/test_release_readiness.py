@@ -98,7 +98,7 @@ class TestUpgradeMigrations(MarketplaceVendorCommon):
         seeded = {
             record.get("id"): record.findtext("field[@name='value']")
             for record in tree.iterfind(".//record[@model='ir.config_parameter']")}
-        self.assertEqual(len(seeded), 24)
+        self.assertEqual(len(seeded), 26)
         self.assertEqual(set(seeded.values()), {"True"})
 
     def test_escrow_lines_without_a_partner_are_filled_from_their_order(self):

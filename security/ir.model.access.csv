@@ -74,3 +74,4 @@ access_vendor_delivery_zone_vendor,vendor delivery zone vendor,model_leaders_ven
 access_fulfillment_inbound_stock,fulfillment inbound stock user,model_leaders_fulfillment_inbound,stock.group_stock_user,1,1,0,0
 access_fulfillment_inbound_line_stock,fulfillment inbound line stock user,model_leaders_fulfillment_inbound_line,stock.group_stock_user,1,1,0,0
 access_cancel_reason,leaders.cancel.reason,model_leaders_cancel_reason,leaders_marketplace.group_marketplace_manager,1,1,1,1
+access_cod_otp_manager,cod otp manager,model_leaders_cod_otp,leaders_marketplace.group_marketplace_manager,1,0,0,0

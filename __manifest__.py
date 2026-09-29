@@ -20,6 +20,7 @@
         "data/mail_template_data.xml",
         "data/fbl_setting_data.xml",
         "data/cancel_reason_data.xml",
+        "data/cod_protection_data.xml",
         "data/commission_invoice_products.xml",
         "views/res_partner_views.xml",
         "views/vendor_application_views.xml",

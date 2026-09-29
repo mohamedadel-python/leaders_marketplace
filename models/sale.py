@@ -640,7 +640,8 @@ class VendorOrder(models.Model):
         for rec in self:
             if rec.state == "cancelled":
                 continue
-            if rec.fulfillment_group_ids.filtered(lambda g: g.state in _SHIPPED_GROUP_STATES):
+            if (not self.env.context.get("leaders_cod_refusal")
+                    and rec.fulfillment_group_ids.filtered(lambda g: g.state in _SHIPPED_GROUP_STATES)):
                 raise UserError(_("Vendor order %s is already shipped; use a return instead.", rec.name))
             if not rec.cancelled_by_type:
                 # Nobody said who cancelled: the back-office did (a vendor or a
@@ -660,7 +661,8 @@ class VendorOrder(models.Model):
                 Accounting.create_cancellation_refund_payment(rec)
             rec.state = "cancelled"
             rec._recompute_amounts()
-            if not self.env.context.get("leaders_customer_cancel"):
+            if not (self.env.context.get("leaders_customer_cancel")
+                    or self.env.context.get("leaders_cod_refusal")):
                 self.env["leaders.notification"].notify_customer("customer_order_cancelled", rec, rec.partner_id)
         return True
 
