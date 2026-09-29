@@ -1,0 +1,102 @@
+<odoo>
+    <record id="action_report_vendor_statement" model="ir.actions.report">
+        <field name="name">Vendor Statement of Account</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">leaders_marketplace.report_vendor_statement</field>
+        <field name="report_file">leaders_marketplace.report_vendor_statement</field>
+        <field name="print_report_name">'Vendor Statement - %s' % object.display_name</field>
+    </record>
+
+    <template id="report_vendor_statement_document">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <t t-set="st" t-value="statements[o.id]"/>
+                <h2>Vendor Statement of Account</h2>
+                <div class="row mb-3">
+                    <div class="col-7">
+                        <strong t-esc="st['vendor_name']"/>
+                        <div t-if="o.contact_address" t-esc="o.contact_address"/>
+                        <div t-if="o.email" t-esc="o.email"/>
+                    </div>
+                    <div class="col-5 text-end">
+                        <div>Period: <span t-esc="st['date_from']"/> - <span t-esc="st['date_to']"/></div>
+                        <div>Currency: <span t-esc="st['currency'].name"/></div>
+                    </div>
+                </div>
+                <table class="table table-sm o_main_table">
+                    <thead>
+                        <tr>
+                            <th class="text-start">Date</th>
+                            <th class="text-start">Type</th>
+                            <th class="text-start">Reference</th>
+                            <th class="text-start">Status</th>
+                            <th class="text-end">Debit</th>
+                            <th class="text-end">Credit</th>
+                            <th class="text-end">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fw-bold">
+                            <td colspan="6">Opening balance</td>
+                            <td class="text-end" t-esc="st['opening']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                        </tr>
+                        <tr t-foreach="st['lines']" t-as="line">
+                            <td t-esc="line['date']"/>
+                            <td t-esc="line['type_label']"/>
+                            <td t-esc="line['reference']"/>
+                            <td t-esc="line['state_label']"/>
+                            <td class="text-end"><span t-if="line['debit']" t-esc="line['debit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></td>
+                            <td class="text-end"><span t-if="line['credit']" t-esc="line['credit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></td>
+                            <td class="text-end" t-esc="line['balance']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                        </tr>
+                        <tr class="fw-bold">
+                            <td colspan="4">Total movements</td>
+                            <td class="text-end" t-esc="st['total_debit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                            <td class="text-end" t-esc="st['total_credit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                            <td/>
+                        </tr>
+                        <tr class="fw-bold">
+                            <td colspan="6">Closing balance</td>
+                            <td class="text-end" t-esc="st['closing']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4 class="mt-4">Settlements</h4>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-start">Settlement</th>
+                            <th class="text-start">Period</th>
+                            <th class="text-start">Status</th>
+                            <th class="text-end">Gross</th>
+                            <th class="text-end">Deductions</th>
+                            <th class="text-end">Net</th>
+                            <th class="text-start">Payout account</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="st['settlements']" t-as="s">
+                            <td t-esc="s['name']"/>
+                            <td><span t-esc="s['period_from']"/> - <span t-esc="s['period_to']"/></td>
+                            <td t-esc="s['state_label']"/>
+                            <td class="text-end" t-esc="s['gross']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                            <td class="text-end" t-esc="s['deductions']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                            <td class="text-end" t-esc="s['net']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                            <td dir="ltr" t-esc="s['payout_account'] or '-'"/>
+                        </tr>
+                        <tr t-if="not st['settlements']"><td colspan="7" class="text-muted">No settlements in this period.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_vendor_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="leaders_marketplace.report_vendor_statement_document" t-lang="o.lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

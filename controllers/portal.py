@@ -1240,6 +1240,89 @@ class MarketplacePortal(CustomerPortal):
         return request.redirect(f"{url}?settlement_requested=1")
 
     # -------------------------------------------------------------------------
+    # Vendor statement of account (B5)
+    # -------------------------------------------------------------------------
+    def _statement_owner(self):
+        vendor = self._require_vendor(allow_frozen=True)
+        if not self._is_vendor_owner():
+            raise AccessError(_("Only the vendor owner can access financial information."))
+        return vendor
+
+    def _statement_for(self, vendor, kw):
+        """The statement of the current vendor (never another one) for the query dates."""
+        return vendor._leaders_vendor_statement(kw.get("date_from"), kw.get("date_to"))
+
+    def _statement_download(self, content, filename, mimetype):
+        return request.make_response(content, headers=[
+            ("Content-Type", mimetype),
+            ("Content-Length", len(content)),
+            ("Content-Disposition", 'attachment; filename="%s"' % filename),
+        ])
+
+    @http.route("/my/vendor/finance/statement", type="http", auth="user", website=True)
+    def vendor_statement(self, **kw):
+        vendor = self._statement_owner()
+        error = False
+        try:
+            statement = self._statement_for(vendor, kw)
+        except UserError as e:
+            error = e.args[0]
+            statement = vendor._leaders_vendor_statement()
+        return self._vendor_render("leaders_marketplace.portal_vendor_statement", {
+            "vendor": vendor, "st": statement, "error": error,
+            "query": "date_from=%s&date_to=%s" % (statement["date_from"], statement["date_to"]),
+        })
+
+    @http.route("/my/vendor/finance/statement.pdf", type="http", auth="user", website=True)
+    def vendor_statement_pdf(self, **kw):
+        vendor = self._statement_owner()
+        try:
+            statement = self._statement_for(vendor, kw)
+        except UserError as e:
+            return request.make_response(e.args[0], headers=[("Content-Type", "text/plain")], status=400)
+        report = request.env["ir.actions.report"].sudo()
+        pdf, _type = report._render_qweb_pdf(
+            "leaders_marketplace.action_report_vendor_statement", vendor.ids,
+            data={"date_from": str(statement["date_from"]), "date_to": str(statement["date_to"])})
+        filename = request.env["leaders.vendor.statement"]._filename(statement, "pdf")
+        return request.make_response(pdf, headers=[
+            ("Content-Type", "application/pdf"),
+            ("Content-Length", len(pdf)),
+            ("Content-Disposition", 'inline; filename="%s"' % filename),
+        ])
+
+    @http.route("/my/vendor/finance/statement.xlsx", type="http", auth="user", website=True)
+    def vendor_statement_xlsx(self, **kw):
+        vendor = self._statement_owner()
+        try:
+            statement = self._statement_for(vendor, kw)
+        except UserError as e:
+            return request.make_response(e.args[0], headers=[("Content-Type", "text/plain")], status=400)
+        Statement = request.env["leaders.vendor.statement"]
+        return self._statement_download(
+            Statement._xlsx(statement), Statement._filename(statement, "xlsx"),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    @http.route("/leaders/vendor_statement/xlsx", type="http", auth="user")
+    def backend_vendor_statement_xlsx(self, vendor_id=None, date_from=None, date_to=None, **kw):
+        """Backend download (vendor form wizard): managers and finance only."""
+        user = request.env.user
+        if not (user.has_group("leaders_marketplace.group_marketplace_manager")
+                or user.has_group("leaders_marketplace.group_marketplace_finance")):
+            raise AccessError(_("Only marketplace managers and finance can print vendor statements."))
+        vendor = request.env["res.partner"].sudo().browse(int(vendor_id or 0)).exists()
+        if not vendor or not vendor.is_marketplace_vendor:
+            raise NotFound()
+        try:
+            statement = vendor._leaders_vendor_statement(date_from, date_to)
+        except UserError as e:
+            return request.make_response(e.args[0], headers=[("Content-Type", "text/plain")], status=400)
+        Statement = request.env["leaders.vendor.statement"]
+        return self._statement_download(
+            Statement._xlsx(statement), Statement._filename(statement, "xlsx"),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    # -------------------------------------------------------------------------
     # Vendor API keys (B4)
     # -------------------------------------------------------------------------
     def _api_keys_owner(self):

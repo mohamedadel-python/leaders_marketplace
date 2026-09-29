@@ -811,7 +811,7 @@
         <h4>Fulfillment Tracking</h4>
         <div t-if="fulfillment_groups" class="table-responsive mb-4"><table class="table"><thead><tr><th>Order</th><th>Type</th><th>Status</th><th>Tracking</th><th>Delivery</th></tr></thead><tbody><tr t-foreach="fulfillment_groups" t-as="g"><td><a t-att-href="'/my/vendor/orders/%s' % g.vendor_order_id.id" t-esc="g.vendor_order_id.name"/></td><td t-esc="g.fulfillment_type.upper()"/><td t-esc="dict(g._fields['state']._description_selection(g.env)).get(g.state)"/><td t-esc="g.tracking_ref or '-'"/><td><span t-foreach="g.picking_ids" t-as="p" t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)" class="me-1"/></td></tr></tbody></table></div>
         <h4>Wallet Transactions</h4><div class="table-responsive"><table class="table"><thead><tr><th>Date</th><th>Type</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead><tbody><tr t-foreach="transactions" t-as="t"><td t-esc="t.create_date"/><td t-esc="t.type"/><td t-esc="t.reference"/><td t-esc="t.amount"/><td t-esc="t.state"/></tr></tbody></table></div>
-        <h4>Settlements</h4><div class="table-responsive"><table class="table"><thead><tr><th>Settlement</th><th>Period</th><th>Gross</th><th>Deductions</th><th>Net</th><th>Status</th><th>Payout account</th><th>Invoice</th></tr></thead><tbody><tr t-foreach="settlements" t-as="s"><td t-esc="s.name"/><td><span t-esc="s.period_from"/> - <span t-esc="s.period_to"/></td><td t-esc="s.gross_amount"/><td t-esc="s.deductions"/><td t-esc="s.net_amount"/><td t-esc="s.state"/><td dir="ltr"><t t-esc="vendor._leaders_masked_payout_account() or '-'"/></td><td><a t-if="s.commission_invoice_id" t-att-href="'/my/vendor/finance/settlement/%s/invoice' % s.id" target="_blank"><i class="fa fa-file-pdf-o"/> <t t-esc="s.commission_invoice_id.name"/></a></td></tr></tbody></table></div>
+        <h4>Settlements</h4><p><a href="/my/vendor/finance/statement" class="btn btn-outline-primary btn-sm"><i class="fa fa-file-text-o"/> Statement of account</a></p><div class="table-responsive"><table class="table"><thead><tr><th>Settlement</th><th>Period</th><th>Gross</th><th>Deductions</th><th>Net</th><th>Status</th><th>Payout account</th><th>Invoice</th></tr></thead><tbody><tr t-foreach="settlements" t-as="s"><td t-esc="s.name"/><td><span t-esc="s.period_from"/> - <span t-esc="s.period_to"/></td><td t-esc="s.gross_amount"/><td t-esc="s.deductions"/><td t-esc="s.net_amount"/><td t-esc="s.state"/><td dir="ltr"><t t-esc="vendor._leaders_masked_payout_account() or '-'"/></td><td><a t-if="s.commission_invoice_id" t-att-href="'/my/vendor/finance/settlement/%s/invoice' % s.id" target="_blank"><i class="fa fa-file-pdf-o"/> <t t-esc="s.commission_invoice_id.name"/></a></td></tr></tbody></table></div>
         </div></t>
     </template>
 
@@ -1705,6 +1705,91 @@
                     </div>
                     <p t-if="not offers" class="text-muted">This store has no published products yet.</p>
                     <div class="mt-4" t-call="website.pager"/>
+                </div>
+            </div>
+        </t>
+    </template>
+    <template id="portal_vendor_statement" name="Vendor Statement of Account">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4 lm-portal">
+                <t t-call="leaders_marketplace.portal_vendor_nav"/>
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <h2 class="mb-0">Statement of account</h2>
+                    <div class="d-flex gap-2">
+                        <a t-attf-href="/my/vendor/finance/statement.pdf?#{query}" class="btn btn-outline-primary"><i class="fa fa-file-pdf-o"/> Download PDF</a>
+                        <a t-attf-href="/my/vendor/finance/statement.xlsx?#{query}" class="btn btn-outline-success"><i class="fa fa-file-excel-o"/> Download XLSX</a>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" t-esc="error"/>
+                <form method="get" action="/my/vendor/finance/statement" class="row g-2 align-items-end mb-4">
+                    <div class="col-6 col-md-3"><label class="form-label" for="lm_st_from">From</label><input id="lm_st_from" type="date" name="date_from" class="form-control" t-att-value="st['date_from']"/></div>
+                    <div class="col-6 col-md-3"><label class="form-label" for="lm_st_to">To</label><input id="lm_st_to" type="date" name="date_to" class="form-control" t-att-value="st['date_to']"/></div>
+                    <div class="col-12 col-md-3"><button class="btn btn-primary w-100">Show</button></div>
+                </form>
+                <div class="row g-2 mb-4">
+                    <div class="col-12 col-md-4"><div class="card p-3"><div class="text-muted">Opening balance</div><strong class="fs-5" t-esc="st['opening']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></div></div>
+                    <div class="col-12 col-md-4"><div class="card p-3"><div class="text-muted">Movements</div><span><span class="text-danger" t-esc="st['total_debit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/> / <span class="text-success" t-esc="st['total_credit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></span></div></div>
+                    <div class="col-12 col-md-4"><div class="card p-3"><div class="text-muted">Closing balance</div><strong class="fs-5" t-esc="st['closing']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></div></div>
+                </div>
+                <h5>Wallet transactions</h5>
+                <div class="table-responsive d-none d-md-block">
+                    <table class="table align-middle">
+                        <thead><tr><th class="text-start">Date</th><th class="text-start">Type</th><th class="text-start">Reference</th><th class="text-start">Status</th><th class="text-end">Debit</th><th class="text-end">Credit</th><th class="text-end">Balance</th></tr></thead>
+                        <tbody>
+                            <tr class="fw-bold"><td colspan="6">Opening balance</td><td class="text-end" t-esc="st['opening']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></tr>
+                            <tr t-foreach="st['lines']" t-as="line">
+                                <td t-esc="line['date']"/>
+                                <td t-esc="line['type_label']"/>
+                                <td t-esc="line['reference']"/>
+                                <td t-esc="line['state_label']"/>
+                                <td class="text-end"><span t-if="line['debit']" t-esc="line['debit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></td>
+                                <td class="text-end"><span t-if="line['credit']" t-esc="line['credit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></td>
+                                <td class="text-end" t-esc="line['balance']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                            </tr>
+                            <tr t-if="not st['lines']"><td colspan="7" class="text-muted">No transactions in this period.</td></tr>
+                            <tr class="fw-bold"><td colspan="6">Closing balance</td><td class="text-end" t-esc="st['closing']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-md-none mb-4">
+                    <div t-foreach="st['lines']" t-as="line" class="card p-3 mb-2">
+                        <div class="d-flex justify-content-between"><strong t-esc="line['type_label']"/><span class="text-muted" t-esc="line['date']"/></div>
+                        <div class="text-muted small" t-esc="line['reference']"/>
+                        <div class="d-flex justify-content-between mt-1">
+                            <span t-if="line['credit']" class="text-success" t-esc="line['credit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                            <span t-else="" class="text-danger" t-esc="-line['debit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                            <span>Balance: <span t-esc="line['balance']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></span>
+                        </div>
+                        <div class="small text-muted" t-esc="line['state_label']"/>
+                    </div>
+                    <p t-if="not st['lines']" class="text-muted">No transactions in this period.</p>
+                </div>
+                <h5>Settlements</h5>
+                <div class="table-responsive d-none d-md-block">
+                    <table class="table align-middle">
+                        <thead><tr><th class="text-start">Settlement</th><th class="text-start">Period</th><th class="text-start">Status</th><th class="text-end">Gross</th><th class="text-end">Deductions</th><th class="text-end">Net</th><th class="text-start">Payout account</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="st['settlements']" t-as="s">
+                                <td t-esc="s['name']"/>
+                                <td><span t-esc="s['period_from']"/> - <span t-esc="s['period_to']"/></td>
+                                <td t-esc="s['state_label']"/>
+                                <td class="text-end" t-esc="s['gross']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                                <td class="text-end" t-esc="s['deductions']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                                <td class="text-end" t-esc="s['net']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                                <td dir="ltr" t-esc="s['payout_account'] or '-'"/>
+                            </tr>
+                            <tr t-if="not st['settlements']"><td colspan="7" class="text-muted">No settlements in this period.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-md-none">
+                    <div t-foreach="st['settlements']" t-as="s" class="card p-3 mb-2">
+                        <div class="d-flex justify-content-between"><strong t-esc="s['name']"/><span t-esc="s['state_label']"/></div>
+                        <div class="text-muted small"><span t-esc="s['period_from']"/> - <span t-esc="s['period_to']"/></div>
+                        <div>Net: <span t-esc="s['net']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></div>
+                        <div class="small" dir="ltr" t-esc="s['payout_account'] or '-'"/>
+                    </div>
+                    <p t-if="not st['settlements']" class="text-muted">No settlements in this period.</p>
                 </div>
             </div>
         </t>

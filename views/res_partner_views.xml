@@ -15,6 +15,9 @@
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="Marketplace Vendor">
+                    <div invisible="not is_marketplace_vendor" groups="leaders_marketplace.group_marketplace_manager,leaders_marketplace.group_marketplace_finance">
+                        <button name="%(leaders_marketplace.action_vendor_statement_wizard)d" type="action" string="Vendor Statement" class="btn btn-secondary" icon="fa-file-text-o" context="{'default_vendor_id': id}"/>
+                    </div>
                     <group>
                         <group>
                             <field name="is_marketplace_vendor"/>
