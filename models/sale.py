@@ -7,7 +7,11 @@ from odoo.tools.float_utils import float_compare, float_is_zero
 #: Group states that mean "the goods have left the vendor". A reported delivery
 #: is still only a claim, so for the vendor order it counts exactly like
 #: ``shipped``: fulfilled/partially_fulfilled, returnable, no longer cancellable.
-_SHIPPED_GROUP_STATES = frozenset({"shipped", "delivery_reported", "delivered"})
+#: ``partially_shipped`` (some pickings done, a backorder still open) counts as
+#: "something shipped" (no cancelling, returns possible for the shipped part) but
+#: is NOT a completed shipment: the delivery flow and the earnings wait for
+#: ``shipped``.
+_SHIPPED_GROUP_STATES = frozenset({"partially_shipped", "shipped", "delivery_reported", "delivered"})
 
 
 class SaleOrderLine(models.Model):
@@ -576,7 +580,7 @@ class VendorOrder(models.Model):
             if states == {"delivered"}:
                 # Platform-only action reached from stock hooks / the vendor portal.
                 rec.sudo().action_mark_completed()
-            elif states <= _SHIPPED_GROUP_STATES:
+            elif states <= _SHIPPED_GROUP_STATES and "partially_shipped" not in states:
                 rec.state = "fulfilled"
             elif states & _SHIPPED_GROUP_STATES:
                 rec.state = "partially_fulfilled"
@@ -834,7 +838,7 @@ class FulfillmentGroup(models.Model):
     currency_id = fields.Many2one(related="vendor_order_id.currency_id", store=True)
     state = fields.Selection([
         ("allocated","Allocated"),("picking","Picking"),("packing","Packing"),
-        ("ready","Ready to Ship"),("shipped","Shipped"),
+        ("ready","Ready to Ship"),("partially_shipped","Partially Shipped"),("shipped","Shipped"),
         ("delivery_reported","Delivery Reported"),("delivered","Delivered"),
         ("cancelled","Cancelled")
     ], default="allocated", tracking=True)
@@ -909,43 +913,177 @@ class FulfillmentGroup(models.Model):
             pickings = group.picking_ids.filtered(lambda p: p.state != "cancel")
             if not pickings or group.state in ("delivery_reported", "delivered", "cancelled"):
                 continue
-            if all(p.state == "done" for p in pickings):
+            done = pickings.filtered(lambda p: p.state == "done")
+            if done:
+                refs = []
+                for p in done.sorted(lambda p: (p.date_done or p.create_date, p.id)):
+                    ref = p.carrier_tracking_ref if "carrier_tracking_ref" in p._fields else False
+                    if ref and ref not in refs:
+                        refs.append(ref)
+                if refs:
+                    # One reference per shipment (picking); the group shows them all.
+                    group.tracking_ref = ", ".join(refs)
+            if len(done) == len(pickings):
                 was_shipped = group.state == "shipped"
                 group.state = "shipped"
-                refs = [p.carrier_tracking_ref for p in pickings
-                        if "carrier_tracking_ref" in p._fields and p.carrier_tracking_ref]
-                if refs and not group.tracking_ref:
-                    group.tracking_ref = ", ".join(refs)
                 if not was_shipped:
                     self.env["leaders.notification"].notify_customer(
                         "customer_order_shipped", group, group.vendor_order_id.partner_id)
+            elif done:
+                # Some parcels left, a backorder is still open.
+                group.state = "partially_shipped"
             elif all(p.state == "assigned" for p in pickings):
                 group.state = "ready"
             else:
                 group.state = "allocated"
         self.vendor_order_id._sync_state_from_groups()
 
-    def action_ship(self):
-        """Validate the vendor delivery (FBM requires a tracking reference)."""
+    def _ship_open_moves(self):
+        """Stock moves of this group still waiting to be shipped."""
+        self.ensure_one()
+        return self.picking_ids.filtered(
+            lambda p: p.state not in ("done", "cancel")).move_ids.filtered(
+            lambda m: m.state not in ("done", "cancel"))
+
+    def _ship_lines_info(self):
+        """{vendor order line: (demanded, available)} of the open moves (no side effect)."""
+        self.ensure_one()
+        result = {}
+        for move in self._ship_open_moves():
+            line = move.leaders_vendor_line_id
+            if not line:
+                continue
+            demanded, available = result.get(line, (0.0, 0.0))
+            result[line] = (demanded + move.product_uom_qty,
+                            available + min(move.quantity, move.product_uom_qty))
+        return result
+
+    def _ship_available_quantities(self):
+        """Like ``_ship_lines_info`` after refreshing the reservation, so
+        "available" is what the vendor's stock can really cover right now."""
+        self.ensure_one()
+        for picking in self.picking_ids.filtered(lambda p: p.state not in ("done", "cancel")):
+            if picking.state != "assigned":
+                picking.action_assign()
+        return self._ship_lines_info()
+
+    def _ship_normalize_quantities(self, quantities):
+        """Validate {vendor order line id: qty}; returns {line record: qty}."""
+        self.ensure_one()
+        wanted = {}
+        for key, qty in (quantities or {}).items():
+            try:
+                line_id, qty = int(key), float(qty or 0.0)
+            except (TypeError, ValueError):
+                raise UserError(_("Invalid shipment quantity."))
+            wanted[line_id] = wanted.get(line_id, 0.0) + qty
+        open_lines = self._ship_available_quantities()
+        by_id = {line.id: line for line in open_lines}
+        unknown = set(wanted) - set(by_id)
+        if unknown:
+            raise UserError(_("Some of the products to ship do not belong to this shipment."))
+        result = {}
+        for line, (demanded, available) in open_lines.items():
+            rounding = line.product_id.uom_id.rounding or 0.01
+            qty = wanted.get(line.id, 0.0)
+            if float_compare(qty, 0.0, precision_rounding=rounding) < 0:
+                raise UserError(_(
+                    "The quantity to ship of %s cannot be negative.", line.product_id.display_name))
+            if float_compare(qty, demanded, precision_rounding=rounding) > 0:
+                raise UserError(_(
+                    "You cannot ship more %(product)s than ordered (%(qty)s of %(needed)s).",
+                    product=line.product_id.display_name, qty=qty, needed=demanded))
+            if float_compare(qty, available, precision_rounding=rounding) > 0:
+                raise UserError(_(
+                    "Not enough vendor stock to ship %(product)s (%(done)s of %(needed)s available).",
+                    product=line.product_id.display_name, done=available, needed=qty))
+            result[line] = qty
+        if not any(float_compare(q, 0.0, precision_rounding=l.product_id.uom_id.rounding or 0.01) > 0
+                   for l, q in result.items()):
+            raise UserError(_("Enter a quantity to ship for at least one product."))
+        return result
+
+    def action_ship(self, quantities=None, tracking_ref=None):
+        """Validate the vendor delivery (FBM requires a tracking reference).
+
+        Without arguments every open picking is shipped in full (raising when
+        the vendor's stock is short), exactly as before. ``quantities`` is a
+        ``{vendor order line id: quantity}`` mapping (a line missing from it
+        ships 0): the moves are validated with those quantities, the rest stays
+        in a backorder picking of the SAME group, and the group becomes
+        ``partially_shipped`` until every picking is done. ``tracking_ref`` is
+        the reference of this shipment (each picking keeps its own).
+        """
+        if quantities is not None and len(self) > 1:
+            raise UserError(_("Partial quantities can only be shipped for one shipment at a time."))
         for rec in self:
             if rec.state in ("shipped", "delivery_reported", "delivered", "cancelled"):
                 continue
-            if rec.fulfillment_type == "fbm" and not rec.tracking_ref:
+            ref = (tracking_ref or "").strip()
+            if not ref and not rec.picking_ids.filtered(lambda p: p.state == "done"):
+                ref = rec.tracking_ref or ""
+            if rec.fulfillment_type == "fbm" and not ref:
                 raise UserError(_("Tracking reference is required for FBM shipments."))
+            wanted = rec._ship_normalize_quantities(quantities) if quantities is not None else None
             for picking in rec.picking_ids.filtered(lambda p: p.state not in ("done", "cancel")):
                 if picking.state != "assigned":
                     picking.action_assign()
-                for move in picking.move_ids:
-                    if float_compare(move.quantity, move.product_uom_qty,
-                                     precision_rounding=move.product_uom.rounding) < 0:
-                        raise UserError(_(
-                            "Not enough vendor stock to ship %(product)s (%(done)s of %(needed)s available).",
-                            product=move.product_id.display_name, done=move.quantity, needed=move.product_uom_qty))
-                if "carrier_tracking_ref" in picking._fields and rec.tracking_ref:
-                    picking.carrier_tracking_ref = rec.tracking_ref
-                picking.move_ids.picked = True
+                if wanted is None:
+                    for move in picking.move_ids:
+                        if float_compare(move.quantity, move.product_uom_qty,
+                                         precision_rounding=move.product_uom.rounding) < 0:
+                            raise UserError(_(
+                                "Not enough vendor stock to ship %(product)s (%(done)s of %(needed)s available).",
+                                product=move.product_id.display_name, done=move.quantity, needed=move.product_uom_qty))
+                if "carrier_tracking_ref" in picking._fields and ref:
+                    picking.carrier_tracking_ref = ref
+                if wanted is None:
+                    picking.move_ids.picked = True
+                else:
+                    remaining = dict(wanted)
+                    for move in picking.move_ids.filtered(lambda m: m.state not in ("done", "cancel")):
+                        line = move.leaders_vendor_line_id
+                        qty = min(remaining.get(line, 0.0), move.product_uom_qty)
+                        remaining[line] = remaining.get(line, 0.0) - qty
+                        # Reserved quantity becomes the shipped quantity; the rest
+                        # of the move goes to the backorder when the picking closes.
+                        move.quantity = qty
+                        move.picked = qty > 0
+                    if not picking.move_ids.filtered("picked"):
+                        # Nothing of this picking ships now (it stays open as is).
+                        continue
                 picking.with_context(skip_backorder=True, skip_sms=True, skip_immediate=True)._action_done()
             rec._sync_from_pickings()
+
+    def action_open_ship_wizard(self):
+        """Backend: ship chosen quantities (the rest goes to a second shipment)."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Ship Quantities"),
+            "res_model": "leaders.ship.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"leaders_ship_group_id": self.id},
+        }
+
+    def action_cancel_remaining(self):
+        """Give up the part of a partially shipped group that never left.
+
+        The open backorder pickings are cancelled (reservations released) and
+        the group turns ``shipped`` with what was sent; the order lines keep
+        their ``qty_delivered`` (only the shipped part), so returns and the
+        delivery flow work on that. The vendor order money is not resized:
+        settle the difference with the customer through the usual refund/return
+        tools.
+        """
+        for rec in self:
+            if rec.state != "partially_shipped":
+                raise UserError(_("Only a partially shipped group has a remaining part to cancel."))
+            rec.picking_ids.filtered(lambda p: p.state not in ("done", "cancel")).action_cancel()
+            rec.message_post(body=_("The part that was not shipped was cancelled."))
+            rec._sync_from_pickings()
+        return True
 
     @api.model
     def _leaders_fbm_delivery_mode(self):

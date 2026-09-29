@@ -644,11 +644,22 @@ class MarketplacePortal(CustomerPortal):
         url = f"/my/vendor/orders/{group.vendor_order_id.id}"
         try:
             with request.env.cr.savepoint():
-                group.sudo().write({
-                    "tracking_ref": (post.get("tracking_ref") or "").strip(),
-                    "carrier_id": int(post.get("carrier_id") or 0) or False,
-                })
-                group.sudo().action_ship()
+                tracking = (post.get("tracking_ref") or "").strip()
+                # One field per order line ("qty_<line id>"); the form defaults to
+                # the full available quantity. No such field: ship everything.
+                quantities = {}
+                for key, value in post.items():
+                    if key.startswith("qty_") and key[4:].isdigit():
+                        try:
+                            quantities[int(key[4:])] = float(value or 0.0)
+                        except ValueError:
+                            raise UserError(_("Invalid shipment quantity."))
+                vals = {"carrier_id": int(post.get("carrier_id") or 0) or False}
+                if not group.picking_ids.filtered(lambda p: p.state == "done"):
+                    vals["tracking_ref"] = tracking
+                group.sudo().write(vals)
+                group.sudo().action_ship(
+                    quantities=quantities if quantities else None, tracking_ref=tracking)
         except UserError as e:
             return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
         return request.redirect(url)

@@ -36,6 +36,7 @@
         "views/commission_views.xml",
         "views/settlement_views.xml",
         "views/fulfillment_views.xml",
+        "views/ship_wizard_views.xml",
         "views/vendor_return_dispute_views.xml",
         "views/vendor_kpi_penalty_views.xml",
         "views/delivery_zone_views.xml",

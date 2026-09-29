@@ -116,6 +116,8 @@
                                     <field name="delivery_proof" filename="delivery_proof_name" optional="hide"/>
                                     <field name="delivery_proof_name" column_invisible="1"/>
                                     <button name="action_ship" type="object" string="Ship" icon="fa-truck" invisible="state in ('shipped', 'delivery_reported', 'delivered', 'cancelled')"/>
+                                    <button name="action_open_ship_wizard" type="object" string="Ship Quantities" icon="fa-cubes" invisible="state in ('shipped', 'delivery_reported', 'delivered', 'cancelled')"/>
+                                    <button name="action_cancel_remaining" type="object" string="Cancel Remaining" icon="fa-times" invisible="state != 'partially_shipped'" confirm="Cancel the part of this shipment that was not shipped? The customer will only receive what already left."/>
                                     <button name="action_delivered" type="object" string="Delivered" icon="fa-check" invisible="state not in ('shipped', 'delivery_reported')"/>
                                     <field name="is_cod" column_invisible="1"/>
                                     <button name="action_customer_refused" type="object" string="Customer refused" icon="fa-undo" invisible="state != 'shipped' or not is_cod" confirm="Cancel this order as refused by the customer at the door? The goods return to the source location and no earning is created." groups="leaders_marketplace.group_marketplace_manager"/>

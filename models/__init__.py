@@ -22,3 +22,4 @@ from . import ir_ui_menu
 from . import delivery
 from . import cod_protection
 from . import bank_change
+from . import ship_wizard

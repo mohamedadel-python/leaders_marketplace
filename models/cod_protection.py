@@ -327,7 +327,7 @@ class FulfillmentGroup(models.Model):
             if rec.state != "shipped":
                 raise UserError(_("Only a shipped group can be marked as refused by the customer."))
             blocked = order.fulfillment_group_ids.filtered(
-                lambda g: g != rec and g.state in ("delivery_reported", "delivered"))
+                lambda g: g != rec and g.state in ("partially_shipped", "delivery_reported", "delivered"))
             if blocked:
                 raise UserError(_(
                     "%(order)s already has a delivered shipment; handle this refusal as a return.",

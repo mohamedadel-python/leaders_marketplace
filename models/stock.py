@@ -57,6 +57,13 @@ class StockMove(models.Model):
 
     leaders_vendor_line_id = fields.Many2one("leaders.vendor.order.line", index=True, copy=False)
 
+    def _prepare_move_split_vals(self, qty):
+        # A backorder move is the rest of the same vendor order line.
+        vals = super()._prepare_move_split_vals(qty)
+        if self.leaders_vendor_line_id:
+            vals["leaders_vendor_line_id"] = self.leaders_vendor_line_id.id
+        return vals
+
 
 class StockPicking(models.Model):
     _inherit = "stock.picking"
@@ -65,6 +72,13 @@ class StockPicking(models.Model):
     leaders_vendor_order_id = fields.Many2one(
         related="leaders_fulfillment_group_id.vendor_order_id", store=True, index=True)
     leaders_return_id = fields.Many2one("leaders.vendor.return", index=True, copy=False)
+
+    def _create_backorder_picking(self):
+        # A partial shipment: the backorder stays in the same fulfillment group.
+        backorder = super()._create_backorder_picking()
+        if self.leaders_fulfillment_group_id:
+            backorder.leaders_fulfillment_group_id = self.leaders_fulfillment_group_id
+        return backorder
 
     def _leaders_marketplace_pickings(self, company):
         """This company's pickings, as sudo, for the marketplace side-effects.

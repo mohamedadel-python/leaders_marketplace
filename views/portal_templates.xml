@@ -534,7 +534,7 @@
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <button class="btn btn-primary"><i class="fa fa-check"/> Confirm Order</button>
                     </form>
-                    <form t-if="vendor_can_cancel and lm_is_vendor_owner and order.state in ('pending', 'confirmed', 'processing', 'partially_fulfilled') and not any(g.state in ('shipped', 'delivery_reported', 'delivered') for g in order.fulfillment_group_ids)"
+                    <form t-if="vendor_can_cancel and lm_is_vendor_owner and order.state in ('pending', 'confirmed', 'processing', 'partially_fulfilled') and not any(g.state in ('partially_shipped', 'shipped', 'delivery_reported', 'delivered') for g in order.fulfillment_group_ids)"
                           t-att-action="'/my/vendor/orders/%s/cancel' % order.id" method="post" class="d-flex gap-1">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <input type="text" name="reason" required="required" class="form-control" placeholder="Reason for cancelling" aria-label="Cancellation reason"/>
@@ -598,8 +598,16 @@
                                 <div t-foreach="g.picking_ids" t-as="p" class="small">Delivery <t t-esc="p.name"/>: <t t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)"/></div>
                                 <div class="small">Tracking: <t t-esc="g.tracking_ref or '-'"/></div>
                                 <t t-if="g.fulfillment_type == 'fbm'">
-                                    <form t-if="g.state not in ('shipped', 'delivery_reported', 'delivered', 'cancelled')" t-att-action="'/my/vendor/fulfillment/%s/ship' % g.id" method="post" class="row g-2 mt-2">
+                                    <form t-if="g.state not in ('shipped', 'delivery_reported', 'delivered', 'cancelled')" t-att-action="'/my/vendor/fulfillment/%s/ship' % g.id" method="post" class="row g-2 mt-2" id="lm_ship_form">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <t t-set="lm_ship_info" t-value="g._ship_lines_info()"/>
+                                        <div class="col-12" t-if="lm_ship_info">
+                                            <div class="small text-muted mb-1">Quantity to ship now (the rest stays in a second shipment)</div>
+                                            <div t-foreach="lm_ship_info.items()" t-as="li" class="d-flex align-items-center gap-2 mb-1">
+                                                <label class="small flex-grow-1 mb-0" t-att-for="'lm_ship_qty_%s' % li[0].id"><t t-esc="li[0].product_id.display_name"/> <span class="text-muted">(<t t-esc="'%g' % li[1][1]"/> / <t t-esc="'%g' % li[1][0]"/>)</span></label>
+                                                <input type="number" class="form-control form-control-sm" style="max-width: 6rem;" t-att-id="'lm_ship_qty_%s' % li[0].id" t-att-name="'qty_%s' % li[0].id" t-att-value="'%g' % li[1][1]" min="0" t-att-max="'%g' % li[1][1]" step="any"/>
+                                            </div>
+                                        </div>
                                         <div class="col-8"><input class="form-control" name="tracking_ref" placeholder="Tracking number" required="required"/></div>
                                         <div class="col-4"><button class="btn btn-primary w-100"><i class="fa fa-truck"/> Ship</button></div>
                                     </form>

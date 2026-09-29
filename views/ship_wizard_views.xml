@@ -1,0 +1,28 @@
+<odoo>
+    <record id="view_leaders_ship_wizard_form" model="ir.ui.view">
+        <field name="name">leaders.ship.wizard.form</field>
+        <field name="model">leaders.ship.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Ship Quantities">
+                <group>
+                    <field name="group_id"/>
+                    <field name="tracking_ref"/>
+                </group>
+                <field name="line_ids">
+                    <list create="false" delete="false" editable="bottom">
+                        <field name="vendor_line_id" column_invisible="1"/>
+                        <field name="product_id"/>
+                        <field name="demanded_qty"/>
+                        <field name="available_qty"/>
+                        <field name="quantity"/>
+                    </list>
+                </field>
+                <div class="text-muted">What is not shipped now stays in a second shipment of the same group, with its own tracking reference.</div>
+                <footer>
+                    <button name="action_ship" type="object" string="Ship" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
