@@ -45,6 +45,8 @@
         "views/checkout_templates.xml",
         "views/vendor_apply_templates.xml",
         "views/menu_views.xml",
+        "views/vendor_import_views.xml",
+        "views/vendor_import_templates.xml",
         "views/cancel_reason_views.xml",
         "views/bank_change_views.xml",
         "views/vendor_terms_views.xml"

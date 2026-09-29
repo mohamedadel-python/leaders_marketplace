@@ -289,6 +289,7 @@ class MarketplacePortal(CustomerPortal):
         return self._vendor_render("leaders_marketplace.portal_vendor_products", {
             "fbl_enabled": request.env["leaders.marketplace.offer"]._leaders_fbl_allowed(),
             "discounts_enabled": request.env["leaders.marketplace.offer"]._leaders_discounts_enabled(),
+            "bulk_import_enabled": request.env["leaders.vendor.import"]._leaders_import_enabled(),
             "offers": offers,
             "vendor": vendor,
             "error": kw.get("error"),
@@ -594,9 +595,7 @@ class MarketplacePortal(CustomerPortal):
         offer = self._offer_owned_by_vendor(offer_id, vendor)
         # Unpublishing a shared template would pull other sellers' offers off
         # the website too; only the sole owner may send it back for review.
-        if offer.product_tmpl_id.sudo()._leaders_vendor_owns_content(vendor):
-            offer.product_tmpl_id.sudo().write({"marketplace_state": "pending", "is_published": False})
-        offer.sudo().action_submit()
+        offer._leaders_vendor_submit(vendor)
         return request.redirect("/my/vendor/products")
 
     def _vendor_stock_error(self, message):
@@ -616,28 +615,10 @@ class MarketplacePortal(CustomerPortal):
         qty = self._to_float(post.get("quantity"), 0.0)
         location = vendor._marketplace_stock_location("fbm")
         if mode == "set":
-            if qty < 0:
-                return self._vendor_stock_error(_("The stock quantity cannot be negative."))
-            rounding = offer.product_id.uom_id.rounding
-            quants = request.env["stock.quant"].sudo().search([
-                ("product_id", "=", offer.product_id.id),
-                ("location_id", "=", location.id),
-                ("owner_id", "=", vendor.id),
-                ("lot_id", "=", False),
-                ("package_id", "=", False),
-            ])
-            reserved = sum(quants.mapped("reserved_quantity"))
-            if float_compare(qty, reserved, precision_rounding=rounding) < 0:
-                return self._vendor_stock_error(_(
-                    "You cannot set the stock of %(product)s to %(qty)s: %(reserved)s are already reserved for open orders.",
-                    product=offer.product_id.display_name, qty=qty, reserved=reserved))
-            delta = qty - sum(quants.mapped("quantity"))
-            if not float_is_zero(delta, precision_rounding=rounding):
-                if offer.stock_location_id != location:
-                    offer.sudo().stock_location_id = location
-                request.env["stock.quant"].sudo()._leaders_adjust_vendor_stock(
-                    offer.product_id, location, vendor, delta,
-                    reason=_("Vendor portal stock correction (%s)", offer.seller_sku))
+            try:
+                offer._leaders_set_fbm_stock(qty)
+            except UserError as exc:
+                return self._vendor_stock_error(str(exc))
             return request.redirect("/my/vendor/products")
         if qty < 0:
             raise UserError(_("The added stock quantity cannot be negative."))
@@ -649,6 +630,113 @@ class MarketplacePortal(CustomerPortal):
                 offer.product_id, location, vendor, qty,
                 reason=_("Vendor portal stock update (%s)", offer.seller_sku))
         return request.redirect("/my/vendor/products")
+
+    # -------------------------------------------------------------------------
+    # Bulk import (B2)
+    # -------------------------------------------------------------------------
+    def _import_vendor(self):
+        """The vendor allowed to import (same rule as product creation); 404 when the feature is off."""
+        if not request.env["leaders.vendor.import"]._leaders_import_enabled():
+            raise NotFound()
+        return self._require_vendor()
+
+    def _import_job(self, job_id, vendor):
+        job = request.env["leaders.vendor.import"].sudo().search([
+            ("id", "=", job_id), ("vendor_id", "=", vendor.id)], limit=1)
+        if not job:
+            raise NotFound()
+        return job
+
+    def _import_kinds(self):
+        kinds = request.env["leaders.vendor.import"]._fields["kind"]._description_selection(request.env)
+        if not request.env["res.partner"]._marketplace_catalog_enabled():
+            kinds = [k for k in kinds if k[0] != "catalog_offers"]
+        return kinds
+
+    def _import_index_values(self, vendor, **extra):
+        values = {
+            "vendor": vendor, "kinds": self._import_kinds(), "error": False,
+            "jobs": request.env["leaders.vendor.import"].sudo().search(
+                [("vendor_id", "=", vendor.id)], limit=20),
+        }
+        values.update(extra)
+        return values
+
+    @http.route("/my/vendor/import", type="http", auth="user", website=True)
+    def vendor_import(self, **kw):
+        vendor = self._import_vendor()
+        return self._vendor_render("leaders_marketplace.portal_vendor_import", self._import_index_values(vendor))
+
+    @http.route("/my/vendor/import/template/<any(new_products,catalog_offers,update):kind>.<any(xlsx,csv):fmt>",
+                type="http", auth="user", website=True)
+    def vendor_import_template(self, kind, fmt, **kw):
+        self._import_vendor()
+        if kind not in [k[0] for k in self._import_kinds()]:
+            raise NotFound()
+        content, mimetype, filename = request.env["leaders.vendor.import"]._leaders_build_template(kind, fmt)
+        return request.make_response(content, headers=[
+            ("Content-Type", mimetype),
+            ("Content-Disposition", "attachment; filename=%s" % filename)])
+
+    @http.route("/my/vendor/import/upload", type="http", auth="user", website=True, methods=["POST"], csrf=True)
+    def vendor_import_upload(self, **post):
+        vendor = self._import_vendor()
+        kind = post.get("kind")
+        upload = request.httprequest.files.get("file")
+        error = False
+        if kind not in [k[0] for k in self._import_kinds()]:
+            error = _("Choose what you want to import.")
+        elif not upload or not upload.filename:
+            error = _("Choose a file to upload.")
+        elif not upload.filename.lower().endswith((".xlsx", ".csv")):
+            error = _("Upload an .xlsx or .csv file.")
+        data = b"" if error else upload.read(10 * 1024 * 1024 + 1)
+        if not error and (not data or len(data) > 10 * 1024 * 1024):
+            error = _("The file is empty or larger than 10 MB.")
+        if error:
+            return self._vendor_render("leaders_marketplace.portal_vendor_import",
+                                       self._import_index_values(vendor, error=error))
+        Import = request.env["leaders.vendor.import"].sudo()
+        job = Import.create({
+            "vendor_id": vendor.id, "user_id": request.env.user.id, "kind": kind,
+            "file": base64.b64encode(data), "filename": upload.filename,
+            "submit_after_import": bool(post.get("submit_after_import")),
+        })
+        if job._leaders_count_rows() <= Import._LEADERS_SYNC_ROWS:
+            job.action_validate()
+        else:
+            Import._leaders_trigger_cron()
+        return request.redirect("/my/vendor/import/%s" % job.id)
+
+    @http.route("/my/vendor/import/<int:job_id>", type="http", auth="user", website=True)
+    def vendor_import_job(self, job_id, **kw):
+        vendor = self._import_vendor()
+        job = self._import_job(job_id, vendor)
+        preview = [r for r in job._leaders_error_rows()][:30]
+        return self._vendor_render("leaders_marketplace.portal_vendor_import_job", {
+            "vendor": vendor, "job": job, "error_preview": preview,
+            "error_count": len(job._leaders_error_rows()),
+            "error": kw.get("error"),
+        })
+
+    @http.route("/my/vendor/import/<int:job_id>/confirm", type="http", auth="user", website=True, methods=["POST"], csrf=True)
+    def vendor_import_confirm(self, job_id, **post):
+        vendor = self._import_vendor()
+        job = self._import_job(job_id, vendor)
+        try:
+            job.action_confirm()
+        except UserError as exc:
+            return request.redirect("/my/vendor/import/%s?error=%s" % (job.id, quote(str(exc))))
+        return request.redirect("/my/vendor/import/%s" % job.id)
+
+    @http.route("/my/vendor/import/<int:job_id>/errors.<any(csv,xlsx):fmt>", type="http", auth="user", website=True)
+    def vendor_import_errors(self, job_id, fmt, **kw):
+        vendor = self._import_vendor()
+        job = self._import_job(job_id, vendor)
+        content, mimetype, filename = job._leaders_build_error_file(fmt)
+        return request.make_response(content, headers=[
+            ("Content-Type", mimetype),
+            ("Content-Disposition", "attachment; filename=%s" % filename)])
 
     # -------------------------------------------------------------------------
     # Orders / fulfillment

@@ -268,6 +268,20 @@ class ResConfigSettings(models.TransientModel):
              "COD order only notes in the chatter that the cash was not booked, "
              "which is how the marketplace behaved before this setting.",
     )
+    marketplace_vendor_bulk_import_enabled = fields.Boolean(
+        string="Vendor Bulk Import",
+        config_parameter="leaders_marketplace.vendor_bulk_import_enabled",
+        default=False,
+        help="Off: the portal page /my/vendor/import does not exist. On: vendors can upload "
+             "xlsx/csv files to create products, offers on catalog products, or update "
+             "price, stock and discount by seller SKU.",
+    )
+    marketplace_vendor_import_batch_size = fields.Integer(
+        string="Import Rows per Cron Run",
+        config_parameter="leaders_marketplace.vendor_import_batch_size",
+        default=50,
+        help="How many validated rows the import cron applies per run (all jobs together).",
+    )
     marketplace_vendor_image_max_mb = fields.Integer(
         string="Vendor Image Max Size (MB)",
         config_parameter="leaders_marketplace.vendor_image_max_mb",

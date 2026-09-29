@@ -136,6 +136,12 @@
                         <setting string="Block COD After Refusals" invisible="not marketplace_cod_enabled" help="Hide Cash on Delivery for customers who refused this many parcels at the door. 0 turns it off.">
                             <field name="marketplace_cod_refusal_block_count"/>
                         </setting>
+                        <setting string="Vendor Bulk Import" help="Let vendors upload xlsx/csv files to create products, sell catalog products and update price, stock and discounts. Every row is validated first and only valid rows are applied after the vendor confirms.">
+                            <field name="marketplace_vendor_bulk_import_enabled"/>
+                        </setting>
+                        <setting string="Import Rows per Cron Run" invisible="not marketplace_vendor_bulk_import_enabled" help="Rows applied per run of the 'process vendor imports' cron.">
+                            <field name="marketplace_vendor_import_batch_size"/>
+                        </setting>
                         <setting string="Vendor Image Max Size (MB)" help="Largest product image a vendor may upload from the portal. Non-image files are always refused.">
                             <field name="marketplace_vendor_image_max_mb"/>
                         </setting>

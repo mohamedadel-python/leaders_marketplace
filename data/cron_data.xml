@@ -35,6 +35,12 @@
         <field name="state">code</field><field name="code">model.cron_refresh_discounts()</field>
         <field name="interval_number">15</field><field name="interval_type">minutes</field><field name="active">True</field>
     </record>
+    <record id="cron_process_vendor_imports" model="ir.cron">
+        <field name="name">Marketplace: process vendor imports</field>
+        <field name="model_id" ref="model_leaders_vendor_import"/>
+        <field name="state">code</field><field name="code">model.cron_process_imports()</field>
+        <field name="interval_number">5</field><field name="interval_type">minutes</field><field name="active">True</field>
+    </record>
     <record id="cron_refresh_buybox" model="ir.cron">
         <field name="name">Marketplace: Refresh Buy Box</field>
         <field name="model_id" ref="model_leaders_marketplace_offer"/>

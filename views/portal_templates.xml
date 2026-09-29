@@ -384,7 +384,7 @@
     <template id="portal_vendor_products" name="Vendor Products">
         <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
             <t t-call="leaders_marketplace.portal_vendor_nav"/>
-            <div class="d-flex justify-content-between align-items-center mb-3"><h2>Products &amp; Offers</h2><a href="/my/vendor/products/new" class="btn btn-primary">+ Add Product</a></div>
+            <div class="d-flex justify-content-between align-items-center mb-3"><h2>Products &amp; Offers</h2><div class="d-flex flex-wrap gap-2"><a t-if="bulk_import_enabled" href="/my/vendor/import" class="btn btn-outline-primary"><i class="fa fa-upload"/> Bulk import</a><a href="/my/vendor/products/new" class="btn btn-primary">+ Add Product</a></div></div>
             <div t-if="error" class="alert alert-danger" t-esc="error"/>
             <div t-if="notice" class="alert alert-success" t-esc="notice"/>
             <div class="alert alert-info"><t t-if="fbl_enabled">FBM stock can be updated here. FBL stock is updated through warehouse inbound receipts.</t><t t-else="">Update your stock here.</t></div>
