@@ -142,6 +142,15 @@
                         <setting string="Import Rows per Cron Run" invisible="not marketplace_vendor_bulk_import_enabled" help="Rows applied per run of the 'process vendor imports' cron.">
                             <field name="marketplace_vendor_import_batch_size"/>
                         </setting>
+                        <setting string="Vendor Variants, Images and Specifications" help="Let vendors build variants from existing attributes (one offer per variant), add extra images and write specifications on products they own. Off keeps the single-variant product form.">
+                            <field name="marketplace_vendor_variants_enabled"/>
+                        </setting>
+                        <setting string="Vendors May Create Attributes" invisible="not marketplace_vendor_variants_enabled" help="Allow vendors to add new attribute values and attributes. They are global: every vendor sees them.">
+                            <field name="marketplace_allow_vendor_attributes"/>
+                        </setting>
+                        <setting string="Vendor Extra Images" invisible="not marketplace_vendor_variants_enabled" help="Extra images per product (0 = 8).">
+                            <field name="marketplace_vendor_max_extra_images"/>
+                        </setting>
                         <setting string="Vendor Image Max Size (MB)" help="Largest product image a vendor may upload from the portal. Non-image files are always refused.">
                             <field name="marketplace_vendor_image_max_mb"/>
                         </setting>

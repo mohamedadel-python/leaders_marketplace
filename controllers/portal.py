@@ -128,7 +128,7 @@ class MarketplacePortal(CustomerPortal):
             request.env["product.public.category"].browse()
         forced_policy = request.env["leaders.fulfillment.policy"].sudo()._policy_for(
             vendor, categories)
-        return {
+        values = {
             "vendor": vendor,
             "offer": offer,
             "vendor_owns_content": owns_content,
@@ -143,8 +143,30 @@ class MarketplacePortal(CustomerPortal):
             "currencies": request.env["res.currency"].sudo().search([("active", "=", True)], order="name"),
             "error": error,
         }
+        values.update(self._vendor_variants_form_values(offer))
+        return values
 
-    def _vendor_over_offer_limit(self, vendor):
+    def _vendor_variants_form_values(self, offer=None):
+        """B3 form data (options, extra images, specifications); inert while the switch is off."""
+        Template = request.env["product.template"]
+        enabled = Template._leaders_variants_enabled()
+        values = {"variants_enabled": enabled}
+        if not enabled:
+            return values
+        tmpl = offer.product_tmpl_id.sudo() if offer else Template.browse()
+        values.update({
+            "attr_options": Template._leaders_pickable_attributes(),
+            "attr_selected": tmpl._leaders_current_selection() if tmpl else {},
+            "allow_new_attrs": Template._leaders_allow_vendor_attributes(),
+            "max_extra_images": Template._leaders_max_extra_images(),
+            "extra_images": tmpl.product_template_image_ids if tmpl else request.env["product.image"],
+            "tmpl_specs": tmpl.leaders_specs if tmpl else "",
+            "variant_tmpl": tmpl,
+            "variant_count": len(tmpl.product_variant_ids) if tmpl else 0,
+        })
+        return values
+
+    def _vendor_over_offer_limit(self, vendor, count=1):
         tier = vendor.vendor_tier_id
         if not (tier and tier.product_limit):
             return False
@@ -152,7 +174,7 @@ class MarketplacePortal(CustomerPortal):
             ("vendor_id", "=", vendor.id),
             ("active", "=", True),
         ])
-        return current >= tier.product_limit
+        return current + count > tier.product_limit
 
     def _catalog_values(self, vendor, query="", **extra):
         """Catalog search results for "Sell an existing product" (empty when the feature is off)."""
@@ -197,6 +219,159 @@ class MarketplacePortal(CustomerPortal):
         if not guess_mimetype(data, default="").startswith("image/"):
             return False, _("Only image files (PNG, JPEG, GIF, WebP) can be uploaded.")
         return base64.b64encode(data), False
+
+    # -- B3: variants, extra images, specifications ----------------------------
+    def _vendor_b3_parse(self, post):
+        """Read the B3 part of the product form; raise UserError on anything invalid.
+
+        Nothing is written here. Returns None when the form did not carry the B3 card.
+        """
+        form = request.httprequest.form
+        if not form.get("lm_variants_form"):
+            return None
+        Template = request.env["product.template"]
+        selection = {}
+        for key in form:
+            if key.startswith("attr_values_") and key[len("attr_values_"):].isdigit():
+                selection[int(key[len("attr_values_"):])] = [
+                    int(v) for v in form.getlist(key) if str(v).isdigit()]
+        new_values = {}
+        for key in form:
+            if key.startswith("new_values_") and key[len("new_values_"):].isdigit() and form.get(key, "").strip():
+                new_values[int(key[len("new_values_"):])] = form.get(key).split(",")
+        new_attr = None
+        if (form.get("new_attr_name") or "").strip():
+            new_attr = {"name": form.get("new_attr_name"), "values": (form.get("new_attr_values") or "").split(","),
+                        "spec": form.get("new_attr_kind") == "spec"}
+        if (new_values or new_attr) and not Template._leaders_allow_vendor_attributes():
+            raise UserError(_("Adding new attribute values is not allowed."))
+        images = []
+        for image_file in request.httprequest.files.getlist("extra_images"):
+            image_b64, image_error = self._read_vendor_image(image_file)
+            if image_error:
+                raise UserError(image_error)
+            if image_b64:
+                images.append((image_b64, image_file.filename))
+        remove_ids = [int(v) for v in form.getlist("remove_image_ids") if str(v).isdigit()]
+        return {
+            "selection": selection, "new_values": new_values, "new_attr": new_attr,
+            "images": images, "remove_ids": remove_ids,
+            "specs": Template._leaders_clean_specs(form.get("leaders_specs")),
+        }
+
+    def _vendor_b3_apply(self, tmpl, parsed):
+        """Write the parsed B3 data on an owned template (atomic: one savepoint)."""
+        if not parsed:
+            return
+        Template = request.env["product.template"]
+        tmpl = tmpl.sudo()
+        with request.env.cr.savepoint():
+            tmpl._leaders_check_extra_images(len(parsed["images"]), parsed["remove_ids"])
+            selection = {k: list(v) for k, v in parsed["selection"].items()}
+            for attribute_id, names in parsed["new_values"].items():
+                attribute = Template._leaders_pickable_attributes().filtered(lambda a: a.id == attribute_id)
+                if not attribute:
+                    raise UserError(_("This attribute cannot be used."))
+                created = Template._leaders_create_vendor_attribute_values(attribute, names)
+                selection.setdefault(attribute_id, []).extend(created.ids)
+            if parsed["new_attr"]:
+                attribute, created = Template._leaders_create_vendor_attribute(
+                    parsed["new_attr"]["name"], parsed["new_attr"]["values"], as_spec=parsed["new_attr"]["spec"])
+                if attribute not in Template._leaders_pickable_attributes():
+                    raise UserError(_("This attribute cannot be used."))
+                selection.setdefault(attribute.id, []).extend(created.ids)
+            tmpl._leaders_apply_attribute_selection(selection)
+            tmpl._leaders_remove_extra_images(parsed["remove_ids"])
+            for image_b64, filename in parsed["images"]:
+                tmpl._leaders_add_extra_image(image_b64, name=filename)
+            tmpl.leaders_specs = parsed["specs"] or False
+
+    def _template_owned_by_vendor(self, tmpl_id, vendor):
+        """Template the vendor owns outright (variants pages); feature off -> 404, else AccessError."""
+        Template = request.env["product.template"]
+        if not Template._leaders_variants_enabled():
+            raise NotFound()
+        tmpl = Template.sudo().browse(tmpl_id).exists()
+        if not tmpl or not tmpl._leaders_vendor_owns_template(vendor):
+            raise AccessError(_("You cannot access this product."))
+        return tmpl
+
+    def _variants_page_values(self, vendor, tmpl, **extra):
+        Offer = request.env["leaders.marketplace.offer"].sudo()
+        offers = Offer.search([("vendor_id", "=", vendor.id), ("product_tmpl_id", "=", tmpl.id)])
+        missing = tmpl._leaders_variants_without_offer(vendor)
+        args = request.params
+        values = dict(self._vendor_form_values(vendor), **{
+            "tmpl": tmpl, "offers": offers, "missing": missing,
+            "form": {k: args.get(k, "") for k in ("sku", "price", "fulfillment_type", "currency_id")},
+            "form_markets": [int(x) for x in (args.get("markets") or "").split(",") if x.isdigit()]
+                            or offers[:1].market_ids.ids,
+            "form_fulfillment": args.get("fulfillment_type") or offers[:1].fulfillment_type or "fbm",
+            "form_currency": int(args.get("currency_id") or 0) if str(args.get("currency_id") or "").isdigit()
+                             else (offers[:1].currency_id.id or request.env.company.currency_id.id),
+            "discounts_enabled": Offer._leaders_discounts_enabled(),
+            "error": False, "notice": args.get("notice"),
+        })
+        values.update(extra)
+        return values
+
+    @http.route("/my/vendor/templates/<int:tmpl_id>/variants", type="http", auth="user", website=True,
+                methods=["GET", "POST"], csrf=True)
+    def vendor_template_variants(self, tmpl_id, **post):
+        """Offers of the variants of an owned template: table of existing offers, one row per
+        variant still without an offer (POST creates one draft offer per ticked row)."""
+        vendor = self._require_vendor()
+        tmpl = self._template_owned_by_vendor(tmpl_id, vendor)
+        if request.httprequest.method == "GET":
+            return self._vendor_render("leaders_marketplace.portal_vendor_variants",
+                                       self._variants_page_values(vendor, tmpl))
+        form = request.httprequest.form
+        Offer = request.env["leaders.marketplace.offer"]
+        missing = tmpl._leaders_variants_without_offer(vendor)
+        rows = []
+        for product in missing:
+            if not form.get("create_%s" % product.id):
+                continue
+            row = {
+                "product": product,
+                "sku": (form.get("sku_%s" % product.id) or "").strip(),
+                "price": self._to_float(form.get("price_%s" % product.id)),
+                "stock": self._to_float(form.get("stock_%s" % product.id)),
+            }
+            discount = (form.get("discount_%s" % product.id) or "").strip()
+            if discount:
+                row["discount_percent"] = discount
+            rows.append(row)
+        fulfillment_type = form.get("fulfillment_type") or "fbm"
+        currency = request.env["res.currency"].sudo().browse(
+            int(form.get("currency_id") or 0) if str(form.get("currency_id") or "").isdigit() else 0
+        ).exists() or request.env.company.currency_id
+        markets = request.env["website"].sudo().browse(
+            [int(x) for x in form.getlist("market_ids") if x.isdigit()]).exists()
+        try:
+            if rows and any(r.get("discount_percent") for r in rows) and not Offer._leaders_discounts_enabled():
+                raise UserError(_("Vendor discounts are not enabled."))
+            with request.env.cr.savepoint():
+                Offer._leaders_create_variant_offers(vendor, tmpl, rows, fulfillment_type, currency, markets)
+        except (UserError, ValidationError) as exc:
+            return self._vendor_render("leaders_marketplace.portal_vendor_variants",
+                                       self._variants_page_values(vendor, tmpl, error=str(exc)))
+        return request.redirect("/my/vendor/templates/%s/variants?notice=%s" % (
+            tmpl.id, quote(_("%s offer(s) created as drafts.", len(rows)))))
+
+    @http.route("/my/vendor/templates/<int:tmpl_id>/submit", type="http", auth="user", website=True,
+                methods=["POST"], csrf=True)
+    def vendor_template_submit(self, tmpl_id, **post):
+        """Send every draft/rejected variant offer of an owned template for review."""
+        vendor = self._require_vendor()
+        tmpl = self._template_owned_by_vendor(tmpl_id, vendor)
+        offers = request.env["leaders.marketplace.offer"].sudo().search([
+            ("vendor_id", "=", vendor.id), ("product_tmpl_id", "=", tmpl.id),
+            ("state", "in", ("draft", "rejected"))])
+        for offer in offers:
+            offer._leaders_vendor_submit(vendor)
+        return request.redirect("/my/vendor/templates/%s/variants?notice=%s" % (
+            tmpl.id, quote(_("%s offer(s) submitted for review.", len(offers)))))
 
     @staticmethod
     def _to_float(value, default=0.0):
@@ -353,7 +528,32 @@ class MarketplacePortal(CustomerPortal):
         if category_id:
             template_vals["public_categ_ids"] = [(6, 0, [category_id])]
 
-        tmpl = request.env["product.template"].sudo().create(template_vals)
+        try:
+            b3 = self._vendor_b3_parse(post) if request.env["product.template"]._leaders_variants_enabled() else None
+            if b3 and len(b3["images"]) > request.env["product.template"]._leaders_max_extra_images():
+                raise UserError(_("A product can have at most %s extra images.",
+                                  request.env["product.template"]._leaders_max_extra_images()))
+        except UserError as exc:
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, error=str(exc)))
+
+        try:
+            with request.env.cr.savepoint():
+                tmpl = request.env["product.template"].sudo().create(template_vals)
+                if b3:
+                    self._vendor_b3_apply(tmpl, b3)
+                    if len(tmpl.product_variant_ids) > 1 and self._vendor_over_offer_limit(
+                            vendor, len(tmpl.product_variant_ids)):
+                        raise UserError(_("Your vendor tier product limit has been reached."))
+        except (UserError, ValidationError) as exc:
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, error=str(exc)))
+        if b3 and len(tmpl.product_variant_ids) > 1:
+            return request.redirect("/my/vendor/templates/%s/variants?created=1&sku=%s&price=%s&fulfillment_type=%s&currency_id=%s&markets=%s" % (
+                tmpl.id, quote(seller_sku), price, quote(fulfillment_type), currency_id,
+                ",".join(str(w) for w in website_ids)))
         product = tmpl.product_variant_id
         offer = request.env["leaders.marketplace.offer"].sudo().create({
             "product_tmpl_id": tmpl.id,
@@ -463,6 +663,17 @@ class MarketplacePortal(CustomerPortal):
                 self._vendor_form_values(vendor, offer=offer, error=_(
                     "You already have an offer for this product with the same fulfillment.")),
             )
+
+        b3 = None
+        if request.env["product.template"]._leaders_variants_enabled() \
+                and offer.product_tmpl_id.sudo()._leaders_vendor_owns_content(vendor):
+            try:
+                b3 = self._vendor_b3_parse(post)
+                self._vendor_b3_apply(offer.product_tmpl_id, b3)
+            except (UserError, ValidationError) as exc:
+                return self._vendor_render(
+                    "leaders_marketplace.portal_vendor_product_form",
+                    self._vendor_form_values(vendor, offer=offer, error=str(exc)))
 
         # The template is shared as soon as another seller lists on it, so its
         # content (name, image, publication) is only the vendor's to change

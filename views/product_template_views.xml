@@ -35,6 +35,7 @@
                         <field name="marketplace_state"/>
                         <field name="marketplace_owner_vendor_id"/>
                         <field name="marketplace_publish_date"/>
+                        <field name="leaders_specs" placeholder="Material: Cotton&#10;Weight: 2 kg"/>
                         <field name="marketplace_reject_reason"
                                placeholder="Required to reject the product; the vendor sees this on their portal."/>
                     </group>

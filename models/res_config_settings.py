@@ -282,6 +282,27 @@ class ResConfigSettings(models.TransientModel):
         default=50,
         help="How many validated rows the import cron applies per run (all jobs together).",
     )
+    marketplace_vendor_variants_enabled = fields.Boolean(
+        string="Vendor Variants, Images and Specifications",
+        config_parameter="leaders_marketplace.vendor_variants_enabled",
+        default=False,
+        help="Off: the vendor product form is the single-variant form. On: vendors can pick "
+             "existing attributes to make variants (one offer per variant), add extra images "
+             "and write specifications, on products they own.",
+    )
+    marketplace_allow_vendor_attributes = fields.Boolean(
+        string="Vendors May Create Attributes",
+        config_parameter="leaders_marketplace.allow_vendor_attributes",
+        default=False,
+        help="Off: vendors only choose existing attributes and values. On: they may also add "
+             "new values (and new attributes), which become visible to every vendor.",
+    )
+    marketplace_vendor_max_extra_images = fields.Integer(
+        string="Vendor Extra Images",
+        config_parameter="leaders_marketplace.vendor_max_extra_images",
+        default=8,
+        help="Extra gallery images a vendor may add per product. 0 or empty means 8.",
+    )
     marketplace_vendor_image_max_mb = fields.Integer(
         string="Vendor Image Max Size (MB)",
         config_parameter="leaders_marketplace.vendor_image_max_mb",

@@ -25,3 +25,4 @@ from . import cod_protection
 from . import bank_change
 from . import ship_wizard
 from . import vendor_import
+from . import vendor_variants

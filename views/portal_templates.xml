@@ -494,6 +494,46 @@
                     <div class="col-md-8"><label class="form-label">Markets</label><div class="d-flex flex-wrap gap-3 border rounded p-2"><label t-foreach="websites" t-as="w"><input type="checkbox" name="market_ids" t-att-value="w.id" t-att-checked="offer and w in offer.market_ids"/> <span t-esc="w.name"/></label></div></div>
                     <div class="col-12"><label class="form-label">Main Image</label><input class="form-control" type="file" name="image_1920" accept="image/*" t-att-disabled="'disabled' if not vendor_owns_content else None"/></div>
                 </div>
+                <t t-if="variants_enabled and vendor_owns_content">
+                    <input type="hidden" name="lm_variants_form" value="1"/>
+                    <div id="lm_variants_card" class="border rounded p-3 mt-4">
+                        <h5>Options and Variants</h5>
+                        <p class="small text-muted mb-2">Tick the values this product comes in. Every combination becomes a variant with its own seller SKU, price, stock and offer, which you fill in on the next page. Options marked "Specification" only describe the product.</p>
+                        <div t-if="offer and variant_count &gt; 1" class="alert alert-info py-2">
+                            This product has <t t-esc="variant_count"/> variants.
+                            <a t-att-href="'/my/vendor/templates/%s/variants' % variant_tmpl.id">Manage the offers of the variants</a>
+                        </div>
+                        <div t-foreach="attr_options" t-as="attr" class="mb-3">
+                            <strong t-esc="attr.name"/>
+                            <span t-if="attr.create_variant == 'no_variant'" class="badge text-bg-light border ms-1">Specification</span>
+                            <div class="d-flex flex-wrap gap-3">
+                                <label t-foreach="attr.value_ids" t-as="val"><input type="checkbox" t-att-name="'attr_values_%s' % attr.id" t-att-value="val.id" t-att-checked="val.id in attr_selected.get(attr.id, ())"/> <span t-esc="val.name"/></label>
+                            </div>
+                            <input t-if="allow_new_attrs" class="form-control form-control-sm mt-1" t-att-name="'new_values_%s' % attr.id" placeholder="Add new values, separated by commas"/>
+                        </div>
+                        <div t-if="allow_new_attrs" class="row g-2">
+                            <div class="col-md-4"><input class="form-control form-control-sm" name="new_attr_name" maxlength="64" placeholder="New option name"/></div>
+                            <div class="col-md-5"><input class="form-control form-control-sm" name="new_attr_values" placeholder="Values, separated by commas"/></div>
+                            <div class="col-md-3"><select class="form-select form-select-sm" name="new_attr_kind"><option value="variant">Variant option</option><option value="spec">Specification</option></select></div>
+                        </div>
+                    </div>
+                    <div id="lm_extra_images_card" class="border rounded p-3 mt-3">
+                        <h5>Extra Images</h5>
+                        <p class="small text-muted mb-2">Up to <t t-esc="max_extra_images"/> extra images shown in the product gallery.</p>
+                        <div t-if="extra_images" class="d-flex flex-wrap gap-3 mb-2">
+                            <label t-foreach="extra_images" t-as="img" class="text-center">
+                                <img t-att-src="'/web/image/product.image/%s/image_128' % img.id" class="d-block mb-1 rounded border" width="96" height="96" style="object-fit: cover;" alt=""/>
+                                <input type="checkbox" name="remove_image_ids" t-att-value="img.id"/> Remove
+                            </label>
+                        </div>
+                        <input class="form-control" type="file" name="extra_images" accept="image/*" multiple="multiple"/>
+                    </div>
+                    <div id="lm_specs_card" class="border rounded p-3 mt-3">
+                        <h5>Specifications</h5>
+                        <p class="small text-muted mb-2">One per line as "Name: value". They appear as a table on the product page.</p>
+                        <textarea class="form-control" name="leaders_specs" rows="5" maxlength="4000" placeholder="Material: Cotton"><t t-esc="tmpl_specs or ''"/></textarea>
+                    </div>
+                </t>
                 <div class="mt-4 d-flex gap-2"><button class="btn btn-primary">Save Draft</button><a href="/my/vendor/products" class="btn btn-outline-secondary">Cancel</a></div>
             </form>
             <div t-if="offer and discounts_enabled" id="lm_discount_card" class="card p-4 mt-3">
@@ -1518,6 +1558,82 @@
         </xpath>
         <xpath expr="//div[@id='o_wsale_total_accordion_item']/t[@t-call='website_sale.total']" position="attributes">
             <attribute name="t-if">not lm_vendor_only</attribute>
+        </xpath>
+    </template>
+
+    <template id="portal_vendor_variants" name="Vendor Product Variants">
+        <t t-call="portal.portal_layout"><div class="container my-4 lm-portal">
+            <t t-call="leaders_marketplace.portal_vendor_nav"/>
+            <div class="d-flex justify-content-between flex-wrap gap-2">
+                <h2>Variants of <t t-esc="tmpl.name"/></h2>
+                <a href="/my/vendor/products" class="btn btn-outline-secondary">Back</a>
+            </div>
+            <div t-if="error" class="alert alert-danger mt-3" t-esc="error"/>
+            <div t-if="notice" class="alert alert-success mt-3" t-esc="notice"/>
+            <div t-if="request.params.get('created')" class="alert alert-success mt-3">Product created with its variants. Now set the seller SKU, price and stock of each variant.</div>
+            <div t-if="offers" class="card p-3 mt-3">
+                <h5>Offers</h5>
+                <div class="table-responsive"><table class="table align-middle mb-0">
+                    <thead><tr><th>Variant</th><th>Seller SKU</th><th class="text-end">Price</th><th>Status</th><th/></tr></thead>
+                    <tbody><tr t-foreach="offers" t-as="o">
+                        <td t-esc="o.product_id.display_name"/><td t-esc="o.seller_sku"/>
+                        <td class="text-end"><span t-esc="o.price"/> <span t-esc="o.currency_id.name"/></td>
+                        <td t-esc="dict(o._fields['state']._description_selection(o.env)).get(o.state)"/>
+                        <td class="text-end"><a t-att-href="'/my/vendor/products/%s/edit' % o.id" class="btn btn-sm btn-outline-primary">Edit</a></td>
+                    </tr></tbody>
+                </table></div>
+                <form t-if="offers.filtered(lambda x: x.state in ('draft', 'rejected'))" t-att-action="'/my/vendor/templates/%s/submit' % tmpl.id" method="post" class="mt-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <button class="btn btn-success">Submit all draft offers for review</button>
+                </form>
+            </div>
+            <div t-if="missing" id="lm_variants_without_offer" class="card p-3 mt-3">
+                <h5>Variants without an offer</h5>
+                <form t-att-action="'/my/vendor/templates/%s/variants' % tmpl.id" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3"><label class="form-label">Fulfillment</label>
+                            <select class="form-select" name="fulfillment_type">
+                                <option value="fbm" t-att-selected="form_fulfillment == 'fbm'">FBM - Fulfilled by Vendor</option>
+                                <option t-if="fbl_enabled" value="fbl" t-att-selected="form_fulfillment == 'fbl'">FBL - Fulfilled by Leaders</option>
+                            </select></div>
+                        <div class="col-md-3"><label class="form-label">Currency</label>
+                            <select class="form-select" name="currency_id"><option t-foreach="currencies" t-as="c" t-att-value="c.id" t-att-selected="c.id == form_currency" t-esc="c.name"/></select></div>
+                        <div class="col-md-6"><label class="form-label">Markets</label><div class="d-flex flex-wrap gap-3 border rounded p-2"><label t-foreach="websites" t-as="w"><input type="checkbox" name="market_ids" t-att-value="w.id" t-att-checked="w.id in form_markets"/> <span t-esc="w.name"/></label></div></div>
+                    </div>
+                    <div class="table-responsive"><table class="table align-middle">
+                        <thead><tr><th/><th>Variant</th><th>Seller SKU</th><th>Price</th><th>Stock (FBM)</th><th t-if="discounts_enabled">Discount %</th></tr></thead>
+                        <tbody><tr t-foreach="missing" t-as="p">
+                            <td><input type="checkbox" t-att-name="'create_%s' % p.id" value="1" checked="checked"/></td>
+                            <td t-esc="p.display_name"/>
+                            <td><input class="form-control" t-att-name="'sku_%s' % p.id" t-att-value="'%s-%s' % (form['sku'], p_index + 1) if form['sku'] else ''"/></td>
+                            <td><input class="form-control" type="number" min="0" step="0.01" t-att-name="'price_%s' % p.id" t-att-value="form['price'] or 0"/></td>
+                            <td><input class="form-control" type="number" min="0" step="1" t-att-name="'stock_%s' % p.id" value="0"/></td>
+                            <td t-if="discounts_enabled"><input class="form-control" type="number" min="0.01" max="99.99" step="0.01" t-att-name="'discount_%s' % p.id"/></td>
+                        </tr></tbody>
+                    </table></div>
+                    <button class="btn btn-primary">Create offers</button>
+                </form>
+            </div>
+            <div t-if="not missing and not offers" class="alert alert-info mt-3">This product has no variants yet.</div>
+        </div></t>
+    </template>
+
+    <!-- Product page: vendor specifications (B3), one "name: value" per line. -->
+    <template id="product_page_leaders_specs" inherit_id="website_sale.product" name="Marketplace Specifications on Product Page">
+        <xpath expr="//div[@id='o_product_terms_and_share']" position="before">
+            <t t-set="lm_specs" t-value="product._leaders_specs_rows()"/>
+            <div t-if="lm_specs" id="lm_product_specs" class="my-2">
+                <h5>Specifications</h5>
+                <table class="table table-sm">
+                    <tbody>
+                        <tr t-foreach="lm_specs" t-as="spec">
+                            <th t-if="spec[0]" class="fw-normal text-muted" t-esc="spec[0]"/>
+                            <td t-att-colspan="None if spec[0] else 2" t-esc="spec[1]"/>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </xpath>
     </template>
 

@@ -40,3 +40,4 @@ from . import test_partial_shipments
 from . import test_ship_sla
 from . import test_vendor_discounts
 from . import test_vendor_import
+from . import test_vendor_variants
