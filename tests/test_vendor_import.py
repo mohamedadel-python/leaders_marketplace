@@ -4,9 +4,8 @@ import csv
 import io
 from unittest.mock import patch
 
-import requests
-
 from odoo import Command
+from odoo.addons.leaders_marketplace.tools.safe_fetch import SafeFetchError
 from odoo.tests import tagged
 from odoo.tests.common import HttpCase
 
@@ -15,24 +14,13 @@ from .test_vendor_split import MarketplaceVendorCommon
 
 PARAM = "leaders_marketplace.vendor_bulk_import_enabled"
 BATCH = "leaders_marketplace.vendor_import_batch_size"
-FETCH = "odoo.addons.leaders_marketplace.models.vendor_import.requests.get"
+FETCH = "odoo.addons.leaders_marketplace.tools.safe_fetch.safe_get"
+IMAGE_PARAM = "leaders_marketplace.vendor_import_allow_image_urls"
 # 1x1 PNG
 PNG = base64.b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==")
 NEW_HEADERS = ["name", "description", "category", "sku", "price", "fulfillment", "initial_qty",
                "image_url", "markets", "discount_percent", "discount_price", "discount_start", "discount_end"]
-
-
-class FakeResponse:
-    def __init__(self, body=b"", status=200, headers=None):
-        self.body, self.status_code, self.headers = body, status, headers or {}
-
-    def iter_content(self, size):
-        for i in range(0, len(self.body), size):
-            yield self.body[i:i + size]
-
-    def close(self):
-        pass
 
 
 def make_csv(headers, rows):
@@ -58,6 +46,7 @@ class ImportCommon(MarketplaceVendorCommon):
         cls.Offer = cls.env["leaders.marketplace.offer"]
         cls.param = cls.env["ir.config_parameter"].sudo()
         cls.param.set_param(PARAM, "True")
+        cls.param.set_param(IMAGE_PARAM, "True")
         cls.param.set_param("leaders_marketplace.vendor_discounts_enabled", "True")
         cls.param.set_param("leaders_marketplace.catalog_offers_enabled", "True")
         cls.category = cls.env["product.public.category"].create({"name": "Import Kitchen"})
@@ -299,7 +288,7 @@ class TestVendorImportApply(ImportCommon):
 
     def test_image_failure_is_a_warning_and_the_product_is_created(self):
         job = self._new_job([new_row(name="A", sku="I-1", price="5", image_url="http://93.184.216.34/a.png")])
-        with patch(FETCH, side_effect=requests.exceptions.Timeout()):
+        with patch(FETCH, side_effect=SafeFetchError("timeout")):
             self._run(job)
         self.assertEqual(job.applied_rows, 1)
         offer = self._get("I-1")
@@ -308,37 +297,28 @@ class TestVendorImportApply(ImportCommon):
 
     def test_image_is_downloaded(self):
         job = self._new_job([new_row(name="A", sku="I-2", price="5", image_url="http://93.184.216.34/a.png")])
-        with patch(FETCH, return_value=FakeResponse(PNG, headers={"Content-Length": str(len(PNG))})) as get:
+        with patch(FETCH, return_value=PNG) as get:
             self._run(job)
         self.assertEqual(get.call_args.kwargs["timeout"], 10)
         self.assertTrue(self._get("I-2").product_tmpl_id.image_1920)
 
     def test_image_fetch_guards(self):
         fetch = self.Import._leaders_fetch_image
-        with patch(FETCH, side_effect=requests.exceptions.Timeout()):
+        with patch(FETCH, side_effect=SafeFetchError("timeout")):
             self.assertIn("timed out", fetch("http://93.184.216.34/a.png")[1])
-        with patch(FETCH, return_value=FakeResponse(b"<html>nope</html>")):
+        with patch(FETCH, return_value=b"<html>nope</html>"):
             self.assertIn("did not return an image", fetch("http://93.184.216.34/a.png")[1])
-        self.param.set_param("leaders_marketplace.vendor_image_max_mb", "1")
-        big = FakeResponse(b"\x89PNG" + b"0" * (1024 * 1024 + 10))
-        with patch(FETCH, return_value=big):
+        with patch(FETCH, side_effect=SafeFetchError("too_large")):
             self.assertIn("too large", fetch("http://93.184.216.34/a.png")[1])
-        with patch(FETCH, return_value=FakeResponse(b"", headers={"Content-Length": str(5 * 1024 * 1024)})):
-            self.assertIn("too large", fetch("http://93.184.216.34/a.png")[1])
-        with patch(FETCH, return_value=FakeResponse(b"", status=404)):
+        with patch(FETCH, side_effect=SafeFetchError("status", 404)):
             self.assertIn("HTTP 404", fetch("http://93.184.216.34/a.png")[1])
-        for url in ("http://127.0.0.1/a.png", "http://10.0.0.5/a.png", "http://192.168.1.1/a.png",
-                    "http://[::1]/a.png", "http://169.254.169.254/latest"):
-            with patch(FETCH) as get:
-                self.assertIn("private", fetch(url)[1], url)
-                get.assert_not_called()
-        with patch(FETCH) as get:
+        with patch(FETCH, return_value=b""):
+            self.assertIn("empty", fetch("http://93.184.216.34/a.png")[1])
+        # the network guards themselves are covered in test_vendor_import_ssrf.py
+        with patch("odoo.addons.leaders_marketplace.tools.safe_fetch._request") as request:
+            self.assertIn("private", fetch("http://127.0.0.1/a.png")[1])
             self.assertIn("http", fetch("ftp://93.184.216.34/a.png")[1])
-            get.assert_not_called()
-        redirect = FakeResponse(b"", status=302, headers={"Location": "http://127.0.0.1/secret.png"})
-        with patch(FETCH, return_value=redirect) as get:
-            self.assertIn("private", fetch("http://93.184.216.34/a.png")[1])
-            self.assertEqual(get.call_count, 1)
+            request.assert_not_called()
 
     def test_catalog_offers(self):
         headers = ["barcode", "internal_reference", "sku", "price", "fulfillment", "initial_qty"]

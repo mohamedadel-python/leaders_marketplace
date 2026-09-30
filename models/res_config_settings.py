@@ -345,6 +345,13 @@ class ResConfigSettings(models.TransientModel):
         default=50,
         help="How many validated rows the import cron applies per run (all jobs together).",
     )
+    marketplace_vendor_import_allow_image_urls = fields.Boolean(
+        string="Import: Download Images from URLs",
+        config_parameter="leaders_marketplace.vendor_import_allow_image_urls",
+        default=False,
+        help="Off (default): image_url cells of bulk imports are ignored with a row warning. On: the server "
+             "downloads them, only from public http/https addresses on ports 80/443, without following redirects.",
+    )
     marketplace_vendor_api_write_enabled = fields.Boolean(
         string="Vendor Write API",
         config_parameter="leaders_marketplace.vendor_api_write_enabled",

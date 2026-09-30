@@ -171,6 +171,9 @@
                         <setting string="Import Rows per Cron Run" invisible="not marketplace_vendor_bulk_import_enabled" help="Rows applied per run of the 'process vendor imports' cron.">
                             <field name="marketplace_vendor_import_batch_size"/>
                         </setting>
+                        <setting string="Import: Download Images from URLs" invisible="not marketplace_vendor_bulk_import_enabled" help="Off (default): image_url cells are ignored with a warning. On: the server downloads public http/https images (ports 80/443, no redirects, size limit).">
+                            <field name="marketplace_vendor_import_allow_image_urls"/>
+                        </setting>
                         <setting string="Vendor Write API" help="Let vendor owners create API keys (portal page /my/vendor/api) and manage offers, orders, returns and read finance through /api/v1/vendor with a bearer key. Documentation: /api/v1/openapi.json.">
                             <field name="marketplace_vendor_api_write_enabled"/>
                         </setting>

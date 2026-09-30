@@ -2,20 +2,19 @@
 import base64
 import csv
 import io
-import ipaddress
 import json
 import logging
-import socket
 from datetime import datetime
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 import pytz
-import requests
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.float_utils import float_compare, float_is_zero
 from odoo.tools.mimetypes import guess_mimetype
+
+from ..tools import safe_fetch
 
 _logger = logging.getLogger(__name__)
 
@@ -47,8 +46,8 @@ EXAMPLES = {
 MAX_ROWS = 5000
 MAX_FILE_BYTES = 10 * 1024 * 1024
 SYNC_VALIDATION_ROWS = 200
-MAX_REDIRECTS = 3
 IMAGE_TIMEOUT = 10
+PARAM_IMAGE_URLS = "leaders_marketplace.vendor_import_allow_image_urls"
 PARAM_ENABLED = "leaders_marketplace.vendor_bulk_import_enabled"
 PARAM_BATCH = "leaders_marketplace.vendor_import_batch_size"
 CRON_XMLID = "leaders_marketplace.cron_process_vendor_imports"
@@ -584,6 +583,8 @@ class VendorImport(models.Model):
             warnings = []
             if not errors:
                 errors, warnings, _resolved = self._leaders_check_rules(payload, ctx)
+                if not errors and payload.get("image_url") and not self._leaders_image_urls_allowed():
+                    warnings.append(("image_url", self._leaders_image_disabled_message()))
             messages = [{"column": c, "message": m, "level": "error"} for c, m in errors] + \
                        [{"column": c, "message": m, "level": "warning"} for c, m in warnings]
             if errors:
@@ -715,64 +716,60 @@ class VendorImport(models.Model):
     # Image download (SSRF-guarded)
     # ------------------------------------------------------------------
     @api.model
+    def _leaders_image_urls_allowed(self):
+        value = self.env["ir.config_parameter"].sudo().get_param(PARAM_IMAGE_URLS)
+        return str(value or "").strip().lower() in ("true", "1")
+
+    @api.model
+    def _leaders_image_disabled_message(self):
+        return _("Image download from URLs is disabled by the administrator; the image was ignored.")
+
+    @api.model
     def _leaders_check_image_url(self, url):
-        """An error message, or False when the URL is safe to fetch."""
-        parsed = urlparse(url or "")
-        if parsed.scheme not in ("http", "https") or not parsed.hostname or len(url) > 2048:
-            return _("Only http and https image addresses are allowed.")
+        """An error message, or False when the URL is safe to fetch (no download is made)."""
         try:
-            infos = socket.getaddrinfo(parsed.hostname, parsed.port or (443 if parsed.scheme == "https" else 80),
-                                       type=socket.SOCK_STREAM)
-        except (socket.gaierror, UnicodeError):
-            return _("The image host %s cannot be resolved.", parsed.hostname)
-        for info in infos:
-            try:
-                address = ipaddress.ip_address(info[4][0].split("%")[0])
-            except ValueError:
-                return _("The image host %s has an invalid address.", parsed.hostname)
-            if not address.is_global:
-                return _("The image address points to a private or local network and was not fetched.")
+            _scheme, hostname, port, _target = safe_fetch.parse_url(url)
+            safe_fetch.resolve_public(hostname, port)
+        except safe_fetch.SafeFetchError as exc:
+            return self._leaders_image_error_message(exc)
         return False
 
     @api.model
+    def _leaders_image_error_message(self, exc):
+        code = exc.code
+        if code in ("scheme", "url"):
+            return _("Only http and https image addresses are allowed.")
+        if code == "resolve":
+            return _("The image host %s cannot be resolved.", exc.detail)
+        if code == "blocked":
+            return _("The image address points to a private or local network and was not fetched.")
+        if code == "redirect":
+            return _("The image address redirects (HTTP %s); redirects are not followed.", exc.detail)
+        if code == "status":
+            return _("The image server answered HTTP %s.", exc.detail)
+        if code == "too_large":
+            return _("The image is too large (max %(size)s MB).", size=self._leaders_image_max_bytes() // (1024 * 1024))
+        if code == "timeout":
+            return _("The image download timed out after %s seconds.", IMAGE_TIMEOUT)
+        return _("The image could not be downloaded: %s", exc.detail or code)
+
+    @api.model
     def _leaders_fetch_image(self, url):
-        """``(image_b64, warning)``: a failure is a warning, never an exception."""
-        max_bytes = self._leaders_image_max_bytes()
-        current = url
+        """``(image_b64, warning)``: a failure is a warning, never an exception.
+
+        Callers must have checked ``_leaders_image_urls_allowed()``; this method double-checks.
+        """
+        if not self._leaders_image_urls_allowed():
+            return False, self._leaders_image_disabled_message()
         try:
-            for _hop in range(MAX_REDIRECTS + 1):
-                problem = self._leaders_check_image_url(current)
-                if problem:
-                    return False, problem
-                response = requests.get(current, timeout=IMAGE_TIMEOUT, stream=True, allow_redirects=False,
-                                        headers={"User-Agent": "LeadersMarketplaceImport/1.0"})
-                try:
-                    if response.status_code in (301, 302, 303, 307, 308):
-                        current = urljoin(current, response.headers.get("Location", ""))
-                        continue
-                    if response.status_code != 200:
-                        return False, _("The image server answered HTTP %s.", response.status_code)
-                    length = str(response.headers.get("Content-Length") or "")
-                    too_large = _("The image is too large (max %(size)s MB).", size=max_bytes // (1024 * 1024))
-                    if length.isdigit() and int(length) > max_bytes:
-                        return False, too_large
-                    data = b""
-                    for chunk in response.iter_content(65536):
-                        data += chunk
-                        if len(data) > max_bytes:
-                            return False, too_large
-                finally:
-                    response.close()
-                if not data:
-                    return False, _("The downloaded image is empty.")
-                if not guess_mimetype(data, default="").startswith("image/"):
-                    return False, _("The address did not return an image (PNG, JPEG, GIF, WebP).")
-                return base64.b64encode(data), False
-            return False, _("The image address redirects too many times.")
-        except requests.exceptions.Timeout:
-            return False, _("The image download timed out after %s seconds.", IMAGE_TIMEOUT)
-        except requests.exceptions.RequestException as exc:
-            return False, _("The image could not be downloaded: %s", exc.__class__.__name__)
+            data = safe_fetch.safe_get(url, timeout=IMAGE_TIMEOUT, max_bytes=self._leaders_image_max_bytes())
+        except safe_fetch.SafeFetchError as exc:
+            return False, self._leaders_image_error_message(exc)
+        if not data:
+            return False, _("The downloaded image is empty.")
+        if not guess_mimetype(data, default="").startswith("image/"):
+            return False, _("The address did not return an image (PNG, JPEG, GIF, WebP).")
+        return base64.b64encode(data), False
 
 
 class VendorImportLine(models.Model):
@@ -859,11 +856,14 @@ class VendorImportApply(models.Model):
                 "marketplace_owner_vendor_id": vendor.id,
             }
             if payload.get("image_url"):
-                image, problem = self._leaders_fetch_image(payload["image_url"])
-                if image:
-                    template_vals["image_1920"] = image
+                if self._leaders_image_urls_allowed():
+                    image, problem = self._leaders_fetch_image(payload["image_url"])
+                    if image:
+                        template_vals["image_1920"] = image
+                    else:
+                        warnings.append(("image_url", problem))
                 else:
-                    warnings.append(("image_url", problem))
+                    warnings.append(("image_url", self._leaders_image_disabled_message()))
             if resolved.get("category"):
                 template_vals["public_categ_ids"] = [(6, 0, resolved["category"].ids)]
             template = self.env["product.template"].sudo().create(template_vals)
