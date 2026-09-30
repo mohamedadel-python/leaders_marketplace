@@ -109,3 +109,10 @@
 - Steps: on a fresh install enable Settings > Marketplace > "Upgrade Vendor Tiers Automatically" and run the monthly cron.
 - Expected: vendors move only as far as their seniority, sales and rating allow. Actual: with untouched thresholds every approved vendor qualifies for the last tier (Platinum: 8 % rate, daily payout, release on ship, no reserve). The manual tells the admin to fill the thresholds first.
 - Found by: CH02A (code reading).
+
+## With "Withhold a Returns Reserve" on, a tier with return policy "Use reserve, then deduct next" charges the consumed reserve twice (CH02A)
+- Where: models/returns.py `_process_refund` (creates the wallet line `type = "return"`, `amount = -vendor_deduction`, then, for `tier.return_policy == "reserve_first"`, calls `leaders.vendor.reserve._consume_for_return`) + models/settlement.py `_consume_for_return` / `_leaders_pay_back` (the payback is `amount - consumed_amount`) + `create_vendor_earning` (the reserve hold `-reserve_amount` is already a wallet line).
+- Steps (verified on a DB copy of the manual demo, rolled back): vendor nour (Gold: reserve 3 %, policy reserve_first, `enforce_returns_reserve` on), order VO/000001 (earning 1656.50, reserve hold -49.70); full return of the only line (refund 747.50, commission refund 0), received and refunded.
+- Expected: the reserve absorbs the first 49.70 of the deduction, the wallet is charged only 697.80, and the vendor ends with 909.00 (the new net of the order).
+- Actual: wallet lines of the order after the refund: earning +1656.50, reserve -49.70, return -747.50, reserve record `consumed` 49.70/49.70 (so nothing is paid back). Total 859.30 = 909.00 - 49.70: the reserve is charged twice. With policy "deduct_next" the reserve is not consumed, is paid back later and the total is the correct 909.00. The journal entry of the refund debits Vendor payable by the full 747.50, so the payable account keeps 49.70 that the wallet no longer pays.
+- Found by: CH02A (tier/reserve documentation).
