@@ -437,6 +437,99 @@ class MarketplaceAccounting(models.AbstractModel):
         return payment
 
     @api.model
+    def post_quantity_cancellation_entry(self, vendor_order, amount, vendor_deduction=0.0, released=False):
+        """Give the customer back the price of a cancelled remainder.
+
+        Escrow not released yet:  Dr Escrow / Cr Customer receivable (the escrow
+        was credited with the ORIGINAL amount, the earning entry later releases
+        only the kept amount, so escrow ends at zero).
+        Earning already released: the escrow of the cancelled part is already
+        gone, so the vendor's share comes back like a return after release:
+        Dr Vendor payable (vendor's share = drop of vendor_net) + Dr Commission
+        income (rest) / Cr Customer receivable.
+        The receivable credit is matched with the unpaid collection, else paid out
+        by the draft refund payment (``create_cancellation_refund_payment_partial``).
+        """
+        if not amount:
+            return False
+        if not vendor_order.collection_move_id:
+            vendor_order.message_post(body=_("No escrow collection entry on the vendor order; skipped the cancelled quantity entry."))
+            return False
+        if not self._is_configured():
+            vendor_order.message_post(body=_("Escrow accounts not configured; skipped the cancelled quantity entry."))
+            return False
+        a = self._get_accounts()
+        currency = vendor_order.currency_id
+        vendor = vendor_order.vendor_id.commercial_partner_id
+        customer = vendor_order.partner_id.commercial_partner_id
+        receivable = customer.with_company(self.env.company).property_account_receivable_id
+        label = _("Cancelled quantity of %s", vendor_order.name)
+        if released:
+            deduction = max(min(currency.round(vendor_deduction), amount), 0.0)
+            commission = currency.round(amount - deduction)
+            debit_lines = []
+            if deduction:
+                debit_lines.append((0, 0, {
+                    "account_id": a["vendor_payable"], "partner_id": vendor.id,
+                    "name": _("Cancelled quantity charged to vendor %s", vendor_order.name),
+                    "debit": deduction, "credit": 0.0}))
+            if commission:
+                debit_lines.append((0, 0, {
+                    "account_id": a["commission_income"], "name": _("Commission given back %s", vendor_order.name),
+                    "debit": commission, "credit": 0.0}))
+        else:
+            debit_lines = [(0, 0, {
+                "account_id": a["escrow"], "partner_id": vendor.id,
+                "name": _("Escrow refund %s", vendor_order.name), "debit": amount, "credit": 0.0})]
+        move = self.env["account.move"].sudo().create({
+            "move_type": "entry",
+            "journal_id": a["journal"],
+            "ref": _("Marketplace cancelled quantity (%s)", vendor_order.name),
+            "line_ids": debit_lines + [(0, 0, {
+                "account_id": receivable.id, "partner_id": customer.id,
+                "name": label, "debit": 0.0, "credit": amount})],
+        })
+        move.action_post()
+        refund_line = move.line_ids.filtered(lambda l: l.account_id == receivable)
+        open_collection = vendor_order.collection_move_id.line_ids.filtered(
+            lambda l: l.account_id == receivable and not l.reconciled)
+        if open_collection:
+            # The customer had not paid yet: the cancellation lowers what they owe.
+            (refund_line + open_collection).reconcile()
+        return move
+
+    @api.model
+    def create_cancellation_refund_payment_partial(self, vendor_order, refund_move):
+        """Draft outbound payment for the part of a cancelled remainder the customer already paid."""
+        customer = vendor_order.partner_id.commercial_partner_id
+        refund_line = refund_move.line_ids.filtered(
+            lambda l: l.account_id.account_type == "asset_receivable" and l.partner_id == customer)
+        to_pay = -sum(refund_line.mapped("amount_residual"))
+        if to_pay <= 0:
+            return False
+        tx = vendor_order.sale_order_id.transaction_ids.filtered(
+            lambda t: t.state == "done" and t.provider_id.journal_id)[:1]
+        journal = tx.provider_id.journal_id or self.env["account.journal"].search([
+            ("type", "=", "bank"), ("company_id", "=", self.env.company.id)], limit=1)
+        if not journal:
+            vendor_order.message_post(body=_("No bank journal found to prepare the customer refund payment."))
+            return False
+        payment = self.env["account.payment"].sudo().create({
+            "payment_type": "outbound",
+            "partner_type": "customer",
+            "partner_id": customer.id,
+            "amount": to_pay,
+            "currency_id": vendor_order.currency_id.id,
+            "journal_id": journal.id,
+            "memo": _("Refund cancelled quantity %s", vendor_order.name),
+            "leaders_cancel_refund_move_id": refund_move.id,
+        })
+        vendor_order.message_post(body=_(
+            "Customer refund payment of %(amount)s prepared for the cancelled quantity; "
+            "post it once the money is sent.", amount=to_pay))
+        return payment
+
+    @api.model
     def post_earning_entry(self, vendor_order):
         """Step 2: release escrow into commission income, fee income, vendor payable."""
         if not self._is_configured():

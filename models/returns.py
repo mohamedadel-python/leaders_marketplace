@@ -602,10 +602,12 @@ class VendorReturnLine(models.Model):
     refund_amount = fields.Monetary(compute="_compute_amounts", store=True, currency_field="currency_id")
     commission_refund = fields.Monetary(compute="_compute_amounts", store=True, currency_field="currency_id")
 
-    @api.depends("quantity", "vendor_line_id.price_total", "vendor_line_id.product_uom_qty", "vendor_line_id.commission_amount")
+    @api.depends("quantity", "vendor_line_id.price_total", "vendor_line_id.product_uom_qty",
+                 "vendor_line_id.qty_cancelled", "vendor_line_id.commission_amount")
     def _compute_amounts(self):
         for line in self:
-            ordered = line.vendor_line_id.product_uom_qty
+            # price_total is on the kept quantity (the cancelled remainder is out of the order).
+            ordered = line.vendor_line_id.product_uom_qty - line.vendor_line_id.qty_cancelled
             ratio = line.quantity / ordered if ordered else 0.0
             line.refund_amount = line.currency_id.round(line.vendor_line_id.price_total * ratio) if line.currency_id else line.vendor_line_id.price_total * ratio
             commission = line.vendor_line_id.commission_amount * ratio

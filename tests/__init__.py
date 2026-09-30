@@ -53,3 +53,4 @@ from . import test_product_questions
 from . import test_delivery_estimate
 from . import test_notification_preferences
 from . import test_settlement_cancel_ledger
+from . import test_cancel_remaining_money

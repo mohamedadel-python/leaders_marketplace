@@ -305,7 +305,7 @@ class VendorOrder(models.Model):
             return "cancelled"
         lines = order.line_ids.filtered(lambda l: not l.is_delivery)
         if lines and order.state != "pending" and all(
-                float_compare(l.qty_returned, l.product_uom_qty, precision_digits=4) >= 0 for l in lines):
+                float_compare(l.qty_returned, l.product_uom_qty - l.qty_cancelled, precision_digits=4) >= 0 for l in lines):
             return "returned"
         return _VENDOR_CODES.get(order.state, "placed")
 

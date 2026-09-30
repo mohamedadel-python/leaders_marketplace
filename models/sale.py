@@ -544,7 +544,7 @@ class VendorOrder(models.Model):
         """Quantity still kept by the customer, across all non-delivery lines."""
         self.ensure_one()
         return sum(
-            max(line.product_uom_qty - line.qty_returned, 0.0)
+            max(line.product_uom_qty - line.qty_cancelled - line.qty_returned, 0.0)
             for line in self.line_ids if not line.is_delivery
         )
 
@@ -783,6 +783,134 @@ class VendorOrder(models.Model):
                 self.env["leaders.notification"].notify_customer("customer_order_cancelled", rec, rec.partner_id)
         return True
 
+    #: Who gave up the unshipped quantity (all four funnel into one method).
+    _LEADERS_CANCEL_BY = ("vendor", "warehouse", "customer", "platform")
+
+    def action_cancel_quantities(self, lines_qty, reason=None):
+        """Back-office / support action: give up quantities that never shipped.
+
+        Same money handling as ``action_cancel_remaining`` (vendor, warehouse) but
+        run by the platform on behalf of anybody, e.g. support cancelling the
+        remainder a customer asked to drop. A customer cannot do it from the portal
+        (A2 forbids cancelling once something shipped); this is the only door.
+        ``lines_qty`` is ``{vendor order line (or id): quantity}``.
+        """
+        self._leaders_check_backoffice("manager")
+        return self.ensure_one()._leaders_cancel_quantities(lines_qty, reason=reason, by="platform")
+
+    def _leaders_cancel_quantities(self, lines_qty, reason=None, by="platform"):
+        """Cancel quantities of this order that will never ship and fix the money.
+
+        The ONE entry point for a cancelled remainder, whoever caused it: the
+        vendor (``action_cancel_remaining``), the warehouse (a cancelled backorder
+        picking, see ``stock.picking.action_cancel``), the platform/support
+        (``action_cancel_quantities``) or the customer through support. It does not
+        touch pickings (the caller already cancelled them).
+
+        * ``lines_qty``: ``{vendor order line or id: quantity}``; each quantity must
+          satisfy 0 < q <= ordered - cancelled - delivered (else UserError, nothing
+          changes: asking twice for the same remainder is refused, ``qty_cancelled``
+          is only ever increased once per quantity).
+        * The line amounts, ``amount_*`` and ``vendor_net`` are recomputed on the kept
+          quantity; commission plans read the reduced ``price_subtotal``.
+        * A vendor credit note lists the cancelled quantity.
+        * Online + collected: escrow refund entry (Dr escrow / Cr customer receivable)
+          and a draft customer refund payment; if the vendor's earning was already
+          released the vendor's share comes back from the vendor payable instead
+          (Dr vendor payable + Dr commission / Cr receivable, like a return after
+          release) plus a negative ``cancelled_qty`` wallet transaction.
+        * COD: only the expected cash shrinks (no refund entries); an already
+          confirmed FBM COD amount gets a negative ``cod_collected`` transaction.
+
+        Returns the vendor credit note (or False when nothing was cancelled).
+        """
+        self.ensure_one()
+        if by not in self._LEADERS_CANCEL_BY:
+            by = "platform"
+        if self.state in ("pending", "cancelled"):
+            raise UserError(_("Vendor order %s has no shipment to cancel the remaining part of.", self.name))
+        wanted = {}
+        for key, qty in (lines_qty or {}).items():
+            line = key if isinstance(key, models.BaseModel) else self.line_ids.browse(int(key))
+            if line.order_id != self or line.is_delivery:
+                raise UserError(_("Line %s does not belong to vendor order %s.", line.display_name, self.name))
+            try:
+                qty = float(qty or 0.0)
+            except (TypeError, ValueError):
+                raise UserError(_("Invalid quantity to cancel."))
+            rounding = (line.product_uom or line.product_id.uom_id).rounding or 0.01
+            if float_compare(qty, 0.0, precision_rounding=rounding) < 0:
+                raise UserError(_("A quantity to cancel cannot be negative."))
+            if float_is_zero(qty, precision_rounding=rounding):
+                continue
+            remaining = line.product_uom_qty - line.qty_cancelled - line.qty_delivered
+            if float_compare(qty, remaining, precision_rounding=rounding) > 0:
+                raise UserError(_(
+                    "Only %(remaining)s of %(product)s is left to cancel (asked %(asked)s).",
+                    remaining=max(remaining, 0.0), product=line.product_id.display_name, asked=qty))
+            wanted[line] = wanted.get(line, 0.0) + qty
+        if not wanted:
+            return False
+        kept_after = sum(l.qty_kept - wanted.get(l, 0.0) for l in self.line_ids if not l.is_delivery)
+        if float_compare(kept_after, 0.0, precision_digits=4) <= 0:
+            raise UserError(_(
+                "Nothing would be left of vendor order %s: cancel the whole order instead.", self.name))
+        cod = self.payment_method == "cod"
+        if cod and self.collection_move_id:
+            raise UserError(_(
+                "The cash collection of %s is already booked; use a return for the cancelled part.", self.name))
+
+        Wallet = self.env["leaders.wallet.transaction"].sudo()
+        Accounting = self.env["leaders.marketplace.accounting"]
+        earning = Wallet.search([("vendor_order_id", "=", self.id), ("type", "=", "earning")], limit=1)
+        cod_held = Wallet.search([("vendor_order_id", "=", self.id), ("type", "=", "cod_collected")], limit=1)
+        currency = self.currency_id
+        total_before, net_before = self.amount_total, self.vendor_net
+
+        for line, qty in wanted.items():
+            line.sudo().qty_cancelled += qty
+        self.sudo()._recompute_amounts()
+        cancelled = currency.round(total_before - self.amount_total)
+        deduction = currency.round(net_before - self.vendor_net)
+        detail = ", ".join("%s x %g" % (l.product_id.display_name, q) for l, q in wanted.items())
+        credit_note = self.env["leaders.vendor.invoice"]._create_credit_note_for_cancellation(self, wanted)
+
+        move = self.env["account.move"]
+        payment = self.env["account.payment"]
+        if not cod:
+            if self.collection_move_id and cancelled:
+                move = Accounting.post_quantity_cancellation_entry(
+                    self, cancelled, deduction, released=bool(earning))
+                if move:
+                    payment = Accounting.create_cancellation_refund_payment_partial(self, move)
+            if earning and deduction:
+                Wallet.create({
+                    "vendor_id": self.vendor_id.id, "vendor_order_id": self.id,
+                    "type": "cancelled_qty", "amount": -deduction,
+                    "currency_id": currency.id, "available_date": fields.Date.context_today(self),
+                    "state": "available", "reference": self.name,
+                    "move_id": move.id if move else False,
+                    "note": _("Cancelled quantity: %s", detail),
+                })
+        elif cod_held and deduction:
+            Wallet.create({
+                "vendor_id": self.vendor_id.id, "vendor_order_id": self.id,
+                "type": "cod_collected", "amount": -deduction,
+                "currency_id": currency.id, "available_date": fields.Date.context_today(self),
+                "state": "available", "reference": self.name,
+                "note": _("Cancelled quantity: %s", detail),
+            })
+        if credit_note:
+            # Paid when there is nothing to send back (COD, or an unpaid balance that just
+            # shrank); otherwise once the draft refund payment is posted (as for returns).
+            credit_note.payment_state = "paid" if (cod or (move and not payment)) else "not_paid"
+        by_label = dict(zip(self._LEADERS_CANCEL_BY, (_("the vendor"), _("the warehouse"), _("the customer"), _("the platform"))))
+        self.sudo().message_post(body=_(
+            "Cancelled quantity (%(detail)s) by %(by)s: %(amount)s taken off the order%(reason)s.",
+            detail=detail, by=by_label[by], amount=cancelled,
+            reason=(" - %s" % reason) if reason else ""))
+        return credit_note
+
     def _marketplace_submit_rating(self, rating, feedback=None):
         """The customer rates a completed order (1-5 plus an optional comment)."""
         self.ensure_one()
@@ -885,6 +1013,13 @@ class VendorOrderLine(models.Model):
     product_id = fields.Many2one("product.product", required=True)
     name = fields.Text(required=True)
     product_uom_qty = fields.Float("Quantity", digits="Product Unit of Measure", default=1.0)
+    qty_cancelled = fields.Float(
+        "Cancelled Quantity", digits="Product Unit of Measure", default=0.0, readonly=True, copy=False,
+        help="Part of the ordered quantity that will never ship (the cancelled remainder of a "
+             "partial shipment). Amounts, invoices and commission use the kept quantity.")
+    qty_kept = fields.Float(
+        "Kept Quantity", compute="_compute_qty_kept", digits="Product Unit of Measure",
+        help="Ordered quantity minus the cancelled quantity: what the customer buys.")
     product_uom = fields.Many2one("uom.uom", string="Unit")
     price_unit = fields.Float(digits="Product Price")
     discount = fields.Float(digits="Discount")
@@ -897,12 +1032,18 @@ class VendorOrderLine(models.Model):
     commission_amount = fields.Monetary(currency_field="currency_id")
     move_ids = fields.One2many("stock.move", "leaders_vendor_line_id")
 
-    @api.depends("product_uom_qty", "price_unit", "discount", "tax_ids", "currency_id")
+    @api.depends("product_uom_qty", "qty_cancelled")
+    def _compute_qty_kept(self):
+        for line in self:
+            line.qty_kept = max(line.product_uom_qty - line.qty_cancelled, 0.0)
+
+    @api.depends("product_uom_qty", "qty_cancelled", "price_unit", "discount", "tax_ids", "currency_id")
     def _compute_amounts(self):
+        # Amounts are on the KEPT quantity (ordered minus cancelled remainder).
         for line in self:
             price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
             taxes = line.tax_ids.compute_all(
-                price, line.currency_id, line.product_uom_qty,
+                price, line.currency_id, max(line.product_uom_qty - line.qty_cancelled, 0.0),
                 product=line.product_id, partner=line.order_id.partner_id)
             line.price_subtotal = taxes["total_excluded"]
             line.price_total = taxes["total_included"]
@@ -1193,17 +1334,28 @@ class FulfillmentGroup(models.Model):
         The open backorder pickings are cancelled (reservations released) and
         the group turns ``shipped`` with what was sent; the order lines keep
         their ``qty_delivered`` (only the shipped part), so returns and the
-        delivery flow work on that. The vendor order money is not resized:
-        settle the difference with the customer through the usual refund/return
-        tools.
+        delivery flow work on that. The money is resized through
+        ``VendorOrder._leaders_cancel_quantities`` (kept-quantity amounts, vendor
+        credit note, escrow refund / expected cash, earning adjustment).
         """
         for rec in self:
             if rec.state != "partially_shipped":
                 raise UserError(_("Only a partially shipped group has a remaining part to cancel."))
-            rec.picking_ids.filtered(lambda p: p.state not in ("done", "cancel")).action_cancel()
+            open_pickings = rec.picking_ids.filtered(lambda p: p.state not in ("done", "cancel"))
+            lines_qty = rec._leaders_open_quantities()
+            open_pickings.with_context(leaders_skip_cancel_quantities=True).action_cancel()
             rec.message_post(body=_("The part that was not shipped was cancelled."))
+            if lines_qty:
+                rec.vendor_order_id._leaders_cancel_quantities(
+                    lines_qty, reason=self.env.context.get("leaders_cancel_reason"),
+                    by=self.env.context.get("leaders_cancel_by") or "vendor")
             rec._sync_from_pickings()
         return True
+
+    def _leaders_open_quantities(self):
+        """{vendor order line: quantity} still waiting in this group's open moves."""
+        self.ensure_one()
+        return {line: demanded for line, (demanded, _available) in self._ship_lines_info().items()}
 
     @api.model
     def _leaders_fbm_delivery_mode(self):

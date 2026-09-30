@@ -80,6 +80,45 @@ class StockPicking(models.Model):
             backorder.leaders_fulfillment_group_id = self.leaders_fulfillment_group_id
         return backorder
 
+    def action_cancel(self):
+        """A backorder cancelled in the warehouse gives up that quantity for good.
+
+        When the picking belongs to a fulfillment group that already shipped
+        something, the cancelled quantity is a cancelled remainder: the vendor
+        order money is resized through ``_leaders_cancel_quantities`` (by the
+        warehouse), exactly as the vendor's "Cancel Remaining" does. Cancelling an
+        order that never shipped stays the whole-order cancellation (its own flow).
+        """
+        tracked = {}
+        if not self.env.context.get("leaders_skip_cancel_quantities"):
+            for picking in self.filtered(
+                    lambda p: p.leaders_fulfillment_group_id and not p.leaders_return_id
+                    and p.state not in ("done", "cancel")):
+                group = picking.leaders_fulfillment_group_id.sudo()
+                if group.state in ("cancelled",) or group.vendor_order_id.state in ("pending", "cancelled"):
+                    continue
+                if not group.picking_ids.filtered(lambda p: p.state == "done"):
+                    continue
+                quantities = tracked.setdefault(group, {})
+                for move in picking.move_ids.filtered(
+                        lambda m: m.leaders_vendor_line_id and m.state not in ("done", "cancel")):
+                    line = move.leaders_vendor_line_id
+                    quantities[line] = quantities.get(line, 0.0) + move.product_uom_qty
+        res = super().action_cancel()
+        for group, quantities in tracked.items():
+            order = group.vendor_order_id
+            usable = {}
+            for line, qty in quantities.items():
+                qty = min(qty, line.product_uom_qty - line.qty_cancelled - line.qty_delivered)
+                if qty > 0:
+                    usable[line] = qty
+            if usable:
+                company = group.picking_ids[:1].company_id or self.env.company
+                order.with_company(company)._leaders_cancel_quantities(
+                    usable, reason=_("Delivery cancelled in the warehouse"), by="warehouse")
+            group._sync_from_pickings()
+        return res
+
     def _leaders_marketplace_pickings(self, company):
         """This company's pickings, as sudo, for the marketplace side-effects.
 

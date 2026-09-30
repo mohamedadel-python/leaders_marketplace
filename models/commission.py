@@ -417,12 +417,13 @@ class CommissionRule(models.Model):
             return float(self.env["leaders.marketplace.offer.publish.log"].search_count(domain))
         matched = vendor_orders.line_ids.filtered(lambda line: not line.is_delivery)
         if self.achieve_type == "qty_sold":
-            return sum(max(line.product_uom_qty - line.qty_returned, 0.0) for line in matched)
+            return sum(max(line.qty_kept - line.qty_returned, 0.0) for line in matched)
         # amount_sold: net the subtotal by the same returned-quantity ratio the
         # return itself was refunded on, so a partial return only reduces its share.
+        # ``price_subtotal`` is already on the kept quantity (a cancelled remainder is gone).
         total = 0.0
         for line in matched:
-            ratio = (line.product_uom_qty - line.qty_returned) / line.product_uom_qty if line.product_uom_qty else 0.0
+            ratio = (line.qty_kept - line.qty_returned) / line.qty_kept if line.qty_kept else 0.0
             total += line.price_subtotal * max(ratio, 0.0)
         return total
 

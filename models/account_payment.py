@@ -10,6 +10,11 @@ class AccountPayment(models.Model):
         string="Cancelled Marketplace Order",
         help="Vendor order this payment refunds after its cancellation.")
 
+    leaders_cancel_refund_move_id = fields.Many2one(
+        "account.move", index=True, copy=False, readonly=True,
+        string="Cancelled Quantity Refund Entry",
+        help="Refund entry of a cancelled remainder (part of a vendor order) this payment pays out.")
+
     leaders_cancelled_sale_id = fields.Many2one(
         "sale.order", index=True, copy=False, readonly=True,
         string="Cancelled Company Order",
@@ -43,6 +48,13 @@ class AccountPayment(models.Model):
             credit = credit.filtered(lambda l: l.account_id in pay_lines.account_id)
             if credit and pay_lines:
                 (credit + pay_lines).reconcile()
+        for payment in self.filtered("leaders_cancel_refund_move_id"):
+            receivable = payment.leaders_cancel_refund_move_id.line_ids.filtered(
+                lambda l: l.account_id.account_type == "asset_receivable" and not l.reconciled)
+            pay_lines = payment.move_id.line_ids.filtered(
+                lambda l: l.account_id in receivable.account_id and not l.reconciled)
+            if receivable and pay_lines:
+                (receivable + pay_lines).reconcile()
         for payment in self.filtered("leaders_return_id"):
             ret = payment.leaders_return_id
             receivable = ret.refund_move_id.line_ids.filtered(

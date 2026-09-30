@@ -110,6 +110,37 @@ class VendorInvoice(models.Model):
         vendor_return.credit_note_id = credit_note
         return credit_note
 
+    @api.model
+    def _create_credit_note_for_cancellation(self, vendor_order, lines_qty):
+        """Credit note for a cancelled remainder: ``lines_qty`` = {vendor order line: qty}.
+
+        Numbered like a return credit note (``<code>/RINV/<year>/<seq>``) and
+        pointing at the vendor order's invoice, but with no return behind it.
+        """
+        lines_qty = {line: qty for line, qty in lines_qty.items() if qty}
+        if not lines_qty:
+            return self.browse()
+        vendor = vendor_order.vendor_id.commercial_partner_id
+        return self.sudo().create({
+            "name": self._next_name(vendor, "out_refund"),
+            "move_type": "out_refund",
+            "vendor_id": vendor.id,
+            "partner_id": vendor_order.partner_id.id,
+            "vendor_order_id": vendor_order.id,
+            "reversed_invoice_id": vendor_order.invoice_id.id,
+            "currency_id": vendor_order.currency_id.id,
+            "line_ids": [(0, 0, {
+                "vendor_line_id": line.id,
+                "product_id": line.product_id.id,
+                "name": line.name,
+                "quantity": qty,
+                "product_uom": line.product_uom.id,
+                "price_unit": line.price_unit,
+                "discount": line.discount,
+                "tax_ids": [(6, 0, line.tax_ids.ids)],
+            }) for line, qty in lines_qty.items()],
+        })
+
     def _get_report_base_filename(self):
         self.ensure_one()
         label = "Vendor Credit Note" if self.move_type == "out_refund" else "Vendor Invoice"

@@ -147,6 +147,7 @@ class WalletTransaction(models.Model):
         ("fee_tax","Tax on Marketplace Fees"),
         ("cod_collected","COD Collected (Vendor Held)"),
         ("reserve","Returns Reserve"),
+        ("cancelled_qty","Cancelled Quantity"),
     ], required=True)
     amount = fields.Monetary(required=True, currency_field="currency_id")
     currency_id = fields.Many2one("res.currency", required=True)
@@ -362,7 +363,7 @@ class Settlement(models.Model):
             earnings = earning_transactions.filtered(
                 lambda tx: tx.vendor_id == settlement.vendor_id and tx.type in ("earning", "cod_collected"))
             returns = earning_transactions.filtered(
-                lambda tx: tx.vendor_id == settlement.vendor_id and tx.type == "return")
+                lambda tx: tx.vendor_id == settlement.vendor_id and tx.type in ("return", "cancelled_qty"))
             # Returns are already negative, so this nets the period's sales down
             # by whatever was given back to the customer (minus the commission
             # already refunded on it).
@@ -448,7 +449,7 @@ class Settlement(models.Model):
         # What this settlement itself contributed inside the target period.
         slice_txs = collected_transactions.filtered(
             lambda tx: tx.vendor_id == vendor
-            and tx.type in ("earning", "cod_collected", "return")
+            and tx.type in ("earning", "cod_collected", "return", "cancelled_qty")
             and tx.available_date and window_from <= tx.available_date <= window_to)
         already = sum(self.env["leaders.commission.achievement"].search([
             ("rule_id", "=", plan.id),
@@ -477,7 +478,7 @@ class Settlement(models.Model):
         """
         return self.env["leaders.wallet.transaction"].search([
             ("vendor_id", "=", vendor.id),
-            ("type", "in", ("earning", "cod_collected", "return")),
+            ("type", "in", ("earning", "cod_collected", "return", "cancelled_qty")),
             ("available_date", ">=", date_from),
             ("available_date", "<=", date_to),
             ("settlement_id", "!=", False),

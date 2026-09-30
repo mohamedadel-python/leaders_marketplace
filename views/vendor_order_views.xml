@@ -89,6 +89,7 @@
                                     <field name="fulfillment_type"/>
                                     <field name="product_uom_qty"/>
                                     <field name="qty_delivered"/>
+                                    <field name="qty_cancelled" optional="show"/>
                                     <field name="qty_returned" optional="show"/>
                                     <field name="product_uom" optional="hide"/>
                                     <field name="price_unit"/>

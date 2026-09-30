@@ -328,6 +328,7 @@ class VendorAPI(http.Controller):
                 "id": l.id, "name": l.name, "product_id": l.product_id.id,
                 "quantity": l.product_uom_qty, "price_unit": l.price_unit, "discount": l.discount,
                 "subtotal": l.price_subtotal, "qty_delivered": l.qty_delivered,
+                "qty_cancelled": l.qty_cancelled,
                 "group_id": l.fulfillment_group_id.id or None,
             } for l in o.line_ids.filtered(lambda l: not l.is_delivery)]
             data["groups"] = [{
@@ -831,7 +832,8 @@ def openapi_document(base_url=""):
             "lines": {"type": "array", "items": {"type": "object", "properties": {
                 "id": {"type": "integer"}, "name": {"type": "string"}, "product_id": {"type": "integer"},
                 "quantity": num, "price_unit": num, "discount": num, "subtotal": num,
-                "qty_delivered": num, "group_id": {"type": "integer", "nullable": True}}}},
+                "qty_delivered": num, "qty_cancelled": num,
+                "group_id": {"type": "integer", "nullable": True}}}},
             "groups": {"type": "array", "items": {"type": "object", "properties": {
                 "id": {"type": "integer"}, "name": {"type": "string"},
                 "fulfillment_type": {"type": "string"}, "state": {"type": "string"},

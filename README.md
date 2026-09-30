@@ -100,6 +100,12 @@ This list is maintained as the module is worked on; later tasks extend it.
 - **Duplicate offers**: a partial unique index allows one live offer per vendor,
   variant and fulfilment type (rejected/archived offers do not count). Upgrading a
   database that already has duplicates stops with the list of offers; fix them by hand.
+- **Cancelled remainder of a partial shipment** (`qty_cancelled`): all causes (vendor
+  "Cancel Remaining", a backorder picking cancelled in the warehouse, support through
+  `action_cancel_quantities`) go through `VendorOrder._leaders_cancel_quantities`. A
+  customer cannot cancel a remainder from the portal (cancelling after any shipment
+  stays refused); support does it for them. Not handled: the tier returns reserve
+  is not resized, and a COD FBL order whose cash collection is already booked is refused.
 - **Translation**: `i18n/ar.po` was machine-translated and needs a native review;
   re-export `leaders_marketplace.pot` and translate new strings (a test fails while
   the Arabic file lacks any).
