@@ -39,6 +39,12 @@ class MarketplaceVendorCommon(TransactionCase):
         for key in ("escrow_account_id", "commission_income_account_id", "fee_income_account_id",
                     "vendor_payable_account_id", "journal_id", "cod_cash_journal_id"):
             Param.set_param("leaders_marketplace.%s" % key, False)
+        # Optional features are off unless a test switches them on (a demo database may have them on).
+        for key in ("catalog_offers_enabled", "customer_can_cancel_orders", "vendor_can_cancel_orders",
+                    "vendor_only_presentation", "vendor_apply_enabled", "vendor_discounts_enabled",
+                    "vendor_bulk_import_enabled", "vendor_variants_enabled", "vendor_api_write_enabled",
+                    "shipping_providers_enabled"):
+            Param.set_param("leaders_marketplace.%s" % key, False)
         for model in ("leaders.fulfillment.fee", "leaders.fulfillment.policy", "leaders.commission.rule"):
             records = env[model].with_context(active_test=False).search([])
             if "active" in records._fields:
