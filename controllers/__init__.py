@@ -6,3 +6,4 @@ from . import catalog
 from . import vendor_api
 from . import shipping_webhook
 from . import checkouts
+from . import product_questions

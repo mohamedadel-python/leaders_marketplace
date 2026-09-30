@@ -11,6 +11,7 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import email_normalize
 from odoo.tools.float_utils import float_compare, float_is_zero
 from odoo.tools.mimetypes import guess_mimetype
+from odoo.addons.leaders_marketplace.models.product_question import ANSWER_MAX_LENGTH
 from odoo.addons.leaders_marketplace.models.returns import MAX_RETURN_PHOTOS
 from odoo.addons.leaders_marketplace.controllers.vendor_apply import VendorApplyController
 from odoo.addons.portal.controllers.portal import CustomerPortal
@@ -1601,6 +1602,48 @@ class MarketplacePortal(CustomerPortal):
         except (UserError, ValidationError) as e:
             return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
         return request.redirect(f"{url}?replied=1")
+
+    # -------------------------------------------------------------------------
+    # Product questions (D3): behind the master switch, 404 while it is off
+    # -------------------------------------------------------------------------
+    @staticmethod
+    def _require_questions_enabled():
+        if not request.env["leaders.product.question"]._leaders_enabled():
+            raise NotFound()
+
+    @http.route("/my/vendor/questions", type="http", auth="user", website=True)
+    def vendor_questions(self, **kw):
+        self._require_questions_enabled()
+        vendor = self._require_vendor(allow_frozen=True)
+        Question = request.env["leaders.product.question"].sudo()
+        templates = Question._leaders_vendor_templates(vendor)
+        records = Question.search([("product_tmpl_id", "in", templates.ids)], limit=300)
+        flt = kw.get("filter") if kw.get("filter") in ("answered", "all") else "unanswered"
+        return self._vendor_render("leaders_marketplace.portal_vendor_questions", {
+            "records": records, "vendor": vendor, "lm_flt": flt,
+            "editable_ids": [r.id for r in records if r._vendor_can_edit(vendor)],
+            "answer_max_length": ANSWER_MAX_LENGTH,
+            "error": kw.get("error"), "saved": kw.get("saved"),
+        })
+
+    @http.route("/my/vendor/questions/<int:question_id>/answer", type="http", auth="user",
+                website=True, methods=["POST"], csrf=True)
+    def vendor_question_answer(self, question_id, **post):
+        self._require_questions_enabled()
+        vendor = self._require_vendor(allow_frozen=True)
+        record = request.env["leaders.product.question"].sudo().browse(question_id).exists()
+        if not record:
+            raise NotFound()
+        # Ownership: only a vendor with an active offer on the product may act on the question.
+        if not record._vendor_can_answer(vendor):
+            raise AccessError(_("You cannot access this question."))
+        url = "/my/vendor/questions"
+        try:
+            with request.env.cr.savepoint():
+                record.action_vendor_answer(vendor, request.env.user, post.get("answer"))
+        except (UserError, ValidationError) as e:
+            return request.redirect(f"{url}?filter=all&error={quote(str(e.args[0]))}")
+        return request.redirect(f"{url}?filter=all&saved=1")
 
     @staticmethod
     def _dispute_messages(dispute):

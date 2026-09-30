@@ -392,6 +392,36 @@
             </field>
             <field name="auto_delete" eval="True"/>
         </record>
+        <record id="mail_template_vendor_question_asked" model="mail.template">
+            <field name="name">Marketplace: Customer question on your product (vendor)</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_product_question"/>
+            <field name="subject">New customer question about {{ object.product_tmpl_id.name }}</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>A customer asked a question about <strong t-out="object.product_tmpl_id.name"/>:</p>
+<blockquote style="white-space: pre-line;" t-out="object.question"/>
+<p>Any seller with an active offer on this product can answer. <a t-attf-href="{{ object.get_base_url() }}/my/vendor/questions">Answer the question</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="mail_template_customer_question_answered" model="mail.template">
+            <field name="name">Marketplace: Your question was answered (customer)</field>
+            <field name="model_id" ref="leaders_marketplace.model_leaders_product_question"/>
+            <field name="subject">Your question about {{ object.product_tmpl_id.name }} was answered</field>
+            <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Your question about <strong t-out="object.product_tmpl_id.name"/>:</p>
+<blockquote style="white-space: pre-line;" t-out="object.question"/>
+<p>Answer from <strong t-out="object.answered_partner_id.vendor_store_name or object.answered_partner_id.name"/>:</p>
+<blockquote style="white-space: pre-line;" t-out="object.answer"/>
+<p><a t-attf-href="{{ object.get_base_url() }}{{ object.product_tmpl_id.website_url }}#lm_questions">See the product</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
         <record id="mail_template_vendor_bank_change_requested" model="mail.template">
             <field name="name">Marketplace: Payout account change requested (security notice, always sent)</field>
             <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_bank_change"/>
@@ -547,6 +577,14 @@
         </record>
         <record id="param_notify_vendor_bank_change_rejected" model="ir.config_parameter">
             <field name="key">leaders_marketplace.notify_vendor_bank_change_rejected</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_vendor_question_asked" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_vendor_question_asked</field>
+            <field name="value">True</field>
+        </record>
+        <record id="param_notify_customer_question_answered" model="ir.config_parameter">
+            <field name="key">leaders_marketplace.notify_customer_question_answered</field>
             <field name="value">True</field>
         </record>
     </data>

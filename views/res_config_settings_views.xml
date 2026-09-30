@@ -92,6 +92,18 @@
                             <div><field name="marketplace_notify_vendor_bank_change_approved"/></div>
                             <div><field name="marketplace_notify_vendor_bank_change_rejected"/></div>
                             <div><field name="marketplace_notify_vendor_order_late"/></div>
+                            <div><field name="marketplace_notify_vendor_question_asked"/></div>
+                            <div><field name="marketplace_notify_customer_question_answered"/></div>
+                        </setting>
+                        <setting string="Product Questions &amp; Answers" help="Let logged-in customers ask questions on the product page and sellers with an active offer on that product answer them from the vendor portal. Off: nothing is shown and the pages return 404.">
+                            <field name="marketplace_product_questions_enabled"/>
+                            <div class="mt-2" invisible="not marketplace_product_questions_enabled">
+                                <field name="marketplace_product_questions_moderation"/>
+                            </div>
+                            <div class="mt-2" invisible="not marketplace_product_questions_enabled">
+                                <label for="marketplace_product_questions_daily_limit" class="o_light_label"/>
+                                <field name="marketplace_product_questions_daily_limit"/>
+                            </div>
                         </setting>
                         <setting string="Vendor Return Response" help="Days the vendor has to answer a return request before it escalates to the marketplace.">
                             <field name="marketplace_return_vendor_sla_days"/>

@@ -38,6 +38,8 @@ STATE_TONES = {
     "suspended": "dark", "frozen": "dark",
     # penalty levels
     "warning": "warning", "freeze": "dark", "ban": "danger",
+    # product questions
+    "answered": "success", "hidden": "dark",
     # neutral
     "closed": "secondary", "none": "secondary", "consumed": "secondary",
 }
@@ -135,9 +137,9 @@ class LeadersPortalNav(models.AbstractModel):
             {"key": "orders", "url": "/my/vendor/orders", "icon": "fa-shopping-cart", "label": _("Orders")},
             {"key": "returns", "url": "/my/vendor/returns", "icon": "fa-undo", "label": _("Returns")},
             {"key": "disputes", "url": "/my/vendor/disputes", "icon": "fa-gavel", "label": _("Disputes")},
-            # Questions (product Q&A) is not built yet: flip route_exists when it is.
+            # Product Q&A (D3): only while its master switch is on.
             {"key": "questions", "url": "/my/vendor/questions", "icon": "fa-question-circle",
-             "label": _("Questions"), "route_exists": False},
+             "label": _("Questions"), "enabled": self.env["leaders.product.question"]._leaders_enabled()},
             {"key": "performance", "url": "/my/vendor/performance", "icon": "fa-line-chart",
              "label": _("Performance")},
             # Owner-only, mirroring what the routes enforce.

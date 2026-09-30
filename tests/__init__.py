@@ -49,3 +49,4 @@ from . import test_portal_components
 from . import test_portal_vendor_pages
 from . import test_unified_orders
 from . import test_returns_center
+from . import test_product_questions

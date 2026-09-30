@@ -31,4 +31,5 @@ from . import vendor_api
 from . import vendor_statement
 from . import portal_nav
 from . import unified_orders
+from . import product_question
 from . import shipping_provider

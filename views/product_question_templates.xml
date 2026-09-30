@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Product page: "Questions & answers" under the description (TASK 29 / D3). Nothing is
+         rendered while the master switch is off (lm_qa is empty). -->
+    <template id="product_page_questions" inherit_id="website_sale.product" name="Product Questions and Answers">
+        <xpath expr="//div[@id='product_full_description']" position="after">
+            <t t-set="lm_qa" t-value="product._leaders_questions_context()"/>
+            <section t-if="lm_qa" id="lm_questions" class="container my-4 lm-portal">
+                <div class="lm-card">
+                    <h2 class="lm-section-title">Questions &amp; answers</h2>
+                    <t t-set="lm_flash" t-value="request.env['leaders.product.question']._leaders_flash_message(request.httprequest.args.get('lm_q'))"/>
+                    <div t-if="lm_flash" t-attf-class="alert alert-#{lm_flash[0]}" role="alert" id="lm_question_flash" t-esc="lm_flash[1]"/>
+
+                    <div t-if="lm_qa['questions']" id="lm_question_list">
+                        <div t-foreach="lm_qa['questions']" t-as="q" class="lm-qa-item border-bottom py-3" t-att-id="'lm_question_%s' % q.id">
+                            <div class="fw-bold text-break" style="white-space: pre-line;" t-esc="q.question"/>
+                            <div class="mt-2 ps-3 border-start text-break">
+                                <div style="white-space: pre-line;" t-esc="q.answer"/>
+                                <div class="small text-muted mt-1">
+                                    <i class="fa fa-comment-o" aria-hidden="true"/>
+                                    <t t-set="lm_store" t-value="q.answered_partner_id"/>
+                                    <a t-if="lm_store.vendor_store_slug" t-attf-href="/seller/#{lm_store.vendor_store_slug}" t-esc="lm_store.vendor_store_name or lm_store.name"/>
+                                    <span t-else="" t-esc="lm_store.vendor_store_name or lm_store.name"/>
+                                    <span> · </span><span t-esc="q.answer_date" t-options="{'widget': 'date'}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p t-else="" class="text-muted mb-3" id="lm_question_empty">No questions answered yet.</p>
+
+                    <t t-if="not request.env.user._is_public()">
+                        <div t-if="lm_qa['mine']" class="mt-3" id="lm_my_questions">
+                            <div class="small text-muted mb-1">Your questions waiting to be published</div>
+                            <div t-foreach="lm_qa['mine']" t-as="mq" class="small border rounded p-2 mb-2 text-break">
+                                <span style="white-space: pre-line;" t-esc="mq.question"/>
+                                <span class="badge text-bg-warning ms-1"><t t-if="mq.state == 'pending'">Waiting for an answer</t><t t-else="">Waiting for review</t></span>
+                            </div>
+                        </div>
+                        <form t-attf-action="/shop/product/#{product.id}/question" method="post" class="mt-3 lm-validate" id="lm_question_form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" t-nocache="The csrf token must always be up to date."/>
+                            <div class="lm-form-field">
+                                <label class="form-label" for="lm_question_text">Ask a question about this product</label>
+                                <textarea id="lm_question_text" class="form-control" name="question" rows="3" required="required" t-att-maxlength="lm_qa['max_length']"/>
+                                <div class="invalid-feedback">Write your question first.</div>
+                            </div>
+                            <button class="btn btn-primary mt-2" data-lm-loading="1"><i class="fa fa-paper-plane" aria-hidden="true"/> Send question</button>
+                        </form>
+                    </t>
+                    <div t-else="" class="mt-3" id="lm_question_login">
+                        <a class="btn btn-outline-primary" t-attf-href="/web/login?redirect=#{product.website_url}">Log in to ask a question</a>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <!-- Vendor portal: questions on the products the vendor sells. -->
+    <template id="portal_vendor_questions" name="Vendor Product Questions">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_questions">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Questions</h1>
+                        <p class="lm-page-subtitle">Customer questions about the products you sell. Your answer is shown on the product page once it is published.</p>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="saved" class="alert alert-success" role="alert" id="lm_question_saved">Your answer was saved.</div>
+                <div class="lm-chips" id="lm_question_filters">
+                    <a href="/my/vendor/questions" t-attf-class="lm-chip #{'active' if lm_flt == 'unanswered' else ''}">Not answered <span class="lm-chip-count" t-esc="len(records.filtered(lambda r: r.state == 'pending'))"/></a>
+                    <a href="/my/vendor/questions?filter=answered" t-attf-class="lm-chip #{'active' if lm_flt == 'answered' else ''}">Answered <span class="lm-chip-count" t-esc="len(records.filtered(lambda r: r.state == 'answered'))"/></a>
+                    <a href="/my/vendor/questions?filter=all" t-attf-class="lm-chip #{'active' if lm_flt == 'all' else ''}">All <span class="lm-chip-count" t-esc="len(records)"/></a>
+                </div>
+                <t t-set="lm_shown" t-value="records.filtered(lambda r: lm_flt == 'all' or (lm_flt == 'answered' and r.state == 'answered') or (lm_flt == 'unanswered' and r.state == 'pending'))"/>
+                <div t-if="lm_shown" id="lm_question_cards">
+                    <div t-foreach="lm_shown" t-as="r" class="lm-panel mb-3" t-att-id="'lm_vendor_question_%s' % r.id">
+                        <div class="lm-panel-header">
+                            <h2 class="lm-panel-title"><a t-att-href="r.product_tmpl_id.website_url" t-esc="r.product_tmpl_id.display_name"/></h2>
+                            <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="r"/></t>
+                        </div>
+                        <div class="lm-panel-body">
+                            <div class="small text-muted mb-1"><span t-esc="r.partner_id.name.split(' ')[0] if r.partner_id.name else ''"/> · <span t-esc="r.create_date" t-options="{'widget': 'datetime'}"/></div>
+                            <div class="fw-bold text-break mb-3" style="white-space: pre-line;" t-esc="r.question"/>
+                            <t t-if="r.state == 'hidden'">
+                                <div class="alert alert-secondary mb-0">This question was hidden by the marketplace.</div>
+                            </t>
+                            <t t-elif="r.id in editable_ids">
+                                <form method="post" t-att-action="'/my/vendor/questions/%s/answer' % r.id" class="lm-validate">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="lm-form-field">
+                                        <label class="form-label" t-att-for="'lm_answer_%s' % r.id">Your answer</label>
+                                        <textarea t-att-id="'lm_answer_%s' % r.id" class="form-control" name="answer" rows="3" required="required" t-att-maxlength="answer_max_length" t-esc="r.answer or ''"/>
+                                        <div class="invalid-feedback">Write your answer first.</div>
+                                    </div>
+                                    <button class="btn btn-primary mt-2" data-lm-loading="1"><i class="fa fa-paper-plane" aria-hidden="true"/> <t t-if="r.state == 'pending'">Send answer</t><t t-else="">Update answer</t></button>
+                                </form>
+                            </t>
+                            <t t-else="">
+                                <div class="ps-3 border-start text-break" style="white-space: pre-line;" t-esc="r.answer"/>
+                                <div class="small text-muted mt-1">Answered by <t t-esc="r.answered_partner_id.vendor_store_name or r.answered_partner_id.name"/></div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-question-circle'"/>
+                        <t t-set="lm_message">No questions here.</t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

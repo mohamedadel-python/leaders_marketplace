@@ -59,6 +59,8 @@
         "views/vendor_api_templates.xml",
         "views/cancel_reason_views.xml",
         "views/return_reason_views.xml",
+        "views/product_question_views.xml",
+        "views/product_question_templates.xml",
         "views/bank_change_views.xml",
         "views/vendor_terms_views.xml",
         "views/shipping_provider_views.xml"
