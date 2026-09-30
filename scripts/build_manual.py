@@ -273,16 +273,21 @@ def build_target(target, root, out_dir, opts):
         raise BuildError(f"no chapters in {root / 'src'}")
     screens, renderer = [], ScreenRenderer(root, opts.allow_missing, not opts.no_legend)
     front, chapters, toc = [], [], []
+    # Several files may share one chapter number (NN_a.md, NN_b.md ...): they are
+    # concatenated in name order into ONE chapter (only the first has the "# " title).
+    grouped = {}
     for f in files:
         m = re.match(r"(\d+)_", f.name)
         if not m:
             print(f"skip {f.name} (no NN_ prefix)", file=sys.stderr)
             continue
-        num = int(m.group(1))
+        grouped.setdefault(int(m.group(1)), []).append(f)
+    for num in sorted(grouped):
         if num > 0 and spec is not None and num not in spec:
             continue
         tag = None if num == 0 or spec is None else spec[num]
-        pre, secs = filter_sections(*split_sections(render_markdown(f.read_text(encoding="utf-8"), screens)), tag)
+        text = "\n\n".join(f.read_text(encoding="utf-8") for f in grouped[num])
+        pre, secs = filter_sections(*split_sections(render_markdown(text, screens)), tag)
         if not secs and not pre.strip():
             continue
         parts, h2n, h3n = [], 0, 0

@@ -45,10 +45,14 @@ BUTTONS = INV["buttons"]
 ROUTES = {r["id"]: r for r in INV["routes"]}
 TEMPLATES = {t["xmlid"]: t for t in INV["templates"]}
 SETTINGS = {s["field"]: s for s in INV["settings"]}
+def norm_path(p):
+    return re.sub(r"<[^>]+>|\{[^}]+\}", "{}", p.split("?")[0])
+
+
 ROUTE_BY_PATH = {}
 for r in INV["routes"]:
     for p in r["paths"]:
-        ROUTE_BY_PATH.setdefault(p, []).append(r["id"])
+        ROUTE_BY_PATH.setdefault(norm_path(p), []).append(r["id"])
 
 
 def lab(model, field, fallback=None):
@@ -198,11 +202,9 @@ def bform(sid, role, title, action, model, domain, fields, *, note="", requires=
 # 1. BACKEND
 # ================================================================================================
 # ---- menus / navigation --------------------------------------------------------------------------
-add("backend_home_apps", "manager", "backend", "الشاشة الرئيسية لأودو وتطبيق السوق", {"type": "backend", "model": "", "action": None,
-    "record": None, "home": True}, note="القائمة الرئيسية للتطبيقات بعد الدخول",
-    markers=[M(".o_home_menu", "قائمة التطبيقات", optional=True)], capture={"mode": "viewport"}, refs={})
-# (the entry above is replaced below by a real nav; kept simple: home menu is /odoo)
-SCREENS["backend_home_apps"]["nav"] = {"type": "web", "path": "/odoo"}
+add("backend_home_apps", "manager", "backend", "الشاشة الرئيسية لأودو وتطبيق السوق", {"type": "web", "path": "/odoo"},
+    note="قائمة التطبيقات بعد الدخول: تطبيق «السوق»", markers=[M(".o_home_menu", "قائمة التطبيقات", optional=True)],
+    capture={"mode": "viewport"}, refs={})
 
 MENU_TOPS = [("operations", "العمليات", "menu_marketplace_operations", "action_vendor_application"),
              ("finance", "المالية", "menu_finance", "action_settlement"),
@@ -236,7 +238,7 @@ for key, bname, st, note in [
         ("expired_doc", "الندى", "under_review", "طلب قيد المراجعة وأحد مستنداته منتهي الصلاحية"),
         ("rejected", "سوق التوفير", "rejected", "طلب مرفوض مع سبب الرفض"),
         ("approved", "النور", "approved", "طلب معتمد: أُنشئ البائع ومستخدم البوابة")]:
-    bform("backend_application_form_%s" % key, "reviewer", "نموذج طلب الانضمام: %s" % note.split(":")[0].split(" في ")[0] if False else "نموذج طلب انضمام (%s)" % st,
+    bform("backend_application_form_%s" % key, "reviewer", "نموذج طلب انضمام (%s)" % st,
           "action_vendor_application", APP, [["business_name", "ilike", bname], ["state", "=", st]], APP_F,
           note=note, state=st, tabs=True)
 bform("backend_application_form_documents", "reviewer", "تبويب مستندات طلب الانضمام", "action_vendor_application", APP,
@@ -486,9 +488,9 @@ for key, dom, st, note, req in [
         ("cancelled", [["state", "=", "cancelled"]], "cancelled", "تسوية ملغاة", ["part4"]),
         ("with_invoice", [["commission_invoice_id", "!=", False]], "approved", "تسوية أصدرت فاتورة عمولة ضريبية للبائع", ["part4"])]:
     bform("backend_settlement_form_%s" % key, "finance", "نموذج التسوية (%s)" % key, "action_settlement", ST, dom, ST_F, note=note, requires=req, state=st)
-add("backend_settlement_wizard_statement", "finance", "backend", "معالج كشف حساب البائع", {"type": "backend", "model": "res.partner",
+add("backend_settlement_wizard_statement", "admin", "backend", "معالج كشف حساب البائع", {"type": "backend", "model": "res.partner",
     "record": rec("res.partner", [["is_marketplace_vendor", "=", True], ["vendor_store_name", "=", NOUR]])},
-    note="من نموذج جهة اتصال البائع، تبويب «بائع السوق»، زر «كشف البائع»", login="admin", role="finance" if False else "admin",
+    note="من نموذج جهة اتصال البائع، تبويب «بائع السوق»، زر «كشف البائع»", login="admin",
     setup=[{"op": "click", "selector": ".o_notebook .nav-link:has-text('بائع السوق')", "safe": True, "optional": True},
            {"op": "click", "selector": "button:has-text('كشف البائع')", "dialog": True, "wait": 1200}],
     markers=[M(".modal.show .modal-content", "معالج كشف الحساب"), M(".modal.show [name='vendor_id']", "البائع", optional=True),
@@ -496,7 +498,6 @@ add("backend_settlement_wizard_statement", "finance", "backend", "معالج ك�
              M(".modal.show button[name='action_print']", "طباعة PDF", optional=True), M(".modal.show button[name='action_xlsx']", "تحميل XLSX", optional=True)],
     capture={"mode": "viewport"}, refs=refs_backend("action_vendor_statement_wizard", "leaders.vendor.statement.wizard", "form",
                                                    extra_views=[]))
-SCREENS["backend_settlement_wizard_statement"]["role"] = "admin"
 blist("backend_cod_orders_list", "finance", "قائمة طلبات الدفع عند الاستلام", "action_cod_vendor_order", VO,
       ["name", "date_order", "vendor_id", "partner_id", "state", "cod_cash_confirmed", "amount_total"], requires=["part3"],
       note="مجمّعة حسب الحالة افتراضياً")
@@ -657,7 +658,7 @@ for key, title, names in SETTING_GROUPS:
     if key == "notifications":
         markers = [M(".o_setting_box:has([name='marketplace_notify_vendor_order_confirmed'])", "قائمة مفاتيح إشعارات البريد (بائع وعميل)")]
     keys = [SETTINGS[n]["key"] for n in names if n in SETTINGS]
-    add("backend_settings_%s" % ("feature_switches" if key == "returns_center" and False else key), "admin", "backend", "إعدادات السوق: %s" % title, SET_ACTION,
+    add("backend_settings_%s" % key, "admin", "backend", "إعدادات السوق: %s" % title, SET_ACTION,
         note="مجموعة إعدادات: %s" % title,
         setup=[{"op": "click", "selector": ".settings_tab .tab[data-key='leaders_marketplace']", "safe": True, "wait": 900},
                {"op": "eval", "js": "(" + SETTINGS_JS + ")(" + json.dumps(names) + ")"}],
@@ -713,22 +714,22 @@ def template_refs(tids, paths=(), extra_routes=()):
                 if b.get("route"):
                     r["routes"].append(b["route"])
     for p in list(paths) + list(extra_routes):
-        r["routes"] += ROUTE_BY_PATH.get(p, [])
+        r["routes"] += ROUTE_BY_PATH.get(norm_path(p), [])
     r["routes"] = sorted(set(r["routes"]))
     r["buttons"] = sorted(set(r["buttons"]))
     return r
 
 
 def vshot(sid, title, path, tmpl, markers, *, who="nour", role="vendor_owner", note="", requires=None, record=None, setup=None, extra_routes=(),
-          capture=None, mutates=False, devices=None, paths=()):
+          capture=None, mutates=False, devices=None, paths=(), allow_error_status=False):
     login = OWN[who] if role == "vendor_owner" else STF[who]
     nav = {"type": "web", "path": path}
     if record:
         nav["record"] = record
     mk = [VSIDE, VNAV, VCRUMB] + markers
     return add(sid, role, "portal", title, nav, note=note, markers=mk, requires=requires, setup=setup, capture=capture, login=login,
-               refs=template_refs(tmpl, paths=[path.split("{")[0].rstrip("/") if "{" in path else path] + list(paths), extra_routes=extra_routes),
-               mutates=mutates, devices=devices)
+               refs=template_refs(tmpl, paths=[path] + list(paths), extra_routes=extra_routes),
+               mutates=mutates, devices=devices, allow_error_status=allow_error_status)
 
 
 def vo_rec(who, domain, order="id desc", fields=None):
@@ -935,7 +936,7 @@ def cshot(sid, title, path, tmpl, markers, *, who=1, role="customer", note="", r
         nav["record"] = record
     login = CUST[who] if role == "customer" else None
     return add(sid, role, kind, title, nav, note=note, markers=markers, requires=requires, setup=setup, capture=capture, login=login,
-               refs=template_refs(tmpl, paths=list(paths), extra_routes=extra_routes), mutates=mutates, devices=devices, allow_error_status=allow_error_status)
+               refs=template_refs(tmpl, paths=[path] + list(paths), extra_routes=extra_routes), mutates=mutates, devices=devices, allow_error_status=allow_error_status)
 
 
 def co_rec(who, domain, order="id desc", fields=None):
@@ -1008,9 +1009,6 @@ cshot("portal_customer_order_dispute_thread", "نزاع مفتوح: المحاد
       [M(".lm-conversation, #portal_dispute_conversation", "محادثة النزاع", optional=True)], who=1, requires=["part4"],
       record=rec(DS, [["partner_id.email", "=", CUST[1]], ["state", "in", ["open", "vendor_reply"]]], fields=["vendor_order_id"]),
       extra_routes=["/my/marketplace/disputes/<int:dispute_id>/message", "/my/marketplace/disputes/<int:dispute_id>/escalate"])
-cshot("portal_customer_invoice", "فاتورة الطلب للعميل", "/my/marketplace/orders/{id}/invoice", ["portal_customer_marketplace_order_detail"], [], who=1, requires=["part3"],
-      record=co_rec(1, [["state", "=", "completed"], ["invoice_id", "!=", False]]), note="ملف PDF", capture={"mode": "viewport"}, devices=DEV_D, allow_error_status=True,
-      paths=["/my/marketplace/orders/<int:order_id>/invoice"])
 RC_M = [M("#lm_returns_filters", "مرشحات المركز", optional=True), M("#lm_center_returns", "مرتجعاتي"), M("#lm_center_disputes", "نزاعاتي", optional=True)]
 cshot("portal_customer_returns_center", "مركز المرتجعات والنزاعات", "/my/marketplace/returns", ["portal_customer_marketplace_returns"], RC_M, requires=["part4"], paths=["/my/marketplace/returns"])
 cshot("portal_customer_returns_center_filtered", "مركز المرتجعات: مرشح", "/my/marketplace/returns?filter=open", ["portal_customer_marketplace_returns"], RC_M, requires=["part4"])
