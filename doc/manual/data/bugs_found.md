@@ -179,3 +179,45 @@
 - Expected: an Arabic label (e.g. "ليدرز").
 - Actual: the Latin word in the middle of Arabic text.
 - Found by: CH07.
+
+## A vendor can lift a marketplace suspension of an offer by saving or re-submitting it (CH06A, medium)
+- Where: controllers/portal.py `vendor_product_edit` (the POST writes `"state": "draft"` on any offer, whatever its current state) and `vendor_product_submit` (calls `offer._leaders_vendor_submit(vendor)` -> `action_submit` -> `state = pending` with no state check); the "Save Draft" button is shown on the edit page of a suspended offer.
+- Steps (verified over HTTP on a copy of lm_manual_ref): as owner.nour@vendor.demo open /my/vendor/products/9/edit (NOUR-GH-01, offer suspended by the marketplace, product suspended) and press "Save Draft" (or POST /my/vendor/products/9/submit).
+- Expected: an offer suspended by a reviewer or by a penalty stays suspended until the marketplace lifts it; the vendor cannot change its state.
+- Actual: the POST to `/submit` moved the offer to `pending` and its product to `pending` (the suspension is gone; a reviewer must reject again). The edit form sets `draft` in the same way. A frozen vendor is protected (`_require_vendor()` refuses), a vendor whose single offer was suspended is not.
+- Found by: CH06A.
+
+## Creating a product with a Seller SKU that already exists gives a generic error page (CH06A, low)
+- Where: controllers/portal.py `vendor_product_create` (no SKU uniqueness check before `Offer.create`; the sell-existing route, the variants page and the bulk import do check and show "SKU البائع X مستخدم بالفعل في أحد عروضك الأخرى.").
+- Steps: as owner.nour@vendor.demo POST /my/vendor/products/new with `seller_sku=NOUR-HP-01` (already used), any name and price.
+- Expected: the form again with the friendly message used by the other flows.
+- Actual: HTTP 400 "عذراً! حدث خطأ ما" with "لا يمكن إكمال العملية: يجب أن يكون SKU البائع فريدًا لكل بائع." (the SQL constraint `seller_sku_vendor_uniq`); the request is rolled back (no template left behind), the form values are lost.
+- Found by: CH06A.
+
+## The delivery zones page is readable by vendor staff although the sidebar hides it (CH06A, low)
+- Where: controllers/portal.py `vendor_delivery_zones` (GET: `_require_vendor()` only; the owner check exists only in the create/update/delete POST routes) versus models/portal_nav.py (`zones` entry with `owner_only: True`, docstring "mirroring what the routes enforce").
+- Steps: log in as staff.nour@vendor.demo and open /my/vendor/delivery-zones.
+- Expected: 403 "يمكن لمالك البائع فقط إدارة مناطق التسليم." like /my/vendor/finance, /my/vendor/staff, /my/vendor/api, /my/vendor/profile.
+- Actual: 200 with the list of zones and the (working-looking) forms; saving one is then refused with that message.
+- Found by: CH06A.
+
+## The vendor dashboard shows the wallet balances to vendor staff (CH06A, low)
+- Where: views/portal_vendor_templates.xml `portal_vendor_dashboard` (the "Available Balance" and "On Hold" cards are rendered for everyone; only their link is limited to `is_vendor_owner`), controllers/portal.py `vendor_dashboard` (`wallet_available`, `wallet_hold`).
+- Steps: log in as staff.nour@vendor.demo and open /my/vendor: the cards show 2,665.51 and 0.00 while /my/vendor/finance answers "يمكن لمالك البائع فقط الوصول إلى المعلومات المالية.".
+- Expected: money figures hidden from staff (the manual states staff do not see finance pages).
+- Actual: the two amounts are visible to staff.
+- Found by: CH06A.
+
+## Application form and its error list show the document type names in English (CH06A, cosmetic)
+- Where: controllers/vendor_apply.py `_form_values` passes `DOCUMENT_TYPES` (models/vendor_core.py:10) untranslated to the template; `_get_missing_requirements` builds "Document not uploaded: %s" from the same English labels.
+- Steps: open /vendor/apply in Arabic (step 7) or submit without documents.
+- Expected: Arabic names (السجل التجاري, الشهادة الضريبية ...; the selection field itself is translated in the backend).
+- Actual: "Commercial Register", "Tax Certificate", "ID / Passport" ... in the form and "مستند غير مرفوع: ID / Passport" in the errors and on the status page.
+- Found by: CH06A.
+
+## Saving the edit form of an ACTIVE offer sends the offer and its product back to draft and unpublishes it (CH06A, medium, may be intended)
+- Where: controllers/portal.py `vendor_product_edit` (offer `state: draft`, and for an owned template `marketplace_state: draft`, `is_published: False`).
+- Steps: as owner.nour@vendor.demo open the active offer NOUR-CH-01 (/my/vendor/products/4/edit), change only the price to 375 and press "Save Draft".
+- Expected (from the page: "Save Draft" on an active offer): at least the price change waits for review while the product stays on sale, or the page warns about it.
+- Actual: offer draft and product draft, `is_published = False`: the product leaves /shop until a reviewer approves it again; nothing warns the vendor. Stock (list form), discount card, bulk import "update" and the API change price/stock/discount WITHOUT this reset. The manual documents it as a warning.
+- Found by: CH06A.
