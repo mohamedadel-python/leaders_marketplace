@@ -2,10 +2,15 @@
     <template id="vendor_apply_form" name="Apply to Sell">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure">
-                <div class="container my-5" style="max-width: 900px;">
-                    <h1 class="mb-2">Apply to sell on our marketplace</h1>
-                    <p class="text-muted">Tell us about your business. Fields marked * are required.</p>
-                    <div t-if="errors" class="alert alert-danger" role="alert">
+                <div class="container my-5 lm-portal lm-apply" id="lm_apply_page">
+                    <div class="lm-page-header">
+                        <div>
+                            <h1 class="lm-page-title">Apply to sell on our marketplace</h1>
+                            <p class="lm-page-subtitle">Tell us about your business. Fields marked * are required.</p>
+                        </div>
+                    </div>
+                    <div class="lm-apply-progress" id="lm_apply_progress" aria-hidden="true"/>
+                    <div t-if="errors" class="alert alert-danger" role="alert" id="lm_form_error">
                         <strong>Please fix the following:</strong>
                         <ul class="mb-0"><li t-foreach="errors" t-as="e" t-esc="e"/></ul>
                     </div>
@@ -15,7 +20,7 @@
                             <label>Leave this field empty <input type="text" name="website_url" tabindex="-1" autocomplete="off"/></label>
                         </div>
 
-                        <section class="lm-step card mb-3"><div class="card-body">
+                        <section class="lm-step card"><div class="card-body">
                             <h4>1. Business information</h4>
                             <div class="row g-3">
                                 <div class="col-md-6"><label class="form-label">Business name *</label><input class="form-control" name="business_name" t-att-value="v.get('business_name')"/></div>
@@ -32,7 +37,7 @@
                             </div>
                         </div></section>
 
-                        <section class="lm-step card mb-3"><div class="card-body">
+                        <section class="lm-step card"><div class="card-body">
                             <h4>2. Legal information</h4>
                             <div class="row g-3">
                                 <div class="col-md-6"><label class="form-label">Legal type *</label>
@@ -45,7 +50,7 @@
                             </div>
                         </div></section>
 
-                        <section class="lm-step card mb-3"><div class="card-body">
+                        <section class="lm-step card"><div class="card-body">
                             <h4>3. Owner</h4>
                             <p class="text-muted small">The owner receives the vendor portal login once the application is approved.</p>
                             <div class="row g-3">
@@ -55,7 +60,7 @@
                             </div>
                         </div></section>
 
-                        <section class="lm-step card mb-3"><div class="card-body">
+                        <section class="lm-step card"><div class="card-body">
                             <h4>4. Legal representative</h4>
                             <div class="row g-3">
                                 <div class="col-md-4"><label class="form-label">Name *</label><input class="form-control" name="representative_name" t-att-value="v.get('representative_name')"/></div>
@@ -64,7 +69,7 @@
                             </div>
                         </div></section>
 
-                        <section class="lm-step card mb-3"><div class="card-body">
+                        <section class="lm-step card"><div class="card-body">
                             <h4>5. Bank account for payouts</h4>
                             <div class="row g-3">
                                 <div class="col-md-4"><label class="form-label">Bank name *</label><input class="form-control" name="bank_name" t-att-value="v.get('bank_name')"/></div>
@@ -73,7 +78,7 @@
                             </div>
                         </div></section>
 
-                        <section class="lm-step card mb-3"><div class="card-body">
+                        <section class="lm-step card"><div class="card-body">
                             <h4>6. Product categories *</h4>
                             <div class="row">
                                 <div class="col-md-4" t-foreach="categories" t-as="cat">
@@ -85,7 +90,7 @@
                             </div>
                         </div></section>
 
-                        <section class="lm-step card mb-3"><div class="card-body">
+                        <section class="lm-step card"><div class="card-body">
                             <h4>7. Documents</h4>
                             <p class="text-muted small">PDF or image files. Pick your legal type to see which ones are required.</p>
                             <div class="row g-3">
@@ -99,7 +104,7 @@
                             </div>
                         </div></section>
 
-                        <section class="lm-step card mb-3"><div class="card-body">
+                        <section class="lm-step card"><div class="card-body">
                             <h4>8. Terms</h4>
                             <div t-if="terms" class="border rounded p-3 mb-3" style="max-height: 240px; overflow: auto;">
                                 <strong t-esc="terms.name"/>
@@ -109,10 +114,10 @@
                             <label class="form-check d-block"><input class="form-check-input" type="checkbox" name="seller_agreement_accepted" value="1" t-att-checked="v.get('seller_agreement_accepted')"/><span class="form-check-label">I accept the seller agreement *</span></label>
                         </div></section>
 
-                        <div class="d-flex justify-content-between">
-                            <button type="button" id="lm_prev" class="btn btn-outline-secondary d-none">Back</button>
-                            <button type="button" id="lm_next" class="btn btn-primary d-none">Next</button>
-                            <button type="submit" id="lm_submit" class="btn btn-primary">Submit application</button>
+                        <div class="d-flex justify-content-between gap-2">
+                            <button type="button" id="lm_prev" class="btn btn-outline-secondary d-none"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</button>
+                            <button type="button" id="lm_next" class="btn btn-primary d-none">Next <i class="fa fa-angle-right lm-flip" aria-hidden="true"/></button>
+                            <button type="submit" id="lm_submit" class="btn btn-primary" data-lm-loading="1">Submit application</button>
                         </div>
                     </form>
                 </div>
@@ -142,7 +147,10 @@
                         var next = document.getElementById('lm_next');
                         var submit = document.getElementById('lm_submit');
                         var i = 0;
+                        var progress = document.getElementById('lm_apply_progress');
+                        steps.forEach(function () { progress.appendChild(document.createElement('span')); });
                         function show() {
+                            [].slice.call(progress.children).forEach(function (bar, n) { bar.classList.toggle('is-done', n &lt;= i); });
                             steps.forEach(function (s, n) { s.classList.toggle('d-none', n !== i); });
                             prev.classList.toggle('d-none', i === 0);
                             next.classList.toggle('d-none', i === steps.length - 1);
@@ -160,43 +168,55 @@
     <template id="vendor_apply_status" name="Vendor Application Status">
         <t t-call="website.layout">
             <div id="wrap" class="oe_structure">
-                <div class="container my-5" style="max-width: 900px;">
+                <div class="container my-5 lm-portal lm-apply" id="lm_apply_status_page">
                     <div t-if="submitted" class="alert alert-success">
                         Thank you! Your application <strong t-esc="application.name"/> was received. We sent you an email with this page's link.
                     </div>
                     <div t-if="reuploaded" class="alert alert-success">The document was replaced and will be checked again.</div>
-                    <div t-if="error" class="alert alert-danger" t-esc="error"/>
-                    <h2>Application <span t-esc="application.name"/></h2>
-                    <p>Status: <span class="badge text-bg-info" t-esc="state_label"/></p>
+                    <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                    <div class="lm-page-header">
+                        <div>
+                            <div class="lm-page-heading">
+                                <h1 class="lm-page-title">Application <span t-esc="application.name"/></h1>
+                                <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="application"/></t>
+                            </div>
+                            <p class="lm-page-subtitle">Status: <span t-esc="state_label"/></p>
+                        </div>
+                    </div>
                     <div t-if="application.state == 'rejected' and application.reject_reason" class="alert alert-danger">
                         Rejected: <t t-esc="application.reject_reason"/>
                     </div>
-                    <div t-if="missing and application.state != 'approved'" class="card mb-4">
+                    <div t-if="missing and application.state != 'approved'" class="card mb-4" id="lm_apply_missing">
                         <div class="card-body">
                             <h5>Still needed</h5>
                             <ul class="mb-0"><li t-foreach="missing" t-as="m" t-esc="m"/></ul>
                         </div>
                     </div>
-                    <h5>Documents</h5>
-                    <table class="table align-middle">
-                        <thead><tr><th>Document</th><th>File</th><th>Status</th><th>Note</th><th/></tr></thead>
+                    <h2 class="lm-section-title">Documents</h2>
+                    <t t-set="lb_file">File</t>
+                    <t t-set="lb_status">Status</t>
+                    <t t-set="lb_note">Note</t>
+                    <div class="lm-table-responsive">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Document</th><th>File</th><th>Status</th><th>Note</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
                         <tbody>
                             <tr t-foreach="application.document_ids" t-as="d">
-                                <td t-esc="d.name"/>
-                                <td t-esc="d.file_name"/>
-                                <td t-esc="dict(d._fields['verification_status']._description_selection(d.env)).get(d.verification_status)"/>
-                                <td t-esc="d.notes if d.verification_status == 'rejected' else ''"/>
-                                <td>
+                                <td class="lm-cell-title" t-esc="d.name"/>
+                                <td t-att-data-label="lb_file" class="text-break" t-esc="d.file_name"/>
+                                <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="d"/><t t-set="lm_field" t-value="'verification_status'"/></t></td>
+                                <td t-att-data-label="lb_note" t-esc="d.notes if d.verification_status == 'rejected' else ''"/>
+                                <td class="lm-cell-actions">
                                     <form t-if="can_reupload and d.verification_status == 'rejected'" method="post" enctype="multipart/form-data"
-                                          t-attf-action="/vendor/apply/status/#{application.access_token}/document/#{d.id}" class="d-flex gap-2">
+                                          t-attf-action="/vendor/apply/status/#{application.access_token}/document/#{d.id}" class="lm-inline-form">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                        <input type="file" name="file" class="form-control form-control-sm" accept="application/pdf,image/*"/>
-                                        <button class="btn btn-sm btn-primary text-nowrap">Replace</button>
+                                        <input type="file" name="file" class="form-control form-control-sm" accept="application/pdf,image/*" aria-label="Replace"/>
+                                        <button class="btn btn-sm btn-primary text-nowrap" data-lm-loading="1">Replace</button>
                                     </form>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </t>

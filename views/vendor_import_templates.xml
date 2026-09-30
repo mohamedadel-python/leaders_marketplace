@@ -1,111 +1,149 @@
 <odoo>
     <template id="portal_vendor_import" name="Vendor Bulk Import">
-        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal">
-            
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <h2 class="mb-0">Bulk import</h2>
-                <a href="/my/vendor/products" class="btn btn-outline-secondary">Back</a>
-            </div>
-            <div t-if="error" class="alert alert-danger" t-esc="error"/>
-            <div class="card p-3 mb-3">
-                <h5>1. Download a template</h5>
-                <div class="row g-2">
-                    <div t-foreach="kinds" t-as="k" class="col-12 col-md-4">
-                        <div class="border rounded p-2 h-100">
-                            <div class="fw-semibold mb-1" t-esc="k[1]"/>
-                            <a t-att-href="'/my/vendor/import/template/%s.xlsx' % k[0]" class="btn btn-sm btn-outline-primary">Excel (.xlsx)</a>
-                            <a t-att-href="'/my/vendor/import/template/%s.csv' % k[0]" class="btn btn-sm btn-outline-secondary">CSV</a>
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_import">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Bulk import</h1>
+                        <p class="lm-page-subtitle">Create or update many products from a spreadsheet.</p>
+                    </div>
+                    <div class="lm-page-actions"><a href="/my/vendor/products" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a></div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div class="lm-card mb-4">
+                    <h2 class="lm-section-title"><i class="fa fa-download" aria-hidden="true"/> 1. Download a template</h2>
+                    <div class="row g-2">
+                        <div t-foreach="kinds" t-as="k" class="col-12 col-md-4">
+                            <div class="border rounded p-3 h-100">
+                                <div class="fw-semibold mb-2" t-esc="k[1]"/>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a t-att-href="'/my/vendor/import/template/%s.xlsx' % k[0]" class="btn btn-sm btn-outline-primary">Excel (.xlsx)</a>
+                                    <a t-att-href="'/my/vendor/import/template/%s.csv' % k[0]" class="btn btn-sm btn-outline-secondary">CSV</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <form action="/my/vendor/import/upload" method="post" enctype="multipart/form-data" class="card p-3 mb-3">
-                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                <h5>2. Upload your file</h5>
-                <div class="row g-3">
-                    <div class="col-12 col-md-4">
-                        <label class="form-label" for="lm_import_kind">What do you import?</label>
-                        <select id="lm_import_kind" name="kind" class="form-select" required="required">
-                            <option t-foreach="kinds" t-as="k" t-att-value="k[0]" t-esc="k[1]"/>
-                        </select>
-                    </div>
-                    <div class="col-12 col-md-5">
-                        <label class="form-label" for="lm_import_file">File (.xlsx or .csv, max 10 MB)</label>
-                        <input id="lm_import_file" type="file" name="file" class="form-control" accept=".xlsx,.csv" required="required"/>
-                    </div>
-                    <div class="col-12 col-md-3 d-flex align-items-end">
-                        <div class="form-check">
-                            <input id="lm_import_submit" type="checkbox" name="submit_after_import" value="1" class="form-check-input"/>
-                            <label class="form-check-label" for="lm_import_submit">Submit for review after import</label>
+                <form action="/my/vendor/import/upload" method="post" enctype="multipart/form-data" class="lm-card mb-4 lm-validate">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <h2 class="lm-section-title"><i class="fa fa-upload" aria-hidden="true"/> 2. Upload your file</h2>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4 lm-form-field">
+                            <label class="form-label" for="lm_import_kind">What do you import?</label>
+                            <select id="lm_import_kind" name="kind" class="form-select" required="required">
+                                <option t-foreach="kinds" t-as="k" t-att-value="k[0]" t-esc="k[1]"/>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-5 lm-form-field">
+                            <label class="form-label" for="lm_import_file">File (.xlsx or .csv, max 10 MB)</label>
+                            <input id="lm_import_file" type="file" name="file" class="form-control" accept=".xlsx,.csv" required="required"/>
+                            <div class="invalid-feedback">Choose an .xlsx or .csv file.</div>
+                        </div>
+                        <div class="col-12 col-md-3 lm-form-field d-flex align-items-end">
+                            <div class="form-check">
+                                <input id="lm_import_submit" type="checkbox" name="submit_after_import" value="1" class="form-check-input"/>
+                                <label class="form-check-label" for="lm_import_submit">Submit for review after import</label>
+                            </div>
                         </div>
                     </div>
+                    <p class="lm-help">Every row is checked first. Nothing is created until you confirm, and only valid rows are imported.</p>
+                    <button class="btn btn-primary" type="submit" data-lm-loading="1">Upload and check</button>
+                </form>
+                <t t-set="lb_type">Type</t>
+                <t t-set="lb_file">File</t>
+                <t t-set="lb_status">Status</t>
+                <t t-set="lb_valid">Valid</t>
+                <t t-set="lb_errors">Errors</t>
+                <t t-set="lb_applied">Applied</t>
+                <div class="lm-panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-history" aria-hidden="true"/> History</h2></div>
+                    <div t-if="jobs" class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Date</th><th>Type</th><th>File</th><th>Status</th><th class="text-end">Valid</th><th class="text-end">Errors</th><th class="text-end">Applied</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="jobs" t-as="j">
+                                    <td class="lm-cell-title" t-esc="j.create_date" t-options="{'widget': 'datetime'}"/>
+                                    <td t-att-data-label="lb_type" t-esc="dict(j._fields['kind']._description_selection(j.env)).get(j.kind)"/>
+                                    <td t-att-data-label="lb_file" class="text-break" t-esc="j.filename"/>
+                                    <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="j"/></t></td>
+                                    <td t-att-data-label="lb_valid" class="text-end" t-esc="j.valid_rows"/>
+                                    <td t-att-data-label="lb_errors" class="text-end" t-esc="j.invalid_rows"/>
+                                    <td t-att-data-label="lb_applied" class="text-end" t-esc="j.applied_rows"/>
+                                    <td class="lm-cell-actions text-end"><a t-att-href="'/my/vendor/import/%s' % j.id" class="btn btn-sm btn-outline-primary">Open</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <t t-else="">
+                        <t t-call="leaders_marketplace.lm_empty_state">
+                            <t t-set="lm_icon" t-value="'fa-upload'"/>
+                            <t t-set="lm_message">No import yet.</t>
+                        </t>
+                    </t>
                 </div>
-                <div class="text-muted small mt-2">Every row is checked first. Nothing is created until you confirm, and only valid rows are imported.</div>
-                <div class="mt-3"><button class="btn btn-primary" type="submit">Upload and check</button></div>
-            </form>
-            <h5>History</h5>
-            <div class="table-responsive"><table class="table table-sm align-middle">
-                <thead><tr><th>Date</th><th>Type</th><th>File</th><th>Status</th><th>Valid</th><th>Errors</th><th>Applied</th><th/></tr></thead>
-                <tbody>
-                    <tr t-foreach="jobs" t-as="j">
-                        <td t-esc="j.create_date" t-options="{'widget': 'datetime'}"/>
-                        <td t-esc="dict(j._fields['kind']._description_selection(j.env)).get(j.kind)"/>
-                        <td t-esc="j.filename"/>
-                        <td><span class="badge text-bg-secondary" t-esc="dict(j._fields['state']._description_selection(j.env)).get(j.state)"/></td>
-                        <td t-esc="j.valid_rows"/><td t-esc="j.invalid_rows"/><td t-esc="j.applied_rows"/>
-                        <td><a t-att-href="'/my/vendor/import/%s' % j.id" class="btn btn-sm btn-outline-primary">Open</a></td>
-                    </tr>
-                    <tr t-if="not jobs"><td colspan="8" class="text-muted">No import yet.</td></tr>
-                </tbody>
-            </table></div>
-        </div></t>
+            </div>
+        </t>
     </template>
 
     <template id="portal_vendor_import_job" name="Vendor Bulk Import Job">
-        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal">
-            
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <h2 class="mb-0"><t t-esc="dict(job._fields['kind']._description_selection(job.env)).get(job.kind)"/>: <span t-esc="job.filename"/></h2>
-                <a href="/my/vendor/import" class="btn btn-outline-secondary">Back</a>
-            </div>
-            <div t-if="error" class="alert alert-danger" t-esc="error"/>
-            <div class="mb-3">Status: <span class="badge text-bg-info" t-esc="dict(job._fields['state']._description_selection(job.env)).get(job.state)"/></div>
-            <div t-if="job.state in ('uploaded', 'validating', 'confirmed', 'processing')" class="alert alert-info">
-                This import is being processed in the background. <a t-att-href="'/my/vendor/import/%s' % job.id">Refresh</a> in a moment.
-            </div>
-            <div class="row g-2 mb-3">
-                <div class="col-6 col-md-3"><div class="card p-2 text-center"><div class="h4 mb-0" t-esc="job.total_rows"/><div class="small text-muted">Rows</div></div></div>
-                <div class="col-6 col-md-3"><div class="card p-2 text-center"><div class="h4 mb-0 text-success" t-esc="job.valid_rows"/><div class="small text-muted">Valid</div></div></div>
-                <div class="col-6 col-md-3"><div class="card p-2 text-center"><div class="h4 mb-0 text-danger" t-esc="job.invalid_rows"/><div class="small text-muted">With errors</div></div></div>
-                <div class="col-6 col-md-3"><div class="card p-2 text-center"><div class="h4 mb-0" t-esc="job.applied_rows"/><div class="small text-muted">Imported</div></div></div>
-            </div>
-            <div t-if="job.state == 'validated'" class="card p-3 mb-3">
-                <t t-if="job.valid_rows">
-                    <form t-att-action="'/my/vendor/import/%s/confirm' % job.id" method="post">
-                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                        <button class="btn btn-primary" type="submit">Confirm import of <t t-esc="job.valid_rows"/> valid rows</button>
-                        <span t-if="job.invalid_rows" class="text-muted ms-2">The rows with errors are skipped.</span>
-                    </form>
-                </t>
-                <div t-else="" class="text-danger">No row can be imported. Fix the errors and upload the file again.</div>
-            </div>
-            <div t-if="error_count" class="card p-3 mb-3">
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                    <h5 class="mb-0">Errors and warnings</h5>
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_import_job">
+                <div class="lm-page-header">
                     <div>
-                        <a t-att-href="'/my/vendor/import/%s/errors.xlsx' % job.id" class="btn btn-sm btn-outline-primary">Error file (.xlsx)</a>
-                        <a t-att-href="'/my/vendor/import/%s/errors.csv' % job.id" class="btn btn-sm btn-outline-secondary">CSV</a>
+                        <div class="lm-page-heading">
+                            <h1 class="lm-page-title"><t t-esc="dict(job._fields['kind']._description_selection(job.env)).get(job.kind)"/>: <span t-esc="job.filename"/></h1>
+                            <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="job"/></t>
+                        </div>
                     </div>
+                    <div class="lm-page-actions"><a href="/my/vendor/import" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a></div>
                 </div>
-                <div class="table-responsive"><table class="table table-sm mb-0">
-                    <thead><tr><th>Row</th><th>Column</th><th>Level</th><th>Message</th></tr></thead>
-                    <tbody><tr t-foreach="error_preview" t-as="e">
-                        <td t-esc="e[0]"/><td t-esc="e[1]"/><td t-esc="e[2]"/><td t-esc="e[3]"/>
-                    </tr></tbody>
-                </table></div>
-                <div t-if="error_count > len(error_preview)" class="small text-muted mt-1">Only the first messages are shown; download the error file for all of them.</div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="job.state in ('uploaded', 'validating', 'confirmed', 'processing')" class="alert alert-info" role="status">
+                    This import is being processed in the background. <a t-att-href="'/my/vendor/import/%s' % job.id">Refresh</a> in a moment.
+                </div>
+                <div class="lm-stat-cards">
+                    <div class="lm-stat-card lm-tone-secondary"><span class="lm-stat-icon"><i class="fa fa-table" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Rows</div><div class="lm-stat-value" t-esc="job.total_rows"/></div></div>
+                    <div class="lm-stat-card lm-tone-success"><span class="lm-stat-icon"><i class="fa fa-check-circle" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Valid</div><div class="lm-stat-value" t-esc="job.valid_rows"/></div></div>
+                    <div class="lm-stat-card lm-tone-danger"><span class="lm-stat-icon"><i class="fa fa-exclamation-circle" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">With errors</div><div class="lm-stat-value" t-esc="job.invalid_rows"/></div></div>
+                    <div class="lm-stat-card"><span class="lm-stat-icon"><i class="fa fa-download" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Imported</div><div class="lm-stat-value" t-esc="job.applied_rows"/></div></div>
+                </div>
+                <div t-if="job.state == 'validated'" class="lm-card mb-4">
+                    <t t-if="job.valid_rows">
+                        <form t-att-action="'/my/vendor/import/%s/confirm' % job.id" method="post" class="d-flex flex-wrap align-items-center gap-2" data-lm-confirm-ref="#lm_confirm_import">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button class="btn btn-primary" type="submit" data-lm-loading="1">Confirm import of <t t-esc="job.valid_rows"/> valid rows</button>
+                            <span t-if="job.invalid_rows" class="text-muted">The rows with errors are skipped.</span>
+                        </form>
+                        <span id="lm_confirm_import" class="d-none">Import the valid rows now?</span>
+                    </t>
+                    <div t-else="" class="text-danger">No row can be imported. Fix the errors and upload the file again.</div>
+                </div>
+                <t t-set="lb_column">Column</t>
+                <t t-set="lb_level">Level</t>
+                <t t-set="lb_message">Message</t>
+                <div t-if="error_count" class="lm-panel">
+                    <div class="lm-panel-header">
+                        <h2 class="lm-panel-title"><i class="fa fa-exclamation-triangle" aria-hidden="true"/> Errors and warnings</h2>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a t-att-href="'/my/vendor/import/%s/errors.xlsx' % job.id" class="btn btn-sm btn-outline-primary">Error file (.xlsx)</a>
+                            <a t-att-href="'/my/vendor/import/%s/errors.csv' % job.id" class="btn btn-sm btn-outline-secondary">CSV</a>
+                        </div>
+                    </div>
+                    <div class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Row</th><th>Column</th><th>Level</th><th>Message</th></tr></thead>
+                            <tbody><tr t-foreach="error_preview" t-as="e">
+                                <td class="lm-cell-title" t-esc="e[0]"/>
+                                <td t-att-data-label="lb_column" t-esc="e[1]"/>
+                                <td t-att-data-label="lb_level" t-esc="e[2]"/>
+                                <td t-att-data-label="lb_message" class="text-break" t-esc="e[3]"/>
+                            </tr></tbody>
+                        </table>
+                    </div>
+                    <div t-if="error_count > len(error_preview)" class="lm-panel-footer">Only the first messages are shown; download the error file for all of them.</div>
+                </div>
+                <div t-if="job.log" class="lm-card mt-3"><h2 class="lm-section-title">Log</h2><pre class="lm-code mb-0" t-esc="job.log" style="white-space: pre-wrap;"/></div>
             </div>
-            <div t-if="job.log" class="card p-3"><h6>Log</h6><pre class="mb-0 small" t-esc="job.log" style="white-space: pre-wrap;"/></div>
-        </div></t>
+        </t>
     </template>
 </odoo>

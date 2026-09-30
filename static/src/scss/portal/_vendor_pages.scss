@@ -1,0 +1,237 @@
+// ---------------------------------------------------------------------------
+// Vendor portal pages (TASK 29 / C2b): patterns shared by every vendor page.
+// Built on the tokens and components of _tokens.scss / _components.scss.
+// Logical properties only (RTL first): TestPortalScssIsRtlSafe enforces it.
+// ---------------------------------------------------------------------------
+.lm-vendor-page { min-inline-size: 0; }
+.lm-vendor-page .lm-page-header:first-child { margin-block-start: 0; }
+.lm-vendor-page h1, .lm-vendor-page h2, .lm-vendor-page h3, .lm-vendor-page h5 { overflow-wrap: anywhere; }
+.lm-vendor-page a:not(.btn):not(.lm-stat-card):not(.lm-attention-row):not(.lm-chip):not(.lm-quick-link) { overflow-wrap: anywhere; }
+
+// Panels: a titled block (card) with an optional footer.
+.lm-panel {
+    background: var(--lm-surface);
+    border: 1px solid var(--lm-border);
+    border-radius: var(--lm-radius);
+    box-shadow: var(--lm-shadow-sm);
+    margin-block-end: var(--lm-space-4);
+    min-inline-size: 0;
+    overflow: hidden;
+    &.h-100 { margin-block-end: 0; }
+}
+.lm-panel-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--lm-space-2);
+    padding: var(--lm-space-3);
+    border-block-end: 1px solid var(--lm-border);
+    .lm-panel-title { margin: 0; font-size: 1rem; font-weight: 700; overflow-wrap: anywhere; }
+    .lm-panel-title .fa { color: var(--lm-text-muted); margin-inline-end: var(--lm-space-1); }
+}
+.lm-panel-body { padding: var(--lm-space-3); }
+.lm-panel-footer {
+    padding: var(--lm-space-2) var(--lm-space-3);
+    border-block-start: 1px solid var(--lm-border);
+    background: var(--lm-surface-muted);
+    color: var(--lm-text-muted);
+    font-size: .875rem;
+}
+// Tables inside a panel use the panel padding and no outer border.
+.lm-panel > .lm-table-responsive { padding: 0; }
+.lm-panel > .lm-empty { border: 0; border-radius: 0; }
+
+// Table -> cards below md: on wider screens a wide table scrolls inside its own box.
+@include media-breakpoint-up(md) {
+    .lm-vendor-page .lm-table-responsive { overflow-x: auto; }
+}
+.lm-vendor-page .lm-table { --bs-table-bg: transparent; }
+.lm-vendor-page .lm-table a { text-decoration: none; }
+.lm-vendor-page .lm-table a:hover { text-decoration: underline; }
+@include media-breakpoint-down(md) {
+    // Row without a label: a full width title of the card (product name, order number ...).
+    .lm-table-responsive .lm-table td.lm-cell-title {
+        justify-content: flex-start;
+        font-weight: 600;
+        text-align: start;
+    }
+    .lm-table-responsive .lm-table td.lm-cell-actions {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        text-align: start;
+    }
+    .lm-table-responsive .lm-table td .lm-inline-form { inline-size: 100%; }
+}
+
+// Quantity / price editors placed inside a table cell.
+.lm-inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--lm-space-1);
+    min-inline-size: 0;
+    margin: 0;
+    .form-control, .form-select { flex: 1 1 5rem; min-inline-size: 0; min-block-size: 36px; }
+    .lm-inline-note { flex: 1 0 100%; font-size: .8rem; color: var(--lm-text-muted); }
+}
+
+// Stat card that is a link.
+a.lm-stat-card { transition: transform .15s ease, box-shadow .15s ease; }
+a.lm-stat-card[href]:hover { transform: translateY(-2px); box-shadow: var(--lm-shadow); }
+.lm-stat-card .lm-stat-sub { color: var(--lm-text-muted); font-size: .8rem; }
+.lm-stat-cards.lm-stat-cards-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@include media-breakpoint-up(lg) {
+    .lm-stat-cards.lm-stat-cards-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+// Alerts strip of the dashboard.
+.lm-alerts { display: flex; flex-direction: column; gap: var(--lm-space-2); margin-block-end: var(--lm-space-4); }
+.lm-alerts .alert { margin: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--lm-space-2); }
+
+// Rows of counters ("needs attention", offers by status).
+.lm-attention-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--lm-space-2);
+    padding: var(--lm-space-3);
+    color: inherit;
+    text-decoration: none;
+    & + .lm-attention-row { border-block-start: 1px solid var(--lm-border); }
+    .fa { inline-size: 1.25rem; text-align: center; margin-inline-end: var(--lm-space-2); }
+}
+a.lm-attention-row:hover { background: var(--lm-surface-muted); }
+.lm-count {
+    min-inline-size: 1.75rem;
+    padding: .15em .6em;
+    border-radius: var(--lm-radius-pill);
+    background: var(--lm-surface-muted);
+    border: 1px solid var(--lm-border);
+    text-align: center;
+    font-size: .8rem;
+    font-weight: 700;
+    &.lm-count--warning { @include lm-tone(warning); background: var(--lm-tone-bg); color: var(--lm-tone-text); }
+    &.lm-count--danger { @include lm-tone(danger); background: var(--lm-tone-bg); color: var(--lm-tone-text); }
+    &.lm-count--primary { @include lm-tone(primary); background: var(--lm-tone-bg); color: var(--lm-tone-text); }
+}
+
+// Quick actions.
+.lm-quick-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--lm-space-2); padding: var(--lm-space-3); }
+.lm-quick-link {
+    display: flex;
+    align-items: center;
+    gap: var(--lm-space-2);
+    min-block-size: var(--lm-tap-size);
+    padding: var(--lm-space-2) var(--lm-space-3);
+    border: 1px solid var(--lm-border);
+    border-radius: var(--lm-radius);
+    color: inherit;
+    text-decoration: none;
+    &:hover { background: var(--lm-surface-muted); }
+}
+
+// Filter chips (orders, products).
+.lm-chips { display: flex; flex-wrap: wrap; gap: var(--lm-space-2); margin-block-end: var(--lm-space-3); }
+.lm-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--lm-space-1);
+    min-block-size: 36px;
+    padding: .25rem .9rem;
+    border: 1px solid var(--lm-border);
+    border-radius: var(--lm-radius-pill);
+    color: inherit;
+    text-decoration: none;
+    background: var(--lm-surface);
+    &:hover { background: var(--lm-surface-muted); }
+    &.active { @include lm-tone(primary); background: var(--lm-tone-bg); border-color: var(--lm-tone); color: var(--lm-tone-text); font-weight: 600; }
+    .lm-chip-count { font-size: .75rem; color: var(--lm-text-muted); }
+}
+
+// Key / value lists (profile, order facts).
+.lm-kv { margin: 0; }
+.lm-kv > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--lm-space-1) var(--lm-space-3);
+    padding-block: var(--lm-space-2);
+    & + div { border-block-start: 1px solid var(--lm-border); }
+    dt { color: var(--lm-text-muted); font-weight: 600; margin: 0; }
+    dd { margin: 0; min-inline-size: 0; overflow-wrap: anywhere; text-align: end; }
+}
+
+// Form sections (product form, apply form).
+.lm-form-section { margin-block-end: var(--lm-space-4); }
+.lm-form-section > .lm-section-title { display: flex; align-items: center; gap: var(--lm-space-2); }
+.lm-form-section > .lm-section-title .fa { color: var(--lm-text-muted); }
+.lm-help { color: var(--lm-text-muted); font-size: .875rem; margin-block-end: var(--lm-space-3); }
+.lm-form-actions { display: flex; flex-wrap: wrap; gap: var(--lm-space-2); margin-block-start: var(--lm-space-3); }
+.lm-form-actions .btn { flex: 0 1 auto; }
+.lm-check-group { display: flex; flex-wrap: wrap; gap: var(--lm-space-2); }
+.lm-check-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--lm-space-2);
+    min-block-size: 40px;
+    padding-inline: var(--lm-space-3);
+    border: 1px solid var(--lm-border);
+    border-radius: var(--lm-radius-pill);
+    background: var(--lm-surface);
+    cursor: pointer;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
+}
+.lm-thumbs { display: flex; flex-wrap: wrap; gap: var(--lm-space-3); }
+.lm-thumb {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--lm-space-1);
+    img { inline-size: 6rem; block-size: 6rem; object-fit: cover; border: 1px solid var(--lm-border); border-radius: var(--lm-radius); }
+}
+
+// Multi-line text from the customer (reason, notes).
+.lm-note { white-space: pre-line; overflow-wrap: anywhere; margin: 0; }
+
+// Dispute / message thread.
+.lm-thread { display: flex; flex-direction: column; gap: var(--lm-space-3); max-block-size: 28rem; overflow-y: auto; padding: var(--lm-space-3); }
+.lm-message {
+    max-inline-size: 90%;
+    padding: var(--lm-space-2) var(--lm-space-3);
+    border: 1px solid var(--lm-border);
+    border-radius: var(--lm-radius);
+    background: var(--lm-surface-muted);
+    align-self: flex-start;
+    &.lm-message--mine { align-self: flex-end; @include lm-tone(primary); background: var(--lm-tone-bg); }
+    .lm-message-meta { color: var(--lm-text-muted); font-size: .8rem; margin-block-end: var(--lm-space-1); }
+    .lm-message-body { overflow-wrap: anywhere; }
+}
+
+// Code blocks (API quick start): always left-to-right, scroll inside their own box.
+.lm-code {
+    direction: ltr;
+    text-align: start;
+    max-inline-size: 100%;
+    overflow-x: auto;
+    padding: var(--lm-space-3);
+    margin: 0;
+    background: var(--lm-surface-muted);
+    border: 1px solid var(--lm-border);
+    border-radius: var(--lm-radius);
+    font-size: .8rem;
+}
+.lm-ltr { direction: ltr; unicode-bidi: isolate; display: inline-block; max-inline-size: 100%; overflow-wrap: anywhere; }
+.o_rtl .lm-ltr, [dir="rtl"] .lm-ltr { text-align: end; }
+
+// Terms text.
+.lm-terms { max-block-size: 26rem; overflow-y: auto; padding: var(--lm-space-3); border: 1px solid var(--lm-border); border-radius: var(--lm-radius); overflow-wrap: anywhere; }
+
+// Public application pages (website layout, no vendor sidebar).
+.lm-apply { max-inline-size: 56rem; margin-inline: auto; }
+.lm-apply .lm-step { margin-block-end: var(--lm-space-3); }
+.lm-apply .lm-step > .card-body { padding: var(--lm-space-3); }
+.lm-apply-progress { display: flex; gap: var(--lm-space-1); margin-block-end: var(--lm-space-3); }
+.lm-apply-progress span { flex: 1 1 0; block-size: .35rem; border-radius: var(--lm-radius-pill); background: var(--lm-border); }
+.lm-apply-progress span.is-done { background: var(--lm-tone-primary); }

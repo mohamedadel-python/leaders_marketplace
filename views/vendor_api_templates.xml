@@ -1,68 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="portal_vendor_api" name="Vendor API Keys">
-        <t t-call="leaders_marketplace.portal_vendor_layout"><div class="container my-4 lm-portal">
-            
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <h2 class="mb-0">API keys</h2>
-                <a href="/my/vendor" class="btn btn-outline-secondary">Back</a>
-            </div>
-            <div t-if="error" class="alert alert-danger" t-esc="error"/>
-            <div t-if="revoked" class="alert alert-success">The key was revoked.</div>
-            <div t-if="new_key" class="alert alert-warning" id="lm_api_new_key">
-                <div class="fw-semibold mb-1">Copy your new key now. It is shown only once and cannot be recovered.</div>
-                <div class="input-group" dir="ltr">
-                    <input type="text" class="form-control font-monospace" readonly="readonly" id="lm_api_new_key_value" t-att-value="new_key"/>
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_api">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">API keys</h1>
+                        <p class="lm-page-subtitle">Connect your ERP or store system to your offers and orders.</p>
+                    </div>
+                    <div class="lm-page-actions"><a href="/my/vendor" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a></div>
                 </div>
-            </div>
-            <div class="card p-3 mb-3">
-                <h5>Create a key</h5>
-                <form action="/my/vendor/api/keys" method="post" class="row g-2 align-items-end">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <div class="col-12 col-md-5">
-                        <label class="form-label" for="lm_api_name">Name</label>
-                        <input type="text" id="lm_api_name" name="name" class="form-control" maxlength="100" required="required" placeholder="e.g. ERP sync"/>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="revoked" class="alert alert-success" role="status">The key was revoked.</div>
+                <div t-if="new_key" class="alert alert-warning" role="alert" id="lm_api_new_key">
+                    <div class="fw-semibold mb-2">Copy your new key now. It is shown only once and cannot be recovered.</div>
+                    <div class="input-group" dir="ltr">
+                        <input type="text" class="form-control font-monospace" readonly="readonly" id="lm_api_new_key_value" t-att-value="new_key" aria-label="New API key"/>
                     </div>
-                    <div class="col-12 col-md-4">
-                        <label class="form-label" for="lm_api_scope">Access</label>
-                        <select id="lm_api_scope" name="scope" class="form-select">
-                            <option value="read">Read only</option>
-                            <option value="write">Read and write</option>
-                        </select>
+                </div>
+                <div class="lm-card mb-4">
+                    <h2 class="lm-section-title"><i class="fa fa-key" aria-hidden="true"/> Create a key</h2>
+                    <form action="/my/vendor/api/keys" method="post" class="row g-2 align-items-start lm-validate">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="col-12 col-md-5 lm-form-field">
+                            <label class="form-label" for="lm_api_name">Name</label>
+                            <input type="text" id="lm_api_name" name="name" class="form-control" maxlength="100" required="required" placeholder="e.g. ERP sync"/>
+                            <div class="invalid-feedback">Give the key a name.</div>
+                        </div>
+                        <div class="col-12 col-md-4 lm-form-field">
+                            <label class="form-label" for="lm_api_scope">Access</label>
+                            <select id="lm_api_scope" name="scope" class="form-select">
+                                <option value="read">Read only</option>
+                                <option value="write">Read and write</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-3 lm-form-field d-flex align-items-end"><button type="submit" class="btn btn-primary w-100" data-lm-loading="1">Create key</button></div>
+                    </form>
+                </div>
+                <t t-set="lb_key">Key</t>
+                <t t-set="lb_access">Access</t>
+                <t t-set="lb_created">Created</t>
+                <t t-set="lb_last_used">Last used</t>
+                <t t-set="lb_status">Status</t>
+                <div class="lm-panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-list" aria-hidden="true"/> Your keys</h2></div>
+                    <div t-if="keys" class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Name</th><th>Key</th><th>Access</th><th>Created</th><th>Last used</th><th>Status</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="keys" t-as="k">
+                                    <td class="lm-cell-title" t-esc="k.name"/>
+                                    <td t-att-data-label="lb_key"><code class="lm-ltr">lmk_<t t-esc="k.key_prefix"/>...</code></td>
+                                    <td t-att-data-label="lb_access"><t t-esc="'Read and write' if k.scope == 'write' else 'Read only'"/></td>
+                                    <td t-att-data-label="lb_created"><span t-esc="k.create_date" t-options="{'widget': 'datetime'}"/></td>
+                                    <td t-att-data-label="lb_last_used"><span t-if="k.last_used" t-esc="k.last_used" t-options="{'widget': 'datetime'}"/><span t-else="" class="text-muted">Never</span></td>
+                                    <td t-att-data-label="lb_status">
+                                        <span t-if="k.revoked_date" class="lm-badge lm-badge--secondary">Revoked <span t-esc="k.revoked_date" t-options="{'widget': 'date'}"/></span>
+                                        <span t-else="" class="lm-badge lm-badge--success">Active</span>
+                                    </td>
+                                    <td class="lm-cell-actions text-end">
+                                        <form t-if="not k.revoked_date" t-attf-action="/my/vendor/api/keys/#{k.id}/revoke" method="post" data-lm-confirm-ref="#lm_confirm_revoke_key">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" data-lm-loading="1">Revoke</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-12 col-md-3"><button type="submit" class="btn btn-primary w-100">Create key</button></div>
-                </form>
-            </div>
-            <div class="card p-3 mb-3">
-                <h5>Your keys</h5>
-                <div class="table-responsive"><table class="table table-sm align-middle mb-0">
-                    <thead><tr><th>Name</th><th>Key</th><th>Access</th><th>Created</th><th>Last used</th><th>Status</th><th/></tr></thead>
-                    <tbody>
-                        <tr t-foreach="keys" t-as="k">
-                            <td t-esc="k.name"/>
-                            <td dir="ltr"><code>lmk_<t t-esc="k.key_prefix"/>...</code></td>
-                            <td><t t-esc="'Read and write' if k.scope == 'write' else 'Read only'"/></td>
-                            <td><span t-esc="k.create_date" t-options="{'widget': 'datetime'}"/></td>
-                            <td><span t-if="k.last_used" t-esc="k.last_used" t-options="{'widget': 'datetime'}"/><span t-else="" class="text-muted">Never</span></td>
-                            <td>
-                                <span t-if="k.revoked_date" class="badge text-bg-secondary">Revoked <span t-esc="k.revoked_date" t-options="{'widget': 'date'}"/></span>
-                                <span t-else="" class="badge text-bg-success">Active</span>
-                            </td>
-                            <td>
-                                <form t-if="not k.revoked_date" t-attf-action="/my/vendor/api/keys/#{k.id}/revoke" method="post" onsubmit="return confirm('Revoke this key? Calls using it stop working immediately.');">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Revoke</button>
-                                </form>
-                            </td>
-                        </tr>
-                        <tr t-if="not keys"><td colspan="7" class="text-muted">No keys yet.</td></tr>
-                    </tbody>
-                </table></div>
-            </div>
-            <div class="card p-3">
-                <h5>Quick start</h5>
-                <p class="text-muted mb-2">Send the key as a bearer token. Full reference (OpenAPI): <a href="/api/v1/openapi.json" dir="ltr">/api/v1/openapi.json</a></p>
-                <pre class="bg-light border rounded p-2 small" dir="ltr"><code># list your offers (page/limit, max 100)
+                    <t t-else="">
+                        <t t-call="leaders_marketplace.lm_empty_state">
+                            <t t-set="lm_icon" t-value="'fa-key'"/>
+                            <t t-set="lm_message">No keys yet.</t>
+                        </t>
+                    </t>
+                </div>
+                <span id="lm_confirm_revoke_key" class="d-none">Revoke this key? Calls using it stop working immediately.</span>
+                <div class="lm-card">
+                    <h2 class="lm-section-title"><i class="fa fa-terminal" aria-hidden="true"/> Quick start</h2>
+                    <p class="text-muted mb-2">Send the key as a bearer token. Full reference (OpenAPI): <a href="/api/v1/openapi.json" class="lm-ltr">/api/v1/openapi.json</a></p>
+                    <pre class="lm-code"><code># list your offers (page/limit, max 100)
 curl -H "Authorization: Bearer YOUR_KEY" "<t t-esc="api_base"/>/api/v1/vendor/offers?limit=20"
 
 # change a price and set a 15% discount (write key; Idempotency-Key makes retries safe)
@@ -74,8 +91,9 @@ curl -X PATCH -H "Authorization: Bearer YOUR_KEY" -H "Idempotency-Key: 4d1c-0001
 # ship an order
 curl -X POST -H "Authorization: Bearer YOUR_KEY" -H "Content-Type: application/json" \
      -d '{"tracking_ref": "TRK123"}' "<t t-esc="api_base"/>/api/v1/vendor/orders/7/ship"</code></pre>
-                <p class="small text-muted mb-0">Keep keys secret. Errors are JSON: <code dir="ltr">{"error": "code", "message": "...", "details": []}</code>. Calls per minute are limited per key (429 with Retry-After).</p>
+                    <p class="small text-muted mb-0">Keep keys secret. Errors are JSON: <code class="lm-ltr">{"error": "code", "message": "...", "details": []}</code>. Calls per minute are limited per key (429 with Retry-After).</p>
+                </div>
             </div>
-        </div></t>
+        </t>
     </template>
 </odoo>

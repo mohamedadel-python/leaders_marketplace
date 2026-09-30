@@ -1,0 +1,1763 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vendor portal pages (TASK 29 / C2b). Same patterns everywhere: .lm-page-header, .lm-stat-cards,
+         lm_state_badge, .lm-table-responsive (data-label through the t-set trick so it is translatable),
+         lm_empty_state, data-lm-confirm-ref / data-lm-loading on destructive actions.
+         All of them are rendered inside portal_vendor_layout (sidebar, breadcrumbs, freeze notice). -->
+
+    <template id="portal_vendor_dashboard" name="Vendor Dashboard">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_dashboard">
+                <div class="lm-page-header">
+                    <div>
+                        <div class="lm-page-heading">
+                            <h1 class="lm-page-title">Vendor Dashboard</h1>
+                            <span t-if="vendor.vendor_tier_id" class="lm-badge lm-badge--warning"><i class="fa fa-star" aria-hidden="true"/> <t t-esc="vendor.vendor_tier_id.name"/></span>
+                        </div>
+                        <p class="lm-page-subtitle" t-esc="vendor.vendor_store_name or vendor.display_name"/>
+                    </div>
+                    <div class="lm-page-actions">
+                        <a href="/my/vendor/orders" class="btn btn-outline-secondary"><i class="fa fa-list" aria-hidden="true"/> All Orders</a>
+                        <a href="/my/vendor/products/new" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"/> Add Product</a>
+                    </div>
+                </div>
+
+                <!-- Alerts: what needs an answer today -->
+                <div t-if="cod_pending_confirmation or orders_late or returns_to_answer or disputes_open" class="lm-alerts" id="lm_dashboard_alerts">
+                    <div t-if="cod_pending_confirmation" class="alert alert-warning" role="alert">
+                        <div>
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true"/>
+                            <strong><t t-esc="len(cod_pending_confirmation)"/></strong>
+                            Cash on Delivery order(s) delivered and waiting for you to confirm you collected the cash.
+                            Your commission on them is only charged once confirmed.
+                        </div>
+                        <a t-att-href="'/my/vendor/orders/%s' % cod_pending_confirmation[0].id" class="btn btn-sm btn-warning">Review &amp; Confirm</a>
+                    </div>
+                    <div t-if="orders_late" class="alert alert-danger" role="alert" id="lm_alert_late">
+                        <div><i class="fa fa-clock-o" aria-hidden="true"/> <strong t-esc="orders_late"/> order(s) are past their ship-by date. Ship them as soon as possible.</div>
+                        <a href="/my/vendor/orders?filter=late" class="btn btn-sm btn-danger">See late orders</a>
+                    </div>
+                    <div t-if="returns_to_answer" class="alert alert-warning" role="alert" id="lm_alert_returns">
+                        <div><i class="fa fa-undo" aria-hidden="true"/> <strong t-esc="returns_to_answer"/> return request(s) are waiting for your answer.</div>
+                        <a href="/my/vendor/returns" class="btn btn-sm btn-warning">Answer returns</a>
+                    </div>
+                    <div t-if="disputes_open" class="alert alert-danger" role="alert" id="lm_alert_disputes">
+                        <div><i class="fa fa-gavel" aria-hidden="true"/> <strong t-esc="disputes_open"/> open dispute(s) need attention.</div>
+                        <a href="/my/vendor/disputes" class="btn btn-sm btn-danger">Open disputes</a>
+                    </div>
+                </div>
+
+                <!-- Summary cards -->
+                <div class="lm-stat-cards">
+                    <a href="/my/vendor/orders" class="lm-stat-card">
+                        <span class="lm-stat-icon"><i class="fa fa-shopping-cart" aria-hidden="true"/></span>
+                        <div class="lm-stat-body"><div class="lm-stat-label">Orders</div><div class="lm-stat-value" t-esc="orders_count"/><div class="lm-stat-sub"><t t-esc="orders_to_process"/> to process</div></div>
+                    </a>
+                    <a href="/my/vendor/products" class="lm-stat-card lm-tone-info">
+                        <span class="lm-stat-icon"><i class="fa fa-cube" aria-hidden="true"/></span>
+                        <div class="lm-stat-body"><div class="lm-stat-label">Offers</div><div class="lm-stat-value" t-esc="offers_count"/><div class="lm-stat-sub">Products listed</div></div>
+                    </a>
+                    <a t-att-href="is_vendor_owner and '/my/vendor/finance' or None" class="lm-stat-card lm-tone-success">
+                        <span class="lm-stat-icon"><i class="fa fa-money" aria-hidden="true"/></span>
+                        <div class="lm-stat-body"><div class="lm-stat-label">Available Balance</div><div class="lm-stat-value" t-out="wallet_available" t-options="{'widget': 'monetary', 'display_currency': currency}"/><div class="lm-stat-sub">Ready for payout</div></div>
+                    </a>
+                    <a t-att-href="is_vendor_owner and '/my/vendor/finance' or None" class="lm-stat-card lm-tone-warning">
+                        <span class="lm-stat-icon"><i class="fa fa-lock" aria-hidden="true"/></span>
+                        <div class="lm-stat-body"><div class="lm-stat-label">On Hold</div><div class="lm-stat-value" t-out="wallet_hold" t-options="{'widget': 'monetary', 'display_currency': currency}"/><div class="lm-stat-sub">Pending release</div></div>
+                    </a>
+                </div>
+
+                <t t-set="lb_order">Order</t>
+                <t t-set="lb_status">Status</t>
+                <t t-set="lb_total">Total</t>
+                <t t-set="lb_commission">Commission</t>
+                <t t-set="lb_net">Net</t>
+                <t t-set="lb_fulfillment">Fulfillment</t>
+                <t t-set="lb_available">Available</t>
+                <div class="row g-4">
+                    <div class="col-12 col-lg-8">
+                        <div class="lm-panel" id="lm_dashboard_orders">
+                            <div class="lm-panel-header">
+                                <h2 class="lm-panel-title"><i class="fa fa-shopping-cart" aria-hidden="true"/> Recent Orders</h2>
+                                <a href="/my/vendor/orders" class="small">View all <i class="fa fa-angle-right lm-flip" aria-hidden="true"/></a>
+                            </div>
+                            <div t-if="orders" class="lm-table-responsive">
+                                <table class="table align-middle lm-table">
+                                    <thead><tr><th>Order</th><th>Status</th><th class="text-end">Total</th><th class="text-end">Commission</th><th class="text-end">Net</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="orders" t-as="o">
+                                            <td t-att-data-label="lb_order">
+                                                <a class="fw-semibold" t-att-href="'/my/vendor/orders/%s' % o.id" t-esc="o.name"/>
+                                                <div class="small text-muted" t-esc="o.create_date" t-options="{'widget': 'date'}"/>
+                                            </td>
+                                            <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                                            <td t-att-data-label="lb_total" class="text-end text-nowrap" t-out="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            <td t-att-data-label="lb_commission" class="text-end text-nowrap text-muted" t-out="o.commission_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                            <td t-att-data-label="lb_net" class="text-end text-nowrap fw-semibold" t-out="o.vendor_net" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <t t-else="">
+                                <t t-call="leaders_marketplace.lm_empty_state">
+                                    <t t-set="lm_icon" t-value="'fa-inbox'"/>
+                                    <t t-set="lm_message">No orders yet.</t>
+                                </t>
+                            </t>
+                        </div>
+
+                        <div class="lm-panel" id="lm_dashboard_inventory">
+                            <div class="lm-panel-header">
+                                <h2 class="lm-panel-title"><i class="fa fa-cubes" aria-hidden="true"/> Inventory</h2>
+                                <a href="/my/vendor/products" class="small">Manage stock <i class="fa fa-angle-right lm-flip" aria-hidden="true"/></a>
+                            </div>
+                            <div t-if="stock_offers" class="lm-table-responsive">
+                                <table class="table align-middle lm-table">
+                                    <thead><tr><th>Product</th><th>Status</th><th>Fulfillment</th><th class="text-end">Available</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="stock_offers" t-as="o">
+                                            <t t-set="qty" t-value="o.available_qty()"/>
+                                            <td class="lm-cell-title">
+                                                <a class="fw-semibold" t-att-href="'/my/vendor/products/%s/edit' % o.id" t-esc="o.product_id.display_name"/>
+                                                <div class="small text-muted text-break">SKU: <t t-esc="o.seller_sku"/></div>
+                                            </td>
+                                            <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                                            <td t-att-data-label="lb_fulfillment"><span class="badge rounded-pill text-bg-light border" t-esc="o.fulfillment_type.upper()"/></td>
+                                            <td t-att-data-label="lb_available" class="text-end">
+                                                <span t-attf-class="fw-semibold #{'text-danger' if qty &lt;= 0 else ('text-warning' if qty &lt; 5 else '')}" t-esc="'%g' % qty"/>
+                                                <div t-if="qty &lt;= 0" class="small text-danger">Out of stock</div>
+                                                <div t-elif="qty &lt; 5" class="small text-warning">Low stock</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <t t-else="">
+                                <t t-call="leaders_marketplace.lm_empty_state">
+                                    <t t-set="lm_icon" t-value="'fa-cube'"/>
+                                    <t t-set="lm_message">You have no products yet.</t>
+                                    <t t-set="lm_action_url" t-value="'/my/vendor/products/new'"/>
+                                    <t t-set="lm_action_label">Add your first product</t>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4">
+                        <div class="lm-panel" id="lm_dashboard_attention">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-bell" aria-hidden="true"/> Needs Attention</h2></div>
+                            <a href="/my/vendor/orders?filter=to_process" class="lm-attention-row">
+                                <span><i class="fa fa-truck text-primary" aria-hidden="true"/> Orders to process</span>
+                                <span t-attf-class="lm-count #{'lm-count--primary' if orders_to_process else ''}" t-esc="orders_to_process"/>
+                            </a>
+                            <a href="/my/vendor/orders?filter=late" class="lm-attention-row">
+                                <span><i class="fa fa-clock-o text-danger" aria-hidden="true"/> Late orders</span>
+                                <span t-attf-class="lm-count #{'lm-count--danger' if orders_late else ''}" t-esc="orders_late"/>
+                            </a>
+                            <a href="/my/vendor/returns" class="lm-attention-row">
+                                <span><i class="fa fa-undo text-warning" aria-hidden="true"/> Open returns</span>
+                                <span t-attf-class="lm-count #{'lm-count--warning' if returns_open else ''}" t-esc="returns_open"/>
+                            </a>
+                            <a href="/my/vendor/disputes" class="lm-attention-row">
+                                <span><i class="fa fa-gavel text-danger" aria-hidden="true"/> Open disputes</span>
+                                <span t-attf-class="lm-count #{'lm-count--danger' if disputes_open else ''}" t-esc="disputes_open"/>
+                            </a>
+                            <div class="lm-panel-footer">Total: <t t-esc="returns_count"/> returns · <t t-esc="disputes_count"/> disputes</div>
+                        </div>
+
+                        <div class="lm-panel">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-tags" aria-hidden="true"/> Offers by Status</h2></div>
+                            <div t-foreach="offer_state_counts" t-as="sc" class="lm-attention-row">
+                                <span t-esc="sc[0]"/>
+                                <span class="lm-count" t-esc="sc[2]"/>
+                            </div>
+                            <div t-if="not offer_state_counts" class="lm-attention-row text-muted">No offers yet</div>
+                        </div>
+
+                        <div class="lm-panel">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-bolt" aria-hidden="true"/> Quick Links</h2></div>
+                            <div class="lm-quick-links">
+                                <a class="lm-quick-link" href="/my/vendor/products/new"><i class="fa fa-plus" aria-hidden="true"/> New product</a>
+                                <a class="lm-quick-link" href="/my/vendor/performance"><i class="fa fa-line-chart" aria-hidden="true"/> Performance</a>
+                                <t t-if="is_vendor_owner">
+                                    <a class="lm-quick-link" href="/my/vendor/finance"><i class="fa fa-money" aria-hidden="true"/> Wallet</a>
+                                    <a class="lm-quick-link" href="/my/vendor/staff"><i class="fa fa-users" aria-hidden="true"/> Staff</a>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_products" name="Vendor Products">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_products">
+                <t t-set="lm_flt" t-value="request.params.get('state')"/>
+                <t t-set="lm_shown" t-value="offers.filtered(lambda o: o.state == lm_flt) if lm_flt in ('draft', 'pending', 'active', 'rejected', 'suspended') else offers"/>
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Products &amp; Offers</h1>
+                        <p class="lm-page-subtitle"><t t-if="fbl_enabled">FBM stock can be updated here. FBL stock is updated through warehouse inbound receipts.</t><t t-else="">Update your stock here.</t></p>
+                    </div>
+                    <div class="lm-page-actions">
+                        <a t-if="bulk_import_enabled" href="/my/vendor/import" class="btn btn-outline-primary"><i class="fa fa-upload" aria-hidden="true"/> Bulk import</a>
+                        <a href="/my/vendor/products/new" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"/> Add Product</a>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="notice" class="alert alert-success" role="status" t-esc="notice"/>
+
+                <div t-if="offers" class="lm-stat-cards">
+                    <div class="lm-stat-card"><span class="lm-stat-icon"><i class="fa fa-cubes" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Offers</div><div class="lm-stat-value" t-esc="len(offers)"/></div></div>
+                    <div class="lm-stat-card lm-tone-success"><span class="lm-stat-icon"><i class="fa fa-check-circle" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Active</div><div class="lm-stat-value" t-esc="len(offers.filtered(lambda o: o.state == 'active'))"/></div></div>
+                    <div class="lm-stat-card lm-tone-warning"><span class="lm-stat-icon"><i class="fa fa-hourglass-half" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Pending Review</div><div class="lm-stat-value" t-esc="len(offers.filtered(lambda o: o.state == 'pending'))"/></div></div>
+                    <div class="lm-stat-card lm-tone-danger"><span class="lm-stat-icon"><i class="fa fa-times-circle" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Rejected</div><div class="lm-stat-value" t-esc="len(offers.filtered(lambda o: o.state == 'rejected'))"/></div></div>
+                </div>
+
+                <form t-if="discounts_enabled and offers" id="lm_bulk_discount_form" action="/my/vendor/products/discount-bulk" method="post" class="lm-card mb-4 lm-validate">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <h2 class="lm-section-title mb-1">Discount selected offers</h2>
+                    <p class="lm-help">Tick offers below, then apply one percentage (a sale price is set per offer on its edit page). Dates are optional.</p>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-12 col-md-2 lm-form-field"><label class="form-label" for="lm_bulk_percent">Discount %</label><input id="lm_bulk_percent" class="form-control" type="number" name="discount_percent" min="0.01" max="99.99" step="0.01"/><div class="invalid-feedback">Enter a percentage between 0.01 and 99.99.</div></div>
+                        <div class="col-12 col-md-3 lm-form-field"><label class="form-label" for="lm_bulk_start">Starts</label><input id="lm_bulk_start" class="form-control" type="datetime-local" name="discount_start"/></div>
+                        <div class="col-12 col-md-3 lm-form-field"><label class="form-label" for="lm_bulk_end">Ends</label><input id="lm_bulk_end" class="form-control" type="datetime-local" name="discount_end"/></div>
+                        <div class="col-12 col-md-4 lm-form-field d-flex flex-wrap gap-2">
+                            <button type="submit" name="action" value="apply" class="btn btn-primary" data-lm-loading="1">Apply discount</button>
+                            <button type="submit" name="action" value="clear" class="btn btn-outline-danger" data-lm-loading="1" data-lm-confirm-ref="#lm_confirm_bulk_clear" formnovalidate="formnovalidate">Remove discount</button>
+                        </div>
+                    </div>
+                    <span id="lm_confirm_bulk_clear" class="d-none">Remove the discount from the selected offers?</span>
+                </form>
+
+                <div t-if="offers" class="lm-chips" id="lm_product_filters">
+                    <a href="/my/vendor/products" t-attf-class="lm-chip #{'' if lm_flt in ('draft', 'pending', 'active', 'rejected', 'suspended') else 'active'}">All <span class="lm-chip-count" t-esc="len(offers)"/></a>
+                    <a href="/my/vendor/products?state=active" t-attf-class="lm-chip #{'active' if lm_flt == 'active' else ''}">Active <span class="lm-chip-count" t-esc="len(offers.filtered(lambda o: o.state == 'active'))"/></a>
+                    <a href="/my/vendor/products?state=pending" t-attf-class="lm-chip #{'active' if lm_flt == 'pending' else ''}">Pending Review <span class="lm-chip-count" t-esc="len(offers.filtered(lambda o: o.state == 'pending'))"/></a>
+                    <a href="/my/vendor/products?state=draft" t-attf-class="lm-chip #{'active' if lm_flt == 'draft' else ''}">Draft <span class="lm-chip-count" t-esc="len(offers.filtered(lambda o: o.state == 'draft'))"/></a>
+                    <a href="/my/vendor/products?state=rejected" t-attf-class="lm-chip #{'active' if lm_flt == 'rejected' else ''}">Rejected <span class="lm-chip-count" t-esc="len(offers.filtered(lambda o: o.state == 'rejected'))"/></a>
+                </div>
+
+                <t t-set="lb_select">Select</t>
+                <t t-set="lb_sku">SKU</t>
+                <t t-set="lb_price">Price</t>
+                <t t-set="lb_fulfillment">Fulfillment</t>
+                <t t-set="lb_status">Status</t>
+                <t t-set="lb_buybox">Buy Box</t>
+                <t t-set="lb_stock">Stock</t>
+                <t t-set="lb_actions">Actions</t>
+                <div t-if="lm_shown" class="lm-table-responsive">
+                    <table class="table align-middle lm-table" id="lm_products_table">
+                        <thead><tr><th t-if="discounts_enabled"><span class="visually-hidden">Select</span></th><th>Product</th><th>SKU</th><th>Price</th><th>Fulfillment</th><th>Status</th><th>Buy Box</th><th>Stock</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+                        <tbody><tr t-foreach="lm_shown" t-as="o">
+                            <td t-if="discounts_enabled" t-att-data-label="lb_select"><input type="checkbox" class="form-check-input" name="offer_ids" t-att-value="o.id" form="lm_bulk_discount_form" t-att-aria-label="o.seller_sku"/></td>
+                            <td class="lm-cell-title">
+                                <span t-esc="o.product_id.display_name"/>
+                                <div class="small text-danger" t-if="o.reject_reason">Offer rejected: <t t-esc="o.reject_reason"/></div>
+                                <div class="small text-danger" t-if="o.product_tmpl_id.marketplace_reject_reason and o.product_tmpl_id.marketplace_state == 'rejected'">Product rejected: <t t-esc="o.product_tmpl_id.marketplace_reject_reason"/></div>
+                                <div class="small text-muted fw-normal" t-if="o.state == 'active' and o.product_tmpl_id.marketplace_state != 'published'">
+                                    Your offer is approved, but the product is still
+                                    <t t-esc="dict(o.product_tmpl_id._fields['marketplace_state']._description_selection(o.env)).get(o.product_tmpl_id.marketplace_state)"/>
+                                    and is not on the website yet.
+                                </div>
+                            </td>
+                            <td t-att-data-label="lb_sku" class="text-break" t-esc="o.seller_sku"/>
+                            <td t-att-data-label="lb_price"><span class="text-nowrap"><span t-esc="o.price"/> <span t-esc="o.currency_id.name"/></span>
+                                <div t-if="o.discount_state != 'none'" class="small">
+                                    <span t-if="o.discount_state == 'active'" class="lm-badge lm-badge--danger">-<t t-esc="'%.0f' % o.discount_regular_percent"/>%</span>
+                                    <t t-else=""><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="o"/><t t-set="lm_field" t-value="'discount_state'"/></t></t>
+                                    <span t-if="o.discount_state == 'active'" class="text-muted">now <t t-esc="o.effective_price"/></span>
+                                </div>
+                            </td>
+                            <td t-att-data-label="lb_fulfillment" t-esc="o.fulfillment_type.upper()"/>
+                            <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                            <td t-att-data-label="lb_buybox"><span t-if="o.is_buybox_winner" class="lm-badge lm-badge--success">Winner</span></td>
+                            <td t-att-data-label="lb_stock">
+                                <t t-if="o.fulfillment_type == 'fbm'">
+                                    <form t-att-action="'/my/vendor/products/%s/stock' % o.id" method="post" class="lm-inline-form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <span class="lm-inline-note">Available: <strong t-esc="o.available_qty()"/></span>
+                                        <select name="mode" class="form-select form-select-sm" aria-label="Stock update mode">
+                                            <option value="add">Add</option>
+                                            <option value="set">Set</option>
+                                        </select>
+                                        <input type="number" name="quantity" min="0" step="0.01" value="0" class="form-control form-control-sm" aria-label="Quantity"/>
+                                        <button class="btn btn-sm btn-outline-secondary" data-lm-loading="1">Update</button>
+                                    </form>
+                                </t><t t-else=""><span class="lm-badge lm-badge--info">Warehouse controlled</span></t>
+                            </td>
+                            <td class="lm-cell-actions text-nowrap"><a t-att-href="'/my/vendor/products/%s/edit' % o.id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <form t-if="o.state in ('draft','rejected')" t-att-action="'/my/vendor/products/%s/submit' % o.id" method="post" class="d-inline"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-sm btn-primary" data-lm-loading="1">Submit</button></form>
+                            </td>
+                        </tr></tbody>
+                    </table>
+                </div>
+                <t t-elif="offers">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-filter'"/>
+                        <t t-set="lm_message">No offer matches this filter.</t>
+                        <t t-set="lm_action_url" t-value="'/my/vendor/products'"/>
+                        <t t-set="lm_action_label">Show all offers</t>
+                    </t>
+                </t>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-cube'"/>
+                        <t t-set="lm_message">You have no products yet. Add your first product to start selling.</t>
+                        <t t-set="lm_action_url" t-value="'/my/vendor/products/new'"/>
+                        <t t-set="lm_action_label">Add Product</t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_product_form" name="Vendor Product Form">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_product_form">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title"><t t-if="offer">Edit Product</t><t t-else="">Add Product</t></h1>
+                        <p t-if="offer" class="lm-page-subtitle text-break"><t t-esc="offer.product_id.display_name"/> · <t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="offer"/></t></p>
+                    </div>
+                    <div class="lm-page-actions"><a href="/my/vendor/products" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a></div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="created" class="alert alert-success" role="status">Product created. Review the details then submit it for approval.</div>
+                <div t-if="offer and offer.reject_reason and offer.state == 'rejected'" class="alert alert-warning" role="status">Offer rejected: <t t-esc="offer.reject_reason"/></div>
+
+                <div t-if="catalog_enabled and not offer" class="lm-card mb-4" id="lm_catalog_card">
+                    <h2 class="lm-section-title"><i class="fa fa-search" aria-hidden="true"/> Sell an existing product</h2>
+                    <form method="get" action="/my/vendor/products/new" class="d-flex flex-wrap gap-2">
+                        <input class="form-control flex-grow-1" name="q" t-att-value="catalog_query" placeholder="Search the catalog by product name" aria-label="Search the catalog by product name"/>
+                        <button class="btn btn-outline-primary">Search</button>
+                    </form>
+                    <div t-if="catalog_query and not catalog_results" class="text-muted mt-2">No published product matches your search.</div>
+                    <div t-foreach="catalog_results" t-as="cp" class="border-top mt-3 pt-3">
+                        <form method="post" action="/my/vendor/products/sell-existing" class="row g-2 align-items-end lm-validate">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="product_id" t-att-value="cp.id"/>
+                            <input type="hidden" name="q" t-att-value="catalog_query"/>
+                            <div class="col-12 col-md-3"><strong t-esc="cp.display_name"/></div>
+                            <div class="col-12 col-md-2 lm-form-field"><input class="form-control" name="seller_sku" placeholder="Seller SKU" aria-label="Seller SKU" required="required"/><div class="invalid-feedback">Enter your SKU.</div></div>
+                            <div class="col-6 col-md-2 lm-form-field"><input class="form-control" type="number" min="0" step="0.01" name="price" placeholder="Price" aria-label="Price" required="required"/><div class="invalid-feedback">Enter a price.</div></div>
+                            <div class="col-6 col-md-2 lm-form-field"><select class="form-select" name="currency_id" aria-label="Currency"><option t-foreach="currencies" t-as="c" t-att-value="c.id" t-att-selected="c == request.env.company.currency_id" t-esc="c.name"/></select></div>
+                            <div class="col-6 col-md-2 lm-form-field"><select class="form-select" name="fulfillment_type" aria-label="Fulfillment"><option value="fbm">FBM</option><option t-if="fbl_enabled" value="fbl">FBL</option></select></div>
+                            <div class="col-6 col-md-1 lm-form-field"><button class="btn btn-primary w-100" data-lm-loading="1">Sell</button></div>
+                        </form>
+                    </div>
+                </div>
+
+                <div t-if="offer and not vendor_owns_content" class="alert alert-info" role="status">
+                    <i class="fa fa-info-circle" aria-hidden="true"/> Product details are managed by the marketplace; you can edit your offer only.
+                </div>
+                <form t-att-action="offer and ('/my/vendor/products/%s/edit' % offer.id) or '/my/vendor/products/new'" method="post" enctype="multipart/form-data" class="lm-validate" id="lm_product_form">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <div class="lm-card lm-form-section" id="lm_details_card">
+                        <h2 class="lm-section-title"><i class="fa fa-file-text-o" aria-hidden="true"/> Product details</h2>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-8 lm-form-field"><label class="form-label" for="lm_pf_name">Product Name</label><input class="form-control" id="lm_pf_name" name="name" required="required" t-att-value="offer and offer.product_tmpl_id.name or ''" t-att-readonly="'readonly' if not vendor_owns_content else None"/><div class="invalid-feedback">Enter the product name.</div></div>
+                            <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_pf_sku">Seller SKU</label><input class="form-control text-break" id="lm_pf_sku" name="seller_sku" required="required" t-att-value="offer and offer.seller_sku or ''"/><div class="invalid-feedback">Enter your SKU.</div></div>
+                            <div class="col-12 lm-form-field"><label class="form-label" for="lm_pf_desc">Description</label><textarea class="form-control" id="lm_pf_desc" name="description_sale" rows="4" t-att-readonly="'readonly' if not vendor_owns_content else None"><t t-esc="offer and offer.product_tmpl_id.description_sale or ''"/></textarea></div>
+                            <div class="col-12 col-md-6 lm-form-field"><label class="form-label" for="lm_pf_categ">Website Category</label><select class="form-select" id="lm_pf_categ" name="public_category_id" t-att-disabled="'disabled' if not vendor_owns_content else None"><option value="">Select</option><option t-foreach="categories" t-as="c" t-att-value="c.id" t-att-selected="offer and c in offer.product_tmpl_id.public_categ_ids" t-esc="c.display_name"/></select></div>
+                        </div>
+                    </div>
+
+                    <div class="lm-card lm-form-section" id="lm_offer_card">
+                        <h2 class="lm-section-title"><i class="fa fa-tag" aria-hidden="true"/> Offer</h2>
+                        <div class="row g-3">
+                            <div class="col-6 col-md-3 lm-form-field"><label class="form-label" for="lm_pf_price">Price</label><input class="form-control" id="lm_pf_price" type="number" min="0" step="0.01" name="price" required="required" t-att-value="offer and offer.price or 0"/><div class="invalid-feedback">Enter a valid price (0 or more).</div></div>
+                            <div class="col-6 col-md-3 lm-form-field"><label class="form-label" for="lm_pf_currency">Currency</label><select class="form-select" id="lm_pf_currency" name="currency_id"><option t-foreach="currencies" t-as="c" t-att-value="c.id" t-att-selected="offer and offer.currency_id == c or (not offer and c == request.env.company.currency_id)" t-esc="c.name"/></select></div>
+                            <div class="col-12 col-md-6 lm-form-field"><label class="form-label" for="lm_pf_fulfillment">Fulfillment</label>
+                                <select class="form-select" id="lm_pf_fulfillment" name="fulfillment_type" t-att-disabled="'disabled' if forced_fulfillment else None">
+                                    <option value="fbm" t-att-selected="(forced_fulfillment == 'fbm') if forced_fulfillment else (not offer or offer.fulfillment_type == 'fbm')">FBM - Fulfilled by Vendor</option>
+                                    <option t-if="fbl_enabled" value="fbl" t-att-selected="(forced_fulfillment == 'fbl') if forced_fulfillment else (offer and offer.fulfillment_type == 'fbl')">FBL - Fulfilled by Leaders</option>
+                                </select>
+                                <div t-if="forced_fulfillment" class="form-text">
+                                    Set by the marketplace policy "<t t-esc="forced_fulfillment_name"/>" for this vendor or category; it cannot be changed here.
+                                </div>
+                            </div>
+                            <div class="col-12"><span class="form-label d-block fw-semibold mb-1">Markets</span><div class="lm-check-group"><label t-foreach="websites" t-as="w"><input type="checkbox" class="form-check-input m-0" name="market_ids" t-att-value="w.id" t-att-checked="offer and w in offer.market_ids"/> <span t-esc="w.name"/></label></div></div>
+                        </div>
+                    </div>
+
+                    <div class="lm-card lm-form-section" id="lm_main_image_card">
+                        <h2 class="lm-section-title"><i class="fa fa-picture-o" aria-hidden="true"/> Main Image</h2>
+                        <div class="lm-form-field mb-0"><label class="visually-hidden" for="lm_pf_image">Main Image</label><input class="form-control" id="lm_pf_image" type="file" name="image_1920" accept="image/*" t-att-disabled="'disabled' if not vendor_owns_content else None"/></div>
+                    </div>
+
+                    <t t-if="variants_enabled and vendor_owns_content">
+                        <input type="hidden" name="lm_variants_form" value="1"/>
+                        <div id="lm_variants_card" class="lm-card lm-form-section">
+                            <h2 class="lm-section-title"><i class="fa fa-sitemap" aria-hidden="true"/> Options and Variants</h2>
+                            <p class="lm-help">Tick the values this product comes in. Every combination becomes a variant with its own seller SKU, price, stock and offer, which you fill in on the next page. Options marked "Specification" only describe the product.</p>
+                            <div t-if="offer and variant_count &gt; 1" class="alert alert-info py-2">
+                                This product has <t t-esc="variant_count"/> variants.
+                                <a t-att-href="'/my/vendor/templates/%s/variants' % variant_tmpl.id">Manage the offers of the variants</a>
+                            </div>
+                            <div t-foreach="attr_options" t-as="attr" class="mb-3">
+                                <strong t-esc="attr.name"/>
+                                <span t-if="attr.create_variant == 'no_variant'" class="lm-badge lm-badge--secondary ms-1">Specification</span>
+                                <div class="lm-check-group mt-1">
+                                    <label t-foreach="attr.value_ids" t-as="val"><input type="checkbox" class="form-check-input m-0" t-att-name="'attr_values_%s' % attr.id" t-att-value="val.id" t-att-checked="val.id in attr_selected.get(attr.id, ())"/> <span t-esc="val.name"/></label>
+                                </div>
+                                <input t-if="allow_new_attrs" class="form-control form-control-sm mt-1" t-att-name="'new_values_%s' % attr.id" placeholder="Add new values, separated by commas" aria-label="Add new values, separated by commas"/>
+                            </div>
+                            <div t-if="allow_new_attrs" class="row g-2">
+                                <div class="col-12 col-md-4"><input class="form-control form-control-sm" name="new_attr_name" maxlength="64" placeholder="New option name" aria-label="New option name"/></div>
+                                <div class="col-12 col-md-5"><input class="form-control form-control-sm" name="new_attr_values" placeholder="Values, separated by commas" aria-label="Values, separated by commas"/></div>
+                                <div class="col-12 col-md-3"><select class="form-select form-select-sm" name="new_attr_kind" aria-label="Option type"><option value="variant">Variant option</option><option value="spec">Specification</option></select></div>
+                            </div>
+                        </div>
+                        <div id="lm_extra_images_card" class="lm-card lm-form-section">
+                            <h2 class="lm-section-title"><i class="fa fa-th" aria-hidden="true"/> Extra Images</h2>
+                            <p class="lm-help">Up to <t t-esc="max_extra_images"/> extra images shown in the product gallery.</p>
+                            <div t-if="extra_images" class="lm-thumbs mb-3">
+                                <label t-foreach="extra_images" t-as="img" class="lm-thumb">
+                                    <img t-att-src="'/web/image/product.image/%s/image_128' % img.id" width="96" height="96" alt=""/>
+                                    <span><input type="checkbox" class="form-check-input" name="remove_image_ids" t-att-value="img.id"/> Remove</span>
+                                </label>
+                            </div>
+                            <input class="form-control" type="file" name="extra_images" accept="image/*" multiple="multiple" aria-label="Extra Images"/>
+                        </div>
+                        <div id="lm_specs_card" class="lm-card lm-form-section">
+                            <h2 class="lm-section-title"><i class="fa fa-list-ul" aria-hidden="true"/> Specifications</h2>
+                            <p class="lm-help">One per line as "Name: value". They appear as a table on the product page.</p>
+                            <textarea class="form-control" name="leaders_specs" rows="5" maxlength="4000" placeholder="Material: Cotton" aria-label="Specifications"><t t-esc="tmpl_specs or ''"/></textarea>
+                        </div>
+                    </t>
+                    <div class="lm-form-actions"><button class="btn btn-primary" data-lm-loading="1"><i class="fa fa-save" aria-hidden="true"/> Save Draft</button><a href="/my/vendor/products" class="btn btn-outline-secondary">Cancel</a></div>
+                </form>
+
+                <div t-if="offer and discounts_enabled" id="lm_discount_card" class="lm-card mt-4">
+                    <h2 class="lm-section-title"><i class="fa fa-percent" aria-hidden="true"/> Discount</h2>
+                    <div t-if="discount_result" class="alert alert-success" role="status">
+                        <t t-if="discount_result == 'pending_approval'">Saved. This discount is above the approval limit: it takes effect once the marketplace approves it.</t>
+                        <t t-elif="discount_result == 'cleared'">Discount removed.</t>
+                        <t t-else="">Discount saved.</t>
+                    </div>
+                    <p class="lm-help">The regular price stays as listed. While a discount runs customers see the original price struck through, the new price and the percentage; you fund the discount and your invoice shows both.</p>
+                    <p t-if="offer.discount_state != 'none'" class="mb-3">Status:
+                        <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="offer"/><t t-set="lm_field" t-value="'discount_state'"/></t>
+                        <t t-if="offer.discount_state == 'active'"> - customers pay <strong t-esc="offer.effective_price"/> <span t-esc="offer.currency_id.name"/></t>
+                    </p>
+                    <form t-att-action="'/my/vendor/products/%s/discount' % offer.id" method="post" class="lm-validate">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-3 lm-form-field"><label class="form-label" for="lm_disc_type">Type</label>
+                                <select class="form-select" id="lm_disc_type" name="discount_type">
+                                    <option value="percent" t-att-selected="offer.discount_type != 'price'">Percentage</option>
+                                    <option value="price" t-att-selected="offer.discount_type == 'price'">Sale price</option>
+                                </select></div>
+                            <div class="col-6 col-md-2 lm-form-field"><label class="form-label" for="lm_disc_percent">Percentage</label><input class="form-control" id="lm_disc_percent" type="number" name="discount_percent" min="0.01" max="99.99" step="0.01" t-att-value="offer.discount_percent or ''"/><div class="invalid-feedback">Enter a percentage between 0.01 and 99.99.</div></div>
+                            <div class="col-6 col-md-2 lm-form-field"><label class="form-label" for="lm_disc_price">Sale price</label><input class="form-control" id="lm_disc_price" type="number" name="discount_price" min="0.01" step="0.01" t-att-value="offer.discount_price or ''"/><div class="invalid-feedback">Enter a sale price above 0.</div></div>
+                            <div class="col-12 col-md-3 lm-form-field"><label class="form-label" for="lm_disc_start">Starts (optional)</label><input class="form-control" id="lm_disc_start" type="datetime-local" name="discount_start" t-att-value="discount_start_local"/></div>
+                            <div class="col-12 col-md-3 lm-form-field"><label class="form-label" for="lm_disc_end">Ends (optional)</label><input class="form-control" id="lm_disc_end" type="datetime-local" name="discount_end" t-att-value="discount_end_local"/></div>
+                        </div>
+                        <div class="lm-form-actions">
+                            <button type="submit" name="action" value="set" class="btn btn-primary" data-lm-loading="1">Save discount</button>
+                            <button t-if="offer.discount_state != 'none'" type="submit" name="action" value="clear" class="btn btn-outline-danger" data-lm-loading="1" data-lm-confirm-ref="#lm_confirm_clear_discount" formnovalidate="formnovalidate">Remove discount</button>
+                        </div>
+                        <span id="lm_confirm_clear_discount" class="d-none">Remove the discount from this offer?</span>
+                    </form>
+                </div>
+                <div t-if="offer and offer.state in ('draft','rejected')" class="lm-form-actions"><form t-att-action="'/my/vendor/products/%s/submit' % offer.id" method="post"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-success" data-lm-loading="1"><i class="fa fa-paper-plane" aria-hidden="true"/> Submit for Review</button></form></div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_variants" name="Vendor Product Variants">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_variants">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Variants of <t t-esc="tmpl.name"/></h1>
+                        <p class="lm-page-subtitle">Set the seller SKU, price and stock of each variant.</p>
+                    </div>
+                    <div class="lm-page-actions"><a href="/my/vendor/products" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a></div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="notice" class="alert alert-success" role="status" t-esc="notice"/>
+                <div t-if="request.params.get('created')" class="alert alert-success" role="status">Product created with its variants. Now set the seller SKU, price and stock of each variant.</div>
+
+                <t t-set="lb_variant">Variant</t>
+                <t t-set="lb_sku">Seller SKU</t>
+                <t t-set="lb_price">Price</t>
+                <t t-set="lb_status">Status</t>
+                <t t-set="lb_stock">Stock (FBM)</t>
+                <t t-set="lb_discount">Discount %</t>
+                <t t-set="lb_create">Create</t>
+                <div t-if="offers" class="lm-panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-tags" aria-hidden="true"/> Offers</h2></div>
+                    <div class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Variant</th><th>Seller SKU</th><th class="text-end">Price</th><th>Status</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+                            <tbody><tr t-foreach="offers" t-as="o">
+                                <td class="lm-cell-title" t-esc="o.product_id.display_name"/>
+                                <td t-att-data-label="lb_sku" class="text-break" t-esc="o.seller_sku"/>
+                                <td t-att-data-label="lb_price" class="text-end text-nowrap"><span t-esc="o.price"/> <span t-esc="o.currency_id.name"/></td>
+                                <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                                <td class="lm-cell-actions text-end"><a t-att-href="'/my/vendor/products/%s/edit' % o.id" class="btn btn-sm btn-outline-primary">Edit</a></td>
+                            </tr></tbody>
+                        </table>
+                    </div>
+                    <div t-if="offers.filtered(lambda x: x.state in ('draft', 'rejected'))" class="lm-panel-footer">
+                        <form t-att-action="'/my/vendor/templates/%s/submit' % tmpl.id" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button class="btn btn-success" data-lm-loading="1"><i class="fa fa-paper-plane" aria-hidden="true"/> Submit all draft offers for review</button>
+                        </form>
+                    </div>
+                </div>
+                <div t-if="missing" id="lm_variants_without_offer" class="lm-card">
+                    <h2 class="lm-section-title"><i class="fa fa-plus-circle" aria-hidden="true"/> Variants without an offer</h2>
+                    <form t-att-action="'/my/vendor/templates/%s/variants' % tmpl.id" method="post" class="lm-validate">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-3 lm-form-field"><label class="form-label" for="lm_var_fulfillment">Fulfillment</label>
+                                <select class="form-select" id="lm_var_fulfillment" name="fulfillment_type">
+                                    <option value="fbm" t-att-selected="form_fulfillment == 'fbm'">FBM - Fulfilled by Vendor</option>
+                                    <option t-if="fbl_enabled" value="fbl" t-att-selected="form_fulfillment == 'fbl'">FBL - Fulfilled by Leaders</option>
+                                </select></div>
+                            <div class="col-12 col-md-3 lm-form-field"><label class="form-label" for="lm_var_currency">Currency</label>
+                                <select class="form-select" id="lm_var_currency" name="currency_id"><option t-foreach="currencies" t-as="c" t-att-value="c.id" t-att-selected="c.id == form_currency" t-esc="c.name"/></select></div>
+                            <div class="col-12 col-md-6"><span class="form-label d-block fw-semibold mb-1">Markets</span><div class="lm-check-group"><label t-foreach="websites" t-as="w"><input type="checkbox" class="form-check-input m-0" name="market_ids" t-att-value="w.id" t-att-checked="w.id in form_markets"/> <span t-esc="w.name"/></label></div></div>
+                        </div>
+                        <div class="lm-table-responsive">
+                            <table class="table align-middle lm-table">
+                                <thead><tr><th><span class="visually-hidden">Create</span></th><th>Variant</th><th>Seller SKU</th><th>Price</th><th>Stock (FBM)</th><th t-if="discounts_enabled">Discount %</th></tr></thead>
+                                <tbody><tr t-foreach="missing" t-as="p">
+                                    <td t-att-data-label="lb_create"><input type="checkbox" class="form-check-input" t-att-name="'create_%s' % p.id" value="1" checked="checked" t-att-aria-label="p.display_name"/></td>
+                                    <td class="lm-cell-title" t-esc="p.display_name"/>
+                                    <td t-att-data-label="lb_sku"><input class="form-control" t-att-name="'sku_%s' % p.id" t-att-value="'%s-%s' % (form['sku'], p_index + 1) if form['sku'] else ''" t-att-aria-label="lb_sku"/></td>
+                                    <td t-att-data-label="lb_price"><input class="form-control" type="number" min="0" step="0.01" t-att-name="'price_%s' % p.id" t-att-value="form['price'] or 0" t-att-aria-label="lb_price"/></td>
+                                    <td t-att-data-label="lb_stock"><input class="form-control" type="number" min="0" step="1" t-att-name="'stock_%s' % p.id" value="0" t-att-aria-label="lb_stock"/></td>
+                                    <td t-if="discounts_enabled" t-att-data-label="lb_discount"><input class="form-control" type="number" min="0.01" max="99.99" step="0.01" t-att-name="'discount_%s' % p.id" t-att-aria-label="lb_discount"/></td>
+                                </tr></tbody>
+                            </table>
+                        </div>
+                        <div class="lm-form-actions"><button class="btn btn-primary" data-lm-loading="1">Create offers</button></div>
+                    </form>
+                </div>
+                <t t-if="not missing and not offers">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-sitemap'"/>
+                        <t t-set="lm_message">This product has no variants yet.</t>
+                        <t t-set="lm_action_url" t-value="'/my/vendor/products'"/>
+                        <t t-set="lm_action_label">Back to products</t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_orders" name="Vendor Orders">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_orders">
+                <t t-set="lm_flt" t-value="request.params.get('filter')"/>
+                <t t-set="lm_shown" t-value="orders.filtered(lambda o: o.state in ('pending', 'confirmed', 'processing', 'partially_fulfilled')) if lm_flt == 'to_process' else orders.filtered(lambda o: o.is_late) if lm_flt == 'late' else orders.filtered(lambda o: o.state in ('fulfilled', 'completed')) if lm_flt == 'done' else orders.filtered(lambda o: o.state == 'cancelled') if lm_flt == 'cancelled' else orders"/>
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Vendor Orders</h1>
+                        <p class="lm-page-subtitle">Orders placed on your products. Ship them before the ship-by date.</p>
+                    </div>
+                    <div class="lm-page-actions">
+                        <a href="/my/vendor/returns" class="btn btn-outline-secondary"><i class="fa fa-undo" aria-hidden="true"/> Returns</a>
+                    </div>
+                </div>
+                <div t-if="orders" class="lm-stat-cards">
+                    <div class="lm-stat-card"><span class="lm-stat-icon"><i class="fa fa-shopping-cart" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Orders</div><div class="lm-stat-value" t-esc="len(orders)"/></div></div>
+                    <div class="lm-stat-card lm-tone-warning"><span class="lm-stat-icon"><i class="fa fa-truck" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">To process</div><div class="lm-stat-value" t-esc="len(orders.filtered(lambda o: o.state in ('pending', 'confirmed', 'processing', 'partially_fulfilled')))"/></div></div>
+                    <div class="lm-stat-card lm-tone-danger"><span class="lm-stat-icon"><i class="fa fa-clock-o" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Late</div><div class="lm-stat-value" t-esc="len(orders.filtered(lambda o: o.is_late))"/></div></div>
+                    <div class="lm-stat-card lm-tone-success"><span class="lm-stat-icon"><i class="fa fa-check-circle" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Delivered</div><div class="lm-stat-value" t-esc="len(orders.filtered(lambda o: o.state in ('fulfilled', 'completed')))"/></div></div>
+                </div>
+                <div t-if="orders" class="lm-chips" id="lm_order_filters">
+                    <a href="/my/vendor/orders" t-attf-class="lm-chip #{'' if lm_flt in ('to_process', 'late', 'done', 'cancelled') else 'active'}">All <span class="lm-chip-count" t-esc="len(orders)"/></a>
+                    <a href="/my/vendor/orders?filter=to_process" t-attf-class="lm-chip #{'active' if lm_flt == 'to_process' else ''}">To process <span class="lm-chip-count" t-esc="len(orders.filtered(lambda o: o.state in ('pending', 'confirmed', 'processing', 'partially_fulfilled')))"/></a>
+                    <a href="/my/vendor/orders?filter=late" t-attf-class="lm-chip #{'active' if lm_flt == 'late' else ''}">Late <span class="lm-chip-count" t-esc="len(orders.filtered(lambda o: o.is_late))"/></a>
+                    <a href="/my/vendor/orders?filter=done" t-attf-class="lm-chip #{'active' if lm_flt == 'done' else ''}">Delivered <span class="lm-chip-count" t-esc="len(orders.filtered(lambda o: o.state in ('fulfilled', 'completed')))"/></a>
+                    <a href="/my/vendor/orders?filter=cancelled" t-attf-class="lm-chip #{'active' if lm_flt == 'cancelled' else ''}">Cancelled <span class="lm-chip-count" t-esc="len(orders.filtered(lambda o: o.state == 'cancelled'))"/></a>
+                </div>
+
+                <t t-set="lb_customer">Customer</t>
+                <t t-set="lb_status">Status</t>
+                <t t-set="lb_ship_by">Ship by</t>
+                <t t-set="lb_payment">Payment</t>
+                <t t-set="lb_total">Total</t>
+                <t t-set="lb_commission">Commission</t>
+                <t t-set="lb_net">Net</t>
+                <t t-set="lb_invoice">Invoice</t>
+                <div t-if="lm_shown" class="lm-table-responsive">
+                    <table class="table align-middle lm-table" id="lm_orders_table">
+                        <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Ship by</th><th>Payment</th><th class="text-end">Total</th><th class="text-end">Commission</th><th class="text-end">Net</th><th>Invoice</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="lm_shown" t-as="o">
+                                <td class="lm-cell-title">
+                                    <a class="fw-semibold" t-att-href="'/my/vendor/orders/%s' % o.id" t-esc="o.name"/>
+                                    <div class="small text-muted fw-normal" t-esc="o.date_order" t-options="{'widget': 'date'}"/>
+                                </td>
+                                <td t-att-data-label="lb_customer" t-esc="o.partner_id.display_name"/>
+                                <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                                <td t-att-data-label="lb_ship_by" class="text-nowrap">
+                                    <span t-if="o.ship_by_date" t-esc="o.ship_by_date" t-options="{'widget': 'date'}"/><span t-else="" class="text-muted">-</span>
+                                    <span t-if="o.is_late" class="lm-badge lm-badge--danger ms-1"><i class="fa fa-clock-o" aria-hidden="true"/> Late</span>
+                                </td>
+                                <td t-att-data-label="lb_payment">
+                                    <span t-if="o.payment_method == 'cod'" class="lm-badge lm-badge--secondary">Cash on Delivery</span>
+                                    <span t-else="" class="badge text-bg-light border">Online</span>
+                                    <br t-if="o.payment_method == 'cod'"/>
+                                    <a t-if="o.payment_method == 'cod' and o.state == 'completed' and not o.cod_cash_confirmed and o.fulfillment_group_ids and all(g.fulfillment_type == 'fbm' for g in o.fulfillment_group_ids)"
+                                       t-att-href="'/my/vendor/orders/%s' % o.id" class="lm-badge lm-badge--warning text-decoration-none">
+                                        <i class="fa fa-exclamation-triangle" aria-hidden="true"/> Confirm cash collected
+                                    </a>
+                                    <span t-elif="o.payment_method == 'cod' and o.cod_cash_confirmed" class="lm-badge lm-badge--success">
+                                        <i class="fa fa-check" aria-hidden="true"/> Cash confirmed
+                                    </span>
+                                </td>
+                                <td t-att-data-label="lb_total" class="text-end text-nowrap" t-out="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                <td t-att-data-label="lb_commission" class="text-end text-nowrap text-muted" t-out="o.commission_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                <td t-att-data-label="lb_net" class="text-end text-nowrap fw-semibold" t-out="o.vendor_net" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                <td t-att-data-label="lb_invoice"><a t-if="o.invoice_id" t-att-href="'/my/vendor/orders/%s/invoice' % o.id" target="_blank"><i class="fa fa-file-pdf-o" aria-hidden="true"/> <t t-esc="o.invoice_id.name"/></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <t t-elif="orders">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-filter'"/>
+                        <t t-set="lm_message">No order matches this filter.</t>
+                        <t t-set="lm_action_url" t-value="'/my/vendor/orders'"/>
+                        <t t-set="lm_action_label">Show all orders</t>
+                    </t>
+                </t>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-inbox'"/>
+                        <t t-set="lm_message">No orders yet.</t>
+                        <t t-set="lm_action_url" t-value="'/my/vendor/products'"/>
+                        <t t-set="lm_action_label">Check your products</t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_order_detail" name="Vendor Order Detail">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_order">
+                <t t-set="lm_cod_confirm_due" t-value="order.payment_method == 'cod' and order.state == 'completed' and not order.cod_cash_confirmed and order.fulfillment_group_ids and all(g.fulfillment_type == 'fbm' for g in order.fulfillment_group_ids)"/>
+                <div class="lm-page-header">
+                    <div>
+                        <div class="lm-page-heading">
+                            <h1 class="lm-page-title" t-esc="order.name"/>
+                            <t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="order"/></t>
+                            <span t-if="order.cod_cash_confirmed" class="lm-badge lm-badge--success"><i class="fa fa-check" aria-hidden="true"/> Cash Collected</span>
+                        </div>
+                        <p class="lm-page-subtitle">Customer: <span t-esc="order.partner_id.display_name"/></p>
+                        <p t-if="order.ship_by_date" class="lm-page-subtitle">Ship by: <span t-esc="order.ship_by_date" t-options="{'widget': 'datetime'}"/>
+                            <span t-if="order.is_late" class="lm-badge lm-badge--danger ms-1"><i class="fa fa-clock-o" aria-hidden="true"/> Late</span></p>
+                    </div>
+                    <div class="lm-page-actions">
+                        <form t-if="order.state == 'pending'" t-att-action="'/my/vendor/orders/%s/confirm' % order.id" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button class="btn btn-primary" data-lm-loading="1"><i class="fa fa-check" aria-hidden="true"/> Confirm Order</button>
+                        </form>
+                        <form t-if="lm_cod_confirm_due" t-att-action="'/my/vendor/orders/%s/confirm-cod-payment' % order.id" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button class="btn btn-success" data-lm-loading="1"><i class="fa fa-money" aria-hidden="true"/> Confirm Cash Collected</button>
+                        </form>
+                        <a t-if="order.invoice_id" t-att-href="'/my/vendor/orders/%s/invoice' % order.id" target="_blank" class="btn btn-outline-primary">
+                            <i class="fa fa-file-pdf-o" aria-hidden="true"/> Invoice <t t-esc="order.invoice_id.name"/>
+                        </a>
+                        <a href="/my/vendor/orders" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a>
+                    </div>
+                </div>
+
+                <div class="lm-card mb-4" id="lm_order_timeline">
+                    <t t-call="leaders_marketplace.lm_timeline"><t t-set="lm_record" t-value="order"/></t>
+                </div>
+
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="lm_cod_confirm_due" class="alert alert-warning" role="alert">
+                    This order was delivered Cash on Delivery. Confirm above once you have collected the cash from the customer --
+                    your commission for it is only charged once you confirm.
+                </div>
+                <div t-if="order.state == 'cancelled' and order.cancel_reason" class="alert alert-warning" role="status">Cancelled. Reason: <t t-esc="order.cancel_reason"/></div>
+
+                <div class="lm-stat-cards">
+                    <div class="lm-stat-card"><span class="lm-stat-icon"><i class="fa fa-shopping-cart" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Total</div><div class="lm-stat-value" t-out="order.amount_total" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div></div>
+                    <div class="lm-stat-card lm-tone-secondary"><span class="lm-stat-icon"><i class="fa fa-percent" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Commission</div><div class="lm-stat-value" t-out="order.commission_amount" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div></div>
+                    <div class="lm-stat-card lm-tone-info"><span class="lm-stat-icon"><i class="fa fa-cubes" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Fulfillment Fees</div><div class="lm-stat-value" t-out="order.fulfillment_fee_amount" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div></div>
+                    <div class="lm-stat-card lm-tone-success"><span class="lm-stat-icon"><i class="fa fa-money" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Your Net</div><div class="lm-stat-value" t-out="order.vendor_net" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div></div>
+                </div>
+
+                <t t-set="lb_product">Product</t>
+                <t t-set="lb_fulfillment">Fulfillment</t>
+                <t t-set="lb_qty">Qty</t>
+                <t t-set="lb_delivered">Delivered</t>
+                <t t-set="lb_unit_price">Unit Price</t>
+                <t t-set="lb_total">Total</t>
+                <div class="lm-panel" id="lm_order_items">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-list" aria-hidden="true"/> Items</h2></div>
+                    <div class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Product</th><th>Fulfillment</th><th class="text-end">Qty</th><th class="text-end">Delivered</th><th class="text-end">Unit Price</th><th class="text-end">Total</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="order.line_ids" t-as="l">
+                                    <td class="lm-cell-title" t-esc="l.product_id.display_name"/>
+                                    <td t-att-data-label="lb_fulfillment"><span t-if="l.fulfillment_type" class="badge rounded-pill text-bg-light border" t-esc="l.fulfillment_type.upper()"/><span t-elif="l.is_delivery" class="badge rounded-pill text-bg-light border">Shipping</span></td>
+                                    <td t-att-data-label="lb_qty" class="text-end" t-esc="'%g' % l.product_uom_qty"/>
+                                    <td t-att-data-label="lb_delivered" class="text-end" t-esc="'%g' % l.qty_delivered"/>
+                                    <td t-att-data-label="lb_unit_price" class="text-end text-nowrap" t-out="l.price_unit" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                    <td t-att-data-label="lb_total" class="text-end text-nowrap" t-out="l.price_total" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="lm-panel-body" id="lm_order_totals">
+                        <div class="lm-totals">
+                            <div><span>Commission</span><span class="text-nowrap" t-out="order.commission_amount" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div>
+                            <div><span>Fulfillment Fees</span><span class="text-nowrap" t-out="order.fulfillment_fee_amount" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div>
+                            <div class="lm-totals-grand"><span>Total</span><span class="text-nowrap" t-out="order.amount_total" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div>
+                            <div class="fw-semibold"><span>Your Net</span><span class="text-nowrap" t-out="order.vendor_net" t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="lm-section-title">Shipments</h2>
+                <t t-if="not order.fulfillment_group_ids">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-truck'"/>
+                        <t t-set="lm_message">No shipment yet. Confirm the order to prepare its shipments.</t>
+                    </t>
+                </t>
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-xl-6" t-foreach="order.fulfillment_group_ids" t-as="g">
+                        <div class="lm-panel h-100">
+                            <div class="lm-panel-header">
+                                <h3 class="lm-panel-title"><t t-esc="g.name"/> · <t t-esc="g.fulfillment_type.upper()"/></h3>
+                                <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="g"/></t>
+                            </div>
+                            <div class="lm-panel-body">
+                                <t t-call="leaders_marketplace.lm_timeline"><t t-set="lm_record" t-value="g"/></t>
+                                <dl class="lm-kv mt-3">
+                                    <div><dt>Ships from</dt><dd t-esc="g.source_location_id.complete_name"/></div>
+                                    <div t-foreach="g.picking_ids" t-as="p"><dt>Delivery <t t-esc="p.name"/></dt><dd><t t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)"/></dd></div>
+                                    <div><dt>Tracking</dt><dd><t t-esc="g.tracking_ref or '-'"/></dd></div>
+                                </dl>
+                                <t t-set="lm_providers" t-value="request.env['leaders.shipping.provider']._leaders_portal_providers()"/>
+                                <div t-if="lm_providers and g.awb" class="small mt-2" id="lm_shipment_info">
+                                    <span>AWB: <t t-esc="g.awb"/></span>
+                                    <a t-if="g.tracking_url and g.tracking_url.startswith('http')" t-att-href="g.tracking_url" target="_blank" rel="noopener" class="ms-2">Track</a>
+                                    <a t-if="g.label_attachment_id" t-att-href="'/my/vendor/fulfillment/%s/label' % g.id" class="ms-2"><i class="fa fa-download" aria-hidden="true"/> Download label</a>
+                                </div>
+                                <form t-if="lm_providers and g.fulfillment_type == 'fbm' and not g.awb and g.state in ('allocated', 'picking', 'packing', 'ready')" t-att-action="'/my/vendor/fulfillment/%s/create-shipment' % g.id" method="post" class="row g-2 mt-2 lm-validate" id="lm_create_shipment_form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="col-12 col-sm-8 lm-form-field"><label class="visually-hidden" t-att-for="'lm_provider_%s' % g.id">Shipping provider</label><select class="form-select" name="provider_id" t-att-id="'lm_provider_%s' % g.id" required="required"><option t-foreach="lm_providers" t-as="prov" t-att-value="prov.id" t-esc="prov.name"/></select><div class="invalid-feedback">Choose a shipping provider.</div></div>
+                                    <div class="col-12 col-sm-4"><button class="btn btn-outline-primary w-100" data-lm-loading="1"><i class="fa fa-tag" aria-hidden="true"/> Create shipment / label</button></div>
+                                </form>
+                                <t t-if="g.fulfillment_type == 'fbm'">
+                                    <form t-if="g.state not in ('shipped', 'delivery_reported', 'delivered', 'cancelled')" t-att-action="'/my/vendor/fulfillment/%s/ship' % g.id" method="post" class="row g-2 mt-2 lm-validate" id="lm_ship_form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <t t-set="lm_ship_info" t-value="g._ship_lines_info()"/>
+                                        <div class="col-12" t-if="lm_ship_info">
+                                            <div class="small text-muted mb-1">Quantity to ship now (the rest stays in a second shipment)</div>
+                                            <div t-foreach="lm_ship_info.items()" t-as="li" class="d-flex align-items-center gap-2 mb-1">
+                                                <label class="small flex-grow-1 mb-0 text-break" t-att-for="'lm_ship_qty_%s' % li[0].id"><t t-esc="li[0].product_id.display_name"/> <span class="text-muted">(<t t-esc="'%g' % li[1][1]"/> / <t t-esc="'%g' % li[1][0]"/>)</span></label>
+                                                <input type="number" class="form-control form-control-sm" style="max-inline-size: 6rem;" t-att-id="'lm_ship_qty_%s' % li[0].id" t-att-name="'qty_%s' % li[0].id" t-att-value="'%g' % li[1][1]" min="0" t-att-max="'%g' % li[1][1]" step="any"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-8 lm-form-field"><label class="visually-hidden" t-att-for="'lm_tracking_%s' % g.id">Tracking number</label><input class="form-control" name="tracking_ref" t-att-id="'lm_tracking_%s' % g.id" placeholder="Tracking number" t-att-value="g.awb or None" required="required"/><div class="invalid-feedback">Enter the tracking number.</div></div>
+                                        <div class="col-12 col-sm-4"><button class="btn btn-primary w-100" data-lm-loading="1"><i class="fa fa-truck" aria-hidden="true"/> Ship</button></div>
+                                    </form>
+                                    <form t-if="g.state == 'shipped'" t-att-action="'/my/vendor/fulfillment/%s/delivered' % g.id" method="post" enctype="multipart/form-data" class="mt-3">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <label class="form-label small mb-1" t-att-for="'lm_proof_%s' % g.id">Proof of delivery (optional)</label>
+                                        <input class="form-control form-control-sm mb-2" type="file" name="delivery_proof" t-att-id="'lm_proof_%s' % g.id"/>
+                                        <button class="btn btn-success" data-lm-loading="1"><i class="fa fa-check" aria-hidden="true"/> Mark as Delivered</button>
+                                    </form>
+                                    <form t-if="g.state == 'shipped' and order.payment_method == 'cod'" t-att-action="'/my/vendor/fulfillment/%s/refused' % g.id" method="post" class="mt-3 border-top pt-3" data-lm-confirm-ref="#lm_confirm_refused">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <label class="form-label small mb-1" t-att-for="'lm_refused_%s' % g.id">The customer refused the parcel at the door</label>
+                                        <input class="form-control form-control-sm mb-2" name="reason" t-att-id="'lm_refused_%s' % g.id" maxlength="500" placeholder="Note (optional)"/>
+                                        <button class="btn btn-outline-danger btn-sm" data-lm-loading="1"><i class="fa fa-undo" aria-hidden="true"/> Customer refused</button>
+                                    </form>
+                                    <div t-if="g.state == 'delivery_reported'" class="alert alert-info small mt-3 mb-0" role="status">
+                                        <i class="fa fa-hourglass-half" aria-hidden="true"/> Delivery reported
+                                        <t t-if="g.delivered_reported_date"> on <t t-esc="g.delivered_reported_date" t-options="{'widget': 'datetime'}"/></t>.
+                                        Waiting for the customer to confirm they received it.
+                                    </div>
+                                </t>
+                                <div t-else="" class="small text-info mt-3">Shipped by the Leaders warehouse (FBL).</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span id="lm_confirm_refused" class="d-none">Cancel this order as refused by the customer? The goods return to your stock.</span>
+
+                <!-- Cancel the whole order (owner, only while nothing has shipped) -->
+                <div t-if="vendor_can_cancel and lm_is_vendor_owner and order.state in ('pending', 'confirmed', 'processing', 'partially_fulfilled') and not any(g.state in ('partially_shipped', 'shipped', 'delivery_reported', 'delivered') for g in order.fulfillment_group_ids)"
+                     class="lm-card" id="lm_vendor_cancel_card">
+                    <h2 class="lm-section-title"><i class="fa fa-times-circle" aria-hidden="true"/> Cancel Order</h2>
+                    <form t-att-action="'/my/vendor/orders/%s/cancel' % order.id" method="post" class="lm-validate" data-lm-confirm-ref="#lm_confirm_vendor_cancel">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="row g-2 align-items-start">
+                            <div class="col-12 col-md-8 lm-form-field">
+                                <label class="form-label" for="lm_vendor_cancel_reason">Reason for cancelling</label>
+                                <input type="text" id="lm_vendor_cancel_reason" name="reason" required="required" class="form-control" aria-label="Cancellation reason"/>
+                                <div class="invalid-feedback">Please give a reason for cancelling.</div>
+                            </div>
+                            <div class="col-12 col-md-4 lm-form-field d-flex align-items-end">
+                                <button class="btn btn-outline-danger w-100 text-nowrap" data-lm-loading="1"><i class="fa fa-times" aria-hidden="true"/> Cancel Order</button>
+                            </div>
+                        </div>
+                    </form>
+                    <span id="lm_confirm_vendor_cancel" class="d-none">Cancel this order? The customer is refunded and this cannot be undone.</span>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_return_state_badge" name="Marketplace Return State Badge">
+        <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="ret"/></t>
+    </template>
+
+    <template id="portal_vendor_returns" name="Vendor Returns">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_returns">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Returns</h1>
+                        <p class="lm-page-subtitle">Answer each request before its deadline, otherwise the marketplace decides.</p>
+                    </div>
+                </div>
+                <div t-if="records" class="lm-stat-cards lm-stat-cards-3">
+                    <div class="lm-stat-card"><span class="lm-stat-icon"><i class="fa fa-undo" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Returns</div><div class="lm-stat-value" t-esc="len(records)"/></div></div>
+                    <div class="lm-stat-card lm-tone-warning"><span class="lm-stat-icon"><i class="fa fa-hourglass-half" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Waiting for your answer</div><div class="lm-stat-value" t-esc="len(records.filtered(lambda r: r.state == 'requested'))"/></div></div>
+                    <div class="lm-stat-card lm-tone-success"><span class="lm-stat-icon"><i class="fa fa-check-circle" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Refunded</div><div class="lm-stat-value" t-esc="len(records.filtered(lambda r: r.state == 'refunded'))"/></div></div>
+                </div>
+                <t t-set="lb_order">Order</t>
+                <t t-set="lb_customer">Customer</t>
+                <t t-set="lb_deadline">Answer before</t>
+                <t t-set="lb_refund">Refund</t>
+                <t t-set="lb_status">Status</t>
+                <div t-if="records" class="lm-table-responsive">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Return</th><th>Order</th><th>Customer</th><th>Answer before</th><th class="text-end">Refund</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="records" t-as="ret">
+                                <td class="lm-cell-title"><a class="fw-semibold" t-att-href="'/my/vendor/returns/%s' % ret.id" t-esc="ret.name"/></td>
+                                <td t-att-data-label="lb_order" t-esc="ret.vendor_order_id.name"/>
+                                <td t-att-data-label="lb_customer" t-esc="ret.partner_id.display_name"/>
+                                <td t-att-data-label="lb_deadline"><span t-if="ret.state == 'requested'" t-esc="ret.vendor_deadline" t-options="{'widget': 'datetime'}"/></td>
+                                <td t-att-data-label="lb_refund" class="text-end text-nowrap" t-out="ret.refund_amount" t-options="{'widget': 'monetary', 'display_currency': ret.currency_id}"/>
+                                <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.portal_return_state_badge"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-undo'"/>
+                        <t t-set="lm_message">No return requests.</t>
+                        <t t-set="lm_action_url" t-value="'/my/vendor/orders'"/>
+                        <t t-set="lm_action_label">View orders</t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_return_detail" name="Vendor Return Detail">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <t t-set="ret" t-value="record"/>
+            <div class="lm-vendor-page" id="lm_vendor_return">
+                <div class="lm-page-header">
+                    <div>
+                        <div class="lm-page-heading">
+                            <h1 class="lm-page-title" t-esc="record.name"/>
+                            <t t-call="leaders_marketplace.portal_return_state_badge"/>
+                        </div>
+                        <p class="lm-page-subtitle">
+                            Order <a t-att-href="'/my/vendor/orders/%s' % record.vendor_order_id.id" t-esc="record.vendor_order_id.name"/>
+                            · Customer: <t t-esc="record.partner_id.display_name"/>
+                        </p>
+                    </div>
+                    <div class="lm-page-actions">
+                        <a t-if="record.credit_note_id" t-att-href="'/my/marketplace/vendor-invoices/%s' % record.credit_note_id.id" target="_blank" class="btn btn-outline-primary">
+                            <i class="fa fa-file-pdf-o" aria-hidden="true"/> Credit Note <t t-esc="record.credit_note_id.name"/>
+                        </a>
+                        <a href="/my/vendor/returns" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+
+                <div class="lm-stat-cards lm-stat-cards-3">
+                    <div class="lm-stat-card"><span class="lm-stat-icon"><i class="fa fa-undo" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Refund to customer</div><div class="lm-stat-value" t-out="record.refund_amount" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/></div></div>
+                    <div class="lm-stat-card lm-tone-success"><span class="lm-stat-icon"><i class="fa fa-percent" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Commission given back</div><div class="lm-stat-value" t-out="record.commission_refund" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/></div></div>
+                    <div class="lm-stat-card lm-tone-warning"><span class="lm-stat-icon"><i class="fa fa-minus-circle" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Deducted from you</div><div class="lm-stat-value" t-out="record.vendor_deduction" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/></div></div>
+                </div>
+
+                <t t-set="lb_product">Product</t>
+                <t t-set="lb_qty">Qty</t>
+                <t t-set="lb_refund">Refund</t>
+                <div class="row g-4">
+                    <div class="col-12 col-lg-7">
+                        <div class="lm-panel">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-list" aria-hidden="true"/> Returned Products</h2></div>
+                            <div class="lm-table-responsive">
+                                <table class="table align-middle lm-table">
+                                    <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Refund</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="record.line_ids" t-as="l">
+                                            <td class="lm-cell-title" t-esc="l.product_id.display_name"/>
+                                            <td t-att-data-label="lb_qty" class="text-end" t-esc="'%g' % l.quantity"/>
+                                            <td t-att-data-label="lb_refund" class="text-end text-nowrap" t-out="l.refund_amount" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="lm-panel">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-comment" aria-hidden="true"/> Details</h2></div>
+                            <div class="lm-panel-body">
+                                <div class="mb-3"><strong>Customer reason:</strong><p class="lm-note" t-esc="record.reason"/></div>
+                                <div t-if="record.vendor_note" class="mb-3"><strong>Your response:</strong><p class="lm-note" t-esc="record.vendor_note"/></div>
+                                <div t-if="record.decision_note" class="mb-3"><strong>Marketplace decision:</strong><p class="lm-note" t-esc="record.decision_note"/></div>
+                                <div t-foreach="record.picking_ids" t-as="p" class="small text-muted">
+                                    Return receipt <t t-esc="p.name"/> → <t t-esc="p.location_dest_id.complete_name"/>:
+                                    <t t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <div t-if="record.state == 'requested'" class="lm-panel" id="lm_return_decision">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-gavel" aria-hidden="true"/> Your Decision</h2></div>
+                            <div class="lm-panel-body">
+                                <p class="lm-help">Answer before <t t-esc="record.vendor_deadline" t-options="{'widget': 'datetime'}"/>, otherwise the marketplace decides.</p>
+                                <form method="post" t-att-action="'/my/vendor/returns/%s/approve' % record.id" class="mb-4">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <label class="form-label small" for="lm_return_approve_note">Optional message to the customer</label>
+                                    <textarea id="lm_return_approve_note" name="note" class="form-control mb-2" rows="2" placeholder="Optional message to the customer"/>
+                                    <button class="btn btn-success w-100" data-lm-loading="1"><i class="fa fa-check" aria-hidden="true"/> Approve Return</button>
+                                </form>
+                                <form method="post" t-att-action="'/my/vendor/returns/%s/reject' % record.id" class="lm-validate" data-lm-confirm-ref="#lm_confirm_reject_return">
+                                    <div class="lm-form-field">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <label class="form-label small" for="lm_return_reject_note">Reason for rejection (required)</label>
+                                        <textarea id="lm_return_reject_note" name="note" class="form-control mb-2" rows="2" required="required" placeholder="Reason for rejection (required)"/>
+                                        <div class="invalid-feedback">Please give a reason for the rejection.</div>
+                                    </div>
+                                    <button class="btn btn-outline-danger w-100" data-lm-loading="1"><i class="fa fa-times" aria-hidden="true"/> Reject Return</button>
+                                </form>
+                                <span id="lm_confirm_reject_return" class="d-none">Reject this return? The customer can escalate it to the marketplace.</span>
+                            </div>
+                        </div>
+                        <div t-elif="record.state == 'approved'" class="lm-panel">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-inbox" aria-hidden="true"/> Waiting for the goods</h2></div>
+                            <div class="lm-panel-body">
+                                <t t-if="vendor_can_receive">
+                                    <p class="lm-help">Confirm once the products are back in your warehouse. The customer is refunded right away.</p>
+                                    <form method="post" t-att-action="'/my/vendor/returns/%s/receive' % record.id" data-lm-confirm-ref="#lm_confirm_receive_return">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button class="btn btn-primary w-100" data-lm-loading="1"><i class="fa fa-inbox" aria-hidden="true"/> Goods Received</button>
+                                    </form>
+                                    <span id="lm_confirm_receive_return" class="d-none">Confirm the goods are back? The customer is refunded right away.</span>
+                                </t>
+                                <p t-else="" class="small text-info mb-0">The products come back to the Leaders warehouse (FBL), which confirms receipt.</p>
+                            </div>
+                        </div>
+                        <div t-elif="record.state in ('rejected', 'escalated')" class="alert alert-warning" role="status">
+                            The customer can escalate this return; the marketplace will take the final decision.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_dispute_detail" name="Vendor Dispute Detail">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_dispute">
+                <div class="lm-page-header">
+                    <div>
+                        <div class="lm-page-heading">
+                            <h1 class="lm-page-title" t-esc="record.name"/>
+                            <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="record"/></t>
+                        </div>
+                        <p class="lm-page-subtitle">Order <a t-att-href="'/my/vendor/orders/%s' % record.vendor_order_id.id" t-esc="record.vendor_order_id.name"/> · Customer <t t-esc="record.partner_id.display_name"/></p>
+                    </div>
+                    <div class="lm-page-actions"><a href="/my/vendor/disputes" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a></div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="replied" class="alert alert-success" role="status">Your reply was sent.</div>
+                <div t-if="record.vendor_deadline and record.state == 'open'" class="alert alert-warning" role="alert">
+                    <i class="fa fa-clock-o" aria-hidden="true"/> Answer before <t t-esc="record.vendor_deadline" t-options="{'widget': 'datetime'}"/> or the marketplace takes over.
+                </div>
+                <div t-if="record.decision" class="alert alert-info" role="status">
+                    <strong>Marketplace decision:</strong> <t t-esc="record.decision"/>
+                </div>
+                <div class="lm-panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-comments-o" aria-hidden="true"/> Conversation</h2></div>
+                    <t t-call="leaders_marketplace.portal_dispute_conversation"/>
+                    <div t-if="record.state not in ('resolved', 'closed')" class="lm-panel-body border-top">
+                        <form method="post" t-att-action="'/my/vendor/disputes/%s/reply' % record.id" class="lm-validate">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="lm-form-field">
+                                <label class="form-label" for="lm_dispute_reply">Your reply to the customer</label>
+                                <textarea id="lm_dispute_reply" class="form-control" name="message" rows="3" required="required"
+                                          placeholder="Your reply to the customer"/>
+                                <div class="invalid-feedback">Write your reply first.</div>
+                            </div>
+                            <button class="btn btn-primary" data-lm-loading="1"><i class="fa fa-paper-plane" aria-hidden="true"/> Send reply</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_disputes" name="Vendor Disputes">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_disputes">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Disputes</h1>
+                        <p class="lm-page-subtitle">Cases opened by customers about your orders.</p>
+                    </div>
+                </div>
+                <t t-set="lb_order">Order</t>
+                <t t-set="lb_reason">Reason</t>
+                <t t-set="lb_deadline">Answer by</t>
+                <t t-set="lb_status">Status</t>
+                <div t-if="records" class="lm-table-responsive">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Dispute</th><th>Order</th><th>Reason</th><th>Answer by</th><th>Status</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+                        <tbody><tr t-foreach="records" t-as="r">
+                            <td class="lm-cell-title"><a t-att-href="'/my/vendor/disputes/%s' % r.id" t-esc="r.name"/></td>
+                            <td t-att-data-label="lb_order" t-esc="r.vendor_order_id.name"/>
+                            <td t-att-data-label="lb_reason" class="small" t-esc="r.reason"/>
+                            <td t-att-data-label="lb_deadline" class="small"><t t-if="r.state == 'open' and r.vendor_deadline" t-esc="r.vendor_deadline" t-options="{'widget': 'datetime'}"/><t t-else="">-</t></td>
+                            <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="r"/></t></td>
+                            <td class="lm-cell-actions text-end"><a t-att-href="'/my/vendor/disputes/%s' % r.id" class="btn btn-sm btn-outline-primary">Open</a></td>
+                        </tr></tbody>
+                    </table>
+                </div>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-smile-o'"/>
+                        <t t-set="lm_message">No disputes. Good news.</t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_performance" name="Vendor Performance">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_performance">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Performance</h1>
+                        <p class="lm-page-subtitle">Current tier: <strong t-esc="vendor.vendor_tier_id.name or '-'"/></p>
+                    </div>
+                </div>
+                <t t-set="lb_month">Month</t>
+                <t t-set="lb_orders">Orders</t>
+                <t t-set="lb_completed">Completed</t>
+                <t t-set="lb_cancelled">Cancelled</t>
+                <t t-set="lb_late">Late shipments</t>
+                <t t-set="lb_rating">Rating</t>
+                <t t-set="lb_ship_time">Avg. time to ship</t>
+                <t t-if="kpis">
+                    <t t-set="lm_last" t-value="kpis[0]"/>
+                    <div class="lm-stat-cards" id="lm_kpi_cards">
+                        <div class="lm-stat-card"><span class="lm-stat-icon"><i class="fa fa-shopping-cart" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Orders</div><div class="lm-stat-value" t-esc="lm_last.order_count"/><div class="lm-stat-sub" t-esc="lm_last.period" t-options="{'widget': 'date', 'format': 'MMMM yyyy'}"/></div></div>
+                        <div class="lm-stat-card lm-tone-success"><span class="lm-stat-icon"><i class="fa fa-check-circle" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Completed</div><div class="lm-stat-value"><t t-esc="'%.2f' % lm_last.completion_rate"/>%</div></div></div>
+                        <div t-attf-class="lm-stat-card #{'lm-tone-danger' if lm_last.cancellation_rate &gt; 20 else 'lm-tone-secondary'}"><span class="lm-stat-icon"><i class="fa fa-times-circle" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Cancelled</div><div class="lm-stat-value"><t t-esc="'%.2f' % lm_last.cancellation_rate"/>%</div></div></div>
+                        <div t-attf-class="lm-stat-card #{'lm-tone-danger' if lm_last.late_shipment_rate &gt; 20 else 'lm-tone-warning'}" id="lm_kpi_late_rate"><span class="lm-stat-icon"><i class="fa fa-clock-o" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Late shipments</div><div class="lm-stat-value"><t t-esc="'%.2f' % lm_last.late_shipment_rate"/>%</div></div></div>
+                        <div class="lm-stat-card lm-tone-info"><span class="lm-stat-icon"><i class="fa fa-star" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Rating</div><div class="lm-stat-value"><t t-esc="'%.2f' % lm_last.avg_rating"/></div></div></div>
+                        <div class="lm-stat-card lm-tone-info"><span class="lm-stat-icon"><i class="fa fa-truck" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Avg. time to ship</div><div class="lm-stat-value"><t t-if="lm_last.avg_ship_hours"><t t-esc="'%.1f' % lm_last.avg_ship_hours"/> h</t><t t-else="">-</t></div></div></div>
+                    </div>
+                    <div class="lm-panel">
+                        <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-line-chart" aria-hidden="true"/> Monthly history</h2></div>
+                        <div class="lm-table-responsive">
+                            <table class="table align-middle lm-table">
+                                <thead><tr><th>Month</th><th class="text-end">Orders</th><th class="text-end">Completed</th><th class="text-end">Cancelled</th><th class="text-end">Late shipments</th><th class="text-end">Rating</th><th class="text-end">Avg. time to ship</th></tr></thead>
+                                <tbody><tr t-foreach="kpis" t-as="k">
+                                    <td class="lm-cell-title" t-esc="k.period" t-options="{'widget': 'date', 'format': 'MMMM yyyy'}"/>
+                                    <td t-att-data-label="lb_orders" class="text-end" t-esc="k.order_count"/>
+                                    <td t-att-data-label="lb_completed" class="text-end"><t t-esc="'%.2f' % k.completion_rate"/>%</td>
+                                    <td t-att-data-label="lb_cancelled" class="text-end"><span t-attf-class="#{'text-danger fw-semibold' if k.cancellation_rate &gt; 20 else ''}"><t t-esc="'%.2f' % k.cancellation_rate"/>%</span></td>
+                                    <td t-att-data-label="lb_late" class="text-end"><span t-attf-class="#{'text-danger fw-semibold' if k.late_shipment_rate &gt; 20 else ''}"><t t-esc="'%.2f' % k.late_shipment_rate"/>%</span></td>
+                                    <td t-att-data-label="lb_rating" class="text-end"><t t-esc="'%.2f' % k.avg_rating"/></td>
+                                    <td t-att-data-label="lb_ship_time" class="text-end"><t t-if="k.avg_ship_hours"><t t-esc="'%.1f' % k.avg_ship_hours"/> h</t><t t-else="">-</t></td>
+                                </tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-line-chart'"/>
+                        <t t-set="lm_message">No performance data yet. Your first monthly snapshot appears once you have orders.</t>
+                    </t>
+                </t>
+
+                <h2 class="lm-section-title lm-section">Penalties</h2>
+                <t t-set="lb_reason">Reason</t>
+                <t t-set="lb_level">Level</t>
+                <t t-set="lb_start">Start</t>
+                <t t-set="lb_end">End</t>
+                <div t-if="penalties" class="lm-table-responsive">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Level</th><th>Reason</th><th>Start</th><th>End</th></tr></thead>
+                        <tbody><tr t-foreach="penalties" t-as="p">
+                            <td t-att-data-label="lb_level"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="p"/><t t-set="lm_field" t-value="'level'"/></t></td>
+                            <td t-att-data-label="lb_reason" t-esc="p.reason"/>
+                            <td t-att-data-label="lb_start" t-esc="p.date_start"/>
+                            <td t-att-data-label="lb_end" t-esc="p.date_end or '-'"/>
+                        </tr></tbody>
+                    </table>
+                </div>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-shield'"/>
+                        <t t-set="lm_message">No penalties. Keep it up.</t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_finance" name="Vendor Finance">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_finance">
+                <t t-set="lm_cur" t-value="vendor.company_currency_id or request.env.company.currency_id"/>
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Wallet &amp; Settlements</h1>
+                        <p class="lm-page-subtitle">Your balances, settlements and commission plans.</p>
+                    </div>
+                    <div class="lm-page-actions">
+                        <a href="/my/vendor/finance/statement" class="btn btn-outline-primary"><i class="fa fa-file-text-o" aria-hidden="true"/> Statement of account</a>
+                    </div>
+                </div>
+                <div t-if="settlement_error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="settlement_error"/>
+                <div t-if="settlement_requested" class="alert alert-success" role="status">Settlement requested. It is in Draft until the marketplace approves it.</div>
+
+                <div class="lm-stat-cards lm-stat-cards-3" id="lm_finance_cards">
+                    <div class="lm-stat-card lm-tone-success"><span class="lm-stat-icon"><i class="fa fa-money" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Available</div><div class="lm-stat-value" t-out="vendor.vendor_wallet_balance" t-options="{'widget': 'monetary', 'display_currency': lm_cur}"/></div></div>
+                    <div class="lm-stat-card lm-tone-warning"><span class="lm-stat-icon"><i class="fa fa-lock" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">On Hold</div><div class="lm-stat-value" t-out="vendor.vendor_wallet_hold" t-options="{'widget': 'monetary', 'display_currency': lm_cur}"/></div></div>
+                    <div t-if="reserve_enforced and held_reserves" class="lm-stat-card lm-tone-info"><span class="lm-stat-icon"><i class="fa fa-shield" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Returns Reserve</div><div class="lm-stat-value" t-out="reserved_total" t-options="{'widget': 'monetary', 'display_currency': reserved_currency}"/></div></div>
+                    <div t-else="" class="lm-stat-card lm-tone-secondary"><span class="lm-stat-icon"><i class="fa fa-list-alt" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Settlements</div><div class="lm-stat-value" t-esc="len(settlements)"/></div></div>
+                </div>
+
+                <div class="lm-panel" id="lm_settlement_request">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-paper-plane" aria-hidden="true"/> Request a Settlement</h2></div>
+                    <div class="lm-panel-body">
+                        <form method="post" action="/my/vendor/finance/settlement/request" class="row g-2 align-items-start lm-validate">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="col-12 col-sm-4 lm-form-field"><label class="form-label" for="lm_settle_from">From</label><input id="lm_settle_from" type="date" name="period_from" class="form-control" required="required"/><div class="invalid-feedback">Choose the start date.</div></div>
+                            <div class="col-12 col-sm-4 lm-form-field"><label class="form-label" for="lm_settle_to">To</label><input id="lm_settle_to" type="date" name="period_to" class="form-control" required="required"/><div class="invalid-feedback">Choose the end date.</div></div>
+                            <div class="col-12 col-sm-4 lm-form-field d-flex align-items-end"><button type="submit" class="btn btn-primary w-100" data-lm-loading="1">Request Settlement</button></div>
+                        </form>
+                    </div>
+                </div>
+
+                <div t-if="reserve_enforced and held_reserves" class="lm-panel" id="lm_reserve_panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-shield" aria-hidden="true"/> Returns Reserve</h2></div>
+                    <div class="lm-panel-body pb-0">
+                        <p class="lm-help">
+                            Held back against possible returns and paid to you once the return window closes.
+                            Currently reserved: <strong t-out="reserved_total" t-options="{'widget': 'monetary', 'display_currency': reserved_currency}"/>.
+                        </p>
+                    </div>
+                    <t t-set="lb_order">Order</t>
+                    <t t-set="lb_reserved">Reserved</t>
+                    <t t-set="lb_used">Used by returns</t>
+                    <t t-set="lb_released">Released on</t>
+                    <div class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Order</th><th class="text-end">Reserved</th><th class="text-end">Used by returns</th><th>Released on</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="held_reserves" t-as="r">
+                                    <td class="lm-cell-title" t-esc="r.vendor_order_id.name or '-'"/>
+                                    <td t-att-data-label="lb_reserved" class="text-end text-nowrap" t-out="r.amount" t-options="{'widget': 'monetary', 'display_currency': r.currency_id}"/>
+                                    <td t-att-data-label="lb_used" class="text-end text-nowrap" t-out="r.consumed_amount" t-options="{'widget': 'monetary', 'display_currency': r.currency_id}"/>
+                                    <td t-att-data-label="lb_released"><t t-if="r.release_date" t-esc="r.release_date" t-options="{'widget': 'date'}"/><t t-else="">after shipping</t></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <t t-set="lb_settlement">Settlement</t>
+                <t t-set="lb_period">Period</t>
+                <t t-set="lb_gross">Gross</t>
+                <t t-set="lb_deductions">Deductions</t>
+                <t t-set="lb_net">Net</t>
+                <t t-set="lb_status">Status</t>
+                <t t-set="lb_payout">Payout account</t>
+                <t t-set="lb_invoice">Invoice</t>
+                <div class="lm-panel" id="lm_settlements_panel">
+                    <div class="lm-panel-header">
+                        <h2 class="lm-panel-title"><i class="fa fa-list-alt" aria-hidden="true"/> Settlements</h2>
+                        <a href="/my/vendor/finance/statement" class="small">Statement of account <i class="fa fa-angle-right lm-flip" aria-hidden="true"/></a>
+                    </div>
+                    <div t-if="settlements" class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Settlement</th><th>Period</th><th class="text-end">Gross</th><th class="text-end">Deductions</th><th class="text-end">Net</th><th>Status</th><th>Payout account</th><th>Invoice</th></tr></thead>
+                            <tbody><tr t-foreach="settlements" t-as="s">
+                                <td class="lm-cell-title" t-esc="s.name"/>
+                                <td t-att-data-label="lb_period"><span t-esc="s.period_from"/> - <span t-esc="s.period_to"/></td>
+                                <td t-att-data-label="lb_gross" class="text-end text-nowrap" t-out="s.gross_amount" t-options="{'widget': 'monetary', 'display_currency': s.currency_id}"/>
+                                <td t-att-data-label="lb_deductions" class="text-end text-nowrap" t-out="s.deductions" t-options="{'widget': 'monetary', 'display_currency': s.currency_id}"/>
+                                <td t-att-data-label="lb_net" class="text-end text-nowrap fw-semibold" t-out="s.net_amount" t-options="{'widget': 'monetary', 'display_currency': s.currency_id}"/>
+                                <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="s"/></t></td>
+                                <td t-att-data-label="lb_payout"><span class="lm-ltr" t-esc="vendor._leaders_masked_payout_account() or '-'"/></td>
+                                <td t-att-data-label="lb_invoice"><a t-if="s.commission_invoice_id" t-att-href="'/my/vendor/finance/settlement/%s/invoice' % s.id" target="_blank"><i class="fa fa-file-pdf-o" aria-hidden="true"/> <t t-esc="s.commission_invoice_id.name"/></a></td>
+                            </tr></tbody>
+                        </table>
+                    </div>
+                    <t t-else="">
+                        <t t-call="leaders_marketplace.lm_empty_state">
+                            <t t-set="lm_icon" t-value="'fa-list-alt'"/>
+                            <t t-set="lm_message">No settlements yet. Request one once you have available balance.</t>
+                        </t>
+                    </t>
+                </div>
+
+                <t t-set="lb_date">Date</t>
+                <t t-set="lb_type">Type</t>
+                <t t-set="lb_reference">Reference</t>
+                <t t-set="lb_amount">Amount</t>
+                <div class="lm-panel" id="lm_wallet_panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-exchange" aria-hidden="true"/> Wallet Transactions</h2></div>
+                    <div t-if="transactions" class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Date</th><th>Type</th><th>Reference</th><th class="text-end">Amount</th><th>Status</th></tr></thead>
+                            <tbody><tr t-foreach="transactions" t-as="t">
+                                <td class="lm-cell-title" t-esc="t.create_date" t-options="{'widget': 'datetime'}"/>
+                                <td t-att-data-label="lb_type" t-esc="dict(t._fields['type']._description_selection(t.env)).get(t.type)"/>
+                                <td t-att-data-label="lb_reference" class="text-break" t-esc="t.reference"/>
+                                <td t-att-data-label="lb_amount" t-attf-class="text-end text-nowrap #{'text-danger' if t.amount &lt; 0 else ''}" t-out="t.amount" t-options="{'widget': 'monetary', 'display_currency': t.currency_id}"/>
+                                <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="t"/></t></td>
+                            </tr></tbody>
+                        </table>
+                    </div>
+                    <t t-else="">
+                        <t t-call="leaders_marketplace.lm_empty_state">
+                            <t t-set="lm_icon" t-value="'fa-exchange'"/>
+                            <t t-set="lm_message">No wallet transactions yet.</t>
+                        </t>
+                    </t>
+                </div>
+
+                <h2 class="lm-section-title lm-section">Commission Plans</h2>
+                <div t-if="plans" class="row g-3 mb-4">
+                    <div t-foreach="plans" t-as="plan" class="col-12 col-lg-6">
+                        <div class="lm-card h-100">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2"><strong t-esc="plan.name"/><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="plan"/></t></div>
+                            <div class="small text-muted mt-1">Period: <t t-esc="plan.date_from"/> - <t t-esc="plan.date_to"/> · <t t-esc="plan.periodicity"/></div>
+                            <t t-if="plan.type == 'target'">
+                                <div class="row mt-3"><div class="col-6"><small>On Target Commission</small><div class="fw-semibold" t-out="plan.commission_amount" t-options="{'widget': 'monetary', 'display_currency': plan.currency_id}"/></div><div class="col-6"><small>Target</small><div class="fw-semibold" t-out="plan.target_amount" t-options="{'widget': 'monetary', 'display_currency': plan.currency_id}"/></div></div>
+                                <table class="table table-sm mt-3 mb-0"><thead><tr><th>Achievement</th><th class="text-end">Commission</th></tr></thead><tbody><tr t-foreach="plan.target_commission_ids" t-as="tier"><td><t t-esc="tier.target_rate * 100"/>%</td><td class="text-end" t-out="tier.amount" t-options="{'widget': 'monetary', 'display_currency': plan.currency_id}"/></tr></tbody></table>
+                            </t>
+                            <t t-else="">
+                                <div class="row mt-3">
+                                    <div class="col-12"><small>Metric</small><div class="fw-semibold" t-esc="dict(plan._fields['achieve_type']._description_selection(plan.env)).get(plan.achieve_type)"/></div>
+                                </div>
+                                <div t-if="not plan.achieve_is_tiered" class="row mt-2">
+                                    <div class="col-12"><small>Rate</small><div class="fw-semibold">
+                                        <t t-if="plan.achieve_type == 'amount_sold'"><t t-esc="'%.2f' % (plan.achieve_rate * 100)"/>%</t>
+                                        <t t-else=""><t t-esc="plan.achieve_rate"/> / unit</t>
+                                    </div></div>
+                                </div>
+                                <table t-if="plan.achieve_is_tiered" class="table table-sm mt-3 mb-0"><thead><tr><th>Achievement</th><th class="text-end">Commission</th></tr></thead><tbody><tr t-foreach="plan.target_commission_ids" t-as="tier"><td><t t-esc="tier.target_rate * 100"/>%</td><td class="text-end" t-out="tier.amount" t-options="{'widget': 'monetary', 'display_currency': plan.currency_id}"/></tr></tbody></table>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                <div t-else="" class="alert alert-info" role="status">
+                    <t t-if="no_plan_commission_mode == 'rate'">
+                        No commission plan assigned. The marketplace commission on your settled sales is
+                        <strong><t t-esc="'%.2f' % no_plan_commission_percent"/>%</strong>.
+                    </t>
+                    <t t-else="">No commission plan assigned. No marketplace commission is deducted from your settlements.</t>
+                </div>
+
+                <t t-if="achievements">
+                    <h2 class="lm-section-title lm-section">Commission Achievements</h2>
+                    <t t-set="lb_sales">Sales</t>
+                    <t t-set="lb_target">Target</t>
+                    <t t-set="lb_achievement">Achievement</t>
+                    <t t-set="lb_commission">Commission</t>
+                    <t t-set="lb_effect">Effect</t>
+                    <div class="lm-table-responsive">
+                        <table class="table align-middle lm-table"><thead><tr><th>Period</th><th class="text-end">Sales</th><th class="text-end">Target</th><th class="text-end">Achievement</th><th class="text-end">Commission</th><th>Effect</th></tr></thead><tbody><tr t-foreach="achievements" t-as="a">
+                            <td class="lm-cell-title"><t t-esc="a.period_from"/> - <t t-esc="a.period_to"/></td>
+                            <td t-att-data-label="lb_sales" class="text-end" t-out="a.sales_amount" t-options="{'widget': 'monetary', 'display_currency': a.currency_id}"/>
+                            <td t-att-data-label="lb_target" class="text-end"><t t-if="a.rule_id.type == 'target' or a.rule_id.achieve_is_tiered" t-out="a.target_amount" t-options="{'widget': 'monetary', 'display_currency': a.currency_id}"/><t t-else="">—</t></td>
+                            <td t-att-data-label="lb_achievement" class="text-end"><t t-if="a.rule_id.type == 'target' or a.rule_id.achieve_is_tiered"><t t-esc="'%.2f' % a.achievement_percent"/>%</t><t t-else="">—</t></td>
+                            <td t-att-data-label="lb_commission" class="text-end" t-out="a.commission_amount" t-options="{'widget': 'monetary', 'display_currency': a.currency_id}"/>
+                            <td t-att-data-label="lb_effect"><span t-if="a.effect == 'bonus'" class="lm-badge lm-badge--success">Bonus</span><span t-else="" class="lm-badge lm-badge--secondary">Deduction</span></td>
+                        </tr></tbody></table>
+                    </div>
+                </t>
+
+                <t t-if="orders">
+                    <h2 class="lm-section-title lm-section">Orders &amp; Deliveries</h2>
+                    <t t-set="lb_order">Order</t>
+                    <t t-set="lb_sales">Sales</t>
+                    <div class="lm-table-responsive">
+                        <table class="table align-middle lm-table"><thead><tr><th>Order</th><th>Date</th><th>Status</th><th class="text-end">Sales</th><th><span class="visually-hidden">Actions</span></th></tr></thead><tbody><tr t-foreach="orders" t-as="o">
+                            <td class="lm-cell-title"><a t-att-href="'/my/vendor/orders/%s' % o.id" t-esc="o.name"/></td>
+                            <td t-att-data-label="lb_date" t-esc="o.date_order" t-options="{'widget': 'date'}"/>
+                            <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
+                            <td t-att-data-label="lb_sales" class="text-end" t-out="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                            <td class="lm-cell-actions text-end"><a class="btn btn-sm btn-outline-primary" t-att-href="'/my/vendor/orders/%s' % o.id">Track</a></td>
+                        </tr></tbody></table>
+                    </div>
+                </t>
+
+                <t t-if="fulfillment_groups">
+                    <h2 class="lm-section-title lm-section">Fulfillment Tracking</h2>
+                    <t t-set="lb_tracking">Tracking</t>
+                    <t t-set="lb_delivery">Delivery</t>
+                    <div class="lm-table-responsive">
+                        <table class="table align-middle lm-table"><thead><tr><th>Order</th><th>Type</th><th>Status</th><th>Tracking</th><th>Delivery</th></tr></thead><tbody><tr t-foreach="fulfillment_groups" t-as="g">
+                            <td class="lm-cell-title"><a t-att-href="'/my/vendor/orders/%s' % g.vendor_order_id.id" t-esc="g.vendor_order_id.name"/></td>
+                            <td t-att-data-label="lb_type" t-esc="g.fulfillment_type.upper()"/>
+                            <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="g"/></t></td>
+                            <td t-att-data-label="lb_tracking" class="text-break" t-esc="g.tracking_ref or '-'"/>
+                            <td t-att-data-label="lb_delivery"><span t-foreach="g.picking_ids" t-as="p" t-esc="dict(p._fields['state']._description_selection(p.env)).get(p.state)" class="me-1"/></td>
+                        </tr></tbody></table>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_statement" name="Vendor Statement of Account">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_statement">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Statement of account</h1>
+                        <p class="lm-page-subtitle">Wallet movements and settlements of a period.</p>
+                    </div>
+                    <div class="lm-page-actions">
+                        <a t-attf-href="/my/vendor/finance/statement.pdf?#{query}" class="btn btn-outline-primary"><i class="fa fa-file-pdf-o" aria-hidden="true"/> Download PDF</a>
+                        <a t-attf-href="/my/vendor/finance/statement.xlsx?#{query}" class="btn btn-outline-success"><i class="fa fa-file-excel-o" aria-hidden="true"/> Download XLSX</a>
+                        <a href="/my/vendor/finance" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <form method="get" action="/my/vendor/finance/statement" class="lm-card mb-4 lm-validate">
+                    <div class="row g-2 align-items-start">
+                        <div class="col-6 col-md-4 lm-form-field"><label class="form-label" for="lm_st_from">From</label><input id="lm_st_from" type="date" name="date_from" class="form-control" t-att-value="st['date_from']"/></div>
+                        <div class="col-6 col-md-4 lm-form-field"><label class="form-label" for="lm_st_to">To</label><input id="lm_st_to" type="date" name="date_to" class="form-control" t-att-value="st['date_to']"/></div>
+                        <div class="col-12 col-md-4 lm-form-field d-flex align-items-end"><button class="btn btn-primary w-100" data-lm-loading="1">Show</button></div>
+                    </div>
+                </form>
+                <div class="lm-stat-cards lm-stat-cards-3">
+                    <div class="lm-stat-card lm-tone-secondary"><span class="lm-stat-icon"><i class="fa fa-flag-o" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Opening balance</div><div class="lm-stat-value" t-esc="st['opening']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></div></div>
+                    <div class="lm-stat-card lm-tone-info"><span class="lm-stat-icon"><i class="fa fa-exchange" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Movements</div><div class="lm-stat-value fs-6"><span class="text-danger" t-esc="st['total_debit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/> / <span class="text-success" t-esc="st['total_credit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></div></div></div>
+                    <div class="lm-stat-card lm-tone-success"><span class="lm-stat-icon"><i class="fa fa-flag-checkered" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Closing balance</div><div class="lm-stat-value" t-esc="st['closing']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></div></div>
+                </div>
+
+                <t t-set="lb_date">Date</t>
+                <t t-set="lb_type">Type</t>
+                <t t-set="lb_reference">Reference</t>
+                <t t-set="lb_status">Status</t>
+                <t t-set="lb_debit">Debit</t>
+                <t t-set="lb_credit">Credit</t>
+                <t t-set="lb_balance">Balance</t>
+                <div class="lm-panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-exchange" aria-hidden="true"/> Wallet transactions</h2></div>
+                    <div t-if="st['lines']" class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Date</th><th>Type</th><th>Reference</th><th>Status</th><th class="text-end">Debit</th><th class="text-end">Credit</th><th class="text-end">Balance</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="st['lines']" t-as="line">
+                                    <td class="lm-cell-title" t-esc="line['date']"/>
+                                    <td t-att-data-label="lb_type" t-esc="line['type_label']"/>
+                                    <td t-att-data-label="lb_reference" class="text-break" t-esc="line['reference']"/>
+                                    <td t-att-data-label="lb_status" t-esc="line['state_label']"/>
+                                    <td t-att-data-label="lb_debit" class="text-end text-danger"><span t-if="line['debit']" t-esc="line['debit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></td>
+                                    <td t-att-data-label="lb_credit" class="text-end text-success"><span t-if="line['credit']" t-esc="line['credit']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/></td>
+                                    <td t-att-data-label="lb_balance" class="text-end fw-semibold" t-esc="line['balance']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <t t-else="">
+                        <t t-call="leaders_marketplace.lm_empty_state">
+                            <t t-set="lm_icon" t-value="'fa-exchange'"/>
+                            <t t-set="lm_message">No transactions in this period.</t>
+                        </t>
+                    </t>
+                </div>
+
+                <t t-set="lb_settlement">Settlement</t>
+                <t t-set="lb_period">Period</t>
+                <t t-set="lb_gross">Gross</t>
+                <t t-set="lb_deductions">Deductions</t>
+                <t t-set="lb_net">Net</t>
+                <t t-set="lb_payout">Payout account</t>
+                <div class="lm-panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-list-alt" aria-hidden="true"/> Settlements</h2></div>
+                    <div t-if="st['settlements']" class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Settlement</th><th>Period</th><th>Status</th><th class="text-end">Gross</th><th class="text-end">Deductions</th><th class="text-end">Net</th><th>Payout account</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="st['settlements']" t-as="s">
+                                    <td class="lm-cell-title" t-esc="s['name']"/>
+                                    <td t-att-data-label="lb_period"><span t-esc="s['period_from']"/> - <span t-esc="s['period_to']"/></td>
+                                    <td t-att-data-label="lb_status" t-esc="s['state_label']"/>
+                                    <td t-att-data-label="lb_gross" class="text-end" t-esc="s['gross']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                                    <td t-att-data-label="lb_deductions" class="text-end" t-esc="s['deductions']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                                    <td t-att-data-label="lb_net" class="text-end fw-semibold" t-esc="s['net']" t-options="{'widget': 'monetary', 'display_currency': st['currency']}"/>
+                                    <td t-att-data-label="lb_payout"><span class="lm-ltr" t-esc="s['payout_account'] or '-'"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <t t-else="">
+                        <t t-call="leaders_marketplace.lm_empty_state">
+                            <t t-set="lm_icon" t-value="'fa-list-alt'"/>
+                            <t t-set="lm_message">No settlements in this period.</t>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_delivery_zones" name="Vendor Delivery Zones">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_zones">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Delivery Zones</h1>
+                        <p class="lm-page-subtitle">Set your own delivery price per country and state/governorate. Customers are
+                            charged this price when your products ship there. A destination with no price blocks checkout
+                            for your products to that address.</p>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div class="lm-panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-plus-circle" aria-hidden="true"/> Add a Delivery Price</h2></div>
+                    <div class="lm-panel-body">
+                        <form id="lm_delivery_zone_form" method="post" action="/my/vendor/delivery-zones/new" class="row g-2 align-items-start lm-validate">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="col-12 col-md-6 col-xl-3 lm-form-field">
+                                <label class="form-label" for="lm_zone_country">Country</label>
+                                <select id="lm_zone_country" class="form-select" required="required">
+                                    <option value="">select...</option>
+                                    <t t-foreach="countries" t-as="c">
+                                        <option t-att-value="c.id" t-esc="c.name"/>
+                                    </t>
+                                </select>
+                                <div class="invalid-feedback">Choose a country.</div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-3 lm-form-field">
+                                <label class="form-label" for="lm_zone_state">State / Governorate</label>
+                                <select id="lm_zone_state" name="state_id" class="form-select" required="required" disabled="disabled">
+                                    <option value="">select a country first...</option>
+                                    <t t-foreach="states" t-as="st">
+                                        <option t-att-value="st.id" t-att-data-country_id="st.country_id.id"
+                                                class="d-none" t-esc="st.name"/>
+                                    </t>
+                                </select>
+                                <div class="invalid-feedback">Choose a state or governorate.</div>
+                            </div>
+                            <div class="col-6 col-xl-2 lm-form-field"><label class="form-label" for="lm_zone_price">Price</label><input id="lm_zone_price" type="number" step="0.01" min="0" name="price" class="form-control" required="required"/><div class="invalid-feedback">Enter the delivery price (0 or more).</div></div>
+                            <div class="col-6 col-xl-2 lm-form-field"><label class="form-label" for="lm_zone_free">Free delivery from</label><input id="lm_zone_free" type="number" step="0.01" min="0" name="free_shipping_threshold" class="form-control" placeholder="optional"/></div>
+                            <div class="col-12 col-xl-2 lm-form-field d-flex align-items-end"><button type="submit" class="btn btn-primary w-100" data-lm-loading="1">Add</button></div>
+                        </form>
+                    </div>
+                </div>
+                <span id="lm_zone_txt_first" class="d-none">select a country first...</span>
+                <span id="lm_zone_txt_none" class="d-none">no states for this country</span>
+                <span id="lm_zone_txt_select" class="d-none">select...</span>
+                <script>
+                    (function () {
+                        var countrySelect = document.getElementById('lm_zone_country');
+                        var stateSelect = document.getElementById('lm_zone_state');
+                        if (!countrySelect || !stateSelect) return;
+                        function text(id, fallback) {
+                            var el = document.getElementById(id);
+                            return el ? el.textContent.trim() : fallback;
+                        }
+                        var allOptions = Array.prototype.slice.call(stateSelect.querySelectorAll('option[data-country_id]'));
+                        countrySelect.addEventListener('change', function () {
+                            var countryId = countrySelect.value;
+                            stateSelect.innerHTML = '';
+                            if (!countryId) {
+                                var placeholder = document.createElement('option');
+                                placeholder.value = '';
+                                placeholder.textContent = text('lm_zone_txt_first', 'select a country first...');
+                                stateSelect.appendChild(placeholder);
+                                stateSelect.disabled = true;
+                                return;
+                            }
+                            var matching = allOptions.filter(function (opt) {
+                                return opt.getAttribute('data-country_id') === countryId;
+                            });
+                            if (!matching.length) {
+                                var none = document.createElement('option');
+                                none.value = '';
+                                none.textContent = text('lm_zone_txt_none', 'no states for this country');
+                                stateSelect.appendChild(none);
+                                stateSelect.disabled = true;
+                                return;
+                            }
+                            var blank = document.createElement('option');
+                            blank.value = '';
+                            blank.textContent = text('lm_zone_txt_select', 'select...');
+                            stateSelect.appendChild(blank);
+                            matching.forEach(function (opt) {
+                                var clone = opt.cloneNode(true);
+                                clone.classList.remove('d-none');
+                                stateSelect.appendChild(clone);
+                            });
+                            stateSelect.disabled = false;
+                        });
+                    })();
+                </script>
+                <t t-set="lb_governorate">Governorate</t>
+                <t t-set="lb_price">Price / free delivery from</t>
+                <div t-if="zones" class="lm-table-responsive">
+                    <table class="table align-middle lm-table" id="lm_zones_table">
+                        <thead><tr><th>Country</th><th>Governorate</th><th>Price / free delivery from</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="zones" t-as="z">
+                                <td class="lm-cell-title" t-esc="z.country_id.name"/>
+                                <td t-att-data-label="lb_governorate" t-esc="z.state_id.name"/>
+                                <td t-att-data-label="lb_price">
+                                    <form method="post" t-attf-action="/my/vendor/delivery-zones/#{z.id}/update" class="lm-inline-form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="number" step="0.01" min="0" name="price" t-att-value="z.price" class="form-control form-control-sm" aria-label="Price"/>
+                                        <input type="number" step="0.01" min="0" name="free_shipping_threshold" t-att-value="z.free_shipping_threshold or ''" placeholder="free from" class="form-control form-control-sm" aria-label="Free delivery from"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-primary" data-lm-loading="1">Save</button>
+                                    </form>
+                                </td>
+                                <td class="lm-cell-actions text-end">
+                                    <form method="post" t-attf-action="/my/vendor/delivery-zones/#{z.id}/delete" data-lm-confirm-ref="#lm_confirm_zone_remove">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" data-lm-loading="1">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-map-marker'"/>
+                        <t t-set="lm_message">No delivery price yet. Add your first destination above.</t>
+                    </t>
+                </t>
+                <span id="lm_confirm_zone_remove" class="d-none">Remove this delivery price? Customers cannot check out there until you add a new one.</span>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_staff" name="Vendor Staff">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_staff">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Vendor Staff</h1>
+                        <p class="lm-page-subtitle">People who can work on your orders and products.</p>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="invited" class="alert alert-success" role="status">Invitation sent.</div>
+                <div t-if="resent" class="alert alert-success" role="status">Invitation sent again.</div>
+                <div t-if="updated" class="alert alert-success" role="status">Staff list updated.</div>
+                <div t-if="mail_failed" class="alert alert-warning" role="alert">User created but invitation email could not be sent — use Resend.</div>
+                <div class="lm-panel">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-user-plus" aria-hidden="true"/> Invite a colleague</h2></div>
+                    <div class="lm-panel-body">
+                        <form method="post" action="/my/vendor/staff" class="row g-2 align-items-start lm-validate">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="col-12 col-md-5 lm-form-field"><label class="form-label" for="lm_staff_name">Employee name</label><input id="lm_staff_name" class="form-control" name="name" placeholder="Employee name" required="required"/><div class="invalid-feedback">Enter the employee name.</div></div>
+                            <div class="col-12 col-md-5 lm-form-field"><label class="form-label" for="lm_staff_email">Email</label><input id="lm_staff_email" class="form-control" type="email" name="email" placeholder="Email" required="required"/><div class="invalid-feedback">Enter a valid email address.</div></div>
+                            <div class="col-12 col-md-2 lm-form-field d-flex align-items-end"><button class="btn btn-primary w-100" data-lm-loading="1">Invite</button></div>
+                        </form>
+                    </div>
+                </div>
+                <t t-set="lb_login">Login</t>
+                <t t-set="lb_status">Status</t>
+                <t t-set="lb_actions">Actions</t>
+                <div t-if="staff" class="lm-table-responsive">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Name</th><th>Login</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="staff" t-as="u">
+                                <td class="lm-cell-title" t-esc="u.name"/>
+                                <td t-att-data-label="lb_login" class="text-break" t-esc="u.login"/>
+                                <td t-att-data-label="lb_status">
+                                    <span t-if="not u.active" class="lm-badge lm-badge--secondary">Deactivated</span>
+                                    <span t-elif="not u.has_group('base.group_portal') or u.login_date" class="lm-badge lm-badge--success">Active</span>
+                                    <span t-else="" class="lm-badge lm-badge--warning">Invitation pending</span>
+                                </td>
+                                <td class="lm-cell-actions text-end">
+                                    <form t-if="u.active" method="post" t-att-action="'/my/vendor/staff/%s/resend' % u.id" class="d-inline">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button class="btn btn-sm btn-outline-secondary" title="Send the password invitation again" data-lm-loading="1">Resend</button>
+                                    </form>
+                                    <form t-if="u.active" method="post" t-att-action="'/my/vendor/staff/%s/deactivate' % u.id" class="d-inline" data-lm-confirm-ref="#lm_confirm_staff_deactivate">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button class="btn btn-sm btn-outline-danger" data-lm-loading="1">Deactivate</button>
+                                    </form>
+                                    <form t-if="not u.active" method="post" t-att-action="'/my/vendor/staff/%s/reactivate' % u.id" class="d-inline">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button class="btn btn-sm btn-outline-success" data-lm-loading="1">Reactivate</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-users'"/>
+                        <t t-set="lm_message">No staff yet. Invite someone above.</t>
+                    </t>
+                </t>
+                <span id="lm_confirm_staff_deactivate" class="d-none">Deactivate this account? The person can no longer sign in.</span>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_profile" name="Vendor Profile">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_profile">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Vendor Profile</h1>
+                        <p class="lm-page-subtitle">Your store details and payout account.</p>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="requested" class="alert alert-success" role="status">Payout account change requested. We sent you a security email; the marketplace will review it and payouts are held until then.</div>
+                <div class="lm-card mb-4">
+                    <dl class="lm-kv">
+                        <div><dt>Store</dt><dd t-esc="vendor.vendor_store_name or vendor.name"/></div>
+                        <div><dt>Contact</dt><dd><t t-esc="vendor.email or '-'"/><t t-if="vendor.phone"> / <span class="lm-ltr" t-esc="vendor.phone"/></t></dd></div>
+                        <div><dt>Payout account</dt>
+                            <dd>
+                                <t t-if="payout_account"><t t-esc="payout_bank_name"/> <span class="lm-ltr" t-esc="payout_account"/></t>
+                                <span t-else="" class="text-muted">Not set</span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="lm-card mb-4" id="lm_bank_change_card">
+                    <h2 class="lm-section-title"><i class="fa fa-university" aria-hidden="true"/> Change payout account</h2>
+                    <div t-if="pending_change" class="alert alert-warning mb-0" role="status">
+                        Request <strong t-esc="pending_change.name"/> is waiting for review. You can send a new one after it is decided.
+                    </div>
+                    <form t-else="" method="post" action="/my/vendor/profile/bank-change" enctype="multipart/form-data" class="row g-2 lm-validate">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_bank_name">Bank name</label><input id="lm_bank_name" class="form-control" name="bank_name" required="required" t-att-value="form.get('bank_name')"/><div class="invalid-feedback">Enter the bank name.</div></div>
+                        <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_account_holder">Account holder</label><input id="lm_account_holder" class="form-control" name="account_holder" required="required" t-att-value="form.get('account_holder')"/><div class="invalid-feedback">Enter the account holder.</div></div>
+                        <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_account_number">Account number / IBAN</label><input id="lm_account_number" class="form-control" dir="ltr" name="account_number" required="required" t-att-value="form.get('account_number')"/><div class="invalid-feedback">Enter the account number or IBAN.</div></div>
+                        <div class="col-12 lm-form-field"><label class="form-label" for="lm_bank_proof">Bank proof (PDF or image)</label><input id="lm_bank_proof" class="form-control" type="file" name="proof" accept="application/pdf,image/*" required="required"/><div class="invalid-feedback">Attach the bank proof (PDF or image).</div></div>
+                        <div class="col-12"><button class="btn btn-primary" data-lm-loading="1">Request change</button></div>
+                    </form>
+                </div>
+                <h2 class="lm-section-title lm-section">Request history</h2>
+                <t t-set="lb_date">Date</t>
+                <t t-set="lb_bank">Bank</t>
+                <t t-set="lb_account">Account</t>
+                <t t-set="lb_status">Status</t>
+                <t t-set="lb_reason">Reason</t>
+                <div t-if="changes" class="lm-table-responsive">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Request</th><th>Date</th><th>Bank</th><th>Account</th><th>Status</th><th>Reason</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="changes" t-as="c">
+                                <td class="lm-cell-title" t-esc="c.name"/>
+                                <td t-att-data-label="lb_date"><span t-esc="c.create_date" t-options="{'widget': 'date'}"/></td>
+                                <td t-att-data-label="lb_bank" t-esc="c.bank_name"/>
+                                <td t-att-data-label="lb_account"><span class="lm-ltr" t-esc="c.masked_account_number"/></td>
+                                <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="c"/></t></td>
+                                <td t-att-data-label="lb_reason" t-esc="c.reject_reason or ''"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-university'"/>
+                        <t t-set="lm_message">No requests yet.</t>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_terms" name="Vendor Terms">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_terms">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Vendor Terms</h1>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <t t-if="not terms">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-file-text-o'"/>
+                        <t t-set="lm_message">There are no vendor terms to accept right now.</t>
+                        <t t-set="lm_action_url" t-value="'/my/vendor'"/>
+                        <t t-set="lm_action_label">Go to dashboard</t>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div t-if="contract" class="alert alert-success" role="status">
+                        You accepted these terms on <span t-esc="contract.signed_at" t-options="{'widget': 'datetime'}"/>.
+                    </div>
+                    <div t-elif="not is_owner" class="alert alert-warning" role="alert">Only the vendor owner can accept the terms.</div>
+                    <div t-else="" class="alert alert-warning" role="alert">Please read and accept the terms to continue using the vendor portal.</div>
+                    <div class="lm-card mb-3">
+                        <h2 class="lm-section-title"><t t-esc="terms.name"/> <small class="text-muted">v<t t-esc="terms.version"/></small></h2>
+                        <div class="lm-terms" t-out="terms.body"/>
+                    </div>
+                    <form t-if="not contract and is_owner" method="post" action="/my/vendor/terms/accept" class="lm-validate">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="lm-form-field">
+                            <label class="form-check d-block"><input class="form-check-input" type="checkbox" name="accept" value="1" required="required"/><span class="form-check-label">I have read and accept the vendor terms and conditions</span></label>
+                            <div class="invalid-feedback">You must accept the terms to continue.</div>
+                        </div>
+                        <button class="btn btn-primary" data-lm-loading="1">Accept terms</button>
+                    </form>
+                    <a t-if="contract" href="/my/vendor" class="btn btn-primary">Go to dashboard</a>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_terms_staff_notice" name="Vendor Terms Pending (Staff)">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_terms_notice">
+                <div class="lm-page-header">
+                    <div><h1 class="lm-page-title">Vendor Terms</h1></div>
+                </div>
+                <div class="alert alert-warning" role="alert">
+                    <h2 class="alert-heading h4">Vendor terms are waiting for acceptance</h2>
+                    <p class="mb-0">The vendor owner must accept the new vendor terms before the vendor portal can be used again. Please ask the owner of <strong t-esc="vendor.vendor_store_name or vendor.name"/> to sign in and accept them.</p>
+                </div>
+                <a href="/my/vendor/terms" class="btn btn-outline-secondary">Read the terms</a>
+            </div>
+        </t>
+    </template>
+</odoo>

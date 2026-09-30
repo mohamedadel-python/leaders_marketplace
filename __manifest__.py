@@ -47,6 +47,7 @@
         "views/res_config_settings_views.xml",
         "views/portal_components.xml",
         "views/portal_templates.xml",
+        "views/portal_vendor_templates.xml",
         "views/checkout_templates.xml",
         "views/vendor_apply_templates.xml",
         "views/menu_views.xml",
@@ -68,6 +69,7 @@
         "web.assets_frontend": [
             "leaders_marketplace/static/src/scss/portal/_tokens.scss",
             "leaders_marketplace/static/src/scss/portal/_components.scss",
+            "leaders_marketplace/static/src/scss/portal/_vendor_pages.scss",
             "leaders_marketplace/static/src/scss/portal/_vendor.scss",
             "leaders_marketplace/static/src/scss/portal.scss",
             "leaders_marketplace/static/src/js/portal_actions.js",

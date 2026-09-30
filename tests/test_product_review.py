@@ -213,6 +213,6 @@ class TestPortalShowsRejections(HttpCase, ProductReviewCommon):
         # Scoped to this product's row: the shared fixture has other offers on
         # products that really are still unpublished, and they must keep saying so.
         row = re.search(
-            r"<td>\s*<span>Submitted Product</span>(.*?)</td>", page.text, re.S)
+            r"<td[^>]*>\s*<span>Submitted Product</span>(.*?)</td>", page.text, re.S)
         self.assertTrue(row, "the product row was not rendered")
         self.assertNotIn("is not on the website yet", row.group(1))

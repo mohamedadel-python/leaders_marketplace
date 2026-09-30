@@ -35,6 +35,8 @@ STATE_TONES = {
     "expired": "danger",
     # stopped
     "suspended": "dark", "frozen": "dark",
+    # penalty levels
+    "warning": "warning", "freeze": "dark", "ban": "danger",
     # neutral
     "closed": "secondary", "none": "secondary", "consumed": "secondary",
 }

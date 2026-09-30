@@ -237,7 +237,8 @@ class TestKpiPortal(HttpCase, KpiCommon):
         self.assertNotIn("No performance data yet", page.text)
         # Both rates are 50%; a raw float would render "50.0", so asserting the
         # two-decimal form is what proves the formatting, not the value.
-        self.assertEqual(page.text.count("50.00%"), 2)
+        # twice in the monthly table and twice in the KPI cards of the latest month
+        self.assertEqual(page.text.count("50.00%"), 4)
         self.assertNotIn(">50.0<", page.text)
 
     def test_a_vendor_with_no_snapshot_is_told_so(self):

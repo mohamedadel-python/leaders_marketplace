@@ -46,3 +46,4 @@ from . import test_vendor_statement
 from . import test_shipping_providers
 from . import test_portal_menus
 from . import test_portal_components
+from . import test_portal_vendor_pages

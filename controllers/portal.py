@@ -434,6 +434,8 @@ class MarketplacePortal(CustomerPortal):
             "orders": VendorOrder.search(vendor_domain, limit=8, order="id desc"),
             "stock_offers": Offer.search(vendor_domain + [("active", "=", True)], limit=8, order="id desc"),
             "orders_count": VendorOrder.search_count(vendor_domain),
+            "orders_late": VendorOrder.search_count(vendor_domain + [("is_late", "=", True)]),
+            "returns_to_answer": Return.search_count(vendor_domain + [("state", "=", "requested")]),
             "orders_to_process": VendorOrder.search_count(
                 vendor_domain + [("state", "in", ("pending", "confirmed", "processing", "partially_fulfilled"))]
             ),
@@ -970,6 +972,7 @@ class MarketplacePortal(CustomerPortal):
             raise AccessError(_("You cannot access this vendor order."))
         return self._vendor_render("leaders_marketplace.portal_vendor_order_detail", {
             "order": order, "vendor": vendor, "error": kw.get("error"),
+            "lm_is_vendor_owner": self._is_vendor_owner(),
             "vendor_can_cancel": request.env["ir.config_parameter"].sudo().get_param(
                 "leaders_marketplace.vendor_can_cancel_orders") in ("True", "true", "1"),
         })
