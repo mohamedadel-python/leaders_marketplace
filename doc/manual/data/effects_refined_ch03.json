@@ -1,0 +1,370 @@
+{
+ "_note": "Effects refined by reading the code (CH03). Supersedes the automatic drafts in inventory.json for these buttons. line numbers refer to the code at 18.0.4.0.58.",
+ "leaders.vendor.application.action_submit": {
+  "source": "models/vendor_core.py:364",
+  "state_change": [
+   "application draft->submitted",
+   "partner.vendor_state=submitted (partner created/updated from the application)"
+  ],
+  "raises": [
+   "At least one vendor document is required.",
+   "owner email already used by another account"
+  ],
+  "mail": []
+ },
+ "leaders.vendor.application.action_start_review": {
+  "source": "models/vendor_core.py:388",
+  "state_change": [
+   "application submitted->under_review",
+   "reviewer_id=current user",
+   "partner.vendor_state=under_review"
+  ],
+  "mail": []
+ },
+ "leaders.vendor.application.verify_kyc": {
+  "source": "models/vendor_core.py:432",
+  "state_change": [
+   "kyc_state=verified on application and partner.vendor_kyc_state",
+   "expired documents flagged expired"
+  ],
+  "raises": [
+   "KYC cannot be verified. Required documents missing or not verified: ..."
+  ],
+  "mail": []
+ },
+ "leaders.vendor.application.action_approve": {
+  "source": "models/vendor_core.py:392",
+  "state_change": [
+   "application ->approved, kyc verified",
+   "partner: is_marketplace_vendor, vendor_state=approved, tier bronze if none, vendor_approved_date, store slug (res_partner.py:80)",
+   "res.partner.bank created + payout account (vendor_core.py:451)",
+   "vendor warehouse + stock location, FBL location only if FBL enabled (res_partner.py:203)",
+   "owner contact + portal user (group Vendor Owner) (vendor_core.py:315)"
+  ],
+  "stock_moves": [],
+  "journal_entries": [],
+  "mail": [
+   "vendor_application_approved to owner (setting notify_vendor_application_approved)",
+   "portal invitation via action_reset_password (failure only logged in chatter)"
+  ],
+  "raises": [
+   "This application cannot be approved yet: <missing requirements>"
+  ]
+ },
+ "leaders.vendor.application.action_reject": {
+  "source": "models/vendor_core.py:423",
+  "state_change": [
+   "application ->rejected",
+   "partner.vendor_state=rejected"
+  ],
+  "mail": [
+   "vendor_application_rejected to owner_email with reject_reason"
+  ],
+  "raises": [
+   "Please provide a rejection reason."
+  ]
+ },
+ "leaders.vendor.application.action_create_portal_user": {
+  "source": "models/vendor_core.py:415",
+  "state_change": [
+   "owner user re-activated / created and invitation resent"
+  ],
+  "raises": [
+   "Approve the vendor before creating portal access."
+  ]
+ },
+ "leaders.vendor.document.action_verify": {
+  "source": "models/vendor_core.py:512",
+  "state_change": [
+   "verification_status=verified, verified_by/date",
+   "expired documents are flagged expired and not verified (warning notification)"
+  ],
+  "mail": []
+ },
+ "leaders.vendor.document.action_reject": {
+  "source": "models/vendor_core.py:535",
+  "state_change": [
+   "verification_status=rejected",
+   "application kyc verified->failed"
+  ],
+  "mail": [],
+  "raises": [
+   "Add a note explaining why %s is rejected."
+  ]
+ },
+ "product.template.action_marketplace_approve": {
+  "source": "models/product.py:69",
+  "state_change": [
+   "marketplace_state=published, is_published=True, publish date, reject reason cleared"
+  ],
+  "mail": [
+   "vendor_product_approved to the owner vendor's owner+staff (only when marketplace_owner_vendor_id is set)"
+  ],
+  "guard": "reviewer"
+ },
+ "product.template.action_marketplace_reject": {
+  "source": "models/product.py:81",
+  "state_change": [
+   "marketplace_state=rejected, is_published=False"
+  ],
+  "mail": [
+   "vendor_product_rejected (only when marketplace_owner_vendor_id is set)"
+  ],
+  "raises": [
+   "Please add a rejection reason."
+  ],
+  "guard": "reviewer",
+  "note": "a pure reviewer cannot save the reason (no write ACL on product.template): see bugs_found.md"
+ },
+ "product.template.action_marketplace_suspend": {
+  "source": "models/product.py:90",
+  "state_change": [
+   "marketplace_state=suspended, is_published=False"
+  ],
+  "mail": [],
+  "note": "offers keep their state"
+ },
+ "product.template.action_marketplace_reset": {
+  "source": "models/product.py:95",
+  "state_change": [
+   "marketplace_state=draft, is_published=False"
+  ],
+  "mail": []
+ },
+ "leaders.marketplace.offer.action_approve": {
+  "source": "models/product.py:384",
+  "state_change": [
+   "offer state=active, reject_reason cleared",
+   "Buy Box winner recomputed (write hook, product.py:370)"
+  ],
+  "mail": [
+   "vendor_offer_approved to vendor owner+staff"
+  ],
+  "note": "does not publish the product"
+ },
+ "leaders.marketplace.offer.action_reject": {
+  "source": "models/product.py:390",
+  "state_change": [
+   "offer state=rejected"
+  ],
+  "mail": [
+   "vendor_offer_rejected with reject_reason"
+  ],
+  "raises": [
+   "Please add a rejection reason."
+  ]
+ },
+ "leaders.marketplace.offer.action_approve_with_product": {
+  "source": "models/product.py:399",
+  "state_change": [
+   "offer approved + its product published when not yet published"
+  ],
+  "mail": [
+   "vendor_offer_approved",
+   "vendor_product_approved (owner-created products only)"
+  ]
+ },
+ "leaders.marketplace.offer.action_approve_discount": {
+  "source": "models/offer_discount.py:286",
+  "state_change": [
+   "discount_approved=True; discount_state = scheduled|active|expired from the dates"
+  ],
+  "mail": []
+ },
+ "leaders.marketplace.offer.action_reject_discount": {
+  "source": "models/offer_discount.py:296",
+  "state_change": [
+   "discount_state=rejected, discount_approved=False"
+  ],
+  "mail": [],
+  "note": "no reason asked"
+ },
+ "leaders.marketplace.offer.action_clear_discount": {
+  "source": "models/offer_discount.py:302",
+  "state_change": [
+   "all discount fields cleared, discount_state=none; effective price = regular price"
+  ],
+  "mail": []
+ },
+ "leaders.vendor.return.action_platform_approve": {
+  "source": "models/returns.py:345",
+  "state_change": [
+   "state->approved, approved_by=platform"
+  ],
+  "stock_moves": [
+   "return receipt(s) created and confirmed: FBM -> vendor stock VB/IN/n ; FBL -> Marketplace FBL/<vendor> WH/IN/n (scheduled = pickup date 09:00)"
+  ],
+  "mail": [
+   "customer_return_approved (customer)",
+   "vendor_return_decided (vendor)"
+  ],
+  "guard": "reviewer",
+  "note": "a pure reviewer gets AccessError on leaders.vendor.order.line: see bugs_found.md"
+ },
+ "leaders.vendor.return.action_platform_reject": {
+  "source": "models/returns.py:353",
+  "state_change": [
+   "state->closed"
+  ],
+  "mail": [
+   "vendor_return_decided (vendor)",
+   "customer_return_rejected (customer, reason = decision note)"
+  ],
+  "raises": [
+   "Please write the platform decision before rejecting."
+  ],
+  "guard": "reviewer"
+ },
+ "leaders.vendor.return.action_receive": {
+  "source": "models/returns.py:437",
+  "state_change": [
+   "receipts validated with full quantities, state received -> refunded | exchanged (returns.py:452, 460, 534)"
+  ],
+  "stock_moves": [
+   "receipt Partners/Customers -> vendor location (owner = vendor)"
+  ],
+  "journal_entries": [
+   "refund: Dr vendor payable 219100 (vendor_deduction) [+ Dr commission income 419000 (commission_refund)] / Cr customer receivable 121000 (refund - fee) [/ Cr fee income 419100 (fee)]; earning not yet booked: Dr escrow 219000 instead; COD: Dr commission income / Cr vendor payable only when commission_refund"
+  ],
+  "wallet_transactions": [
+   "type return, amount -vendor_deduction (not for COD without commission)"
+  ],
+  "mail": [
+   "customer_return_refunded"
+  ],
+  "note": "exchange: replacement fulfillment group + delivery, no money"
+ },
+ "leaders.vendor.return.action_cancel": {
+  "source": "models/returns.py:364",
+  "state_change": [
+   "unfinished receipts cancelled, state->cancelled"
+  ],
+  "raises": [
+   "Received returns cannot be cancelled."
+  ],
+  "mail": []
+ },
+ "leaders.vendor.dispute.action_resolve": {
+  "source": "models/returns.py:706",
+  "state_change": [
+   "state->resolved, decision saved, chatter 'Marketplace decision: ...'"
+  ],
+  "mail": [
+   "vendor_dispute_resolved"
+  ],
+  "raises": [
+   "Please write the marketplace decision before resolving."
+  ],
+  "guard": "reviewer",
+  "note": "no money moves"
+ },
+ "leaders.vendor.dispute.action_close": {
+  "source": "models/returns.py:719",
+  "state_change": [
+   "state->closed"
+  ],
+  "mail": [],
+  "guard": "reviewer"
+ },
+ "leaders.vendor.dispute.action_escalate": {
+  "source": "models/returns.py:696",
+  "state_change": [
+   "state->escalated"
+  ],
+  "mail": [
+   "vendor_dispute_escalated"
+  ],
+  "raises": [
+   "Only an open dispute can be escalated."
+  ]
+ },
+ "leaders.vendor.penalty.action_apply": {
+  "source": "models/performance.py:272",
+  "state_change": [
+   "warning: chatter notice only; freeze: partner frozen + offers suspended (snapshot); ban: partner banned + offers suspended + all vendor users deactivated",
+   "penalty state=applied"
+  ],
+  "wallet_transactions": [
+   "type penalty, amount -fine (when amount)"
+  ],
+  "journal_entries": [
+   "fine (journal mode): Dr 219100 vendor payable / Cr 419100 fee income at wallet creation (accounting.py:97, settlement.py:170)"
+  ],
+  "mail": [
+   "vendor_penalty_applied"
+  ],
+  "guard": "manager"
+ },
+ "leaders.vendor.penalty.action_lift": {
+  "source": "models/performance.py:323",
+  "state_change": [
+   "freeze/ban: partner->approved, offers restored from snapshot, deactivated users reactivated",
+   "penalty state=lifted"
+  ],
+  "mail": [
+   "vendor_penalty_lifted"
+  ],
+  "guard": "manager",
+  "note": "fine is not refunded"
+ },
+ "leaders.vendor.kpi.action_recompute_kpis": {
+  "source": "models/performance.py:113",
+  "state_change": [
+   "snapshot recomputed in place; auto draft warnings created when the settings are on"
+  ],
+  "guard": "manager"
+ },
+ "leaders.product.question.action_approve": {
+  "source": "models/product_question.py:222",
+  "state_change": [
+   "approved=True"
+  ],
+  "mail": [
+   "customer_question_answered (once, when public)"
+  ],
+  "guard": "reviewer"
+ },
+ "leaders.product.question.action_hide": {
+  "source": "models/product_question.py:207",
+  "state_change": [
+   "state=hidden, hidden_by/date/reason"
+  ],
+  "mail": [],
+  "guard": "reviewer"
+ },
+ "leaders.product.question.action_unhide": {
+  "source": "models/product_question.py:214",
+  "state_change": [
+   "state=answered (or pending), hide traces cleared"
+  ],
+  "mail": [],
+  "guard": "reviewer"
+ },
+ "leaders.vendor.bank.change.action_approve": {
+  "source": "models/bank_change.py:146",
+  "state_change": [
+   "bank account found/created, previous kept, partner.vendor_payout_bank_id replaced, request approved"
+  ],
+  "mail": [
+   "vendor_bank_change_approved to owners"
+  ],
+  "guard": "finance"
+ },
+ "leaders.vendor.bank.change.action_reject": {
+  "source": "models/bank_change.py:167",
+  "state_change": [
+   "request rejected; payout account unchanged"
+  ],
+  "mail": [
+   "vendor_bank_change_rejected with reason"
+  ],
+  "raises": [
+   "Please provide a rejection reason."
+  ],
+  "guard": "finance"
+ },
+ "leaders.settlement.action_mark_paid": {
+  "source": "models/settlement.py:702",
+  "note": "blocked while a bank change is pending (setting block_payout_on_pending_bank_change, default on): checked before the debt check; register_vendor_payment is not blocked"
+ }
+}

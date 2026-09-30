@@ -221,3 +221,38 @@
 - Expected (from the page: "Save Draft" on an active offer): at least the price change waits for review while the product stays on sale, or the page warns about it.
 - Actual: offer draft and product draft, `is_published = False`: the product leaves /shop until a reviewer approves it again; nothing warns the vendor. Stock (list form), discount card, bulk import "update" and the API change price/stock/discount WITHOUT this reset. The manual documents it as a warning.
 - Found by: CH06A.
+
+## A pure Marketplace Reviewer cannot reject a product: the rejection reason cannot be saved (AccessError on product.template) (CH03)
+- Where: views/product_template_views.xml (button `action_marketplace_reject`, field `marketplace_reject_reason` on the product form) + models/product.py `action_marketplace_reject` (needs a non-empty `marketplace_reject_reason`, otherwise "Please add a rejection reason.") + security: the reviewer only gets `base.group_user` read on `product.template` (Odoo's `access_product_template_user`), and leaders_marketplace grants no write on it.
+- Steps: log in as reviewer@leaders.demo, open a product "Pending Review" (Marketplace > Operations > Products to Review), type a reason in the Marketplace tab and save.
+- Expected: the reviewer, whose role is to approve/reject products, can record the reason and press "Reject Product".
+- Actual: saving the reason raises `AccessError: You are not allowed to modify 'Product' (product.template). This operation is allowed for the groups: Extra Rights/Create Product, Inventory/Administrator, Accounting/Administrator, Sales/Administrator`, so the button cannot be used (without a saved reason it raises "Please add a rejection reason."). Approve / Suspend / Back to Draft work (they write with sudo after `_leaders_check_backoffice("reviewer")`). The manager (who has Sales/Administrator in the demo) can reject. Clicking a status-bar step of `marketplace_state` is also a write and fails for the reviewer.
+- Found by: CH03 (shell test with `with_user(reviewer)` on a copy of lm_manual_ref).
+
+## A pure Marketplace Reviewer cannot approve a return (AccessError on leaders.vendor.order.line) (CH03)
+- Where: models/returns.py `action_platform_approve` -> `_approve` -> `_check_returnable` reads `line.vendor_line_id.order_id` / `_qty_returnable()` as the current user; security/ir.model.access.csv gives the reviewer no access on `leaders.vendor.order.line` (only Manager: rw, Finance: read).
+- Steps: as reviewer@leaders.demo open an escalated return (e.g. RET/000004) and press "Approve Return".
+- Expected: the reviewer approves (the form button is shown to `group_marketplace_reviewer`) and the receipts are created.
+- Actual: `AccessError: You are not allowed to access 'Vendor Order Line' (leaders.vendor.order.line). This operation is allowed for the groups: Marketplace/Marketplace Finance, Marketplace/Marketplace Manager`; nothing changes. "Reject Return" (with a decision note) works for the reviewer. The manager approves without problem (RET/000004 -> receipt WH/IN/00004).
+- Found by: CH03 (shell test on a copy of lm_manual_ref).
+
+## A "Log note" written in the chatter of a dispute is shown to the customer and the vendor (CH03)
+- Where: controllers/portal.py `_dispute_messages` (keeps every message with a body whose `message_type` is `comment` or `notification`, without looking at the subtype) rendered by views/portal_templates.xml `portal_dispute_conversation` for both the customer (`/my/marketplace/orders/<id>`) and the vendor (`/my/vendor/disputes/<id>`).
+- Steps: as a reviewer open a dispute, write an internal note with "Log note", then open the order page as the customer (or the dispute as the vendor).
+- Expected: internal notes (subtype "Notes") stay internal; only "Send message" and system messages are shown.
+- Actual: the note appears in the conversation with the reviewer's name (verified with `message_post(subtype_xmlid="mail.mt_note")` on DSP/000005: the conversation went from 3 to 4 messages).
+- Found by: CH03.
+
+## An application document that is "Expired" cannot be replaced by the applicant from the status page (CH03, low)
+- Where: controllers/vendor_apply.py `vendor_apply_reupload` (allows the upload only when `document.verification_status == "rejected"`) and views/vendor_apply_templates.xml `vendor_apply_status` (shows the "Replace" form only for rejected documents).
+- Steps: application "مؤسسة الندى للأزياء" (VAPP/00008, under review, commercial register expired on 2026-06-30): open `/vendor/apply/status/<token>` as the applicant.
+- Expected: the applicant can upload the renewed document.
+- Actual: no "Replace" button and the POST answers "This document cannot be replaced."; the reviewer must edit the document in the backend (editing resets it to pending) or reject it with a note first so the applicant can replace it. Also no e-mail is sent when a document is verified or rejected, so the applicant only learns it by opening the status page.
+- Found by: CH03.
+
+## A pure Marketplace Reviewer cannot open a return form: AccessError on leaders.fulfillment.group (CH03, blocks the reviewer's returns work)
+- Where: views/vendor_return_dispute_views.xml `view_vendor_return_form` (page "Replacement Shipments" holds `replacement_group_ids`, a one2many to `leaders.fulfillment.group`; the page is only hidden with `invisible`, the field is still read by the form) + security/ir.model.access.csv (`leaders.fulfillment.group`: Manager rw, Vendor staff read, Finance none, Reviewer none).
+- Steps: log in as reviewer@leaders.demo, Marketplace > Operations > Returns (the list opens), open any return (e.g. RET/000004).
+- Expected: the reviewer, who decides escalated returns (buttons "Approve Return"/"Reject Return" are shown to `group_marketplace_reviewer`), opens the form.
+- Actual: the form does not open: `AccessError: You are not allowed to access 'Marketplace Fulfillment Group' (leaders.fulfillment.group). This operation is allowed for the groups: Marketplace/Marketplace Manager, Marketplace/Vendor Staff` (reproduced with `web_read` of `replacement_group_ids` as the reviewer; every other field of the form reads fine). The capture run of the manual (role reviewer) failed on all `backend_return_form_*` screens with this dialog. Together with the separate `leaders.vendor.order.line` AccessError on "Approve Return", only the Marketplace Manager can decide a return from the UI.
+- Found by: CH03 (capture_report.json of the screenshot run + shell test).
