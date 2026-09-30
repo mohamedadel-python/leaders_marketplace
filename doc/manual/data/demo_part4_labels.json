@@ -1,0 +1,368 @@
+{
+  "generated_until": "2026-09-01 09:00:00",
+  "orders_part4": {
+    "o26_nour_online_done": {
+      "sale": "S00025",
+      "customer": "customer3",
+      "vendor_orders": {
+        "nour": "VO/000024"
+      }
+    },
+    "o27_nour_online_done": {
+      "sale": "S00026",
+      "customer": "customer4",
+      "vendor_orders": {
+        "nour": "VO/000025"
+      }
+    },
+    "o24_cod_oasis_debt": {
+      "sale": "S00027",
+      "customer": "customer1",
+      "vendor_orders": {
+        "oasis": "VO/000026"
+      }
+    },
+    "o25_cod_nour_refused_carrier": {
+      "sale": "S00028",
+      "customer": "customer2",
+      "vendor_orders": {
+        "nour": "VO/000027"
+      }
+    }
+  },
+  "returns": {
+    "r01_exchanged": {
+      "name": "RET/000001",
+      "state": "exchanged",
+      "vendor_order": "VO/000001"
+    },
+    "r02_refunded_fee": {
+      "name": "RET/000002",
+      "state": "refunded",
+      "vendor_order": "VO/000002"
+    },
+    "r03_fbl_refunded": {
+      "name": "RET/000003",
+      "state": "refunded",
+      "vendor_order": "VO/000016"
+    },
+    "r04_escalated": {
+      "name": "RET/000004",
+      "state": "escalated",
+      "vendor_order": "VO/000003"
+    },
+    "r11_cod_cron_escalated": {
+      "name": "RET/000005",
+      "state": "escalated",
+      "vendor_order": "VO/000004"
+    },
+    "r05_approved_fbm": {
+      "name": "RET/000006",
+      "state": "approved",
+      "vendor_order": "VO/000010"
+    },
+    "r06_approved_fbl_open": {
+      "name": "RET/000007",
+      "state": "approved",
+      "vendor_order": "VO/000018"
+    },
+    "r07_rejected_vendor": {
+      "name": "RET/000008",
+      "state": "rejected",
+      "vendor_order": "VO/000019"
+    },
+    "r08_closed": {
+      "name": "RET/000009",
+      "state": "closed",
+      "vendor_order": "VO/000007"
+    },
+    "r09_cancelled": {
+      "name": "RET/000010",
+      "state": "cancelled",
+      "vendor_order": "VO/000022"
+    },
+    "r10_requested": {
+      "name": "RET/000011",
+      "state": "requested",
+      "vendor_order": "VO/000020"
+    }
+  },
+  "disputes": {
+    "x04_resolved": {
+      "name": "DSP/000001",
+      "state": "resolved",
+      "vendor_order": "VO/000005"
+    },
+    "x02_vendor_reply": {
+      "name": "DSP/000002",
+      "state": "vendor_reply",
+      "vendor_order": "VO/000019"
+    },
+    "x03_escalated": {
+      "name": "DSP/000003",
+      "state": "escalated",
+      "vendor_order": "VO/000016"
+    },
+    "x05_closed": {
+      "name": "DSP/000004",
+      "state": "closed",
+      "vendor_order": "VO/000010"
+    },
+    "x01_open": {
+      "name": "DSP/000005",
+      "state": "open",
+      "vendor_order": "VO/000006"
+    }
+  },
+  "questions": {
+    "q01_pending": {
+      "id": 1,
+      "state": "pending",
+      "public": false,
+      "product": "ساعة ذكية رياضية مقاومة للماء"
+    },
+    "q02_answered_public": {
+      "id": 2,
+      "state": "answered",
+      "public": true,
+      "product": "سماعة بلوتوث لاسلكية بخاصية عزل الضوضاء"
+    },
+    "q03_answered_moderation": {
+      "id": 3,
+      "state": "answered",
+      "public": false,
+      "product": "كرسي مكتب مريح بمسند ظهر شبكي"
+    },
+    "q04_hidden": {
+      "id": 4,
+      "state": "hidden",
+      "public": false,
+      "product": "خلاط كهربائي 1000 وات"
+    },
+    "q05_lamp_public": {
+      "id": 5,
+      "state": "answered",
+      "public": true,
+      "product": "مصباح مكتب LED قابل للطي"
+    }
+  },
+  "settlements": {
+    "s01_nour_paid": {
+      "name": "SET/000001",
+      "state": "paid",
+      "vendor": "النور للإلكترونيات",
+      "net": 5470.67
+    },
+    "s03_home_cancelled": {
+      "name": "SET/000002",
+      "state": "cancelled",
+      "vendor": "بيت الأثاث الحديث",
+      "net": 0.0
+    },
+    "s04_home_approved": {
+      "name": "SET/000003",
+      "state": "approved",
+      "vendor": "بيت الأثاث الحديث",
+      "net": 2724.2
+    },
+    "s05_oasis_debt_paid": {
+      "name": "SET/000004",
+      "state": "paid",
+      "vendor": "الواحة للمستلزمات",
+      "net": -86.55
+    },
+    "s06_oasis_debt_pending": {
+      "name": "SET/000005",
+      "state": "approved",
+      "vendor": "الواحة للمستلزمات",
+      "net": -400.14
+    },
+    "s02_nour_draft": {
+      "name": "SET/000006",
+      "state": "draft",
+      "vendor": "النور للإلكترونيات",
+      "net": 2665.51
+    },
+    "s07_home_storage_debt": {
+      "name": "SET/000007",
+      "state": "approved",
+      "vendor": "بيت الأثاث الحديث",
+      "net": -526.8
+    }
+  },
+  "penalties": {
+    "p04_freeze_expired": [
+      {
+        "id": 1,
+        "level": "freeze",
+        "state": "lifted",
+        "vendor": "بيت الأثاث الحديث"
+      }
+    ],
+    "p03_fine": [
+      {
+        "id": 2,
+        "level": "warning",
+        "state": "applied",
+        "vendor": "النور للإلكترونيات"
+      }
+    ],
+    "p01_warning": [
+      {
+        "id": 3,
+        "level": "warning",
+        "state": "applied",
+        "vendor": "الواحة للمستلزمات"
+      }
+    ],
+    "p02_freeze_lifted": [
+      {
+        "id": 4,
+        "level": "freeze",
+        "state": "lifted",
+        "vendor": "الواحة للمستلزمات"
+      }
+    ],
+    "p05_auto_warning_draft": [
+      {
+        "id": 5,
+        "level": "warning",
+        "state": "draft",
+        "vendor": "الواحة للمستلزمات"
+      }
+    ]
+  },
+  "imports": {
+    "i01_new_products": {
+      "id": 1,
+      "state": "done",
+      "vendor": "النور للإلكترونيات",
+      "kind": "new_products"
+    },
+    "i02_with_errors": {
+      "id": 2,
+      "state": "validated",
+      "vendor": "الواحة للمستلزمات",
+      "kind": "new_products"
+    },
+    "i03_missing_column": {
+      "id": 3,
+      "state": "failed",
+      "vendor": "الواحة للمستلزمات",
+      "kind": "update"
+    },
+    "i04_catalog_offers": {
+      "id": 4,
+      "state": "done",
+      "vendor": "النور للإلكترونيات",
+      "kind": "catalog_offers"
+    },
+    "i05_update": {
+      "id": 5,
+      "state": "done",
+      "vendor": "النور للإلكترونيات",
+      "kind": "update"
+    }
+  },
+  "api": {
+    "key_prefixes": {
+      "write": "18a9bc1a",
+      "read": "191f41a2",
+      "revoked": "3287a997"
+    },
+    "burst": {
+      "200": 60,
+      "429": 4
+    },
+    "calls": [
+      [
+        "list offers",
+        "GET",
+        "/api/v1/vendor/offers",
+        200
+      ],
+      [
+        "list orders",
+        "GET",
+        "/api/v1/vendor/orders",
+        200
+      ],
+      [
+        "list returns",
+        "GET",
+        "/api/v1/vendor/returns",
+        200
+      ],
+      [
+        "wallet",
+        "GET",
+        "/api/v1/vendor/wallet",
+        200
+      ],
+      [
+        "settlements",
+        "GET",
+        "/api/v1/vendor/settlements",
+        200
+      ],
+      [
+        "PATCH stock (Idempotency-Key)",
+        "PATCH",
+        "/api/v1/vendor/offers/3",
+        200
+      ],
+      [
+        "same request replayed",
+        "PATCH",
+        "/api/v1/vendor/offers/3",
+        200
+      ],
+      [
+        "same key, other body (conflict)",
+        "PATCH",
+        "/api/v1/vendor/offers/3",
+        422
+      ],
+      [
+        "read-only key tries to write",
+        "PATCH",
+        "/api/v1/vendor/offers/3",
+        403
+      ],
+      [
+        "revoked key",
+        "GET",
+        "/api/v1/vendor/offers",
+        401
+      ],
+      [
+        "invalid body (validation error)",
+        "PATCH",
+        "/api/v1/vendor/offers/3",
+        422
+      ],
+      [
+        "openapi document",
+        "GET",
+        "/api/v1/openapi.json",
+        200
+      ]
+    ]
+  },
+  "notes": {
+    "webhook_bad_signature": "HTTP 401 {\"error\": \"invalid_signature\"}",
+    "finance_access_error_action_mark_paid": "لا يُسمح لك بتغيير سجل 'حركة محفظة البائع' (leaders.wallet.transaction). ",
+    "finance_access_error_action_cancel": "لا يُسمح لك بتغيير سجل 'حركة محفظة البائع' (leaders.wallet.transaction). ",
+    "finance_access_error_action_register_vendor_payment": "لا يُسمح لك بتغيير سجل 'حركة محفظة البائع' (leaders.wallet.transaction). ",
+    "import_image_warning": [
+      "تعذر التعرف على مضيف الصورة images.nour-demo.invalid."
+    ],
+    "api_replay_header": "true",
+    "api_rows": {
+      "idempotency": 1,
+      "rate": 10
+    },
+    "pending_bank_change_block": "لدى الواحة للمستلزمات ش.ش.و طلب تغيير لحساب صرف المستحقات قيد المراجعة. اعتمده أو ارفضه قبل الدفع إلى SET/000005.",
+    "vendor_debt_block": "يدين هذا البائع للسوق بمبلغ 526.8 عن هذه الفترة (نقد محصّل عند التسليم). استخدم 'تسجيل دفعة البائع' عند استلامه."
+  }
+}

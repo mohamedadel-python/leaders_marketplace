@@ -63,3 +63,31 @@
 - Actual: `AccessError: You are not allowed to modify 'Vendor Wallet Transaction' (leaders.wallet.transaction). This operation is allowed for the groups: Marketplace / Marketplace Manager.` and the whole action is rolled back (no payout entry).
 - Workaround used by the demo generator (part 4): the approval is done by finance, then paid / cancelled / debt-registered by the Marketplace Manager (who implies Finance). The manual should say that paying needs the Manager role until this is fixed.
 - Found by: DATA4 (scripts/manual_demo/part4_flows.py, `settle_as_manager`).
+
+## A warehouse user (stock user only) cannot cancel an FBL backorder: AccessError on leaders.vendor.order.line (CH04)
+- Where: `models/stock.py` `StockPicking.action_cancel` (reads `move.leaders_vendor_line_id` / `line.product_uom_qty` in the caller's environment; only the later `_leaders_cancel_quantities` call runs as sudo).
+- Steps: FBL order of 3 chairs; the warehouse user (`warehouse@leaders.demo`: internal user + Inventory/User) validates 2 and lets Odoo create a backorder (group `partially_shipped`); then presses Cancel on the backorder transfer.
+- Expected: the backorder is cancelled and the money is resized ("Delivery cancelled in the warehouse"), as the hook's docstring says.
+- Actual: `AccessError: You are not allowed to access 'Vendor Order Line' (leaders.vendor.order.line)`; nothing changes. The marketplace manager (who has the ACL) can do it; so can the manager's "Cancel Remaining" button.
+- Found by: CH04 (verified on a copy of lm_manual: order S00025, picking WH/OUT/00011).
+
+## "No Backorder" in Odoo's backorder dialog drops the unshipped quantity without resizing the order (CH04)
+- Where: Odoo `stock.backorder.confirmation.process_cancel_backorder` -> `_action_done(cancel_backorder=True)` cancels the leftover moves through the move, not through `stock.picking.action_cancel`, so the hook in `models/stock.py` (`action_cancel`) never runs.
+- Steps: FBL order of 3 chairs (S00026); warehouse user sets 2 as done and answers "No Backorder".
+- Expected: like the backorder cancellation (or refused with a message): the customer must not stay charged for the third chair.
+- Actual: the picking is done with 2 of 3, the group becomes `shipped`, the vendor order `fulfilled` with `qty_cancelled = 0`, amount 8340.00 unchanged, no credit note, no refund entry, no refund payment. The customer paid for 3 and receives 2.
+- Found by: CH04 (copy of lm_manual, VO/000025).
+
+## The Marketplace menu (and so "FBL Inbounds") is invisible to a pure warehouse user (CH04)
+- Where: `views/menu_views.xml` line 2: `menu_marketplace_root` has `groups` reviewer/finance/manager only; the ACL for inbounds is given to `stock.group_stock_user` (`security/ir.model.access.csv` lines 76-77).
+- Steps: log in as `warehouse@leaders.demo` (internal user + Inventory/User). The top bar shows Discuss, Dashboards, Website, Inventory, Apps: no Marketplace.
+- Expected: a stock user who is allowed to read/write FBL inbounds reaches them from the menu.
+- Actual: the inbound list opens only by URL (`/odoo/action-leaders_marketplace.action_fulfillment_inbound`) or after adding the user to a marketplace group (then Marketplace > Fulfillment > FBL Inbounds appears).
+- Found by: CH04 (`load_menus` as the warehouse user).
+
+## `FulfillmentInbound.action_receive` does not refuse a cancelled inbound (CH04, low)
+- Where: `models/fulfillment.py` `action_receive` only skips `state == "received"`; the Receive button is hidden outside `draft` by the view, but a call through RPC/automation receives a cancelled inbound and moves it to `received`.
+- Expected: `UserError` for `cancelled`.  Also: the `submitted` state exists in the selection but nothing sets it.
+
+## Backend "Cancel Remaining" is attributed to "the vendor" in the chatter (CH04, low)
+- Where: `models/sale.py` `action_cancel_remaining` uses `leaders_cancel_by` from the context, default `vendor`; the backend button passes none, so a manager's click posts "Cancelled quantity (...) by the vendor". Only the warehouse hook and `action_cancel_quantities` pass `warehouse` / `platform`.

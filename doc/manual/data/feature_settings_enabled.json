@@ -1029,10 +1029,10 @@
     "parameter": "leaders_marketplace.vendor_rating_min_count",
     "label": "Ratings Needed to Rank a Vendor",
     "type": "integer",
-    "value": 5,
+    "value": 2,
     "value_display": null,
     "default": 5,
-    "changed_from_default": false,
+    "changed_from_default": true,
     "left_off_reason": null
   },
   {

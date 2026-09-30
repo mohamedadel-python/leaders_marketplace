@@ -14,6 +14,19 @@ see every helper and every name an earlier part defined). It commits after each 
 a summary. Everything runs under a frozen clock (freezegun) so all dates are stable and form
 one coherent timeline: 2026-08-01 (setup) ... ~2026-09-01 (last screenshots).
 
+Parts (each one continues the same timeline and namespace; run them serially on a pristine DB):
+    part1_config.py   Aug 1        company/EGP, users, settings, tiers, zones, terms
+    part2_catalog.py  Aug 2-10     applications, vendors, commission plans, bank changes, catalog, customers
+    part3_orders.py   Aug 10-24    orders in every state, deliveries, cancellations, refusals, wallet
+    part4_flows.py    Aug 24-Sep 1 returns, disputes, product questions, ratings, settlements (paid, draft, cancelled,
+                                   vendor debt, invoice mode), penalties, KPIs, bulk imports, vendor API calls (through
+                                   the real controllers with werkzeug's test client), shipping-provider webhook,
+                                   discount approval, application documents.  Labels: CTX['returns'|'disputes'|
+                                   'questions'|'settlements'|'penalties'|'imports'|'api'|'shipping'|'notes'|'kpis'];
+                                   a name/state list without secrets is written to doc/manual/data/demo_part4_labels.json.
+                                   CTX['api_key_plain'] (plaintext API key) lives in memory only: it dies with the
+                                   process, so a capture script must create its own key through the portal page.
+
 Environment variables (optional)
     LM_MANUAL_ROOT    repo root of the addon (default: the addon directory)
     LM_MANUAL_PARTS   comma list of part numbers to run, e.g. "1,2" (default: all that exist)
