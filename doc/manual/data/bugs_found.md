@@ -116,3 +116,31 @@
 - Expected: the reserve absorbs the first 49.70 of the deduction, the wallet is charged only 697.80, and the vendor ends with 909.00 (the new net of the order).
 - Actual: wallet lines of the order after the refund: earning +1656.50, reserve -49.70, return -747.50, reserve record `consumed` 49.70/49.70 (so nothing is paid back). Total 859.30 = 909.00 - 49.70: the reserve is charged twice. With policy "deduct_next" the reserve is not consumed, is paid back later and the total is the correct 909.00. The journal entry of the refund debits Vendor payable by the full 747.50, so the payable account keeps 49.70 that the wallet no longer pays.
 - Found by: CH02A (tier/reserve documentation).
+
+## Pressing "Collect Transactions" twice on a settlement adds a duplicate plan-achievement row when the commission is 0 (CH02B, low)
+- Where: `models/settlement.py` `_create_period_commission` skips a settlement only when a `commission` wallet transaction exists; a plan result of 0 creates no transaction, so the guard never triggers.
+- Steps: nour (target plan, 11.24% completion = level 0%) settlement 2026-08-01..2026-08-24, press "Collect Transactions" twice.
+- Expected: one achievement row (or the second press does nothing).
+- Actual: a second row is created (sales 0.00, cumulative 6744.38, commission 0.00). No money effect, but the Plan Achievements list shows a spurious line.
+- Found by: CH02B (copy of lm_manual_base after parts 1-3).
+
+## After the checkout split, the delivery breakdown omits the platform part (CH02B, low)
+- Where: `models/delivery.py` `SaleOrder._leaders_delivery_breakdown` (post-split branch reads the delivery lines that remain on the orders); `models/sale.py` `_marketplace_split_vendor_lines` removes the company delivery line when nothing of the company remains.
+- Steps: setting "FBL Delivery Charge" = "Keep it for the marketplace" (`fbl_delivery_income = platform`), customer1 (Cairo) buys home's FBL lamp (310) alone: delivery 40 charged; confirm/split.
+- Expected: the confirmation page and email show "Leaders delivery: 40.00" (the customer paid it and a journal entry Dr 121000 40 / Cr 419100 40 is posted).
+- Actual: `_leaders_delivery_breakdown()` returns `[]` after the split, so the delivery line is missing from the breakdown text although the total includes it. (Also, a free platform part, 0.00, is not shown as "Free" after the split, unlike before it.)
+- Found by: CH02B.
+
+## Fee-type / calculation-method combinations that silently produce no fee (CH02B, low)
+- Where: `models/fulfillment.py` `FulfillmentFee._compute_fulfillment_fee` (handles fixed, per_kg, percent) and `cron_apply_storage_fees` (handles per_cbm_day, fixed); the form lets any calculation method be chosen for any fee type.
+- Steps: create a Storage fee with "Percentage", or a Fulfillment fee with "Per CBM / Day".
+- Expected: a validation error (or the method hidden).
+- Actual: the rule is saved and simply never charges anything.
+- Found by: CH02B.
+
+## The KPI list colours and filters use a fixed 20% instead of the thresholds settings (CH02B, low)
+- Where: `views/vendor_kpi_penalty_views.xml`: `decoration-danger="cancellation_rate > 20"`, filters "High Cancellation"/"High Late Shipments" use `> 20`; the settings `kpi_cancellation_threshold` and `late_shipment_rate_threshold` only drive the automatic draft warnings.
+- Steps: set the cancellation threshold to 10 and open Performance > Vendor KPIs.
+- Expected: rows over 10 are highlighted and filtered.
+- Actual: highlighting and filters stay at 20.
+- Found by: CH02B.
