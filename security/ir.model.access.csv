@@ -95,3 +95,6 @@ access_vendor_statement_wizard_finance,vendor statement wizard finance,model_lea
 access_shipping_provider_manager,shipping provider manager,model_leaders_shipping_provider,leaders_marketplace.group_marketplace_manager,1,1,1,1
 access_shipping_provider_user,shipping provider internal,model_leaders_shipping_provider,base.group_user,1,0,0,0
 access_shipping_event_manager,shipping event manager,model_leaders_shipping_event,leaders_marketplace.group_marketplace_manager,1,0,0,0
+access_return_reason_manager,leaders.return.reason,model_leaders_return_reason,leaders_marketplace.group_marketplace_manager,1,1,1,1
+access_return_reason_reviewer,leaders.return.reason reviewer,model_leaders_return_reason,leaders_marketplace.group_marketplace_reviewer,1,0,0,0
+access_return_reason_finance,leaders.return.reason finance,model_leaders_return_reason,leaders_marketplace.group_marketplace_finance,1,0,0,0

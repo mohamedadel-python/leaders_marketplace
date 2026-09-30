@@ -145,6 +145,28 @@ class ResConfigSettings(models.TransientModel):
         config_parameter="leaders_marketplace.return_window_days",
         default=14
     )
+    marketplace_returns_center_enabled = fields.Boolean(
+        string="Returns & Disputes Center",
+        config_parameter="leaders_marketplace.returns_center_enabled",
+        default=False,
+        help="Off: the return form and the customer's returns page are as before. On: the return "
+             "form asks for a reason code, photos, refund or exchange and a pickup date (warehouse "
+             "goods); the returns page shows the next step and deadline of every return and dispute "
+             "and each return has a detail page.",
+    )
+    marketplace_return_shipping_fee = fields.Float(
+        string="Return Shipping Fee",
+        config_parameter="leaders_marketplace.return_shipping_fee",
+        default=0.0,
+        help="Company currency. Deducted from the refund when the return reason says the customer "
+             "pays shipping (needs the Returns & Disputes Center). The marketplace keeps it.",
+    )
+    marketplace_return_pickup_max_days = fields.Integer(
+        string="Pickup Date Window (Days)",
+        config_parameter="leaders_marketplace.return_pickup_max_days",
+        default=7,
+        help="How many days ahead a customer can schedule the pickup of goods stored in the marketplace warehouse.",
+    )
     marketplace_return_vendor_sla_days = fields.Integer(
         string="Vendor Return Response (Days)",
         config_parameter="leaders_marketplace.return_vendor_sla_days",

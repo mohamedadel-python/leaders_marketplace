@@ -43,7 +43,7 @@ class MarketplaceVendorCommon(TransactionCase):
         for key in ("catalog_offers_enabled", "customer_can_cancel_orders", "vendor_can_cancel_orders",
                     "vendor_only_presentation", "vendor_apply_enabled", "vendor_discounts_enabled",
                     "vendor_bulk_import_enabled", "vendor_variants_enabled", "vendor_api_write_enabled",
-                    "shipping_providers_enabled"):
+                    "shipping_providers_enabled", "returns_center_enabled"):
             Param.set_param("leaders_marketplace.%s" % key, False)
         for model in ("leaders.fulfillment.fee", "leaders.fulfillment.policy", "leaders.commission.rule"):
             records = env[model].with_context(active_test=False).search([])

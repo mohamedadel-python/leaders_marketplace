@@ -16,6 +16,7 @@ from . import commission
 from . import settlement
 from . import accounting
 from . import fulfillment
+from . import return_reason
 from . import returns
 from . import performance
 from . import res_config_settings

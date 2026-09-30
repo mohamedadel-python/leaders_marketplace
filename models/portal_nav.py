@@ -28,7 +28,7 @@ STATE_TONES = {
     # good
     "completed": "success", "delivered": "success", "done": "success", "active": "success",
     "published": "success", "verified": "success", "refunded": "success", "resolved": "success",
-    "paid": "success", "settled": "success", "posted": "success", "valid": "success",
+    "paid": "success", "exchanged": "success", "settled": "success", "posted": "success", "valid": "success",
     "applied": "success", "signed": "success", "lifted": "success", "approved": "success",
     # bad
     "cancelled": "danger", "cancel": "danger", "rejected": "danger", "failed": "danger",

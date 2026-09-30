@@ -603,7 +603,8 @@ class VendorOrder(models.Model):
                 by_source[(line.fulfillment_type, location)] |= line
             for (fulfillment_type, location), lines in by_source.items():
                 group = rec.fulfillment_group_ids.filtered(
-                    lambda g: g.fulfillment_type == fulfillment_type and g.source_location_id == location)[:1]
+                    lambda g: g.fulfillment_type == fulfillment_type and g.source_location_id == location
+                    and not g.is_replacement)[:1]
                 if not group:
                     group = Fulfillment.create({
                         "vendor_order_id": rec.id,
@@ -684,7 +685,8 @@ class VendorOrder(models.Model):
         for rec in self:
             if rec.state in ("pending", "cancelled", "completed"):
                 continue
-            groups = rec.fulfillment_group_ids.filtered(lambda g: g.state != "cancelled")
+            # Replacement shipments of an exchange never move the order's own state.
+            groups = rec.fulfillment_group_ids.filtered(lambda g: g.state != "cancelled" and not g.is_replacement)
             if not groups:
                 continue
             states = set(groups.mapped("state"))
@@ -919,7 +921,9 @@ class VendorOrderLine(models.Model):
         """Delivered quantity not yet covered by an open or completed return."""
         self.ensure_one()
         engaged = self.return_line_ids.filtered(
-            lambda r: r.return_id != exclude and r.return_id.state not in ("rejected", "closed", "cancelled"))
+            # An exchanged return gave the same quantity back to the customer: still returnable.
+            lambda r: r.return_id != exclude and r.return_id.state not in (
+                "rejected", "closed", "cancelled", "exchanged"))
         return self.qty_delivered - sum(engaged.mapped("quantity"))
 
     @api.depends("move_ids.state", "move_ids.quantity")
@@ -945,6 +949,11 @@ class FulfillmentGroup(models.Model):
     picking_ids = fields.One2many("stock.picking", "leaders_fulfillment_group_id", string="Pickings")
     carrier_id = fields.Many2one("delivery.carrier")
     tracking_ref = fields.Char()
+    is_replacement = fields.Boolean(
+        readonly=True, copy=False, index=True,
+        help="Zero-charge shipment created by an exchange (no invoice, no commission, no earning).")
+    replacement_return_id = fields.Many2one(
+        "leaders.vendor.return", string="Exchange Return", readonly=True, copy=False, index=True)
     fee_amount = fields.Monetary(currency_field="currency_id")
     currency_id = fields.Many2one(related="vendor_order_id.currency_id", store=True)
     state = fields.Selection([

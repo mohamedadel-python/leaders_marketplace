@@ -22,6 +22,7 @@
         "data/vendor_api_data.xml",
         "data/shipping_provider_data.xml",
         "data/cancel_reason_data.xml",
+        "data/return_reason_data.xml",
         "data/cod_protection_data.xml",
         "data/bank_change_data.xml",
         "data/commission_invoice_products.xml",
@@ -57,6 +58,7 @@
         "views/vendor_api_views.xml",
         "views/vendor_api_templates.xml",
         "views/cancel_reason_views.xml",
+        "views/return_reason_views.xml",
         "views/bank_change_views.xml",
         "views/vendor_terms_views.xml",
         "views/shipping_provider_views.xml"

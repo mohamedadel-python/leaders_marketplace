@@ -13,6 +13,17 @@
                         <setting string="Return Window" help="Days after shipping during which a customer can request a return.">
                             <field name="marketplace_return_window_days"/>
                         </setting>
+                        <setting string="Returns &amp; Disputes Center" help="Reason codes, photos, refund or exchange and pickup dates on the customer's return form, plus the returns page with next steps, deadlines and a detail page. Off keeps the current return form and page.">
+                            <field name="marketplace_returns_center_enabled"/>
+                            <div class="mt-2" invisible="not marketplace_returns_center_enabled">
+                                <label for="marketplace_return_shipping_fee" class="o_light_label"/>
+                                <field name="marketplace_return_shipping_fee"/>
+                            </div>
+                            <div class="mt-2" invisible="not marketplace_returns_center_enabled">
+                                <label for="marketplace_return_pickup_max_days" class="o_light_label"/>
+                                <field name="marketplace_return_pickup_max_days"/>
+                            </div>
+                        </setting>
                         <setting string="Vendor Order Cancellation" help="Let a vendor owner cancel an unshipped order from the portal.">
                             <field name="marketplace_vendor_can_cancel_orders"/>
                         </setting>

@@ -11,9 +11,18 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import email_normalize
 from odoo.tools.float_utils import float_compare, float_is_zero
 from odoo.tools.mimetypes import guess_mimetype
+from odoo.addons.leaders_marketplace.models.returns import MAX_RETURN_PHOTOS
 from odoo.addons.leaders_marketplace.controllers.vendor_apply import VendorApplyController
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.sale.controllers.portal import CustomerPortal as SaleCustomerPortal
+
+
+# D2: filter chips of the returns center: chip -> (return states, dispute states)
+CENTER_FILTERS = {
+    "active": (("requested", "rejected", "escalated", "approved", "received"), ("open", "vendor_reply", "escalated")),
+    "completed": (("refunded", "exchanged"), ("resolved",)),
+    "closed": (("closed", "cancelled"), ("closed",)),
+}
 
 
 class MarketplacePortal(CustomerPortal):
@@ -1801,10 +1810,68 @@ class MarketplacePortal(CustomerPortal):
     def customer_marketplace_returns(self, **kw):
         partner = request.env.user.partner_id.commercial_partner_id
         domain = [("partner_id", "child_of", partner.id)]
-        return request.render("leaders_marketplace.portal_customer_marketplace_returns", {
-            "returns": request.env["leaders.vendor.return"].sudo().search(domain, order="id desc"),
-            "disputes": request.env["leaders.vendor.dispute"].sudo().search(domain, order="id desc"),
+        Return = request.env["leaders.vendor.return"].sudo()
+        Dispute = request.env["leaders.vendor.dispute"].sudo()
+        values = {
+            "returns": Return.search(domain, order="id desc"),
+            "disputes": Dispute.search(domain, order="id desc"),
+            "lm_center": Return._leaders_center_enabled(),
+        }
+        if values["lm_center"]:
+            # D2: filter chips (one filter for both lists), applied on the customer's own records.
+            chip = kw.get("filter") if kw.get("filter") in CENTER_FILTERS else "all"
+            if chip != "all":
+                return_states, dispute_states = CENTER_FILTERS[chip]
+                values["returns"] = values["returns"].filtered(lambda r: r.state in return_states)
+                values["disputes"] = values["disputes"].filtered(lambda d: d.state in dispute_states)
+            values["lm_filter"] = chip
+        return request.render("leaders_marketplace.portal_customer_marketplace_returns", values)
+
+    def _customer_return(self, return_id):
+        partner = request.env.user.partner_id.commercial_partner_id
+        record = request.env["leaders.vendor.return"].sudo().search([
+            ("id", "=", return_id), ("partner_id", "child_of", partner.id)], limit=1)
+        if not record:
+            raise AccessError(_("You cannot access this return."))
+        return record
+
+    @http.route("/my/marketplace/returns/<int:return_id>", type="http", auth="user", website=True)
+    def customer_marketplace_return_detail(self, return_id, **kw):
+        if not request.env["leaders.vendor.return"]._leaders_center_enabled():
+            raise NotFound()
+        record = self._customer_return(return_id)
+        return request.render("leaders_marketplace.portal_customer_marketplace_return_detail", {
+            "ret": record, "error": kw.get("error"),
+            "lm_can_escalate": record.state in ("requested", "rejected"),
         })
+
+    @staticmethod
+    def _return_photo_response(record, attachment_id):
+        photo = record.photo_ids.filtered(lambda a: a.id == attachment_id)
+        if not photo:
+            raise NotFound()
+        raw = photo.raw or b""
+        mimetype = guess_mimetype(raw, default="")
+        if not mimetype.startswith("image/") or "svg" in mimetype:
+            raise NotFound()
+        return request.make_response(raw, headers=[
+            ("Content-Type", mimetype),
+            ("Content-Length", len(raw)),
+            ("X-Content-Type-Options", "nosniff"),
+            ("Content-Security-Policy", "sandbox"),
+            ("Cache-Control", "private, max-age=300"),
+        ])
+
+    @http.route("/my/marketplace/returns/<int:return_id>/photo/<int:attachment_id>",
+                type="http", auth="user", website=True)
+    def customer_marketplace_return_photo(self, return_id, attachment_id, **kw):
+        return self._return_photo_response(self._customer_return(return_id), attachment_id)
+
+    @http.route("/my/vendor/returns/<int:return_id>/photo/<int:attachment_id>",
+                type="http", auth="user", website=True)
+    def vendor_return_photo(self, return_id, attachment_id, **kw):
+        vendor = self._require_vendor(allow_frozen=True)
+        return self._return_photo_response(self._vendor_return(vendor, return_id), attachment_id)
 
     def _customer_vendor_order(self, order_id):
         partner = request.env.user.partner_id.commercial_partner_id
@@ -1826,6 +1893,7 @@ class MarketplacePortal(CustomerPortal):
             "rated": kw.get("rated"),
             "order": order,
             "returnable_lines": order._customer_returnable_lines(),
+            **self._center_form_values(order),
             "error": kw.get("error"),
             "return_requested": kw.get("return_requested"),
             "lm_cancel": order._customer_cancel_info(),
@@ -1843,6 +1911,23 @@ class MarketplacePortal(CustomerPortal):
             "dispute_opened": kw.get("dispute_opened"),
             "dispute_updated": kw.get("dispute_updated"),
         })
+
+    def _center_form_values(self, order):
+        """Extra data of the return form (D2); nothing changes while the switch is off."""
+        Return = request.env["leaders.vendor.return"].sudo()
+        if not Return._leaders_center_enabled():
+            return {"lm_center": False}
+        returnable = order._customer_returnable_lines()
+        today = fields.Date.context_today(Return)
+        return {
+            "lm_center": True,
+            "lm_reasons": request.env["leaders.return.reason"].sudo().search([]),
+            "lm_has_fbl": any(item[0].fulfillment_group_id.fulfillment_type == "fbl" for item in returnable),
+            "lm_pickup_min": today,
+            "lm_pickup_max": today + timedelta(days=Return._leaders_pickup_max_days()),
+            "lm_max_photos": MAX_RETURN_PHOTOS,
+            "lm_shipping_fee": Return._leaders_shipping_fee(),
+        }
 
     @http.route("/my/marketplace/orders/<int:order_id>/rate", type="http", auth="user", website=True,
                 methods=["POST"], csrf=True)
@@ -1880,23 +1965,66 @@ class MarketplacePortal(CustomerPortal):
     def customer_request_return(self, order_id, **post):
         order = self._customer_vendor_order(order_id)
         url = f"/my/marketplace/orders/{order.id}"
+        Return = request.env["leaders.vendor.return"].sudo()
         lines = []
         for line in order.line_ids:
             qty = self._to_float(post.get(f"qty_{line.id}"), 0.0)
             if qty > 0:
                 lines.append((0, 0, {"vendor_line_id": line.id, "quantity": qty}))
         reason = (post.get("reason") or "").strip()
+        vals = {"vendor_order_id": order.id, "line_ids": lines}
         try:
-            if not reason:
-                raise UserError(_("Please tell us why you are returning the products."))
+            if Return._leaders_center_enabled():
+                vals.update(self._center_return_vals(order, post, reason))
+            else:
+                if not reason:
+                    raise UserError(_("Please tell us why you are returning the products."))
+                vals["reason"] = reason
             with request.env.cr.savepoint():
-                record = request.env["leaders.vendor.return"].sudo().create({
-                    "vendor_order_id": order.id, "reason": reason, "line_ids": lines,
-                })
+                record = Return.create(vals)
                 record.message_post(body=_("Return requested by the customer from the portal."))
         except (UserError, ValidationError) as e:
             return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
         return request.redirect(f"{url}?return_requested=1")
+
+    def _center_return_vals(self, order, post, comment):
+        """D2 part of the return form: reason code, photos, resolution, pickup date."""
+        reason = request.env["leaders.return.reason"].sudo().search([
+            ("id", "=", int(post.get("reason_id") or 0))], limit=1)
+        if not reason:
+            raise UserError(_("Please choose why you are returning the products."))
+        uploads = [u for u in request.httprequest.files.getlist("photos") if u and u.filename]
+        if len(uploads) > MAX_RETURN_PHOTOS:
+            raise UserError(_("You can attach at most %s photos.", MAX_RETURN_PHOTOS))
+        photos = []
+        for upload in uploads:
+            data, error = self._read_vendor_image(upload)
+            if error:
+                raise UserError(error)
+            photos.append((0, 0, {
+                "name": os.path.basename(upload.filename)[:100] or "photo",
+                "datas": data,
+            }))
+        resolution = "exchange" if post.get("resolution") == "exchange" else "refund"
+        vals = {
+            "reason_id": reason.id,
+            "reason": "%s: %s" % (reason.name, comment) if comment else reason.name,
+            "photo_ids": photos,
+            "resolution": resolution,
+        }
+        pickup = (post.get("pickup_date") or "").strip()
+        if pickup:
+            fbl = False
+            for key, value in post.items():
+                if key.startswith("qty_") and key[4:].isdigit() and self._to_float(value) > 0:
+                    line = order.line_ids.filtered(lambda l: l.id == int(key[4:]))
+                    fbl = fbl or line.fulfillment_group_id.fulfillment_type == "fbl"
+            if fbl:
+                try:
+                    vals["pickup_date"] = fields.Date.from_string(pickup)
+                except (TypeError, ValueError):
+                    raise UserError(_("Choose a valid pickup date."))
+        return vals
 
     def _customer_reported_group(self, group_id):
         """A group of this customer's own order that is waiting on their answer."""
@@ -1944,6 +2072,8 @@ class MarketplacePortal(CustomerPortal):
         if not record:
             raise AccessError(_("You cannot access this return."))
         url = f"/my/marketplace/orders/{record.vendor_order_id.id}"
+        if post.get("back") == "detail" and record._leaders_center_enabled():
+            url = f"/my/marketplace/returns/{record.id}"
         try:
             with request.env.cr.savepoint():
                 record.action_escalate()

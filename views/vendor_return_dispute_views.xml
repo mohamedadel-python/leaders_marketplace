@@ -3,7 +3,7 @@
         <field name="name">leaders.vendor.return.tree</field>
         <field name="model">leaders.vendor.return</field>
         <field name="arch" type="xml">
-            <list create="false" decoration-danger="state == 'escalated'" decoration-muted="state in ('closed', 'cancelled')" decoration-success="state == 'refunded'">
+            <list create="false" decoration-danger="state == 'escalated'" decoration-muted="state in ('closed', 'cancelled')" decoration-success="state in ('refunded', 'exchanged')">
                 <field name="name"/>
                 <field name="request_date"/>
                 <field name="vendor_order_id"/>
@@ -26,7 +26,7 @@
                     <button name="action_platform_approve" type="object" string="Approve Return" class="btn-primary" invisible="state not in ('requested', 'rejected', 'escalated')" groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_manager"/>
                     <button name="action_platform_reject" type="object" string="Reject Return" invisible="state not in ('requested', 'rejected', 'escalated')" groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_manager"/>
                     <button name="action_receive" type="object" string="Goods Received" class="btn-primary" invisible="state != 'approved'" confirm="Confirm the returned goods arrived? The customer is refunded right away."/>
-                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('received', 'refunded', 'closed', 'cancelled')"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('received', 'refunded', 'exchanged', 'closed', 'cancelled')"/>
                     <field name="state" widget="statusbar" statusbar_visible="requested,approved,received,refunded"/>
                 </header>
                 <sheet>
@@ -49,9 +49,17 @@
                             <field name="refund_amount"/>
                             <field name="commission_refund"/>
                             <field name="vendor_deduction"/>
+                            <field name="shipping_fee_deducted" invisible="not shipping_fee_deducted"/>
+                            <field name="net_refund_amount" invisible="not shipping_fee_deducted"/>
                             <field name="credit_note_id"/>
                             <field name="refund_payment_id"/>
                         </group>
+                    </group>
+                    <group string="Request" name="center">
+                        <field name="reason_id" readonly="state != 'requested'"/>
+                        <field name="resolution" readonly="state != 'requested'"/>
+                        <field name="customer_pays_shipping"/>
+                        <field name="pickup_date" readonly="state not in ('requested', 'approved')"/>
                     </group>
                     <group>
                         <field name="reason" readonly="1"/>
@@ -67,6 +75,19 @@
                                     <field name="refund_amount"/>
                                     <field name="commission_refund"/>
                                     <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Photos" name="photos" invisible="not photo_ids">
+                            <field name="photo_ids" widget="many2many_binary" readonly="1"/>
+                        </page>
+                        <page string="Replacement Shipments" name="replacements" invisible="not replacement_group_ids">
+                            <field name="replacement_group_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="fulfillment_type"/>
+                                    <field name="tracking_ref"/>
+                                    <field name="state" widget="badge"/>
                                 </list>
                             </field>
                         </page>

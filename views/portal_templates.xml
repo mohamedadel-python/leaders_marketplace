@@ -276,6 +276,68 @@
                     </div>
                 </div>
 
+                <t t-if="lm_center">
+                    <t t-set="lb_return">Return</t>
+                    <t t-set="lb_dispute">Dispute</t>
+                    <t t-set="lb_order">Order</t>
+                    <t t-set="lb_status">Status</t>
+                    <t t-set="lb_next">Next step</t>
+                    <t t-set="lb_deadline">Deadline</t>
+                    <t t-set="lb_resolution">Resolution</t>
+                    <div class="lm-chips" id="lm_returns_filters">
+                        <a href="/my/marketplace/returns" t-attf-class="lm-chip #{'active' if lm_filter == 'all' else ''}">All</a>
+                        <a href="/my/marketplace/returns?filter=active" t-attf-class="lm-chip #{'active' if lm_filter == 'active' else ''}">In progress</a>
+                        <a href="/my/marketplace/returns?filter=completed" t-attf-class="lm-chip #{'active' if lm_filter == 'completed' else ''}">Completed</a>
+                        <a href="/my/marketplace/returns?filter=closed" t-attf-class="lm-chip #{'active' if lm_filter == 'closed' else ''}">Closed</a>
+                    </div>
+                    <h2 class="lm-section-title" id="lm_center_returns">Returns</h2>
+                    <div t-if="returns" class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Return</th><th>Order</th><th>Status</th><th>Next step</th><th>Deadline</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="returns" t-as="ret">
+                                    <td class="lm-cell-title"><a t-att-href="'/my/marketplace/returns/%s' % ret.id" t-esc="ret.name"/></td>
+                                    <td t-att-data-label="lb_order"><a t-att-href="'/my/marketplace/orders/%s' % ret.vendor_order_id.id" t-esc="ret.vendor_order_id.name"/></td>
+                                    <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="ret"/></t></td>
+                                    <td t-att-data-label="lb_next" class="lm-next-step" t-esc="ret._leaders_next_step()"/>
+                                    <td t-att-data-label="lb_deadline"><t t-if="ret._leaders_deadline()"><span t-esc="ret._leaders_deadline()" t-options="{'widget': 'date'}"/></t><t t-else="">-</t></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <t t-else="">
+                        <t t-call="leaders_marketplace.lm_empty_state">
+                            <t t-set="lm_icon" t-value="'fa-undo'"/>
+                            <t t-set="lm_message">You have no return requests.</t>
+                            <t t-set="lm_action_url" t-value="'/my/marketplace/orders'"/>
+                            <t t-set="lm_action_label">Go to my purchases</t>
+                        </t>
+                    </t>
+                    <h2 class="lm-section-title lm-section" id="lm_center_disputes">Disputes</h2>
+                    <div t-if="disputes" class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Dispute</th><th>Order</th><th>Status</th><th>Next step</th><th>Deadline</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="disputes" t-as="dsp">
+                                    <td class="lm-cell-title"><a t-att-href="'/my/marketplace/orders/%s' % dsp.vendor_order_id.id" t-esc="dsp.name"/></td>
+                                    <td t-att-data-label="lb_order"><a t-att-href="'/my/marketplace/orders/%s' % dsp.vendor_order_id.id" t-esc="dsp.vendor_order_id.name"/></td>
+                                    <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="dsp"/></t></td>
+                                    <td t-att-data-label="lb_next" class="lm-next-step" t-esc="dsp._leaders_next_step()"/>
+                                    <td t-att-data-label="lb_deadline"><t t-if="dsp._leaders_deadline()"><span t-esc="dsp._leaders_deadline()" t-options="{'widget': 'date'}"/></t><t t-else="">-</t></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <t t-else="">
+                        <t t-call="leaders_marketplace.lm_empty_state">
+                            <t t-set="lm_icon" t-value="'fa-comments-o'"/>
+                            <t t-set="lm_message">You have no disputes.</t>
+                            <t t-set="lm_action_url" t-value="'/my/marketplace/orders'"/>
+                            <t t-set="lm_action_label">Go to my purchases</t>
+                        </t>
+                    </t>
+                </t>
+                <t t-else="">
                 <h2 class="lm-section-title">Returns</h2>
                 <t t-set="lb_return">Return</t>
                 <t t-set="lb_order">Order</t>
@@ -326,6 +388,7 @@
                         <t t-set="lm_action_url" t-value="'/my/marketplace/orders'"/>
                         <t t-set="lm_action_label">Go to my purchases</t>
                     </t>
+                </t>
                 </t>
             </div>
         </t>
@@ -631,7 +694,7 @@
                             <thead><tr><th>Return</th><th>Products</th><th class="text-end">Refund</th><th>Status</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
                             <tbody>
                                 <tr t-foreach="order.return_ids" t-as="ret">
-                                    <td t-att-data-label="lb_return" t-esc="ret.name"/>
+                                    <td t-att-data-label="lb_return"><a t-if="lm_center" t-att-href="'/my/marketplace/returns/%s' % ret.id" t-esc="ret.name"/><t t-else="" t-esc="ret.name"/></td>
                                     <td t-att-data-label="lb_products"><div t-foreach="ret.line_ids" t-as="rl" class="small"><t t-esc="'%g' % rl.quantity"/> × <t t-esc="rl.product_id.display_name"/></div></td>
                                     <td t-att-data-label="lb_refund" class="text-end text-nowrap" t-out="ret.refund_amount" t-options="{'widget': 'monetary', 'display_currency': ret.currency_id}"/>
                                     <td t-att-data-label="lb_status">
@@ -641,6 +704,7 @@
                                             <div t-if="ret.decision_note and ret.state == 'closed'" class="small text-muted" t-esc="ret.decision_note"/>
                                             <div t-if="ret.state == 'refunded'" class="small text-muted"><i class="fa fa-money" aria-hidden="true"/> The refund was issued.</div>
                                             <div t-elif="ret.state in ('approved', 'received')" class="small text-muted"><i class="fa fa-clock-o" aria-hidden="true"/> Your refund is being processed.</div>
+                                            <div t-elif="ret.state == 'exchanged'" class="small text-muted"><i class="fa fa-truck" aria-hidden="true"/> Your replacement was sent.</div>
                                         </div>
                                     </td>
                                     <td class="text-end">
@@ -659,7 +723,7 @@
 
                 <div t-if="returnable_lines" class="lm-card mt-4" id="lm_return_card">
                     <h2 class="lm-section-title">Return products</h2>
-                    <form method="post" class="lm-validate" t-att-action="'/my/marketplace/orders/%s/return' % order.id">
+                    <form method="post" class="lm-validate" t-att-action="'/my/marketplace/orders/%s/return' % order.id" t-att-enctype="'multipart/form-data' if lm_center else None">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <t t-set="lb_product">Product</t>
                         <t t-set="lb_can_return">Can return</t>
@@ -676,13 +740,137 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="lm-form-field mt-3">
+                        <t t-if="lm_center">
+                            <div class="lm-form-field mt-3">
+                                <label class="form-label" for="lm_return_reason_id">Why are you returning these products?</label>
+                                <select name="reason_id" id="lm_return_reason_id" class="form-select" required="required">
+                                    <option value="">Choose a reason...</option>
+                                    <option t-foreach="lm_reasons" t-as="rsn" t-att-value="rsn.id" t-att-data-photo="'1' if rsn.requires_photo else None" t-att-data-fee="'1' if rsn.customer_pays_shipping else None">
+                                        <t t-esc="rsn.name"/><t t-if="rsn.requires_photo"> (photo required)</t><t t-if="rsn.customer_pays_shipping and lm_shipping_fee"> (return shipping fee applies)</t>
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback">Please choose why you are returning the products.</div>
+                            </div>
+                            <div class="mt-3">
+                                <label class="form-label" for="lm_return_reason">Details (optional)</label>
+                                <textarea name="reason" id="lm_return_reason" class="form-control" rows="3"/>
+                            </div>
+                            <div class="mt-3">
+                                <label class="form-label" for="lm_return_photos">Photos (up to <t t-esc="lm_max_photos"/>)</label>
+                                <input type="file" name="photos" id="lm_return_photos" class="form-control" accept="image/*" multiple="multiple"/>
+                                <div class="form-text">Photos are required for some reasons (damaged, wrong item).</div>
+                            </div>
+                            <fieldset class="mt-3" id="lm_return_resolution">
+                                <legend class="form-label fs-6">What would you like?</legend>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="resolution" id="lm_res_refund" value="refund" checked="checked"/>
+                                    <label class="form-check-label" for="lm_res_refund">Refund</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="resolution" id="lm_res_exchange" value="exchange"/>
+                                    <label class="form-check-label" for="lm_res_exchange">Exchange for the same product (no charge, subject to the seller's stock)</label>
+                                </div>
+                            </fieldset>
+                            <div t-if="lm_has_fbl" class="mt-3" id="lm_return_pickup">
+                                <label class="form-label" for="lm_return_pickup_date">Pickup date (optional)</label>
+                                <input type="date" name="pickup_date" id="lm_return_pickup_date" class="form-control" t-att-min="lm_pickup_min" t-att-max="lm_pickup_max"/>
+                                <div class="form-text">The marketplace warehouse collects the goods on this day.</div>
+                            </div>
+                        </t>
+                        <div t-else="" class="lm-form-field mt-3">
                             <label class="form-label" for="lm_return_reason">Why are you returning these products?</label>
                             <textarea name="reason" id="lm_return_reason" class="form-control" rows="3" required="required"/>
                             <div class="invalid-feedback">Please tell us why you are returning the products.</div>
                         </div>
                         <button class="btn btn-primary" data-lm-loading="1"><i class="fa fa-undo" aria-hidden="true"/> Request Return</button>
                     </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- D2: customer return detail (only reachable while the Returns & Disputes Center switch is on) -->
+    <template id="portal_customer_marketplace_return_detail" name="Customer Return Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'lm_returns'"/>
+            <div class="container my-4 lm-portal" id="lm_customer_return">
+                <div class="lm-page-header">
+                    <div>
+                        <div class="lm-page-heading">
+                            <h1 class="lm-page-title" t-esc="ret.name"/>
+                            <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="ret"/></t>
+                        </div>
+                        <p class="lm-page-subtitle">Order <a t-att-href="'/my/marketplace/orders/%s' % ret.vendor_order_id.id" t-esc="ret.vendor_order_id.name"/></p>
+                    </div>
+                    <div class="lm-page-actions">
+                        <a href="/my/marketplace/returns" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Returns &amp; disputes</a>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div class="alert alert-info" role="status" id="lm_return_next_step">
+                    <strong>Next step:</strong> <t t-esc="ret._leaders_next_step()"/>
+                    <t t-if="ret._leaders_deadline()"> (<t t-esc="ret._leaders_deadline()" t-options="{'widget': 'date'}"/>)</t>
+                </div>
+                <ol class="lm-timeline mb-4" aria-label="Return progress" id="lm_return_timeline">
+                    <li t-foreach="ret._leaders_timeline_steps()" t-as="st" t-attf-class="lm-timeline-step is-#{st['status']}">
+                        <span class="lm-timeline-dot"><i t-attf-class="fa #{'fa-check' if st['status'] == 'done' else 'fa-circle-o'}" aria-hidden="true"/></span>
+                        <span class="lm-timeline-label" t-out="st['label']"/>
+                        <span t-if="st['date']" class="lm-timeline-date" t-out="st['date']" t-options="{'widget': 'date'}"/>
+                    </li>
+                </ol>
+                <div class="row g-4">
+                    <div class="col-12 col-lg-7">
+                        <div class="lm-card">
+                            <h2 class="lm-section-title">Returned products</h2>
+                            <t t-set="lb_product">Product</t>
+                            <t t-set="lb_qty">Qty</t>
+                            <t t-set="lb_refund">Value</t>
+                            <div class="lm-table-responsive">
+                                <table class="table align-middle lm-table">
+                                    <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Value</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="ret.line_ids" t-as="rl">
+                                            <td class="lm-cell-title" t-esc="rl.product_id.display_name"/>
+                                            <td t-att-data-label="lb_qty" class="text-end" t-esc="'%g' % rl.quantity"/>
+                                            <td t-att-data-label="lb_refund" class="text-end text-nowrap" t-out="rl.refund_amount" t-options="{'widget': 'monetary', 'display_currency': ret.currency_id}"/>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div t-if="ret.photo_ids" class="lm-card mt-3" id="lm_return_photos_card">
+                            <h2 class="lm-section-title">Photos</h2>
+                            <div class="lm-thumbs">
+                                <a t-foreach="ret.photo_ids" t-as="ph" class="lm-thumb" t-att-href="'/my/marketplace/returns/%s/photo/%s' % (ret.id, ph.id)" target="_blank" rel="noopener">
+                                    <img t-att-src="'/my/marketplace/returns/%s/photo/%s' % (ret.id, ph.id)" alt="Return photo" loading="lazy"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5">
+                        <div class="lm-card">
+                            <h2 class="lm-section-title">Details</h2>
+                            <dl class="lm-kv">
+                                <div><dt>Requested</dt><dd t-esc="ret.request_date" t-options="{'widget': 'date'}"/></div>
+                                <div t-if="ret.reason_id"><dt>Reason</dt><dd t-esc="ret.reason_id.name"/></div>
+                                <div><dt>Your message</dt><dd class="lm-note" t-esc="ret.reason"/></div>
+                                <div><dt>Resolution</dt><dd t-esc="dict(ret._fields['resolution']._description_selection(ret.env)).get(ret.resolution)"/></div>
+                                <div t-if="ret.pickup_date"><dt>Pickup date</dt><dd t-esc="ret.pickup_date" t-options="{'widget': 'date'}"/></div>
+                                <div t-if="ret.resolution == 'refund'"><dt>Refund</dt><dd t-out="ret.net_refund_amount" t-options="{'widget': 'monetary', 'display_currency': ret.currency_id}"/></div>
+                                <div t-if="ret.shipping_fee_deducted"><dt>Return shipping fee</dt><dd t-out="ret.shipping_fee_deducted" t-options="{'widget': 'monetary', 'display_currency': ret.currency_id}"/></div>
+                                <div t-if="ret.vendor_note"><dt>Seller's answer</dt><dd class="lm-note" t-esc="ret.vendor_note"/></div>
+                                <div t-if="ret.decision_note"><dt>Marketplace decision</dt><dd class="lm-note" t-esc="ret.decision_note"/></div>
+                                <div t-foreach="ret.replacement_group_ids" t-as="rg"><dt>Replacement shipment</dt><dd><t t-esc="rg.name"/> <t t-if="rg.tracking_ref">(<t t-esc="rg.tracking_ref"/>)</t></dd></div>
+                            </dl>
+                            <a t-if="ret.credit_note_id and ret.credit_note_id.state == 'posted'" t-att-href="'/my/marketplace/vendor-invoices/%s' % ret.credit_note_id.id" target="_blank" class="small"><i class="fa fa-file-pdf-o" aria-hidden="true"/> Credit Note</a>
+                            <form t-if="lm_can_escalate" method="post" t-att-action="'/my/marketplace/returns/%s/escalate' % ret.id" data-lm-confirm-ref="#lm_confirm_escalate_detail" class="mt-3">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="back" value="detail"/>
+                                <button class="btn btn-outline-warning" data-lm-loading="1"><i class="fa fa-gavel" aria-hidden="true"/> Ask the marketplace to review</button>
+                            </form>
+                            <span id="lm_confirm_escalate_detail" class="d-none">Ask the marketplace to review this request now?</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </t>

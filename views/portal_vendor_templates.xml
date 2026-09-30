@@ -924,6 +924,17 @@
                             <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-comment" aria-hidden="true"/> Details</h2></div>
                             <div class="lm-panel-body">
                                 <div class="mb-3"><strong>Customer reason:</strong><p class="lm-note" t-esc="record.reason"/></div>
+                                <div t-if="record.reason_id" class="mb-3"><strong>Reason code:</strong> <t t-esc="record.reason_id.name"/></div>
+                                <div class="mb-3" t-if="record.resolution == 'exchange'"><strong>Customer asks for:</strong> Exchange for the same product</div>
+                                <div class="mb-3" t-if="record.pickup_date"><strong>Pickup date:</strong> <t t-esc="record.pickup_date" t-options="{'widget': 'date'}"/></div>
+                                <div t-if="record.photo_ids" class="mb-3" id="lm_vendor_return_photos">
+                                    <strong>Photos:</strong>
+                                    <div class="lm-thumbs">
+                                        <a t-foreach="record.photo_ids" t-as="ph" class="lm-thumb" t-att-href="'/my/vendor/returns/%s/photo/%s' % (record.id, ph.id)" target="_blank" rel="noopener">
+                                            <img t-att-src="'/my/vendor/returns/%s/photo/%s' % (record.id, ph.id)" alt="Return photo" loading="lazy"/>
+                                        </a>
+                                    </div>
+                                </div>
                                 <div t-if="record.vendor_note" class="mb-3"><strong>Your response:</strong><p class="lm-note" t-esc="record.vendor_note"/></div>
                                 <div t-if="record.decision_note" class="mb-3"><strong>Marketplace decision:</strong><p class="lm-note" t-esc="record.decision_note"/></div>
                                 <div t-foreach="record.picking_ids" t-as="p" class="small text-muted">

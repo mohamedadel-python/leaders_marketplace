@@ -374,15 +374,26 @@ class MarketplaceAccounting(models.AbstractModel):
                         "name": _("Escrow refund %s", vendor_return.name),
                         "debit": amount, "credit": 0.0}),
             ]
+        # D2: a return shipping fee the customer pays is kept by the marketplace. The
+        # vendor still bears the goods value (debit side unchanged); the customer's
+        # receivable is credited by the refund MINUS the fee, and the fee is booked as
+        # fee income (commission income account when no fee account is set).
+        fee = vendor_return.shipping_fee_deducted
+        credit_lines = [
+            (0, 0, {"account_id": receivable.id, "partner_id": customer.id,
+                    "name": _("Refund due for return %s", vendor_return.name),
+                    "debit": 0.0, "credit": amount - fee}),
+        ]
+        if fee:
+            credit_lines.append((0, 0, {
+                "account_id": a["fee_income"] or a["commission_income"],
+                "name": _("Return shipping fee %s", vendor_return.name),
+                "debit": 0.0, "credit": fee}))
         move = self.env["account.move"].sudo().create({
             "move_type": "entry",
             "journal_id": a["journal"],
             "ref": _("Marketplace return %(ret)s (%(order)s)", ret=vendor_return.name, order=order.name),
-            "line_ids": debit_lines + [
-                (0, 0, {"account_id": receivable.id, "partner_id": customer.id,
-                        "name": _("Refund due for return %s", vendor_return.name),
-                        "debit": 0.0, "credit": amount}),
-            ],
+            "line_ids": debit_lines + credit_lines,
         })
         move.action_post()
         refund_line = move.line_ids.filtered(lambda l: l.account_id == receivable)
