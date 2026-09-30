@@ -197,6 +197,12 @@ msgstr "%s استلم الطرد: تم الشحن."
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/shipping_provider.py:0
+msgid "%s reported delivery before pickup: shipped first."
+msgstr "أبلغ %s عن التسليم قبل الاستلام من المخزن: تم الشحن أولًا."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/shipping_provider.py:0
 msgid "%s reported the parcel as delivered."
 msgstr "%s أفاد بأن الطرد تم تسليمه."
 
@@ -670,6 +676,20 @@ msgstr ""
 "            "
 
 #. module: leaders_marketplace
+#: model:mail.template,body_html:leaders_marketplace.mail_template_customer_order_cancelled_by_customer_company
+msgid ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>We cancelled order <strong t-out=\"object.name\"/> as you asked.</p><p t-if=\"object.leaders_cancel_reason_id\">Reason: <t t-out=\"object.leaders_cancel_reason_id.name\"/><t t-if=\"object.leaders_cancel_note\">: <t t-out=\"object.leaders_cancel_note\"/></t></p>\n"
+"<p t-if=\"object.leaders_payment_method != 'cod'\">If you already paid online, a refund of <t t-out=\"object.amount_total\" t-options=\"{'widget': 'monetary', 'display_currency': object.currency_id}\"/> is being processed.</p><p t-else=\"\">You had chosen Cash on Delivery, so nothing was charged.</p><p><a t-attf-href=\"{{ object.get_base_url() }}/my/marketplace/checkouts/{{ object.id }}\">See your order</a></p>\n"
+"</div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"<p>قمنا بإلغاء الطلب <strong t-out=\"object.name\"/> بناءً على طلبك.</p><p t-if=\"object.leaders_cancel_reason_id\">السبب: <t t-out=\"object.leaders_cancel_reason_id.name\"/><t t-if=\"object.leaders_cancel_note\">: <t t-out=\"object.leaders_cancel_note\"/></t></p>\n"
+"<p t-if=\"object.leaders_payment_method != 'cod'\">إذا كنت قد دفعت أونلاين، فإن استرداد مبلغ <t t-out=\"object.amount_total\" t-options=\"{'widget': 'monetary', 'display_currency': object.currency_id}\"/> قيد المعالجة.</p><p t-else=\"\">لقد اخترت الدفع عند الاستلام، لذلك لم يتم تحصيل أي مبلغ.</p><p><a t-attf-href=\"{{ object.get_base_url() }}/my/marketplace/checkouts/{{ object.id }}\">عرض طلبك</a></p>\n"
+"</div>"
+
+#. module: leaders_marketplace
 #: model:mail.template,body_html:leaders_marketplace.mail_template_vendor_order_confirmed
 msgid ""
 "<div style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
@@ -982,6 +1002,7 @@ msgid "<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/> Late"
 msgstr "<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/> متأخر"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid ""
 "<i class=\"fa fa-clock-o\" aria-hidden=\"true\"/> Your refund is being "
@@ -1129,6 +1150,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
 msgid "<i class=\"fa fa-key\" aria-hidden=\"true\"/> Create a key"
 msgstr "<i class=\"fa fa-key\" aria-hidden=\"true\"/> إنشاء مفتاح"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
+msgid "<i class=\"fa fa-life-ring\" aria-hidden=\"true\"/> Contact support"
+msgstr "<i class=\"fa fa-life-ring\" aria-hidden=\"true\"/> التواصل مع الدعم"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_performance
@@ -1344,6 +1370,7 @@ msgid "<i class=\"fa fa-times\" aria-hidden=\"true\"/> Cancel Order"
 msgstr "<i class=\"fa fa-times\" aria-hidden=\"true\"/> إلغاء الطلب"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "<i class=\"fa fa-times\" aria-hidden=\"true\"/> Cancel order"
 msgstr "<i class=\"fa fa-times\" aria-hidden=\"true\"/> إلغاء الطلب"
@@ -1369,6 +1396,7 @@ msgid "<i class=\"fa fa-times-circle\" aria-hidden=\"true\"/> Cancel Order"
 msgstr "<i class=\"fa fa-times-circle\" aria-hidden=\"true\"/> إلغاء الطلب"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid ""
 "<i class=\"fa fa-truck\" aria-hidden=\"true\"/> Part of this order has "
@@ -1450,6 +1478,7 @@ msgid "<option value=\"\">Choose a reason...</option>"
 msgstr "<option value=\"\">اختر سببًا...</option>"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "<option value=\"\">Choose a reason</option>"
 msgstr "<option value=\"\">اختر سببًا</option>"
@@ -1788,6 +1817,15 @@ msgid ""
 msgstr ""
 "<span id=\"lm_confirm_cancel_part\" class=\"d-none\">هل تريد إلغاء جزء هذا "
 "البائع من الطلب؟ لا يمكن التراجع عن هذا الإجراء.</span>"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
+msgid ""
+"<span id=\"lm_confirm_checkout_cancel\" class=\"d-none\">Cancel the whole "
+"order? This cannot be undone.</span>"
+msgstr ""
+"<span id=\"lm_confirm_checkout_cancel\" class=\"d-none\">إلغاء الطلب "
+"بالكامل؟ لا يمكن التراجع عن ذلك.</span>"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
@@ -2172,6 +2210,12 @@ msgstr "لا يمكن أن يكون سعر توصيل المنصة تابعًا 
 #: code:addons/leaders_marketplace/models/vendor_variants.py:0
 msgid "A product can have at most %s extra images."
 msgstr "يمكن أن يحتوي المنتج على %s صور إضافية كحد أقصى."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "A quantity to cancel cannot be negative."
+msgstr "لا يمكن أن تكون الكمية المراد إلغاؤها سالبة."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -3662,6 +3706,17 @@ msgid "Cancelled Marketplace Order"
 msgstr "طلب السوق الملغى"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__qty_cancelled
+#: model:ir.model.fields.selection,name:leaders_marketplace.selection__leaders_wallet_transaction__type__cancelled_qty
+msgid "Cancelled Quantity"
+msgstr "الكمية الملغاة"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_account_payment__leaders_cancel_refund_move_id
+msgid "Cancelled Quantity Refund Entry"
+msgstr "قيد استرداد الكمية الملغاة"
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_search
 msgid "Cancelled by the customer"
 msgstr "ألغاه العميل"
@@ -3671,6 +3726,34 @@ msgstr "ألغاه العميل"
 #: code:addons/leaders_marketplace/models/customer_cancel.py:0
 msgid "Cancelled order %s"
 msgstr "طلب ملغى %s"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid ""
+"Cancelled quantity (%(detail)s) by %(by)s: %(amount)s taken off the "
+"order%(reason)s."
+msgstr ""
+"تم إلغاء كمية (%(detail)s) بواسطة %(by)s: تم خصم %(amount)s من "
+"الطلب%(reason)s."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Cancelled quantity charged to vendor %s"
+msgstr "الكمية الملغاة محمّلة على البائع %s"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Cancelled quantity of %s"
+msgstr "الكمية الملغاة من %s"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Cancelled quantity: %s"
+msgstr "الكمية الملغاة: %s"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -3716,6 +3799,35 @@ msgid ""
 msgstr ""
 "بيانات اعتماد شركة الشحن (نص JSON). يمكن لمديري السوق فقط قراءتها؛ ولا تُعرض"
 " أبدًا لمستخدمي البوابة أو API."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_shipping_webhook_provider_rate_limit
+msgid ""
+"Carrier webhook calls a provider may receive per minute from all IPs (429 "
+"with Retry-After beyond). 0 = no limit."
+msgstr ""
+"عدد استدعاءات webhook الخاصة بشركة الشحن التي يمكن لمزوّد استقبالها في "
+"الدقيقة من كل العناوين (يرجع 429 مع Retry-After عند التجاوز). 0 = بلا حد."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_shipping_webhook_rate_limit
+msgid ""
+"Carrier webhook calls one source IP may make per minute for one provider "
+"(429 with Retry-After beyond). 0 = no limit."
+msgstr ""
+"عدد استدعاءات webhook الخاصة بشركة الشحن التي يمكن لعنوان IP واحد إجراؤها في"
+" الدقيقة لمزوّد واحد (يرجع 429 مع Retry-After عند التجاوز). 0 = بلا حد."
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Carrier webhook calls per minute: per provider and source IP, and per "
+"provider overall. 0 = no limit. Behind a reverse proxy enable proxy_mode so "
+"the real source address is used."
+msgstr ""
+"عدد استدعاءات webhook الخاصة بشركة الشحن في الدقيقة: لكل مزوّد وعنوان IP، "
+"ولكل مزوّد بشكل إجمالي. 0 = بلا حد. خلف reverse proxy فعّل proxy_mode "
+"ليُستخدم عنوان المصدر الحقيقي."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_disputes
@@ -4228,6 +4340,12 @@ msgid "Commission given back"
 msgstr "العمولة المستردة"
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Commission given back %s"
+msgstr "العمولة المُعادة %s"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_commission_rule__commission_amount
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_commission_rule__on_target_commission
 msgid "Commission paid when the target reaches 100%."
@@ -4396,6 +4514,7 @@ msgid "Copy your new key now. It is shown only once and cannot be recovered."
 msgstr "انسخ مفتاحك الجديد الآن. يظهر مرة واحدة فقط ولا يمكن استرجاعه."
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_webhook_rate__count
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__count
 msgid "Count"
 msgstr "العدد"
@@ -4487,6 +4606,7 @@ msgstr "يتم الإنشاء تلقائيًا عند تقديم طلب الان
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__create_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_webhook_rate__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__create_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__create_uid
@@ -4540,6 +4660,7 @@ msgstr "أنشأه"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__create_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_webhook_rate__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__create_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__create_date
@@ -4733,6 +4854,16 @@ msgid ""
 msgstr ""
 "تم تجهيز دفعة استرداد للعميل بمبلغ %(amount)s للطلب الملغى؛ قم بترحيلها بعد "
 "إرسال المبلغ."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid ""
+"Customer refund payment of %(amount)s prepared for the cancelled quantity; "
+"post it once the money is sent."
+msgstr ""
+"تم تجهيز دفعة استرداد للعميل بقيمة %(amount)s للكمية الملغاة؛ قم بترحيلها "
+"بعد إرسال المبلغ."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
@@ -5115,6 +5246,12 @@ msgstr "مناطق التوصيل (المنصة والبائعون)"
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/stock.py:0
+msgid "Delivery cancelled in the warehouse"
+msgstr "تم إلغاء التسليم في المخزن"
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Delivery collected on %s"
 msgstr "تم تحصيل التسليم في %s"
@@ -5331,6 +5468,7 @@ msgstr "خصومات قيد المراجعة"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__display_name
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_webhook_rate__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__display_name
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__display_name
@@ -5804,6 +5942,12 @@ msgstr ""
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Escrow accounts not configured; skipped refund journal entry."
 msgstr "لم يتم إعداد حسابات الأمانة؛ تم تخطي قيد يومية الاسترداد."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Escrow accounts not configured; skipped the cancelled quantity entry."
+msgstr "حسابات الأمانة غير مهيأة؛ تم تخطي قيد الكمية الملغاة."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -6763,6 +6907,7 @@ msgstr "استلمت المنتج الخطأ"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__id
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_webhook_rate__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__id
@@ -6889,6 +7034,14 @@ msgstr "الصورة"
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/vendor_import.py:0
+msgid ""
+"Image download from URLs is disabled by the administrator; the image was "
+"ignored."
+msgstr "تنزيل الصور من الروابط معطّل من المسؤول؛ تم تجاهل الصورة."
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/portal_nav.py:0
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__import_id
 msgid "Import"
@@ -6911,6 +7064,12 @@ msgstr "انتهى الاستيراد: تم تطبيق %(applied)s، وفشل %(
 #: code:addons/leaders_marketplace/models/portal_nav.py:0
 msgid "Import job"
 msgstr "مهمة الاستيراد"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_vendor_import_allow_image_urls
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Import: Download Images from URLs"
+msgstr "الاستيراد: تنزيل الصور من الروابط"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import_job
@@ -6991,6 +7150,12 @@ msgstr "الصفوف غير الصالحة"
 #: code:addons/leaders_marketplace/models/vendor_statement.py:0
 msgid "Invalid date: %s. Use the format YYYY-MM-DD."
 msgstr "تاريخ غير صالح: %s. استخدم الصيغة YYYY-MM-DD."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Invalid quantity to cancel."
+msgstr "كمية الإلغاء غير صالحة."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -7176,6 +7341,11 @@ msgstr ""
 "عدد الطلبات في الدقيقة محدود لكل مفتاح (429 مع Retry-After)."
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_order_line__qty_kept
+msgid "Kept Quantity"
+msgstr "الكمية المتبقية"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__key_id
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__key_id
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_api
@@ -7251,6 +7421,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__write_uid
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_webhook_rate__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__write_uid
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__write_uid
@@ -7304,6 +7475,7 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_ship_wizard_line__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__write_date
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_webhook_rate__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_idempotency__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__write_date
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__write_date
@@ -7589,6 +7761,12 @@ msgstr "تاريخ الرفع"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__line_ids
 msgid "Line"
 msgstr "بند"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Line %s does not belong to vendor order %s."
+msgstr "البند %s لا يخص طلب البائع %s."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.view_vendor_order_form
@@ -7938,6 +8116,12 @@ msgstr ""
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Marketplace cancelled quantity (%s)"
+msgstr "إلغاء كمية في السوق (%s)"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Marketplace collection %(order)s (%(vendor)s)"
 msgstr "تحصيل السوق %(order)s (%(vendor)s)"
 
@@ -8088,6 +8272,11 @@ msgstr "السوق: التأكيد التلقائي لتسليمات FBM الم�
 #: model:mail.template,name:leaders_marketplace.mail_template_customer_order_cancelled_by_customer
 msgid "Marketplace: Cancellation confirmed (customer)"
 msgstr "السوق: تأكيد الإلغاء (العميل)"
+
+#. module: leaders_marketplace
+#: model:mail.template,name:leaders_marketplace.mail_template_customer_order_cancelled_by_customer_company
+msgid "Marketplace: Cancellation confirmed (customer, company-only order)"
+msgstr "السوق: تأكيد الإلغاء (العميل، طلب للشركة فقط)"
 
 #. module: leaders_marketplace
 #: model:ir.actions.server,name:leaders_marketplace.cron_compute_vendor_kpis_ir_actions_server
@@ -8466,6 +8655,7 @@ msgid "Minimum Delivery Days"
 msgstr "أدنى عدد لأيام التوصيل"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_shipping_webhook_rate__window_start
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_api_rate__window_start
 msgid "Minute number since the epoch."
 msgstr "رقم الدقيقة منذ بداية العصر (epoch)."
@@ -9029,6 +9219,14 @@ msgstr ""
 "لا يوجد قيد تحصيل أمانة على طلب البائع؛ تم تخطي قيد اليومية للاسترداد."
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid ""
+"No escrow collection entry on the vendor order; skipped the cancelled "
+"quantity entry."
+msgstr "لا يوجد قيد تحصيل أمانة على طلب البائع؛ تم تخطي قيد الكمية الملغاة."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_import
 msgid "No import yet."
 msgstr "لا يوجد استيراد بعد."
@@ -9238,6 +9436,7 @@ msgid "Note"
 msgstr "ملاحظة"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
 msgid "Note (optional)"
@@ -9258,6 +9457,13 @@ msgstr "لا يوجد شيء في انتظار المراجعة."
 #: code:addons/leaders_marketplace/models/vendor_import.py:0
 msgid "Nothing to update: fill price, stock or a discount."
 msgstr "لا يوجد ما يمكن تحديثه: املأ السعر أو المخزون أو الخصم."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid ""
+"Nothing would be left of vendor order %s: cancel the whole order instead."
+msgstr "لن يتبقى شيء من طلب البائع %s: قم بإلغاء الطلب بالكامل بدلًا من ذلك."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -9352,6 +9558,27 @@ msgstr "OTC %"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__occurred_at
 msgid "Occurred At"
 msgstr "وقت الحدوث"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid ""
+"Off (default): image_url cells are ignored with a warning. On: the server "
+"downloads public http/https images (ports 80/443, no redirects, size limit)."
+msgstr ""
+"معطّل (الافتراضي): يتم تجاهل خلايا image_url مع تحذير. مفعّل: يقوم الخادم "
+"بتنزيل صور http/https العامة (المنفذان 80/443، بدون إعادة توجيه، مع حد "
+"للحجم)."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_res_config_settings__marketplace_vendor_import_allow_image_urls
+msgid ""
+"Off (default): image_url cells of bulk imports are ignored with a row "
+"warning. On: the server downloads them, only from public http/https "
+"addresses on ports 80/443, without following redirects."
+msgstr ""
+"معطّل (الافتراضي): يتم تجاهل خلايا image_url في الاستيراد الجماعي مع تحذير "
+"للصف. مفعّل: يقوم الخادم بتنزيلها فقط من عناوين http/https العامة على "
+"المنفذين 80/443 ودون اتباع إعادة التوجيه."
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
@@ -9698,6 +9925,11 @@ msgid "One counter per key and minute."
 msgstr "عداد واحد لكل مفتاح ودقيقة."
 
 #. module: leaders_marketplace
+#: model:ir.model.constraint,message:leaders_marketplace.constraint_leaders_shipping_webhook_rate_scope_window_unique
+msgid "One counter per scope and minute."
+msgstr "عدّاد واحد لكل نطاق ولكل دقيقة."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_product_form
 msgid ""
 "One per line as \"Name: value\". They appear as a table on the product page."
@@ -9713,6 +9945,13 @@ msgstr "متصل"
 #: model:ir.model.fields.selection,name:leaders_marketplace.selection__sale_order__leaders_payment_method__online
 msgid "Online Payment"
 msgstr "الدفع الإلكتروني"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Only %(remaining)s of %(product)s is left to cancel (asked %(asked)s)."
+msgstr ""
+"المتبقي من %(product)s للإلغاء هو %(remaining)s فقط (المطلوب %(asked)s)."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -10221,6 +10460,11 @@ msgid "Ordered"
 msgstr "تم الطلب"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order_line__qty_kept
+msgid "Ordered quantity minus the cancelled quantity: what the customer buys."
+msgstr "الكمية المطلوبة ناقص الكمية الملغاة: ما يشتريه العميل."
+
+#. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/portal_nav.py:0
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_orders
@@ -10317,6 +10561,16 @@ msgid "Paid"
 msgstr "مدفوع"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_order_line__qty_cancelled
+msgid ""
+"Part of the ordered quantity that will never ship (the cancelled remainder "
+"of a partial shipment). Amounts, invoices and commission use the kept "
+"quantity."
+msgstr ""
+"جزء من الكمية المطلوبة لن يُشحن أبدًا (المتبقي الملغى من شحنة جزئية). تعتمد "
+"المبالغ والفواتير والعمولة على الكمية المتبقية."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 msgid "Part of this order was cancelled; the steps above show the rest of it."
 msgstr "تم إلغاء جزء من هذا الطلب؛ توضح الخطوات أعلاه بقيته."
@@ -10369,6 +10623,7 @@ msgid "Pay it to the vendor"
 msgstr "ادفعه للبائع"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_event__payload
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_import_line__payload
 msgid "Payload"
 msgstr "المحتوى (Payload)"
@@ -10825,6 +11080,7 @@ msgid "Please choose a reason for cancelling."
 msgstr "يرجى اختيار سبب الإلغاء."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "Please choose a reason."
 msgstr "يرجى اختيار سبب."
@@ -11506,6 +11762,12 @@ msgid "Raw Status"
 msgstr "الحالة الخام"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_shipping_event__payload
+msgid "Raw webhook body (capped), kept so support can replay the event."
+msgstr ""
+"محتوى webhook الخام (بحد أقصى) محفوظ ليتمكن الدعم من إعادة تشغيل الحدث."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_staff
 msgid "Reactivate"
 msgstr "إعادة تفعيل"
@@ -11548,6 +11810,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_dispute__reason
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_penalty__reason
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_return__reason
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_return_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_disputes
@@ -11707,6 +11970,12 @@ msgstr "تم إلغاء الاسترداد %s"
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/accounting.py:0
+msgid "Refund cancelled quantity %s"
+msgstr "استرداد الكمية الملغاة %s"
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/returns.py:0
 msgid "Refund completed: %(amount)s, after a shipping fee of %(fee)s."
 msgstr "اكتمل الاسترداد: %(amount)s، بعد خصم رسوم شحن قدرها %(fee)s."
@@ -11722,6 +11991,13 @@ msgstr "اكتمل الاسترداد: %s."
 #: code:addons/leaders_marketplace/models/accounting.py:0
 msgid "Refund due for return %s"
 msgstr "استرداد مستحق للمرتجع %s"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_account_payment__leaders_cancel_refund_move_id
+msgid ""
+"Refund entry of a cancelled remainder (part of a vendor order) this payment "
+"pays out."
+msgstr "قيد استرداد الكمية الملغاة (جزء من طلب بائع) الذي تصرفه هذه الدفعة."
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,help:leaders_marketplace.field_leaders_vendor_return__vendor_deduction
@@ -12573,6 +12849,7 @@ msgstr "مجدول"
 
 #. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_commission_rule__scope
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_webhook_rate__scope
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_key__scope
 msgid "Scope"
 msgstr "النطاق"
@@ -13068,6 +13345,16 @@ msgstr "وزن سرعة الشحن"
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_fulfillment_group__shipping_status
 msgid "Shipping Status"
 msgstr "حالة الشحن"
+
+#. module: leaders_marketplace
+#: model:ir.model,name:leaders_marketplace.model_leaders_shipping_webhook_rate
+msgid "Shipping Webhook Rate Counter"
+msgstr "عدّاد حد استدعاءات webhook الشحن"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.res_config_settings_view_form_marketplace
+msgid "Shipping Webhook Rate Limits"
+msgstr "حدود استدعاءات webhook الشحن"
 
 #. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_order_detail
@@ -13769,6 +14056,14 @@ msgid "The barcode and the internal reference point to different products."
 msgstr "الباركود والمرجع الداخلي يشيران إلى منتجين مختلفين."
 
 #. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid ""
+"The cash collection of %s is already booked; use a return for the cancelled "
+"part."
+msgstr "تم تسجيل تحصيل النقد لـ %s بالفعل؛ استخدم المرتجع للجزء الملغى."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.checkout_cash_on_delivery
 msgid "The code is not correct."
 msgstr "الرمز غير صحيح."
@@ -13972,8 +14267,8 @@ msgstr "عنوان الصورة يشير إلى شبكة خاصة أو محلي�
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/vendor_import.py:0
-msgid "The image address redirects too many times."
-msgstr "عنوان الصورة يعيد التوجيه مرات كثيرة جدًا."
+msgid "The image address redirects (HTTP %s); redirects are not followed."
+msgstr "عنوان الصورة يعيد التوجيه (HTTP %s)؛ لا يتم اتباع إعادة التوجيه."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -13992,12 +14287,6 @@ msgstr "انتهت مهلة تنزيل الصورة بعد %s ثانية."
 #: code:addons/leaders_marketplace/models/vendor_import.py:0
 msgid "The image host %s cannot be resolved."
 msgstr "تعذر التعرف على مضيف الصورة %s."
-
-#. module: leaders_marketplace
-#. odoo-python
-#: code:addons/leaders_marketplace/models/vendor_import.py:0
-msgid "The image host %s has an invalid address."
-msgstr "مضيف الصورة %s له عنوان غير صالح."
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -14280,6 +14569,7 @@ msgid "The time to cancel this order has passed (%s hours after ordering)."
 msgstr "انقضى وقت إلغاء هذا الطلب (%s ساعة بعد الطلب)."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "The time to cancel this order has passed."
 msgstr "انقضى وقت إلغاء هذا الطلب."
@@ -14659,6 +14949,11 @@ msgstr "للشحن"
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_orders
 msgid "To process"
 msgstr "للمعالجة"
+
+#. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
+msgid "To return items from us, contact support and quote order"
+msgstr "لإرجاع منتجات من عندنا، تواصل مع الدعم واذكر الطلب"
 
 #. module: leaders_marketplace
 #. odoo-python
@@ -15699,6 +15994,12 @@ msgstr "طلب البائع %s لا يحتوي على بنود."
 #. module: leaders_marketplace
 #. odoo-python
 #: code:addons/leaders_marketplace/models/sale.py:0
+msgid "Vendor order %s has no shipment to cancel the remaining part of."
+msgstr "طلب البائع %s ليس فيه شحنة لإلغاء الجزء المتبقي منها."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
 msgid "Vendor order %s is already cancelled."
 msgstr "طلب البائع %s ملغى بالفعل."
 
@@ -16116,6 +16417,16 @@ msgid ""
 msgstr "فتحنا حالة لدى السوق بشأن شحنتك المفقودة. سيتم التواصل معك قريبًا."
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_shipping_webhook_provider_rate_limit
+msgid "Webhook Calls per Minute per Provider"
+msgstr "عدد استدعاءات webhook في الدقيقة لكل مزوّد"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_res_config_settings__marketplace_shipping_webhook_rate_limit
+msgid "Webhook Calls per Minute per Provider and IP"
+msgstr "عدد استدعاءات webhook في الدقيقة لكل مزوّد وعنوان IP"
+
+#. module: leaders_marketplace
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_provider__webhook_secret
 msgid "Webhook Secret"
 msgstr "سر Webhook"
@@ -16376,6 +16687,7 @@ msgid "Why are you returning these products?"
 msgstr "لماذا تُرجع هذه المنتجات؟"
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_shipping_webhook_rate__window_start
 #: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_vendor_api_rate__window_start
 msgid "Window Start"
 msgstr "بداية النافذة"
@@ -16485,6 +16797,7 @@ msgstr ""
 " القوائم الجديدة أو المعدلة فهي معلّقة."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "You cancelled this order. Reason:"
 msgstr "لقد ألغيت هذا الطلب. السبب:"
@@ -16619,6 +16932,7 @@ msgstr ""
 "لا يمكنك شحن كمية من %(product)s أكبر من المطلوب (%(qty)s من %(needed)s)."
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "You chose Cash on Delivery, so nothing was charged."
 msgstr "اخترت الدفع عند الاستلام، لذلك لم يتم خصم أي مبلغ."
@@ -16723,6 +17037,7 @@ msgstr "أرصدتك وتسوياتك وخطط العمولة."
 
 #. module: leaders_marketplace
 #: model:mail.template,subject:leaders_marketplace.mail_template_customer_order_cancelled_by_customer
+#: model:mail.template,subject:leaders_marketplace.mail_template_customer_order_cancelled_by_customer_company
 msgid "Your cancellation of order {{ object.name }} is confirmed"
 msgstr "تم تأكيد إلغائك للطلب {{ object.name }}"
 
@@ -16759,6 +17074,7 @@ msgid "Your offer is approved, but the product is still"
 msgstr "تم اعتماد عرضك، لكن المنتج لا يزال"
 
 #. module: leaders_marketplace
+#: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_checkout_detail
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_customer_marketplace_order_detail
 msgid "Your order was cancelled."
 msgstr "تم إلغاء طلبك."
@@ -17034,6 +17350,11 @@ msgid "in a moment."
 msgstr "بعد لحظات."
 
 #. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_shipping_webhook_rate__scope
+msgid "ip:<provider>:<address> or provider:<code>."
+msgstr "ip:<provider>:<address> أو provider:<code>."
+
+#. module: leaders_marketplace
 #: model_terms:ir.ui.view,arch_db:leaders_marketplace.portal_vendor_profile
 msgid "is waiting for review. You can send a new one after it is decided."
 msgstr "قيد المراجعة. يمكنك إرسال طلب جديد بعد البت فيه."
@@ -17188,9 +17509,33 @@ msgstr ""
 
 #. module: leaders_marketplace
 #. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "the customer"
+msgstr "العميل"
+
+#. module: leaders_marketplace
+#. odoo-python
 #: code:addons/leaders_marketplace/models/returns.py:0
 msgid "the deadline"
 msgstr "الموعد النهائي"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "the platform"
+msgstr "المنصة"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "the vendor"
+msgstr "البائع"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/models/sale.py:0
+msgid "the warehouse"
+msgstr "المخزن"
 
 #. module: leaders_marketplace
 #. odoo-python
