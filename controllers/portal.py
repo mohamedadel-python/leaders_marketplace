@@ -1883,6 +1883,29 @@ class MarketplacePortal(CustomerPortal):
             values["lm_filter"] = chip
         return request.render("leaders_marketplace.portal_customer_marketplace_returns", values)
 
+    # D5: notification preferences (customer area; stored on the commercial partner).
+    _NOTIFY_TOGGLES = (
+        ("shipping", "leaders_notify_shipping"), ("returns", "leaders_notify_returns"),
+        ("questions", "leaders_notify_questions"), ("promotions", "leaders_notify_promotions"),
+    )
+
+    @http.route("/my/marketplace/notifications", type="http", auth="user", website=True, methods=["GET"])
+    def customer_notification_preferences(self, **kw):
+        partner = request.env.user.partner_id.commercial_partner_id.sudo()
+        return request.render("leaders_marketplace.portal_customer_notifications", {
+            "lm_prefs": {cat: bool(partner[field]) for cat, field in self._NOTIFY_TOGGLES},
+            "lm_saved": bool(kw.get("saved")),
+        })
+
+    @http.route("/my/marketplace/notifications", type="http", auth="user", website=True,
+                methods=["POST"], csrf=True)
+    def customer_notification_preferences_save(self, **post):
+        partner = request.env.user.partner_id.commercial_partner_id.sudo()
+        # An unchecked checkbox is not posted: absent = off. Only the current user's partner is written.
+        partner.write({field: post.get(cat) in ("1", "on", "true", "True")
+                       for cat, field in self._NOTIFY_TOGGLES})
+        return request.redirect("/my/marketplace/notifications?saved=1")
+
     def _customer_return(self, return_id):
         partner = request.env.user.partner_id.commercial_partner_id
         record = request.env["leaders.vendor.return"].sudo().search([

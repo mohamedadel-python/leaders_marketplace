@@ -29,10 +29,41 @@ class ResPartner(models.Model):
         string="Vendor Approved On", readonly=True, copy=False, index=True,
         help="When this vendor was approved. Seniority for tier upgrades is "
              "counted from here.")
+    leaders_notify_shipping = fields.Boolean(
+        string="Shipping update emails", default=True,
+        help="Receive an email when an order ships or is delivered.")
+    leaders_notify_orders = fields.Boolean(
+        string="Order emails", default=True,
+        help="Reserved. Order cancellation emails are transactional and always sent.")
+    leaders_notify_returns = fields.Boolean(
+        string="Return update emails", default=True,
+        help="Receive an email when a return is approved or rejected (refund emails are always sent).")
+    leaders_notify_questions = fields.Boolean(
+        string="Question answer emails", default=True,
+        help="Receive an email when a seller answers your product question.")
+    leaders_notify_promotions = fields.Boolean(
+        string="Promotions (marketing emails)", default=False,
+        help="Opt-in to marketing emails. The marketplace sends none itself; other modules can ask "
+             "_leaders_customer_accepts('promotions').")
     vendor_min_payout = fields.Monetary(currency_field="company_currency_id", default=0.0)
     company_currency_id = fields.Many2one("res.currency", related="company_id.currency_id", readonly=True)
     vendor_wallet_balance = fields.Monetary(compute="_compute_vendor_wallet_balances", currency_field="company_currency_id")
     vendor_wallet_hold = fields.Monetary(compute="_compute_vendor_wallet_balances", currency_field="company_currency_id")
+
+    LEADERS_NOTIFY_CATEGORIES = ("shipping", "orders", "returns", "questions", "promotions")
+
+    def _leaders_customer_accepts(self, category):
+        """Does this customer want the emails of ``category``? (D5)
+
+        The preference lives on the commercial partner, so every contact of a company shares it.
+        ``orders`` is transactional and always accepted. An unknown category is refused.
+        """
+        self.ensure_one()
+        if category not in self.LEADERS_NOTIFY_CATEGORIES:
+            return False
+        if category == "orders":
+            return True
+        return bool(self.commercial_partner_id.sudo()["leaders_notify_%s" % category])
 
     @api.model_create_multi
     def create(self, vals_list):

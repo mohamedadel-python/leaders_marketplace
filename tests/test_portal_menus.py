@@ -8,7 +8,8 @@ from odoo.tests.common import HttpCase
 from .test_security_rpc import PORTAL_PASSWORD, MarketplacePortalUserCommon
 
 OWNER_ONLY = ("Finance", "Delivery Zones", "Staff", "API", "Profile")
-CUSTOMER_CARDS = {"My orders", "Returns & disputes", "Account details", "Connection & Security"}
+CUSTOMER_CARDS = {"My orders", "Returns & disputes", "Account details", "Connection & Security",
+                  "Notification preferences"}
 
 
 @tagged("post_install", "-at_install")

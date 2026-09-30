@@ -61,6 +61,7 @@
         "views/return_reason_views.xml",
         "views/product_question_views.xml",
         "views/product_question_templates.xml",
+        "views/customer_notification_templates.xml",
         "views/bank_change_views.xml",
         "views/vendor_terms_views.xml",
         "views/shipping_provider_views.xml"

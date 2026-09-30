@@ -238,6 +238,7 @@
                 <li class="breadcrumb-item active" aria-current="page"><t t-out="order.name"/></li>
             </t>
             <li t-elif="page_name == 'lm_returns'" class="breadcrumb-item active" aria-current="page">Returns &amp; disputes</li>
+            <li t-elif="page_name == 'lm_notifications'" class="breadcrumb-item active" aria-current="page">Notification preferences</li>
         </xpath>
     </template>
 

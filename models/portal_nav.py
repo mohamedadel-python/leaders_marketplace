@@ -114,6 +114,8 @@ class LeadersPortalNav(models.AbstractModel):
              "title": _("Addresses"), "text": _("Your delivery and billing addresses")},
             {"key": "account", "url": "/my/account", "route_exists": True,
              "title": _("Account details"), "text": _("Your contact and address information")},
+            {"key": "notifications", "url": "/my/marketplace/notifications", "route_exists": True,
+             "title": _("Notification preferences"), "text": _("Choose which emails you receive")},
             {"key": "wishlist", "url": "/shop/wishlist", "route_exists": True,
              "visible": self._module_installed("website_sale_wishlist"),
              "title": _("Wishlist"), "text": _("Products you saved for later")},

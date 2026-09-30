@@ -51,3 +51,4 @@ from . import test_unified_orders
 from . import test_returns_center
 from . import test_product_questions
 from . import test_delivery_estimate
+from . import test_notification_preferences

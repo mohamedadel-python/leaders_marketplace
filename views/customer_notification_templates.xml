@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- D5: customer notification preferences. -->
+    <template id="portal_customer_notifications" name="Customer Notification Preferences">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'lm_notifications'"/>
+            <div class="container my-4 lm-portal" id="lm_customer_notifications">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Notification preferences</h1>
+                        <p class="lm-page-subtitle">Choose which marketplace emails you receive.</p>
+                    </div>
+                </div>
+                <div t-if="lm_saved" class="alert alert-success" role="alert" id="lm_notifications_saved">Your preferences were saved.</div>
+                <form method="post" action="/my/marketplace/notifications" id="lm_notifications_form">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="lm-card">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" name="shipping" value="1" id="lm_pref_shipping" t-att-checked="'checked' if lm_prefs['shipping'] else None"/>
+                            <label class="form-check-label" for="lm_pref_shipping"><strong>Shipping updates</strong><br/><span class="text-muted small">When your order ships or is delivered.</span></label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" name="returns" value="1" id="lm_pref_returns" t-att-checked="'checked' if lm_prefs['returns'] else None"/>
+                            <label class="form-check-label" for="lm_pref_returns"><strong>Returns</strong><br/><span class="text-muted small">When a return request is approved or rejected.</span></label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" name="questions" value="1" id="lm_pref_questions" t-att-checked="'checked' if lm_prefs['questions'] else None"/>
+                            <label class="form-check-label" for="lm_pref_questions"><strong>Questions</strong><br/><span class="text-muted small">When a seller answers your product question.</span></label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" name="promotions" value="1" id="lm_pref_promotions" t-att-checked="'checked' if lm_prefs['promotions'] else None"/>
+                            <label class="form-check-label" for="lm_pref_promotions"><strong>Promotions (marketing emails)</strong><br/><span class="text-muted small">Offers and news. Off unless you turn it on.</span></label>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="lm_notifications_save">Save preferences</button>
+                    </div>
+                </form>
+                <div class="lm-section mt-3" id="lm_notifications_required">
+                    <h2 class="lm-section-title">Required emails</h2>
+                    <p class="text-muted mb-1">Order cancellation and refund emails are always sent because they confirm changes to your money and orders.</p>
+                    <p class="text-muted mb-0">Vendor and account security emails are not affected by these preferences.</p>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
