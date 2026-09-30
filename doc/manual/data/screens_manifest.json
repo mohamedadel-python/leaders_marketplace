@@ -40,38 +40,21 @@
     "missing": []
    },
    "views": {
-    "covered": 60,
+    "covered": 62,
     "total": 62,
-    "missing": [
-     "leaders_marketplace.view_commission_line_tree",
-     "leaders_marketplace.view_commission_plan_line_graph"
-    ]
+    "missing": []
    },
    "buttons": {
-    "covered": 175,
+    "covered": 188,
     "total": 189,
     "missing": [
-     "backend:leaders_marketplace.view_fulfillment_group_form:action_download_label#1",
-     "backend:leaders_marketplace.view_marketplace_offer_form:action_approve_discount#1",
-     "backend:leaders_marketplace.view_marketplace_offer_form:action_reject_discount#1",
-     "backend:leaders_marketplace.view_offer_discount_review_tree:action_approve_discount#1",
-     "backend:leaders_marketplace.view_offer_discount_review_tree:action_reject_discount#1",
-     "backend:leaders_marketplace.view_vendor_contract_form:action_sign#1",
-     "backend:leaders_marketplace.view_vendor_kpi_list:action_recompute_all_kpis#1",
-     "backend:leaders_marketplace.view_vendor_kpi_list:action_recompute_kpis#1",
-     "backend:leaders_marketplace.view_vendor_order_form:action_cancel_remaining#1",
-     "backend:leaders_marketplace.view_vendor_order_form:action_confirm_cod_payment#1",
-     "backend:leaders_marketplace.view_vendor_order_form:action_customer_refused#1",
-     "backend:leaders_marketplace.view_vendor_order_form:action_delivered#1",
-     "backend:leaders_marketplace.view_vendor_order_form:action_view_pickings#1",
-     "backend:leaders_marketplace.view_vendor_order_form:action_view_returns#1"
+     "backend:leaders_marketplace.view_vendor_contract_form:action_sign#1"
     ]
    },
    "routes": {
-    "covered": 88,
+    "covered": 89,
     "total": 90,
     "missing": [
-     "controllers/portal.py:MarketplacePortal.backend_vendor_statement_xlsx",
      "controllers/portal.py:MarketplacePortal.customer_marketplace_invoice_pdf"
     ]
    },
@@ -83,23 +66,10 @@
     ]
    },
    "templates": {
-    "covered": 49,
+    "covered": 62,
     "total": 63,
     "missing": [
-     "leaders_marketplace.cart_lines_vendor_discount_badge",
-     "leaders_marketplace.cart_marketplace_price_changed",
-     "leaders_marketplace.cart_total_delivery_breakdown",
-     "leaders_marketplace.lm_code_badge",
-     "leaders_marketplace.lm_state_badge",
-     "leaders_marketplace.lm_timeline",
-     "leaders_marketplace.portal_breadcrumbs_marketplace",
-     "leaders_marketplace.portal_return_state_badge",
-     "leaders_marketplace.portal_vendor_layout",
-     "leaders_marketplace.portal_vendor_nav",
-     "leaders_marketplace.portal_vendor_state_badge",
-     "leaders_marketplace.products_item_vendor_discount_badge",
-     "leaders_marketplace.report_saleorder_delivery_breakdown",
-     "leaders_marketplace.website_sale_payment_status_marketplace"
+     "leaders_marketplace.report_saleorder_delivery_breakdown"
     ]
    }
   }
@@ -1651,7 +1621,7 @@
    "role": "reviewer",
    "kind": "backend",
    "title_ar": "قائمة عروض السوق",
-   "state_note": "",
+   "state_note": "القائمة الافتراضية الحالية هي عرض «مراجعة الخصومات» (خطأ معروف في bugs_found.md)",
    "requires": [],
    "devices": [
     "desktop"
@@ -1682,24 +1652,20 @@
      "selector": "th[data-name='vendor_id']"
     },
     {
-     "label": "SKU البائع",
-     "selector": "th[data-name='seller_sku']"
-    },
-    {
      "label": "السعر",
      "selector": "th[data-name='price']"
     },
     {
-     "label": "السعر الفعلي",
-     "selector": "th[data-name='effective_price']"
+     "label": "نوع الخصم",
+     "selector": "th[data-name='discount_type']"
     },
     {
-     "label": "الحالة",
-     "selector": "th[data-name='state']"
+     "label": "نسبة الخصم من السعر الأصلي",
+     "selector": "th[data-name='discount_regular_percent']"
     },
     {
-     "label": "الفائز بصندوق الشراء",
-     "selector": "th[data-name='is_buybox_winner']"
+     "label": "حالة الخصم",
+     "selector": "th[data-name='discount_state']"
     }
    ],
    "refs": {
@@ -2719,7 +2685,11 @@
      "leaders_marketplace.view_marketplace_offer_form"
     ],
     "buttons": [
-     "backend:leaders_marketplace.view_marketplace_offer_form:action_clear_discount#1"
+     "backend:leaders_marketplace.view_marketplace_offer_form:action_approve_discount#1",
+     "backend:leaders_marketplace.view_marketplace_offer_form:action_clear_discount#1",
+     "backend:leaders_marketplace.view_marketplace_offer_form:action_reject_discount#1",
+     "backend:leaders_marketplace.view_offer_discount_review_tree:action_approve_discount#1",
+     "backend:leaders_marketplace.view_offer_discount_review_tree:action_reject_discount#1"
     ],
     "routes": [],
     "settings": [],
@@ -2993,7 +2963,10 @@
      "leaders_marketplace.view_marketplace_offer_tree",
      "leaders_marketplace.view_offer_discount_review_tree"
     ],
-    "buttons": [],
+    "buttons": [
+     "backend:leaders_marketplace.view_offer_discount_review_tree:action_approve_discount#1",
+     "backend:leaders_marketplace.view_offer_discount_review_tree:action_reject_discount#1"
+    ],
     "routes": [],
     "settings": [],
     "templates": []
@@ -4297,7 +4270,9 @@
     ],
     "buttons": [
      "backend:leaders_marketplace.view_vendor_order_form:action_open_ship_wizard#1",
-     "backend:leaders_marketplace.view_vendor_order_form:action_ship#1"
+     "backend:leaders_marketplace.view_vendor_order_form:action_ship#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_view_pickings#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_view_returns#1"
     ],
     "routes": [],
     "settings": [],
@@ -5062,8 +5037,17 @@
      "leaders_marketplace.view_vendor_order_form"
     ],
     "buttons": [
+     "backend:leaders_marketplace.view_vendor_order_form:action_cancel#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_cancel_remaining#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_confirm#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_confirm_cod_payment#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_customer_refused#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_delivered#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_mark_completed#1",
      "backend:leaders_marketplace.view_vendor_order_form:action_open_ship_wizard#1",
-     "backend:leaders_marketplace.view_vendor_order_form:action_ship#1"
+     "backend:leaders_marketplace.view_vendor_order_form:action_ship#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_view_pickings#1",
+     "backend:leaders_marketplace.view_vendor_order_form:action_view_returns#1"
     ],
     "routes": [],
     "settings": [],
@@ -5187,7 +5171,7 @@
     },
     {
      "op": "click",
-     "selector": ".modal.show button[name='action_open_ship_wizard']",
+     "selector": ".modal button[name='action_open_ship_wizard']",
      "dialog": true,
      "wait": 1200
     }
@@ -5198,16 +5182,16 @@
    "markers": [
     {
      "label": "نافذة كميات الشحن",
-     "selector": ".modal.show .modal-content"
+     "selector": ".modal .modal-content"
     },
     {
      "label": "رقم التتبع",
-     "selector": ".modal.show [name='tracking_ref']",
+     "selector": ".modal [name='tracking_ref']",
      "optional": true
     },
     {
      "label": "الكميات المطلوبة والمتاحة والمشحونة",
-     "selector": ".modal.show [name='line_ids']",
+     "selector": ".modal [name='line_ids']",
      "optional": true
     }
    ],
@@ -5447,7 +5431,8 @@
      "leaders_marketplace.view_fulfillment_group_form"
     ],
     "buttons": [
-     "backend:leaders_marketplace.view_fulfillment_group_form:action_create_shipment#1"
+     "backend:leaders_marketplace.view_fulfillment_group_form:action_create_shipment#1",
+     "backend:leaders_marketplace.view_fulfillment_group_form:action_download_label#1"
     ],
     "routes": [],
     "settings": [],
@@ -8599,6 +8584,7 @@
      "leaders_marketplace.menu_commission_rules"
     ],
     "views": [
+     "leaders_marketplace.view_commission_plan_line_graph",
      "leaders_marketplace.view_commission_rule_form"
     ],
     "buttons": [
@@ -9012,7 +8998,8 @@
      "leaders_marketplace.menu_commission_achievements"
     ],
     "views": [
-     "leaders_marketplace.view_commission_achievement_tree"
+     "leaders_marketplace.view_commission_achievement_tree",
+     "leaders_marketplace.view_commission_line_tree"
     ],
     "buttons": [],
     "routes": [],
@@ -9686,31 +9673,31 @@
    "markers": [
     {
      "label": "معالج كشف الحساب",
-     "selector": ".modal.show .modal-content"
+     "selector": ".modal .modal-content"
     },
     {
      "label": "البائع",
-     "selector": ".modal.show [name='vendor_id']",
+     "selector": ".modal [name='vendor_id']",
      "optional": true
     },
     {
      "label": "من تاريخ",
-     "selector": ".modal.show [name='date_from']",
+     "selector": ".modal [name='date_from']",
      "optional": true
     },
     {
      "label": "إلى تاريخ",
-     "selector": ".modal.show [name='date_to']",
+     "selector": ".modal [name='date_to']",
      "optional": true
     },
     {
      "label": "طباعة PDF",
-     "selector": ".modal.show button[name='action_print']",
+     "selector": ".modal button[name='action_print']",
      "optional": true
     },
     {
      "label": "تحميل XLSX",
-     "selector": ".modal.show button[name='action_xlsx']",
+     "selector": ".modal button[name='action_xlsx']",
      "optional": true
     }
    ],
@@ -9727,7 +9714,9 @@
      "backend:leaders_marketplace.view_vendor_statement_wizard_form:action_xlsx#1",
      "backend:leaders_marketplace.view_vendor_statement_wizard_form:cancel#1"
     ],
-    "routes": [],
+    "routes": [
+     "controllers/portal.py:MarketplacePortal.backend_vendor_statement_xlsx"
+    ],
     "settings": [],
     "templates": []
    }
@@ -10356,7 +10345,10 @@
     "views": [
      "leaders_marketplace.view_vendor_kpi_list"
     ],
-    "buttons": [],
+    "buttons": [
+     "backend:leaders_marketplace.view_vendor_kpi_list:action_recompute_all_kpis#1",
+     "backend:leaders_marketplace.view_vendor_kpi_list:action_recompute_kpis#1"
+    ],
     "routes": [],
     "settings": [],
     "templates": []
@@ -13985,7 +13977,13 @@
    ],
    "refs": {
     "templates": [
-     "leaders_marketplace.portal_vendor_dashboard"
+     "leaders_marketplace.lm_code_badge",
+     "leaders_marketplace.lm_state_badge",
+     "leaders_marketplace.lm_timeline",
+     "leaders_marketplace.portal_vendor_dashboard",
+     "leaders_marketplace.portal_vendor_layout",
+     "leaders_marketplace.portal_vendor_nav",
+     "leaders_marketplace.portal_vendor_state_badge"
     ],
     "routes": [
      "controllers/portal.py:MarketplacePortal.vendor_dashboard",
@@ -18148,6 +18146,7 @@
    ],
    "refs": {
     "templates": [
+     "leaders_marketplace.portal_return_state_badge",
      "leaders_marketplace.portal_vendor_return_detail"
     ],
     "routes": [
@@ -20823,8 +20822,9 @@
    ],
    "refs": {
     "templates": [
-     "leaders_marketplace.portal_customer_checkouts",
-     "leaders_marketplace.portal_breadcrumbs_marketplace_checkouts"
+     "leaders_marketplace.portal_breadcrumbs_marketplace",
+     "leaders_marketplace.portal_breadcrumbs_marketplace_checkouts",
+     "leaders_marketplace.portal_customer_checkouts"
     ],
     "routes": [
      "controllers/checkouts.py:MarketplaceCheckouts.customer_checkouts",
@@ -23721,7 +23721,9 @@
     }
    ],
    "refs": {
-    "templates": [],
+    "templates": [
+     "leaders_marketplace.products_item_vendor_discount_badge"
+    ],
     "routes": [],
     "buttons": []
    }
@@ -24909,7 +24911,11 @@
     }
    ],
    "refs": {
-    "templates": [],
+    "templates": [
+     "leaders_marketplace.cart_lines_vendor_discount_badge",
+     "leaders_marketplace.cart_marketplace_price_changed",
+     "leaders_marketplace.cart_total_delivery_breakdown"
+    ],
     "routes": [],
     "buttons": []
    }
@@ -25033,7 +25039,8 @@
    ],
    "refs": {
     "templates": [
-     "leaders_marketplace.checkout_layout_marketplace_total"
+     "leaders_marketplace.checkout_layout_marketplace_total",
+     "leaders_marketplace.website_sale_payment_status_marketplace"
     ],
     "routes": [],
     "buttons": []

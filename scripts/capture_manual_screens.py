@@ -128,16 +128,24 @@ FREEZE_JS = """
   }
   window.Date = FDate;
   const install = () => {
-    if (document.getElementById('lm-shot-css')) return;
-    const s = document.createElement('style'); s.id = 'lm-shot-css';
-    s.textContent = %s;
-    (document.head || document.documentElement).appendChild(s);
+    try {
+      if (document.getElementById('lm-shot-css')) return;
+      const host = document.head || document.documentElement;
+      if (!host) return;
+      const s = document.createElement('style'); s.id = 'lm-shot-css';
+      s.textContent = %s;
+      host.appendChild(s);
+    } catch (e) {}
   };
   install();
   document.addEventListener('readystatechange', install);
   document.addEventListener('DOMContentLoaded', install);
+  new MutationObserver(install).observe(document, {childList: true, subtree: true});
 })();
 """
+
+
+ALLOW_MUTATING = False
 
 
 class Skip(Exception):
@@ -207,10 +215,19 @@ def prepare_db(rpc):
             rpc.call("res.users", "write", [u["id"]], {"lang": "ar_001"})
             done.append("lang " + u["login"])
     grp = rpc.xmlid("leaders_marketplace.group_marketplace_manager")
-    admin = rpc.search_read("res.users", [["login", "=", "admin"]], ["group_ids" if False else "groups_id"], limit=1)
+    admin = rpc.search_read("res.users", [["login", "=", "admin"]], ["groups_id"], limit=1)
     if grp and admin and grp["res_id"] not in admin[0]["groups_id"]:
         rpc.call("res.users", "write", [admin[0]["id"]], {"groups_id": [(4, grp["res_id"])]})
         done.append("admin -> marketplace manager")
+    try:  # the public status page needs the application access token (set on the real public submit only)
+        import uuid
+        apps = rpc.search_read("leaders.vendor.application", [["access_token", "=", False]], ["id"], limit=0)
+        for a in apps:
+            rpc.call("leaders.vendor.application", "write", [a["id"]], {"access_token": uuid.uuid4().hex})
+        if apps:
+            done.append("access_token x%d" % len(apps))
+    except Exception as e:  # noqa: BLE001
+        log("  (could not set application tokens: %s)" % str(e)[:100])
     return done
 
 
@@ -223,11 +240,12 @@ class Server:
     def start(self):
         args = ["-c", ODOO_CONF, "-d", self.db, "--db-filter=^%s$" % self.db, "--addons-path=addons,custom",
                 "--data-dir=" + DATA_DIR, "--http-port=%d" % self.port, "--gevent-port=%d" % (self.port + 1),
-                "--workers=0", "--without-demo=all"]
+                "--workers=0", "--max-cron-threads=0", "--without-demo=all"]
         if self.freeze:
             wrapper = Path("/tmp/claude-1000/lm_capture_freeze_wrapper.py")
             wrapper.write_text(
-                "import sys, runpy, freezegun\n"
+                "import sys, os, runpy, freezegun\n"
+                "sys.path.insert(0, os.getcwd())\n"
                 "f = freezegun.freeze_time(%r, tick=True); f.start()\n"
                 "sys.argv = ['odoo-bin'] + %r\n"
                 "runpy.run_path('odoo-bin', run_name='__main__')\n" % (FREEZE_UTC, args))
@@ -578,6 +596,8 @@ def run_setup(page, steps, screen, device):
 
 def capture_screen(shooter, screen, device, rpc, lang_prefix, base, quantize):
     role = screen["role"]
+    if screen.get("mutates") and not ALLOW_MUTATING:
+        raise Skip("mutates data: run with --allow-mutating on a throw-away DB (%s)" % ",".join(screen.get("requires") or []))
     login, pwd = ROLE_LOGIN[role]
     if screen.get("login"):
         login, pwd = screen["login"], DEMO_PASSWORD if screen["login"] != "admin" else "admin"
@@ -598,7 +618,7 @@ def capture_screen(shooter, screen, device, rpc, lang_prefix, base, quantize):
         run_setup(page, screen.get("setup"), screen, device)
         settle(page, kind, 15)
         # modal open? then the dialog is the subject, no expansion
-        modal = page.locator(".modal.show .modal-content").count() > 0
+        modal = page.locator(".modal .modal-content").count() > 0 and kind == "backend"
         mode = cap.get("mode", "expand" if kind == "backend" else "fullpage")
         max_h = cap.get("max_height", 3400 if kind == "backend" else 12000)
         if kind == "backend" and mode == "expand" and not modal:
@@ -688,8 +708,11 @@ def main():
     ap.add_argument("--retries", type=int, default=2)
     ap.add_argument("--no-prepare", action="store_true")
     ap.add_argument("--no-quantize", action="store_true")
+    ap.add_argument("--allow-mutating", action="store_true", help="also run screens marked mutates (they change data)")
     args = ap.parse_args()
     args.only = [x for x in (args.only or "").split(",") if x]
+    global ALLOW_MUTATING
+    ALLOW_MUTATING = args.allow_mutating
 
     manifest = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
     screens = filter_screens(manifest["screens"], args)
@@ -710,10 +733,10 @@ def main():
                 log("prepared DB: " + ", ".join(done))
         lang_prefix = ""
         w = rpc.search_read("website", [], ["default_lang_id"], limit=1)
-        if w:
-            code = rpc.search_read("res.lang", [["id", "=", w[0]["default_lang_id"][0]]], ["url_code", "code"], limit=1)
-            if code and code[0]["code"] != "ar_001":
-                lang_prefix = "/" + [l for l in rpc.search_read("res.lang", [["code", "=", "ar_001"]], ["url_code"], limit=1)][0]["url_code"]
+        if w and w[0]["default_lang_id"]:
+            dl = rpc.search_read("res.lang", [["id", "=", w[0]["default_lang_id"][0]]], ["code"], limit=1)
+            if dl and dl[0]["code"] != "ar_001":
+                lang_prefix = "/ar"
         report = load_report()
         rep = report.setdefault("screens", {})
         stats = {"captured": 0, "skipped": 0, "failed": 0}

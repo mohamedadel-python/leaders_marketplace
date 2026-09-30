@@ -63,12 +63,17 @@ def visible_in_state(expr, state_field, state):
     """Very small evaluator of the `invisible` expression of a button for a given state (unknown -> visible)."""
     if not expr:
         return True
+    if isinstance(state, dict):
+        ctx = dict(state)
+    else:
+        ctx = {state_field: state}
+
     class D(dict):
         def __missing__(self, k):
             return None
     py = expr.replace("&&", " and ").replace("||", " or ")
     try:
-        return not bool(eval(py, {"__builtins__": {}}, D({state_field: state})))  # noqa: S307 - our own inventory
+        return not bool(eval(py, {"__builtins__": {}}, D(ctx)))  # noqa: S307 - our own inventory
     except Exception:  # noqa: BLE001
         return True
 
@@ -267,7 +272,8 @@ for st, note in (("pending", "منتج قيد المراجعة: أزرار اع�
 # ---- offers ------------------------------------------------------------------------------------------
 OF = "leaders.marketplace.offer"
 blist("backend_offer_list", "reviewer", "قائمة عروض السوق", "action_marketplace_offer", OF,
-      ["product_id", "vendor_id", "seller_sku", "price", "effective_price", "state", "is_buybox_winner"])
+      ["product_id", "vendor_id", "price", "discount_type", "discount_regular_percent", "discount_state"],
+      note="القائمة الافتراضية الحالية هي عرض «مراجعة الخصومات» (خطأ معروف في bugs_found.md)")
 OF_F = ["product_tmpl_id", "vendor_id", "seller_sku", "price", "fulfillment_type", "buybox_score", "is_buybox_winner"]
 for key, dom, st, note in [
         ("draft", [["state", "=", "draft"]], "draft", "عرض مسودة لدى البائع لم يُرسل للمراجعة"),
@@ -289,7 +295,7 @@ for key, dst, note in [("discount_active", "active", "خصم نشط على ال�
     bform("backend_offer_form_%s" % key, "reviewer", "نموذج العرض بخصم: %s" % dst, "action_marketplace_offer", OF,
           [["discount_state", "=", dst]],
           ["discount_state", "discount_type", "discount_percent", "discount_price", "discount_regular_percent", "discount_start", "discount_end", "effective_price"],
-          note=note, state="active", requires=None if dst in ("active", "expired", "pending_approval", "rejected") else [],
+          note=note, state={"state": "active", "discount_state": dst}, requires=None if dst in ("active", "expired", "pending_approval", "rejected") else [],
           extra=[M("button[name='action_approve_discount']", "زر اعتماد الخصم", optional=True),
                  M("button[name='action_reject_discount']", "زر رفض الخصم", optional=True)])
 blist("backend_discount_review_list", "reviewer", "قائمة الخصومات قيد المراجعة", "action_offer_discounts_to_review", OF,
@@ -363,9 +369,9 @@ add("backend_order_dialog_ship_wizard", "manager", "backend", "نافذة كمي
     note="افتح مجموعة التنفيذ ثم زر «كميات الشحن»: نافذة تسمح بتحديد الكمية المشحونة لكل بند", requires=["part3"],
     setup=[{"op": "click", "selector": ".o_notebook .nav-link[name='fulfillment']", "safe": True},
            {"op": "click", "selector": ".o_notebook .tab-pane.active .o_data_row >> nth=0", "safe": True},
-           {"op": "click", "selector": ".modal.show button[name='action_open_ship_wizard']", "dialog": True, "wait": 1200}],
-    markers=[M(".modal.show .modal-content", "نافذة كميات الشحن"), M(".modal.show [name='tracking_ref']", "رقم التتبع", optional=True),
-             M(".modal.show [name='line_ids']", "الكميات المطلوبة والمتاحة والمشحونة", optional=True)],
+           {"op": "click", "selector": ".modal button[name='action_open_ship_wizard']", "dialog": True, "wait": 1200}],
+    markers=[M(".modal .modal-content", "نافذة كميات الشحن"), M(".modal [name='tracking_ref']", "رقم التتبع", optional=True),
+             M(".modal [name='line_ids']", "الكميات المطلوبة والمتاحة والمشحونة", optional=True)],
     capture={"mode": "viewport"}, refs=refs_backend(None, "leaders.ship.wizard", "form", extra_views=["view_leaders_ship_wizard_form"]))
 FG = "leaders.fulfillment.group"
 for key, dom, note, req in [
@@ -493,9 +499,9 @@ add("backend_settlement_wizard_statement", "admin", "backend", "معالج كش�
     note="من نموذج جهة اتصال البائع، تبويب «بائع السوق»، زر «كشف البائع»", login="admin",
     setup=[{"op": "click", "selector": ".o_notebook .nav-link:has-text('بائع السوق')", "safe": True, "optional": True},
            {"op": "click", "selector": "button:has-text('كشف البائع')", "dialog": True, "wait": 1200}],
-    markers=[M(".modal.show .modal-content", "معالج كشف الحساب"), M(".modal.show [name='vendor_id']", "البائع", optional=True),
-             M(".modal.show [name='date_from']", "من تاريخ", optional=True), M(".modal.show [name='date_to']", "إلى تاريخ", optional=True),
-             M(".modal.show button[name='action_print']", "طباعة PDF", optional=True), M(".modal.show button[name='action_xlsx']", "تحميل XLSX", optional=True)],
+    markers=[M(".modal .modal-content", "معالج كشف الحساب"), M(".modal [name='vendor_id']", "البائع", optional=True),
+             M(".modal [name='date_from']", "من تاريخ", optional=True), M(".modal [name='date_to']", "إلى تاريخ", optional=True),
+             M(".modal button[name='action_print']", "طباعة PDF", optional=True), M(".modal button[name='action_xlsx']", "تحميل XLSX", optional=True)],
     capture={"mode": "viewport"}, refs=refs_backend("action_vendor_statement_wizard", "leaders.vendor.statement.wizard", "form",
                                                    extra_views=[]))
 blist("backend_cod_orders_list", "finance", "قائمة طلبات الدفع عند الاستلام", "action_cod_vendor_order", VO,
@@ -1102,6 +1108,31 @@ cshot("web_footer_sell_link", "رابط «بيع معنا» في تذييل ال
 cshot("web_home_visitor", "الصفحة الرئيسية للموقع (زائر)", "/", [], [M("header", "رأس الموقع", optional=True), M("footer", "تذييل الموقع", optional=True)], role="visitor", kind="website")
 cshot("web_login", "تسجيل الدخول", "/web/login", [], [M("input[name='login']", "البريد أو الدخول"), M("input[name='password']", "كلمة المرور"), M("form.oe_login_form button[type='submit']", "دخول")],
       role="visitor", kind="website")
+
+
+def xref(sid, **kw):
+    for k, v in kw.items():
+        cur = SCREENS[sid]["refs"].setdefault(k, [])
+        cur.extend(x for x in v if x not in cur)
+        cur.sort()
+
+
+ORDER_FORM_BTNS = [b["id"] for b in BUTTONS if b["kind"] == "backend" and b["view"] == MOD + "view_vendor_order_form"]
+xref("backend_order_form_tab_fulfillment", buttons=ORDER_FORM_BTNS)
+xref("backend_order_form_completed", buttons=[b for b in ORDER_FORM_BTNS if b.endswith(("action_view_pickings#1", "action_view_returns#1"))])
+xref("backend_fulfillment_group_form_provider", buttons=[b["id"] for b in BUTTONS if b["kind"] == "backend" and b["view"] == MOD + "view_fulfillment_group_form"])
+xref("backend_kpi_list", buttons=[b["id"] for b in BUTTONS if b.get("view") == MOD + "view_vendor_kpi_list"])
+xref("backend_offer_form_discount_pending", buttons=[b["id"] for b in BUTTONS if b["kind"] == "backend" and b.get("view") in (MOD + "view_marketplace_offer_form", MOD + "view_offer_discount_review_tree") and "discount" in b["name"]])
+xref("backend_discount_review_list", buttons=[b["id"] for b in BUTTONS if b.get("view") == MOD + "view_offer_discount_review_tree"])
+xref("backend_settlement_wizard_statement", routes=ROUTE_BY_PATH.get(norm_path("/leaders/vendor_statement/xlsx"), []))
+xref("backend_commission_plan_form_target", views=[MOD + "view_commission_plan_line_graph"])
+xref("backend_commission_achievements", views=[MOD + "view_commission_line_tree"])
+xref("portal_vendor_dashboard", templates=[MOD + t for t in ("portal_vendor_layout", "portal_vendor_nav", "lm_state_badge", "lm_timeline", "lm_code_badge", "portal_vendor_state_badge")])
+xref("portal_vendor_return_requested", templates=[MOD + "portal_return_state_badge"])
+xref("portal_customer_checkouts", templates=[MOD + t for t in ("portal_breadcrumbs_marketplace",)])
+xref("web_cart_c2_draft", templates=[MOD + t for t in ("cart_lines_vendor_discount_badge", "cart_marketplace_price_changed", "cart_total_delivery_breakdown")])
+xref("web_shop_visitor", templates=[MOD + "products_item_vendor_discount_badge"])
+xref("web_payment_step", templates=[MOD + "website_sale_payment_status_marketplace"])
 
 
 def main():
