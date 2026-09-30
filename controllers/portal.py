@@ -1819,21 +1819,13 @@ class MarketplacePortal(CustomerPortal):
                 type="http", auth="user", website=True)
     def customer_marketplace_order_detail(self, order_id, **kw):
         order = self._customer_vendor_order(order_id)
-        window = int(request.env["ir.config_parameter"].sudo().get_param("leaders_marketplace.return_window_days", 14) or 0)
-        returnable = [(line, line._qty_returnable()) for line in order.line_ids.filtered(
-            lambda l: not l.is_delivery and l._qty_returnable() > 0)]
-        in_window = bool(order.date_shipped) and (
-            not window or fields.Datetime.now() <= order.date_shipped + timedelta(days=window))
-        catalog_on = request.env["res.partner"]._marketplace_catalog_enabled()
-        rating = request.env["rating.rating"].sudo().search([
-            ("res_model", "=", "leaders.vendor.order"), ("res_id", "=", order.id),
-            ("consumed", "=", True)], limit=1) if catalog_on else False
+        can_rate, rating = order._customer_rating_info()
         return request.render("leaders_marketplace.portal_customer_marketplace_order_detail", {
-            "lm_can_rate": bool(catalog_on and order.state == "completed" and not rating),
+            "lm_can_rate": can_rate,
             "lm_rating": rating,
             "rated": kw.get("rated"),
             "order": order,
-            "returnable_lines": returnable if in_window and order.state in ("fulfilled", "completed", "partially_fulfilled") else [],
+            "returnable_lines": order._customer_returnable_lines(),
             "error": kw.get("error"),
             "return_requested": kw.get("return_requested"),
             "lm_cancel": order._customer_cancel_info(),

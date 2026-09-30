@@ -39,6 +39,14 @@ class ResConfigSettings(models.TransientModel):
              "(default), always, or never. Marketplace entries are never hidden and the "
              "pages themselves keep working.",
     )
+    marketplace_unified_customer_orders = fields.Boolean(
+        string="Unified My Orders",
+        config_parameter="leaders_marketplace.unified_customer_orders",
+        default=False,
+        help="Off: the customer's My orders card opens the list of vendor orders, as before. "
+             "On: it opens one list with a row per checkout (company and marketplace parts), "
+             "an order page grouped by seller with timelines, invoices and actions, and Buy again.",
+    )
     marketplace_cancel_window_hours = fields.Integer(
         string="Customer Cancellation Window (hours)",
         config_parameter="leaders_marketplace.cancel_window_hours",

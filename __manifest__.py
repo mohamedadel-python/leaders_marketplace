@@ -48,6 +48,7 @@
         "views/portal_components.xml",
         "views/portal_templates.xml",
         "views/portal_vendor_templates.xml",
+        "views/portal_checkout_templates.xml",
         "views/checkout_templates.xml",
         "views/vendor_apply_templates.xml",
         "views/menu_views.xml",

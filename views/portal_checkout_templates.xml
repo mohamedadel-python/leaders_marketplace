@@ -1,0 +1,241 @@
+<odoo>
+    <!-- Unified "My orders" (TASK 29 / D1): one row per checkout, order page grouped by seller.
+         Only reachable when Settings > Marketplace > "Unified My Orders" is on. -->
+
+    <!-- Badge of a computed status: `lm_code` and `lm_label`. -->
+    <template id="lm_code_badge" name="Marketplace Status Code Badge">
+        <t t-set="lm_b" t-value="request.env['leaders.portal.nav']._code_badge(lm_code, lm_label)"/>
+        <span t-attf-class="lm-badge lm-badge--#{lm_b['tone']}" t-att-data-state="lm_b['value']" t-out="lm_b['label']"/>
+    </template>
+
+    <template id="portal_customer_checkouts" name="Customer Checkouts (Unified My Orders)">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'lm_checkouts'"/>
+            <div class="container my-4 lm-portal" id="lm_customer_checkouts">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">My orders</h1>
+                        <p class="lm-page-subtitle">Every purchase in one place, from us and from marketplace sellers.</p>
+                    </div>
+                    <div class="lm-page-actions">
+                        <a href="/my/marketplace/returns" class="btn btn-outline-primary"><i class="fa fa-undo" aria-hidden="true"/> Returns &amp; disputes</a>
+                    </div>
+                </div>
+
+                <form method="get" action="/my/marketplace/checkouts" class="lm-card mb-3" id="lm_checkout_filters">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small" for="lm_checkout_search">Search</label>
+                            <input type="search" class="form-control" name="search" id="lm_checkout_search" t-att-value="search" placeholder="Order, seller or product"/>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label small" for="lm_checkout_status">Status</label>
+                            <select name="status" id="lm_checkout_status" class="form-select">
+                                <option value="all" t-att-selected="status == 'all'">All</option>
+                                <option t-foreach="status_options" t-as="opt" t-att-value="opt[0]" t-att-selected="status == opt[0]" t-out="opt[1]"/>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label small" for="lm_checkout_from">From</label>
+                            <input type="date" class="form-control" name="date_begin" id="lm_checkout_from" t-att-value="date_begin"/>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label small" for="lm_checkout_to">To</label>
+                            <input type="date" class="form-control" name="date_end" id="lm_checkout_to" t-att-value="date_end"/>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label small" for="lm_checkout_sort">Sort by</label>
+                            <select name="sortby" id="lm_checkout_sort" class="form-select">
+                                <option t-foreach="sort_options" t-as="opt" t-att-value="opt[0]" t-att-selected="sortby == opt[0]" t-out="opt[1]"/>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"/> Apply</button>
+                        <a t-if="filtered" href="/my/marketplace/checkouts" class="btn btn-outline-secondary" id="lm_checkout_reset">Clear filters</a>
+                    </div>
+                </form>
+
+                <t t-set="lb_order">Order</t>
+                <t t-set="lb_date">Date</t>
+                <t t-set="lb_payment">Payment</t>
+                <t t-set="lb_total">Total</t>
+                <t t-set="lb_status">Status</t>
+                <div t-if="rows" class="lm-table-responsive" id="lm_checkout_list">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Order</th><th>Date</th><th>Payment</th><th class="text-end">Total</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="rows" t-as="row" t-att-data-checkout="row['order'].id">
+                                <td t-att-data-label="lb_order">
+                                    <a t-att-href="'/my/marketplace/checkouts/%s' % row['order'].id" t-out="row['order'].name"/>
+                                    <div t-if="row['sellers']" class="small text-muted" t-out="row['sellers']"/>
+                                </td>
+                                <td t-att-data-label="lb_date" t-out="row['order'].date_order" t-options="{'widget': 'date'}"/>
+                                <td t-att-data-label="lb_payment" t-out="row['payment']"/>
+                                <td t-att-data-label="lb_total" class="text-end text-nowrap" t-out="row['amount']" t-options="{'widget': 'monetary', 'display_currency': row['order'].currency_id}"/>
+                                <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.lm_code_badge"><t t-set="lm_code" t-value="row['info']['code']"/><t t-set="lm_label" t-value="row['info']['label']"/></t></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <t t-elif="filtered">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-search'"/>
+                        <t t-set="lm_message">No order matches your search.</t>
+                        <t t-set="lm_action_url" t-value="'/my/marketplace/checkouts'"/>
+                        <t t-set="lm_action_label">Clear filters</t>
+                    </t>
+                </t>
+                <t t-else="">
+                    <t t-call="leaders_marketplace.lm_empty_state">
+                        <t t-set="lm_icon" t-value="'fa-shopping-basket'"/>
+                        <t t-set="lm_message">You have no orders yet.</t>
+                        <t t-set="lm_action_url" t-value="'/shop'"/>
+                        <t t-set="lm_action_label">Start shopping</t>
+                    </t>
+                </t>
+                <div t-if="pager" class="d-flex justify-content-center mt-3"><t t-call="portal.pager"/></div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_customer_checkout_detail" name="Customer Checkout Detail (Unified My Orders)">
+        <t t-call="portal.portal_layout">
+            <t t-set="page_name" t-value="'lm_checkout'"/>
+            <div class="container my-4 lm-portal" id="lm_customer_checkout">
+                <div class="lm-page-header">
+                    <div>
+                        <div class="lm-page-heading">
+                            <h1 class="lm-page-title" t-out="sale.name"/>
+                            <t t-call="leaders_marketplace.lm_code_badge"><t t-set="lm_code" t-value="info['code']"/><t t-set="lm_label" t-value="info['label']"/></t>
+                        </div>
+                        <p class="lm-page-subtitle">
+                            <span t-out="sale.date_order" t-options="{'widget': 'date'}"/> · <span t-out="payment"/>
+                        </p>
+                    </div>
+                    <div class="lm-page-actions">
+                        <form method="post" t-att-action="'/my/marketplace/checkouts/%s/buy-again' % sale.id" id="lm_buy_again_form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button class="btn btn-primary" data-lm-loading="1"><i class="fa fa-repeat" aria-hidden="true"/> Buy again</button>
+                        </form>
+                        <a href="/my/marketplace/checkouts" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> My orders</a>
+                    </div>
+                </div>
+
+                <div class="lm-card mb-3" id="lm_checkout_timeline">
+                    <t t-call="leaders_marketplace.lm_timeline"><t t-set="lm_record" t-value="sale"/></t>
+                    <div t-if="info['code'] == 'partially_cancelled'" class="small text-muted mt-2">Part of this order was cancelled; the steps above show the rest of it.</div>
+                </div>
+
+                <div t-if="actions" class="d-flex flex-wrap gap-2 mb-3" id="lm_checkout_actions">
+                    <a t-foreach="actions" t-as="act" t-att-href="act['url']" t-att-data-action="act['key']" class="btn btn-outline-danger" t-out="act['label']"/>
+                </div>
+
+                <!-- Company part -->
+                <div t-if="company" class="lm-card mb-3" id="lm_checkout_company">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <h2 class="lm-section-title mb-0">Shipped and sold by us</h2>
+                        <t t-call="leaders_marketplace.lm_code_badge"><t t-set="lm_code" t-value="company['code']"/><t t-set="lm_label" t-value="company['label']"/></t>
+                    </div>
+                    <t t-set="lb_product">Product</t>
+                    <t t-set="lb_qty">Qty</t>
+                    <t t-set="lb_total">Total</t>
+                    <div class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Total</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="company['lines']" t-as="l">
+                                    <td t-att-data-label="lb_product" t-out="l.product_id.display_name"/>
+                                    <td t-att-data-label="lb_qty" class="text-end" t-out="'%g' % l.product_uom_qty"/>
+                                    <td t-att-data-label="lb_total" class="text-end text-nowrap" t-out="l.price_total" t-options="{'widget': 'monetary', 'display_currency': sale.currency_id}"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div t-foreach="company['pickings']" t-as="pk" class="small mb-1">
+                        <i class="fa fa-truck" aria-hidden="true"/> <strong t-out="pk['name']"/> - <t t-out="pk['state']"/>
+                        <t t-if="pk['tracking_ref']"> - Tracking:
+                            <a t-if="pk['tracking_url']" t-att-href="pk['tracking_url']" target="_blank" rel="noopener" t-out="pk['tracking_ref']"/>
+                            <t t-else="" t-out="pk['tracking_ref']"/>
+                        </t>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        <a t-foreach="company['invoices']" t-as="inv" t-att-href="inv['url']" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa fa-file-pdf-o" aria-hidden="true"/> Invoice <t t-out="inv['name']"/></a>
+                        <a t-if="company['order_url']" t-att-href="company['order_url']" class="btn btn-sm btn-outline-secondary">Order details</a>
+                    </div>
+                </div>
+
+                <!-- One section per seller -->
+                <div t-foreach="vendor_parts" t-as="part" class="lm-card mb-3" t-att-id="'lm_checkout_vendor_%s' % part['order'].id" t-att-data-vendor-order="part['order'].id">
+                    <t t-set="vorder" t-value="part['order']"/>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <h2 class="lm-section-title mb-0">
+                            Sold by
+                            <a t-if="vorder.vendor_id.vendor_store_slug" t-att-href="'/seller/%s' % vorder.vendor_id.vendor_store_slug" t-out="vorder.vendor_id.vendor_store_name or vorder.vendor_id.name"/>
+                            <t t-else="" t-out="vorder.vendor_id.vendor_store_name or vorder.vendor_id.name"/>
+                        </h2>
+                        <t t-call="leaders_marketplace.lm_code_badge"><t t-set="lm_code" t-value="part['code']"/><t t-set="lm_label" t-value="part['label']"/></t>
+                    </div>
+                    <div class="small text-muted mb-2"><span t-out="vorder.name"/> · <span t-out="vorder.amount_total" t-options="{'widget': 'monetary', 'display_currency': vorder.currency_id}"/></div>
+                    <t t-set="lb_product">Product</t>
+                    <t t-set="lb_qty">Qty</t>
+                    <t t-set="lb_total">Total</t>
+                    <div class="lm-table-responsive">
+                        <table class="table align-middle lm-table">
+                            <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Total</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="part['lines']" t-as="l">
+                                    <td t-att-data-label="lb_product" t-out="l.product_id.display_name"/>
+                                    <td t-att-data-label="lb_qty" class="text-end" t-out="'%g' % l.product_uom_qty"/>
+                                    <td t-att-data-label="lb_total" class="text-end text-nowrap" t-out="l.price_total" t-options="{'widget': 'monetary', 'display_currency': vorder.currency_id}"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12 col-lg-6" t-foreach="vorder.fulfillment_group_ids" t-as="g">
+                            <div class="border rounded p-3 h-100">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                                    <strong t-out="g.name"/>
+                                    <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="g"/></t>
+                                </div>
+                                <t t-call="leaders_marketplace.lm_timeline"><t t-set="lm_record" t-value="g"/></t>
+                                <div class="small mt-2" t-if="g.tracking_ref or g.tracking_url">
+                                    <i class="fa fa-truck" aria-hidden="true"/> Tracking:
+                                    <a t-if="g.tracking_url" t-att-href="g.tracking_url" target="_blank" rel="noopener" t-out="g.tracking_ref or g.tracking_url"/>
+                                    <t t-else="" t-out="g.tracking_ref"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div t-if="part['documents']" class="d-flex flex-wrap gap-2 mt-3">
+                        <a t-foreach="part['documents']" t-as="doc" t-att-href="'/my/marketplace/vendor-invoices/%s' % doc.id" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa fa-file-pdf-o" aria-hidden="true"/> <t t-out="doc.name"/></a>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 mt-3 align-items-center" t-att-id="'lm_checkout_chips_%s' % vorder.id">
+                        <a t-foreach="part['chips']" t-as="chip" t-att-href="chip['url']" t-att-data-action="chip['key']" class="btn btn-sm btn-outline-secondary" t-out="chip['label']"/>
+                        <a t-attf-href="/my/marketplace/orders/#{vorder.id}" class="btn btn-sm btn-outline-primary">Manage this order</a>
+                    </div>
+                </div>
+
+                <!-- Totals -->
+                <div class="lm-card" id="lm_checkout_totals">
+                    <div class="lm-totals">
+                        <div t-if="delivery_text" class="small text-muted mb-2" id="lm_checkout_delivery"><i class="fa fa-truck" aria-hidden="true"/> <t t-out="delivery_text"/></div>
+                        <div class="lm-totals-grand"><span>Total</span><span class="text-nowrap" t-out="amount" t-options="{'widget': 'monetary', 'display_currency': sale.currency_id}"/></div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Breadcrumbs of the unified pages: Home > My orders > Order -->
+    <template id="portal_breadcrumbs_marketplace_checkouts" inherit_id="portal.portal_breadcrumbs" name="Marketplace Checkout Breadcrumbs" priority="31">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'lm_checkouts'" class="breadcrumb-item active" aria-current="page">My orders</li>
+            <t t-elif="page_name == 'lm_checkout' and sale">
+                <li class="breadcrumb-item"><a href="/my/marketplace/checkouts">My orders</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><t t-out="sale.name"/></li>
+            </t>
+        </xpath>
+    </template>
+</odoo>

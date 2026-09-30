@@ -16,6 +16,7 @@ STATE_TONES = {
     "pending_approval": "warning", "hold": "warning", "held": "warning", "open": "warning",
     "not_paid": "warning", "vendor_reply": "warning", "delivery_reported": "warning",
     "returned": "warning", "late": "danger", "draft": "secondary",
+    "placed": "info", "partially_cancelled": "warning",
     # in progress
     "confirmed": "info", "processing": "info", "allocated": "info", "picking": "info",
     "packing": "info", "validating": "info", "scheduled": "info", "created": "info",
@@ -91,10 +92,17 @@ class LeadersPortalNav(models.AbstractModel):
     # Customer home
     # ------------------------------------------------------------------
     @api.model
+    def _customer_orders_url(self):
+        """Where "My orders" leads: the unified checkout list when the switch is on."""
+        if self.env["sale.order"]._leaders_unified_orders_enabled():
+            return "/my/marketplace/checkouts"
+        return "/my/marketplace/orders"
+
+    @api.model
     def _customer_entries(self):
         """Cards of the customer's /my home (marketplace entries)."""
         entries = [
-            {"key": "orders", "url": "/my/marketplace/orders", "route_exists": True,
+            {"key": "orders", "url": self._customer_orders_url(), "route_exists": True,
              "title": _("My orders"), "text": _("Follow your orders, deliveries and invoices")},
             {"key": "returns", "url": "/my/marketplace/returns", "route_exists": True,
              "title": _("Returns & disputes"), "text": _("Your return requests and disputes")},
@@ -218,7 +226,7 @@ class LeadersPortalNav(models.AbstractModel):
             "disabled": bool(pending),
             "crumbs": crumbs,
             "is_owner": is_owner,
-            "purchases_url": "/my/marketplace/orders",
+            "purchases_url": self._customer_orders_url(),
         }
 
     # ------------------------------------------------------------------
@@ -230,6 +238,11 @@ class LeadersPortalNav(models.AbstractModel):
         value = record[field] if record and field in record._fields else False
         label = dict(record._fields[field]._description_selection(record.env)).get(value) if value else ""
         return {"tone": STATE_TONES.get(value, "secondary"), "label": label or "", "value": value or ""}
+
+    @api.model
+    def _code_badge(self, code, label):
+        """Badge data for a computed status code (checkout overall status)."""
+        return {"tone": STATE_TONES.get(code, "secondary"), "label": label or "", "value": code or ""}
 
     @api.model
     def _timeline(self, record):
@@ -247,7 +260,17 @@ class LeadersPortalNav(models.AbstractModel):
         }
         dates = dict.fromkeys(TIMELINE_KEYS, False)
         terminal = False
-        if record._name == "leaders.fulfillment.group":
+        if record._name == "sale.order":
+            # A checkout: the progress of its living parts; cancelled = every part cancelled.
+            info = record._leaders_status_info()
+            ordered, shipped, delivered = record._leaders_checkout_dates()
+            dates.update(ordered=ordered, shipped=shipped, delivered=delivered)
+            stage = {"placed": 0, "confirmed": 1, "processing": 1, "partially_shipped": 2,
+                     "shipped": 2, "delivered": 3, "returned": 3, "cancelled": 1}.get(info["progress"], 0)
+            cancelled = info["code"] == "cancelled"
+            returned = info["progress"] == "returned" and not cancelled
+            cancel_date = record._leaders_cancel_date()
+        elif record._name == "leaders.fulfillment.group":
             stage = {
                 "allocated": 1, "picking": 1, "packing": 1, "ready": 1,
                 "partially_shipped": 2, "shipped": 2, "delivery_reported": 2,

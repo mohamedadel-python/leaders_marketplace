@@ -234,7 +234,7 @@
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <li t-if="page_name == 'lm_orders'" class="breadcrumb-item active" aria-current="page">My orders</li>
             <t t-elif="page_name == 'lm_order' and order">
-                <li class="breadcrumb-item"><a href="/my/marketplace/orders">My orders</a></li>
+                <li class="breadcrumb-item"><a t-att-href="request.env['leaders.portal.nav']._customer_orders_url()">My orders</a></li>
                 <li class="breadcrumb-item active" aria-current="page"><t t-out="order.name"/></li>
             </t>
             <li t-elif="page_name == 'lm_returns'" class="breadcrumb-item active" aria-current="page">Returns &amp; disputes</li>
@@ -555,7 +555,7 @@
                     Your rating: <strong t-esc="int(lm_rating.rating)"/> / 5
                     <span t-if="lm_rating.feedback" class="text-muted">- <t t-esc="lm_rating.feedback"/></span>
                 </div>
-                <form t-if="lm_can_rate" method="post" t-att-action="'/my/marketplace/orders/%s/rate' % order.id" class="lm-card mt-4 lm-validate">
+                <form t-if="lm_can_rate" method="post" t-att-action="'/my/marketplace/orders/%s/rate' % order.id" class="lm-card mt-4 lm-validate" id="lm_rate_form">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <h2 class="lm-section-title">Rate this order</h2>
                     <div class="lm-form-field">

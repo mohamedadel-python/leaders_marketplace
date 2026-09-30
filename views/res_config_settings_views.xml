@@ -23,6 +23,9 @@
                                 <field name="marketplace_cancel_window_hours"/>
                             </div>
                         </setting>
+                        <setting string="Unified My Orders" help="One My orders list with a row per checkout (company order and every seller), an order page grouped by seller and Buy again. Off keeps the current lists.">
+                            <field name="marketplace_unified_customer_orders"/>
+                        </setting>
                         <setting string="Standard Portal Entries" help="Which of Odoo's own entries (Quotations, Sales Orders, Invoices, other apps) appear on the customer's My Account home. Marketplace entries always appear.">
                             <field name="marketplace_portal_show_standard_entries"/>
                         </setting>
