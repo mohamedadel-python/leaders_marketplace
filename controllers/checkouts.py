@@ -10,7 +10,9 @@ from datetime import timedelta
 from werkzeug.exceptions import NotFound
 
 from odoo import _, fields, http
-from odoo.exceptions import AccessError
+from urllib.parse import quote
+
+from odoo.exceptions import AccessError, UserError
 from odoo.http import request
 from odoo.osv import expression
 from odoo.addons.portal.controllers.portal import pager as portal_pager
@@ -141,6 +143,8 @@ class MarketplaceCheckouts(http.Controller):
             "actions": sale._leaders_checkout_actions(),
             "delivery_text": sale._leaders_delivery_breakdown_text(),
             "bought_error": kw.get("error"),
+            "cancel": sale._leaders_company_only_cancel_info(),
+            "cancelled_now": kw.get("cancelled"),
         })
 
     # ------------------------------------------------------------------ buy again
@@ -157,3 +161,25 @@ class MarketplaceCheckouts(http.Controller):
                 ", ".join(_("%(product)s (%(reason)s)", product=p.display_name or _("Unknown product"), reason=r)
                           for p, r in skipped))
         return request.redirect("/shop/cart")
+
+    # ------------------------------------------------------------------ cancel
+    @http.route("/my/marketplace/checkouts/<int:sale_order_id>/cancel", type="http", auth="user",
+                website=True, methods=["POST"], csrf=True)
+    def customer_checkout_cancel(self, sale_order_id, **post):
+        """Cancel the whole checkout, also when it only has company products (A2 rules).
+
+        Needs both switches (customer cancellation and unified orders). A checkout
+        with vendor orders goes through the same whole-checkout cancel as the
+        vendor-order route (scope ``all``), so the result is identical.
+        """
+        self._require_enabled()
+        sale = self._customer_checkout(sale_order_id)
+        if not request.env["leaders.vendor.order"]._customer_cancel_enabled():
+            raise NotFound()
+        url = f"/my/marketplace/checkouts/{sale.id}"
+        try:
+            with request.env.cr.savepoint():
+                sale.action_customer_cancel_checkout(post.get("reason_id"), post.get("note"))
+        except UserError as error:
+            return request.redirect(f"{url}?error={quote(str(error.args[0]))}")
+        return request.redirect(f"{url}?cancelled=all")

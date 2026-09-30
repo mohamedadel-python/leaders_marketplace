@@ -67,6 +67,54 @@ class SaleOrder(models.Model):
         self.ensure_one()
         return any(p.state == "done" for p in self.picking_ids)
 
+    def _leaders_customer_cancel_all_status(self):
+        """Why the customer cannot cancel this WHOLE checkout, or ``None`` when they can.
+
+        One of ``off``, ``cancelled``, ``shipped``, ``window``. It is the rule the
+        vendor-order ``scope == "all"`` uses too (a checkout with zero vendor
+        orders, i.e. company products only, works the same way).
+        """
+        self.ensure_one()
+        VendorOrder = self.env["leaders.vendor.order"]
+        if not VendorOrder._customer_cancel_enabled():
+            return "off"
+        sale = self.sudo()
+        parts = sale.vendor_order_ids
+        company_active = sale._leaders_company_part_active()
+        if not parts.filtered(lambda v: v.state != "cancelled") and not company_active:
+            return "cancelled"
+        if any(v._customer_part_shipped() for v in parts) or sale._leaders_company_part_shipped():
+            return "shipped"
+        hours = VendorOrder._customer_cancel_window_hours()
+        if hours and sale.date_order and fields.Datetime.now() > sale.date_order + timedelta(hours=hours):
+            return "window"
+        return None
+
+    def action_customer_cancel_checkout(self, reason_id, note=None):
+        """The customer cancels this whole checkout (company part and every vendor order).
+
+        Works with zero vendor orders (company products only). With vendor orders
+        it is exactly the vendor-order ``action_customer_cancel(scope="all")``.
+        Ownership is the caller's job (the portal route).
+        """
+        self.ensure_one()
+        sale = self.sudo()
+        if sale.vendor_order_ids:
+            return sale.vendor_order_ids[:1].action_customer_cancel(reason_id, note, scope="all")
+        VendorOrder = self.env["leaders.vendor.order"]
+        VendorOrder._customer_cancel_raise(sale._leaders_customer_cancel_all_status())
+        reason = VendorOrder._customer_cancel_reason(reason_id)
+        note = (note or "").strip() or False
+        sale.write({"leaders_cancel_reason_id": reason.id})
+        if sale._leaders_cancel_company_part(reason, note):
+            text = reason.name if not note else "%s: %s" % (reason.name, note)
+            sale.message_post(body=_(
+                "Order cancelled by the customer. Reason: %(reason)s", reason=text))
+        self.env["leaders.notification"].notify_customer(
+            "customer_order_cancelled_by_customer", sale, sale.partner_id,
+            template_xmlid="leaders_marketplace.mail_template_customer_order_cancelled_by_customer_company")
+        return True
+
     def _leaders_cancel_company_part(self, reason, note=None):
         """Cancel the company part as the customer asked; prepare the refund if paid online."""
         self.ensure_one()
@@ -183,16 +231,16 @@ class VendorOrder(models.Model):
         if not self._customer_cancel_enabled():
             return "off"
         if scope == "all":
-            parts = self._customer_cancel_parts()
             sale = self.sale_order_id.sudo()
-            company = sale if sale and sale._leaders_company_part_active() else sale.browse()
-            active = parts.filtered(lambda v: v.state != "cancelled")
-            if not active and not company:
+            if sale:
+                return sale._leaders_customer_cancel_all_status()
+            if not self._customer_cancel_enabled():
+                return "off"
+            if self.state == "cancelled":
                 return "cancelled"
-            if any(v._customer_part_shipped() for v in parts) or (
-                    sale and sale._leaders_company_part_shipped()):
+            if self._customer_part_shipped():
                 return "shipped"
-            started = sale.date_order if sale else False
+            started = False
         else:
             if self.state == "cancelled":
                 return "cancelled"
@@ -234,17 +282,9 @@ class VendorOrder(models.Model):
             raise UserError(_("Please choose a reason for cancelling."))
         return reason
 
-    # -------------------------------------------------------------- the action
-    def action_customer_cancel(self, reason_id, note=None, scope="vendor"):
-        """The customer cancels this seller's part or the whole checkout.
-
-        Ownership is the caller's job (the portal route). Everything is checked
-        before anything changes, so a refusal leaves the order untouched.
-        """
-        self.ensure_one()
-        if scope not in ("vendor", "all"):
-            raise UserError(_("Unknown cancellation scope."))
-        status = self._customer_cancel_scope_status(scope)
+    @api.model
+    def _customer_cancel_raise(self, status):
+        """Turn a refusal code of ``_customer_cancel_scope_status`` into its message."""
         if status == "off":
             raise UserError(_("Customers cannot cancel orders on this marketplace."))
         if status == "cancelled":
@@ -257,6 +297,18 @@ class VendorOrder(models.Model):
             raise UserError(_(
                 "The time to cancel this order has passed (%s hours after ordering).",
                 self._customer_cancel_window_hours()))
+
+    # -------------------------------------------------------------- the action
+    def action_customer_cancel(self, reason_id, note=None, scope="vendor"):
+        """The customer cancels this seller's part or the whole checkout.
+
+        Ownership is the caller's job (the portal route). Everything is checked
+        before anything changes, so a refusal leaves the order untouched.
+        """
+        self.ensure_one()
+        if scope not in ("vendor", "all"):
+            raise UserError(_("Unknown cancellation scope."))
+        self._customer_cancel_raise(self._customer_cancel_scope_status(scope))
         reason = self._customer_cancel_reason(reason_id)
         note = (note or "").strip() or False
         sale = self.sale_order_id.sudo()

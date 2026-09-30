@@ -127,6 +127,14 @@
                     <div t-if="info['code'] == 'partially_cancelled'" class="small text-muted mt-2">Part of this order was cancelled; the steps above show the rest of it.</div>
                 </div>
 
+                <div t-if="bought_error" class="alert alert-danger" role="alert" id="lm_checkout_error" t-out="bought_error"/>
+                <div t-if="cancel['cancelled']" class="alert alert-warning" id="lm_checkout_cancelled_by_customer">
+                    <div>You cancelled this order. Reason: <t t-out="sale.leaders_cancel_reason_id.name"/><t t-if="sale.leaders_cancel_note"> - <t t-out="sale.leaders_cancel_note"/></t></div>
+                    <div t-if="cancel['refund']" class="mt-1"><i class="fa fa-clock-o" aria-hidden="true"/> Your refund is being processed.</div>
+                    <div t-elif="cancel['cod']" class="mt-1">You chose Cash on Delivery, so nothing was charged.</div>
+                </div>
+                <div t-if="cancelled_now and cancel['cancelled']" class="alert alert-success" id="lm_checkout_cancel_done">Your order was cancelled.</div>
+
                 <div t-if="actions" class="d-flex flex-wrap gap-2 mb-3" id="lm_checkout_actions">
                     <a t-foreach="actions" t-as="act" t-att-href="act['url']" t-att-data-action="act['key']" class="btn btn-outline-danger" t-out="act['label']"/>
                 </div>
@@ -160,6 +168,41 @@
                             <a t-if="pk['tracking_url']" t-att-href="pk['tracking_url']" target="_blank" rel="noopener" t-out="pk['tracking_ref']"/>
                             <t t-else="" t-out="pk['tracking_ref']"/>
                         </t>
+                    </div>
+                    <!-- Cancel (company-only checkout: no vendor order page to cancel from) -->
+                    <t t-if="cancel['company_only'] and cancel['status'] is None">
+                        <form method="post" t-att-action="'/my/marketplace/checkouts/%s/cancel' % sale.id" class="lm-validate mt-3" id="lm_checkout_cancel_form" data-lm-confirm-ref="#lm_confirm_checkout_cancel">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="row g-2 align-items-start">
+                                <div class="col-12 col-md-4 lm-form-field">
+                                    <label class="form-label small" for="lm_checkout_cancel_reason">Reason</label>
+                                    <select name="reason_id" id="lm_checkout_cancel_reason" class="form-select" required="required">
+                                        <option value="">Choose a reason</option>
+                                        <option t-foreach="cancel['reasons']" t-as="r" t-att-value="r.id" t-out="r.name"/>
+                                    </select>
+                                    <div class="invalid-feedback">Please choose a reason.</div>
+                                </div>
+                                <div class="col-12 col-md-5 lm-form-field">
+                                    <label class="form-label small" for="lm_checkout_cancel_note">Note (optional)</label>
+                                    <input type="text" name="note" id="lm_checkout_cancel_note" class="form-control"/>
+                                </div>
+                                <div class="col-12 col-md-3 lm-form-field d-flex align-items-end">
+                                    <button class="btn btn-outline-danger w-100" data-lm-loading="1"><i class="fa fa-times" aria-hidden="true"/> Cancel order</button>
+                                </div>
+                            </div>
+                        </form>
+                        <span id="lm_confirm_checkout_cancel" class="d-none">Cancel the whole order? This cannot be undone.</span>
+                    </t>
+                    <div t-elif="cancel['company_only'] and cancel['status'] == 'shipped'" class="alert alert-info mt-3 mb-0" id="lm_checkout_cancel_shipped">
+                        <i class="fa fa-truck" aria-hidden="true"/> Part of this order has already shipped and cannot be cancelled. Request a return after delivery.
+                    </div>
+                    <div t-elif="cancel['company_only'] and cancel['status'] == 'window'" class="alert alert-info mt-3 mb-0" id="lm_checkout_cancel_window">
+                        The time to cancel this order has passed.
+                    </div>
+                    <!-- Returns of company products: no return flow, contact support -->
+                    <div t-if="company['code'] == 'delivered'" class="d-flex flex-wrap gap-2 align-items-center mt-3" id="lm_checkout_contact_support">
+                        <a t-att-href="'/contactus?subject=%s' % quote_plus(sale.name)" class="btn btn-sm btn-outline-primary" data-action="contact_support"><i class="fa fa-life-ring" aria-hidden="true"/> Contact support</a>
+                        <span class="small text-muted">To return items from us, contact support and quote order <strong t-out="sale.name"/>.</span>
                     </div>
                     <div class="d-flex flex-wrap gap-2 mt-2">
                         <a t-foreach="company['invoices']" t-as="inv" t-att-href="inv['url']" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa fa-file-pdf-o" aria-hidden="true"/> Invoice <t t-out="inv['name']"/></a>

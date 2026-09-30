@@ -245,6 +245,30 @@ class SaleOrder(models.Model):
                 break
         return actions
 
+    def _leaders_company_only_cancel_info(self):
+        """What the detail page needs for a checkout with only company products (no vendor order).
+
+        ``status`` is the refusal code of the A2 rule (``None`` = the customer can
+        cancel now), ``refund``/``cod`` describe a cancelled order for the banner.
+        """
+        self.ensure_one()
+        order = self.sudo()
+        info = {"company_only": not order.vendor_order_ids, "status": "off", "reasons": self.env["leaders.cancel.reason"],
+                "cancelled": False, "refund": False, "cod": False}
+        if not info["company_only"]:
+            return info
+        if order.state == "cancel":
+            info["cancelled"] = order.leaders_cancelled_by_type == "customer"
+            info["refund"] = bool(order.leaders_refund_payment_id) and order.leaders_payment_method != "cod"
+            info["cod"] = order.leaders_payment_method == "cod"
+            info["status"] = "cancelled"
+            return info
+        info["status"] = order._leaders_customer_cancel_all_status()
+        if info["status"] is None:
+            info["reasons"] = self.env["leaders.cancel.reason"].sudo().search(
+                [("active", "=", True), ("applies_to", "in", ("customer", "both"))])
+        return info
+
     # ------------------------------------------------------------------ buy again
     def _leaders_buy_again_items(self):
         """[(product, qty, is_vendor_line)] of the checkout: company and vendor lines, no delivery."""

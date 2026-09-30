@@ -159,3 +159,4 @@
   وضع التسليم؛ فشل الشحن (مخزون) يُسجَّل `failed` مع 200؛ FBL يُسجَّل ولا يُطبَّق. يُحفظ نص الجسم
   الخام (حتى 20KB) في `leaders.shipping.event.payload` للدعم. **تغيير سلوك:** `delivered` قبل
   الشحن لم يعد للتسجيل فقط.
+- F5: طلبات منتجات الشركة فقط في "طلباتي" الموحّدة (D1): مسار جديد `POST /my/marketplace/checkouts/<sale_order_id>/cancel` (يلزم `customer_can_cancel_orders` و`unified_customer_orders` معًا، نفس فحص الملكية) ونموذج "Cancel order" (سبب إلزامي + ملاحظة) في قسم الشركة بنفس قواعد A2 (لا إلغاء بعد الشحن، نافذة الساعات من تاريخ الطلب، مسودة إشعار دائن + مسودة دفعة استرداد للمدفوع أونلاين، COD بلا استرداد). المنطق مشترك: `sale.order.action_customer_cancel_checkout` و`_leaders_customer_cancel_all_status` (مسار vendor-order scope=all يستخدمهما الآن). الطلب الذي فيه بائعون يمر عبر نفس مسار scope=all فيُلغى كله. بعد التسليم يظهر إجراء "Contact support" (`/contactus?subject=<المرجع>`) بدل مسار إرجاع جديد. لا إعدادات جديدة ولا ترحيل.

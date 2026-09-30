@@ -366,6 +366,19 @@
             </field>
             <field name="auto_delete" eval="True"/>
         </record>
+        <record id="mail_template_customer_order_cancelled_by_customer_company" model="mail.template">
+            <field name="name">Marketplace: Cancellation confirmed (customer, company-only order)</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Your cancellation of order {{ object.name }} is confirmed</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>We cancelled order <strong t-out="object.name"/> as you asked.</p><p t-if="object.leaders_cancel_reason_id">Reason: <t t-out="object.leaders_cancel_reason_id.name"/><t t-if="object.leaders_cancel_note">: <t t-out="object.leaders_cancel_note"/></t></p>
+<p t-if="object.leaders_payment_method != 'cod'">If you already paid online, a refund of <t t-out="object.amount_total" t-options="{'widget': 'monetary', 'display_currency': object.currency_id}"/> is being processed.</p><p t-else="">You had chosen Cash on Delivery, so nothing was charged.</p><p><a t-attf-href="{{ object.get_base_url() }}/my/marketplace/checkouts/{{ object.id }}">See your order</a></p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
         <record id="mail_template_vendor_order_cancelled_by_customer" model="mail.template">
             <field name="name">Marketplace: Order cancelled by the customer (vendor)</field>
             <field name="model_id" ref="leaders_marketplace.model_leaders_vendor_order"/>

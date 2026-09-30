@@ -58,10 +58,11 @@ class MarketplaceNotification(models.AbstractModel):
         ]).partner_id
 
     @api.model
-    def notify(self, key, record, partners=None, email_to=None, force=False):
+    def notify(self, key, record, partners=None, email_to=None, force=False, template_xmlid=None):
         """Queue one mail for ``record`` to ``partners`` (and/or a raw address).
 
-        ``force`` skips the on/off setting: only for security notices that must
+        ``template_xmlid`` picks another template of the event (same setting) when the record is
+        not the event's usual model. ``force`` skips the on/off setting: only for security notices that must
         always reach their recipient (see ``leaders.vendor.bank.change``).
         """
         if not force and not self._enabled(key):
@@ -76,7 +77,8 @@ class MarketplaceNotification(models.AbstractModel):
             partners = accepted
         if not partners and not email_to:
             return False
-        template = self.env.ref("leaders_marketplace.mail_template_%s" % key, raise_if_not_found=False)
+        template = self.env.ref(
+            template_xmlid or "leaders_marketplace.mail_template_%s" % key, raise_if_not_found=False)
         if not template:
             return False
         values = {}
@@ -96,5 +98,5 @@ class MarketplaceNotification(models.AbstractModel):
         return self.notify(key, record, partners=self._vendor_recipients(vendor))
 
     @api.model
-    def notify_customer(self, key, record, customer):
-        return self.notify(key, record, partners=customer)
+    def notify_customer(self, key, record, customer, template_xmlid=None):
+        return self.notify(key, record, partners=customer, template_xmlid=template_xmlid)
