@@ -106,10 +106,6 @@ This list is maintained as the module is worked on; later tasks extend it.
 - **Email notifications** are on for new installs and **off for upgraded databases**
   (each has a setting; a cleared checkbox deletes its parameter, so the defaults are
   seeded as data records). See `CHANGES_v4.md`.
-- **Existing behaviour to review**: cancelling an *approved journal-mode* settlement
-  reverses the commission entry and also books the neutralising `adjustment` through
-  the fee entry, which credits the vendor payable a second time; the ledger check
-  would show it. It predates these tasks and was left as is.
 
 ## Running the tests
 

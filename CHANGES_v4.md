@@ -132,3 +132,9 @@
   (credit note + reversal of the netting entry, tax returned in the wallet) instead of
   refusing. Paid settlements still cannot be cancelled.
 
+
+# 18.0.4.0.58
+
+- F1: إلغاء تسوية معتمدة (نمط القيود) كان يقيّد دائن حساب مستحقات البائع مرتين: عكس قيد العمولة
+  + قيد التعديل المعادِل. الآن التعديل المعادِل لا ينشئ قيدًا (حركة العمولة لم يكن لها قيد
+  خاص)، فيعود الرصيد وفحص الدفتر إلى ما قبل الاعتماد، وتُعكس القيود مرة واحدة فقط.

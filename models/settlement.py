@@ -665,7 +665,10 @@ class Settlement(models.Model):
                         "note": _("Tax of the credited marketplace invoice."),
                     })
             if charged:
-                Tx.create({
+                # The commission wallet tx never had an entry of its own (the approval
+                # entry books it, and is reversed below), so the neutralising adjustment
+                # must not book one either, or the payable is credited twice.
+                Wallet.with_context(leaders_no_fee_entry=True).create({
                     "vendor_id": rec.vendor_id.id,
                     "type": "adjustment",
                     "amount": -charged,          # charged is negative: this credits it back
