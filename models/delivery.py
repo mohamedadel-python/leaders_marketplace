@@ -26,6 +26,13 @@ class VendorDeliveryZone(models.Model):
         currency_field="currency_id",
         help="Optional. When the untaxed amount of the goods this zone ships reaches this "
              "value, the delivery price is waived. Empty or 0 = no free shipping.")
+    lead_days_min = fields.Integer(
+        string="Minimum Delivery Days",
+        help="Optional delivery estimate shown to the customer. 0 = not set.")
+    lead_days_max = fields.Integer(
+        string="Maximum Delivery Days",
+        help="Optional delivery estimate shown to the customer. 0 = not set. "
+             "With both empty nothing is shown.")
     currency_id = fields.Many2one(
         "res.currency", default=lambda self: self.env.company.currency_id)
     active = fields.Boolean(default=True)
@@ -54,6 +61,37 @@ class VendorDeliveryZone(models.Model):
         for zone in self:
             if zone.price < 0 or zone.free_shipping_threshold < 0:
                 raise ValidationError(_("Delivery prices and thresholds cannot be negative."))
+
+    @api.constrains("lead_days_min", "lead_days_max")
+    def _check_lead_days(self):
+        for zone in self:
+            if zone.lead_days_min < 0 or zone.lead_days_max < 0:
+                raise ValidationError(_("Delivery days cannot be negative."))
+            if zone.lead_days_max and zone.lead_days_max < zone.lead_days_min:
+                raise ValidationError(_("The maximum delivery days cannot be below the minimum."))
+
+    @api.model
+    def _lead_days_text(self, days_min, days_max):
+        """Customer text of a delivery estimate; empty when neither bound is set."""
+        days_min, days_max = days_min or 0, days_max or 0
+        if days_min and days_max:
+            if days_min == days_max:
+                if days_min == 1:
+                    return _("Arrives in 1 day")
+                return _("Arrives in %(days)s days", days=days_min)
+            return _("Arrives in %(min)s–%(max)s days", min=days_min, max=days_max)
+        if days_max:
+            return _("Arrives within %(max)s days", max=days_max)
+        if days_min:
+            return _("Arrives in %(min)s+ days", min=days_min)
+        return ""
+
+    def _delivery_estimate_text(self):
+        """Estimate text of this zone (empty recordset or no days = empty text)."""
+        if not self:
+            return ""
+        self.ensure_one()
+        return self._lead_days_text(self.lead_days_min, self.lead_days_max)
 
     @api.model
     def _zone_for(self, vendor, state):
@@ -158,6 +196,67 @@ class SaleOrder(models.Model):
                 result.append((_("%s delivery", vendor.vendor_store_name or vendor.name), price))
         return result
 
+    def _leaders_zone_delivery_applies(self):
+        """Was this checkout priced by the per-governorate carrier?
+
+        Removing the delivery line from the company order at the split clears
+        ``carrier_id`` (core behaviour), so afterwards the delivery lines of the
+        parts (they keep the carrier's product) tell.
+        """
+        self.ensure_one()
+        order = self.sudo()
+        if order.carrier_id:
+            return order.carrier_id.delivery_type == "marketplace_zone"
+        if not (order.marketplace_split_done or order.vendor_order_ids):
+            return False
+        products = self.env["delivery.carrier"].sudo().search(
+            [("delivery_type", "=", "marketplace_zone")]).product_id
+        used = (order.order_line.filtered("is_delivery").product_id
+                | order.vendor_order_ids.line_ids.filtered("is_delivery").product_id)
+        return bool(used & products)
+
+    def _leaders_delivery_estimates(self):
+        """Delivery estimate per seller, as a list of ``(label, text)``.
+
+        Only for the per-governorate carrier and only for zones that carry lead
+        days (empty otherwise). The label is the seller name ("Leaders" for
+        the platform part: company products and FBL lines). Before the split
+        it comes from the zone plan, afterwards from the vendor orders.
+        """
+        self.ensure_one()
+        order = self.sudo()
+        if not order._leaders_zone_delivery_applies():
+            return []
+        Zone = self.env["leaders.vendor.delivery.zone"].sudo()
+        state = order.partner_shipping_id.state_id
+        platform_needed, vendors = False, []
+        if order.marketplace_split_done or order.vendor_order_ids:
+            live = order.vendor_order_ids.filtered(lambda v: v.state != "cancelled")
+            platform_needed = order._leaders_has_company_part() or any(
+                v._leaders_has_fbl_lines() for v in live)
+            vendors = [(v.vendor_id, v.partner_shipping_id.state_id or state)
+                       for v in live if v._leaders_has_fbm_lines()]
+        else:
+            plan = order._leaders_zone_delivery_plan()
+            platform_needed = plan["platform_needed"]
+            vendors = [(vendor, state) for vendor, _price in plan["vendors"]]
+        result = []
+        if platform_needed:
+            text = Zone._platform_zone_for(state)._delivery_estimate_text()
+            if text:
+                result.append((_("Leaders"), text))
+        for vendor, vstate in vendors:
+            text = Zone._zone_for(vendor, vstate)._delivery_estimate_text()
+            if text:
+                result.append((vendor.vendor_store_name or vendor.name, text))
+        return result
+
+    def _leaders_platform_delivery_estimate(self):
+        """Estimate text of the platform part (company section of the order page)."""
+        self.ensure_one()
+        label = _("Leaders")
+        return next((text for lbl, text in self._leaders_delivery_estimates() if lbl == label), "")
+
     def _leaders_delivery_breakdown_text(self):
         """e.g. ``Leaders delivery: 40.00 · Al Nour Store delivery: 30.00``."""
         self.ensure_one()
@@ -199,3 +298,35 @@ class DeliveryCarrier(models.Model):
                 }
             total += price
         return {"success": True, "price": total, "error_message": False, "warning_message": False}
+
+
+class VendorOrder(models.Model):
+    _inherit = "leaders.vendor.order"
+
+    def _leaders_has_fbl_lines(self):
+        self.ensure_one()
+        return any(l.fulfillment_type == "fbl" for l in self.line_ids if not l.is_delivery)
+
+    def _leaders_has_fbm_lines(self):
+        self.ensure_one()
+        return any(l.fulfillment_type != "fbl" for l in self.line_ids if not l.is_delivery)
+
+    def _leaders_delivery_estimates(self):
+        """``[(label, text)]`` of this seller's part (its zone, or the platform's for FBL lines)."""
+        self.ensure_one()
+        order = self.sudo()
+        sale = order.sale_order_id
+        if sale and not sale._leaders_zone_delivery_applies():
+            return []
+        Zone = self.env["leaders.vendor.delivery.zone"].sudo()
+        state = order.partner_shipping_id.state_id or sale.partner_shipping_id.state_id
+        result = []
+        if order._leaders_has_fbl_lines():
+            text = Zone._platform_zone_for(state)._delivery_estimate_text()
+            if text:
+                result.append((_("Leaders"), text))
+        if order._leaders_has_fbm_lines():
+            text = Zone._zone_for(order.vendor_id, state)._delivery_estimate_text()
+            if text:
+                result.append((order.vendor_id.vendor_store_name or order.vendor_id.name, text))
+        return result

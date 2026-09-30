@@ -390,6 +390,14 @@ class MarketplacePortal(CustomerPortal):
         except (TypeError, ValueError):
             return default
 
+    @staticmethod
+    def _to_days(value):
+        """Non-negative whole days from a form value (empty/invalid = 0)."""
+        try:
+            return max(int(float(value or 0)), 0)
+        except (TypeError, ValueError):
+            return 0
+
     def _vendor_render(self, template, values):
         """Render a vendor page with the frozen-account banner attached."""
         values.setdefault("freeze_notice", self._vendor_freeze_notice(values["vendor"]))
@@ -1466,6 +1474,8 @@ class MarketplacePortal(CustomerPortal):
                 request.env["leaders.vendor.delivery.zone"].sudo().create({
                     "vendor_id": vendor.id, "state_id": state_id, "price": price,
                     "free_shipping_threshold": max(self._to_float(post.get("free_shipping_threshold"), 0.0), 0.0),
+                    "lead_days_min": self._to_days(post.get("lead_days_min")),
+                    "lead_days_max": self._to_days(post.get("lead_days_max")),
                 })
         except (UserError, ValidationError) as e:
             return request.redirect(f"{url}?error={quote(str(e.args[0]))}")
@@ -1496,6 +1506,9 @@ class MarketplacePortal(CustomerPortal):
                 if "free_shipping_threshold" in post:
                     vals["free_shipping_threshold"] = max(
                         self._to_float(post.get("free_shipping_threshold"), 0.0), 0.0)
+                for key in ("lead_days_min", "lead_days_max"):
+                    if key in post:
+                        vals[key] = self._to_days(post.get(key))
                 zone.write(vals)
         except (UserError, ValidationError) as e:
             return request.redirect(f"{url}?error={quote(str(e.args[0]))}")

@@ -1489,6 +1489,8 @@
                             </div>
                             <div class="col-6 col-xl-2 lm-form-field"><label class="form-label" for="lm_zone_price">Price</label><input id="lm_zone_price" type="number" step="0.01" min="0" name="price" class="form-control" required="required"/><div class="invalid-feedback">Enter the delivery price (0 or more).</div></div>
                             <div class="col-6 col-xl-2 lm-form-field"><label class="form-label" for="lm_zone_free">Free delivery from</label><input id="lm_zone_free" type="number" step="0.01" min="0" name="free_shipping_threshold" class="form-control" placeholder="optional"/></div>
+                            <div class="col-6 col-xl-1 lm-form-field"><label class="form-label" for="lm_zone_days_min">Days from</label><input id="lm_zone_days_min" type="number" step="1" min="0" name="lead_days_min" class="form-control" placeholder="optional"/></div>
+                            <div class="col-6 col-xl-1 lm-form-field"><label class="form-label" for="lm_zone_days_max">Days to</label><input id="lm_zone_days_max" type="number" step="1" min="0" name="lead_days_max" class="form-control" placeholder="optional"/></div>
                             <div class="col-12 col-xl-2 lm-form-field d-flex align-items-end"><button type="submit" class="btn btn-primary w-100" data-lm-loading="1">Add</button></div>
                         </form>
                     </div>
@@ -1542,10 +1544,10 @@
                     })();
                 </script>
                 <t t-set="lb_governorate">Governorate</t>
-                <t t-set="lb_price">Price / free delivery from</t>
+                <t t-set="lb_price">Price / free delivery from / delivery days</t>
                 <div t-if="zones" class="lm-table-responsive">
                     <table class="table align-middle lm-table" id="lm_zones_table">
-                        <thead><tr><th>Country</th><th>Governorate</th><th>Price / free delivery from</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+                        <thead><tr><th>Country</th><th>Governorate</th><th>Price / free delivery from / delivery days</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
                         <tbody>
                             <tr t-foreach="zones" t-as="z">
                                 <td class="lm-cell-title" t-esc="z.country_id.name"/>
@@ -1555,6 +1557,8 @@
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                         <input type="number" step="0.01" min="0" name="price" t-att-value="z.price" class="form-control form-control-sm" aria-label="Price"/>
                                         <input type="number" step="0.01" min="0" name="free_shipping_threshold" t-att-value="z.free_shipping_threshold or ''" placeholder="free from" class="form-control form-control-sm" aria-label="Free delivery from"/>
+                                        <input type="number" step="1" min="0" name="lead_days_min" t-att-value="z.lead_days_min or ''" placeholder="days from" class="form-control form-control-sm" aria-label="Delivery days from"/>
+                                        <input type="number" step="1" min="0" name="lead_days_max" t-att-value="z.lead_days_max or ''" placeholder="days to" class="form-control form-control-sm" aria-label="Delivery days to"/>
                                         <button type="submit" class="btn btn-sm btn-outline-primary" data-lm-loading="1">Save</button>
                                     </form>
                                 </td>

@@ -62,6 +62,10 @@
                     <span t-else="">Free</span>
                 </td>
             </tr>
+            <t t-set="lm_estimates" t-value="website_sale_order._leaders_delivery_estimates() if website_sale_order and website_sale_order.carrier_id else []"/>
+            <tr t-foreach="lm_estimates" t-as="lm_est" t-if="len(lm_estimates) &gt; 0" class="lm-delivery-estimate">
+                <td class="ps-3 pt-0 pb-2 border-0 text-muted small" colspan="3"><i class="fa fa-clock-o" aria-hidden="true"/> <t t-out="lm_est[0]"/>: <t t-out="lm_est[1]"/></td>
+            </tr>
         </xpath>
     </template>
     <template id="confirmation_delivery_breakdown" inherit_id="website_sale.confirmation">
@@ -75,6 +79,10 @@
                         <span t-else="">Free</span>
                     </span>
                 </t>
+            </div>
+            <t t-set="lm_estimates" t-value="order._leaders_delivery_estimates()"/>
+            <div t-if="lm_estimates" class="lm-delivery-estimate mt-2 text-muted small">
+                <div t-foreach="lm_estimates" t-as="lm_est"><i class="fa fa-clock-o" aria-hidden="true"/> <t t-out="lm_est[0]"/>: <t t-out="lm_est[1]"/></div>
             </div>
         </xpath>
     </template>

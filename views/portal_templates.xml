@@ -482,6 +482,10 @@
                     <t t-call="leaders_marketplace.lm_timeline"><t t-set="lm_record" t-value="order"/></t>
                 </div>
 
+                <t t-set="lm_estimates" t-value="order._leaders_delivery_estimates() if order.state != 'cancelled' else []"/>
+                <div t-if="lm_estimates" class="lm-card mb-3 lm-delivery-estimate" id="lm_order_delivery_estimate">
+                    <div t-foreach="lm_estimates" t-as="lm_est"><i class="fa fa-clock-o" aria-hidden="true"/> <t t-if="len(lm_estimates) &gt; 1"><t t-out="lm_est[0]"/>: </t><t t-out="lm_est[1]"/></div>
+                </div>
                 <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
                 <div t-if="order.state == 'cancelled' and order.cancel_reason and order.cancelled_by_type != 'customer'" class="alert alert-warning">
                     This order was cancelled by the seller. Reason: <t t-esc="order.cancel_reason"/>

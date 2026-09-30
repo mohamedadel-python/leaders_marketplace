@@ -137,6 +137,8 @@
                         <h2 class="lm-section-title mb-0">Shipped and sold by us</h2>
                         <t t-call="leaders_marketplace.lm_code_badge"><t t-set="lm_code" t-value="company['code']"/><t t-set="lm_label" t-value="company['label']"/></t>
                     </div>
+                    <t t-set="lm_platform_estimate" t-value="sale._leaders_platform_delivery_estimate()"/>
+                    <div t-if="lm_platform_estimate" class="small text-muted mb-2 lm-delivery-estimate"><i class="fa fa-clock-o" aria-hidden="true"/> <t t-out="lm_platform_estimate"/></div>
                     <t t-set="lb_product">Product</t>
                     <t t-set="lb_qty">Qty</t>
                     <t t-set="lb_total">Total</t>
@@ -176,6 +178,8 @@
                         </h2>
                         <t t-call="leaders_marketplace.lm_code_badge"><t t-set="lm_code" t-value="part['code']"/><t t-set="lm_label" t-value="part['label']"/></t>
                     </div>
+                    <t t-set="lm_estimates" t-value="vorder._leaders_delivery_estimates()"/>
+                    <div t-foreach="lm_estimates" t-as="lm_est" class="small text-muted mb-1 lm-delivery-estimate"><i class="fa fa-clock-o" aria-hidden="true"/> <t t-if="len(lm_estimates) &gt; 1"><t t-out="lm_est[0]"/>: </t><t t-out="lm_est[1]"/></div>
                     <div class="small text-muted mb-2"><span t-out="vorder.name"/> · <span t-out="vorder.amount_total" t-options="{'widget': 'monetary', 'display_currency': vorder.currency_id}"/></div>
                     <t t-set="lb_product">Product</t>
                     <t t-set="lb_qty">Qty</t>
