@@ -91,3 +91,21 @@
 
 ## Backend "Cancel Remaining" is attributed to "the vendor" in the chatter (CH04, low)
 - Where: `models/sale.py` `action_cancel_remaining` uses `leaders_cancel_by` from the context, default `vendor`; the backend button passes none, so a manager's click posts "Cancelled quantity (...) by the vendor". Only the warehouse hook and `action_cancel_quantities` pass `warehouse` / `platform`.
+
+## Typing 0 in "Applications per Day" or "Auto-confirm Delivery After (Days)" does not do what the field help says (CH02A)
+- Where: models/res_config_settings.py `marketplace_vendor_apply_daily_limit` (help "0 disables the limit") and `marketplace_fbm_auto_confirm_days` (help "Zero waits for the customer forever"); readers controllers/vendor_apply.py `_rate_limited` (`_int_param(key, 3)`) and models/sale.py `cron_auto_confirm_delivery` (`get_param(key, 3)`). Same pattern (a stored 0 falls back to the code default) for `ship_sla_days` (2), `return_window_days` (14), `return_vendor_sla_days` (3), `dispute_sla_days` (3), `vendor_rating_min_count` (5), `kpi_cancellation_threshold` / `late_shipment_rate_threshold` (20), `max_vendor_discount_without_approval` (50), `vendor_document_max_mb` / `vendor_image_max_mb` (5).
+- Steps: Settings > Marketplace: set "Applications per Day (IP / Email)" to 0 and Save; reopen the screen.
+- Expected: the limit is off (help text). Actual: `res.config.settings.set_values` stores an integer/float 0 as `False`, which deletes the `ir.config_parameter`; the screen then shows the default again (3) and the code reads the missing key as 3, so the limit stays 3 per day. Same for the FBM auto-confirm delay: 0 becomes 3 days, so "wait forever" is impossible from the UI. (Verified on a DB copy: after saving 0 the parameter does not exist and the screen shows 3.) Settings whose reader treats a missing key as 0 (COD max amount, COD refusal block count, cancellation window) or that are seeded/handled explicitly (API rate limit, webhook limits) are not affected.
+- Found by: CH02A.
+
+## A new vendor tier cannot be created from the Vendor Tiers list (CH02A)
+- Where: views/vendor_tier_views.xml (`view_vendor_tier_tree` is `editable="bottom"` and lacks `code`) + models/vendor_core.py (`code = fields.Char(required=True)`), action `action_vendor_tier`.
+- Steps: as a manager open Marketplace > Configuration > Vendor Tiers, press New, type a name, rate, limit, frequency, save.
+- Expected: the tier is created or the form opens. Actual: the inline row has no Code column, so the server answers with a NOT NULL violation on `code` (reproduced with `create()` on a DB copy: `null value in column "code" ... violates not-null constraint`); there is also no button to open the auto-generated form from the editable list.
+- Found by: CH02A.
+
+## Automatic tier upgrade promotes every vendor to Platinum with the shipped tiers (CH02A)
+- Where: data/vendor_tier_data.xml (Bronze/Silver/Gold/Platinum have `min_months`, `min_sales`, `min_rating` all 0) + models/vendor_core.py `cron_auto_upgrade_tiers` / `_vendor_qualifies` (`>=` against 0 is always true; `earned = tiers.filtered(...)[-1:]` is the highest sequence).
+- Steps: on a fresh install enable Settings > Marketplace > "Upgrade Vendor Tiers Automatically" and run the monthly cron.
+- Expected: vendors move only as far as their seniority, sales and rating allow. Actual: with untouched thresholds every approved vendor qualifies for the last tier (Platinum: 8 % rate, daily payout, release on ship, no reserve). The manual tells the admin to fill the thresholds first.
+- Found by: CH02A (code reading).
