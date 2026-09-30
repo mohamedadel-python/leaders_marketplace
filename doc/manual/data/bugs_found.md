@@ -256,3 +256,31 @@
 - Expected: the reviewer, who decides escalated returns (buttons "Approve Return"/"Reject Return" are shown to `group_marketplace_reviewer`), opens the form.
 - Actual: the form does not open: `AccessError: You are not allowed to access 'Marketplace Fulfillment Group' (leaders.fulfillment.group). This operation is allowed for the groups: Marketplace/Marketplace Manager, Marketplace/Vendor Staff` (reproduced with `web_read` of `replacement_group_ids` as the reviewer; every other field of the form reads fine). The capture run of the manual (role reviewer) failed on all `backend_return_form_*` screens with this dialog. Together with the separate `leaders.vendor.order.line` AccessError on "Approve Return", only the Marketplace Manager can decide a return from the UI.
 - Found by: CH03 (capture_report.json of the screenshot run + shell test).
+
+## The vendor performance page shows penalties that were never applied (draft) and never shows their state (CH06B)
+- Where: controllers/portal.py `vendor_performance` (`leaders.vendor.penalty` searched by vendor only, no state filter) + views/portal_vendor_templates.xml `portal_vendor_performance` (columns: level, reason, start, end; no state).
+- Steps: with `late_shipment_auto_warning` (or `kpi_auto_warning`) switched on, `cron_compute_kpis` prepares a DRAFT warning (demo: oasis, "معدل الشحن المتأخر 40.00% خلال 2026-08-01 (الحد 20.00%)"); log in as owner.oasis@vendor.demo and open /my/vendor/performance.
+- Expected: only penalties a manager applied are listed, or the state (draft / applied / lifted) is shown.
+- Actual: the draft warning is listed like an applied one; a lifted freeze also looks identical to an active one.
+- Found by: CH06B.
+
+## The "Confirm Order" and "Confirm Cash Collected" buttons are shown to vendor staff but the routes are owner-only (CH06B)
+- Where: views/portal_vendor_templates.xml `portal_vendor_order_detail` (form `/my/vendor/orders/<id>/confirm` shown when state = pending; form `confirm-cod-payment` shown when `lm_cod_confirm_due`, neither checks `lm_is_vendor_owner`) vs controllers/portal.py `vendor_order_confirm` / `vendor_order_confirm_cod_payment` (AccessError for non-owners). The order list also shows the "Confirm cash collected" badge to staff.
+- Steps: log in as staff.nour@vendor.demo, open a completed COD FBM order not yet cash-confirmed, press "تأكيد تحصيل النقد".
+- Expected: the button is hidden for staff (like the cancel card, which checks `lm_is_vendor_owner`).
+- Actual: HTTP 403 page "يمكن لمالك البائع فقط تأكيد تحصيل النقدية." (checked in-process: staff POST /my/vendor/orders/<id>/confirm -> 403).
+- Found by: CH06B.
+
+## The "Available" balance card and the API wallet balance include COD cash the vendor already holds (CH06B)
+- Where: models/res_partner.py `_compute_vendor_wallet_balances` (sums every `available` wallet transaction, `cod_collected` included) used by portal_vendor_finance cards and `GET /api/v1/vendor/wallet` (`balances.available`), while settlements (`_compute_amounts`) and the statement (`_leaders_vendor_statement`) exclude `cod_collected`.
+- Steps: oasis in the demo data: one confirmed FBM COD order (VO/000026, 2,150.50) plus its commission/fees; open /my/vendor/finance as owner.oasis@vendor.demo.
+- Expected: "Available" is what can be settled (here -400.14, a debt) or at least is consistent with the statement.
+- Actual: "Available" shows 1,750.36 (= 2,150.50 cash the vendor holds - 400.14), while SET/000005 nets -400.14 and the statement's available bucket is -400.14.
+- Found by: CH06B (vendor statement queried on lm_manual_ref).
+
+## Adding a delivery zone for a governorate that already has one gives an error page instead of an inline message (CH06B)
+- Where: controllers/portal.py `vendor_delivery_zone_create` catches only UserError/ValidationError; the unique SQL constraint (`leaders_vendor_delivery_zone_vendor_state_uniq`) raises IntegrityError which becomes an HTTP 400 error page.
+- Steps: owner.nour@vendor.demo, /my/vendor/delivery-zones, add Cairo again with price 40 (checked in-process).
+- Expected: the red inline alert with the message ("سعر توصيل واحد فقط لكل محافظة لكل بائع.") like other validation errors, or the existing governorates removed from the select.
+- Actual: full 400 page "عذراً! حدث خطأ ما ... رسالة خطأ: لا يمكن إكمال العملية: سعر توصيل واحد فقط لكل محافظة لكل بائع."
+- Found by: CH06B.
