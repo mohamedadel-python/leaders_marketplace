@@ -33,3 +33,10 @@
 - Steps: open `/seller/<slug>` with the website in Arabic and read the browser tab title.
 - Expected: Arabic title. Actual: "Seller Storefront | <site name>".
 - Found by: DATA1 (curl).
+
+## Validating the delivery of a company (platform) order fails with a TypeError when the checkout used the zone carrier (DATA3)
+- Where: models/delivery.py (`DeliveryCarrier`, delivery_type `marketplace_zone` only implements `marketplace_zone_rate_shipment`; there is no `marketplace_zone_send_shipping`) + stock_delivery `stock.picking._send_confirmation_email` -> `send_to_shipper()` -> `self.carrier_id.send_shipping(self)[0]`.
+- Steps: website checkout with the "توصيل السوق (لكل محافظة)" carrier containing at least one company product (paid online), then as the warehouse user open the customer delivery `WH/OUT/xxxxx` (it inherits the sale order's carrier) and press Validate without typing a Tracking Reference.
+- Expected: the delivery is validated (the marketplace carrier is a price-only carrier; the company's own courier ships it).
+- Actual: `TypeError: 'NoneType' object is not subscriptable` (send_shipping returns None for an unknown delivery type) and the validation is rolled back. Workaround used by the demo generator (part 3): the warehouse first writes the Tracking Reference on the picking, which makes stock_delivery skip `send_to_shipper`. FBL pickings are not affected (they have no carrier).
+- Found by: DATA3 (scripts/manual_demo/part3_orders.py, `warehouse_validate`).
