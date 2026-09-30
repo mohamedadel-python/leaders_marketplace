@@ -336,6 +336,8 @@ def build_target(target, root, out_dir, opts):
     toc_html = ('<section class="toc-page"><h1 class="front" data-title="المحتويات" id="toc">المحتويات</h1>'
                 f'<ul class="toc">{toc_items}</ul></section>')
     body = TOKEN_RE.sub(lambda m: renderer.render(screens[int(m.group(1))]), body)
+    # Relative image paths in the chapters (src="img/x.png") resolve from ROOT/src.
+    body = body.replace('src="img/', 'src="%s/' % (root / "src" / "img").as_uri())
     if renderer.missing and not opts.allow_missing:
         raise BuildError("missing screenshots/callouts:\n  " + "\n  ".join(renderer.missing))
     for mm in renderer.missing:

@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 760" width="1100" height="760" font-family="LM Arabic, Noto Sans Arabic, sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#4d3246"/></marker><marker id="ahg" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#b45f06"/></marker></defs>
+<rect width="1100" height="760" fill="#fff"/>
+<text x="1090" y="22" font-size="15" fill="#4d3246" text-anchor="start" direction="rtl" font-weight="700">الرحلة الأساسية للطلب من اليمين إلى اليسار</text>
+<rect x="905" y="40" width="185" height="100" rx="10" fill="#714B67"/>
+<circle cx="1086" cy="44" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="1086" y="49" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">1</text>
+<text x="997.5" y="70" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">إتمام الشراء</text>
+<text x="997.5" y="95" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">سلة واحدة تضم منتجات</text>
+<text x="997.5" y="115" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">عدة بائعين</text>
+<rect x="690" y="40" width="185" height="100" rx="10" fill="#714B67"/>
+<circle cx="871" cy="44" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="871" y="49" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">2</text>
+<text x="782.5" y="70" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">التقسيم</text>
+<text x="782.5" y="95" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">طلب واحد لكل بائع</text>
+<text x="782.5" y="115" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">وجزء للشركة إن وجد</text>
+<line x1="901" y1="90" x2="879" y2="90" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<rect x="475" y="40" width="185" height="100" rx="10" fill="#714B67"/>
+<circle cx="656" cy="44" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="656" y="49" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">3</text>
+<text x="567.5" y="70" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">الدفع</text>
+<text x="567.5" y="95" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">إلكتروني، أو</text>
+<text x="567.5" y="115" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">الدفع عند الاستلام</text>
+<line x1="686" y1="90" x2="664" y2="90" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<rect x="260" y="40" width="185" height="100" rx="10" fill="#714B67"/>
+<circle cx="441" cy="44" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="441" y="49" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">4</text>
+<text x="352.5" y="70" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">قيد تحصيل الأمانة</text>
+<text x="352.5" y="95" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">المال محجوز لدى المنصة</text>
+<text x="352.5" y="115" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">وليس لدى البائع</text>
+<line x1="471" y1="90" x2="449" y2="90" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<rect x="45" y="40" width="185" height="100" rx="10" fill="#714B67"/>
+<circle cx="226" cy="44" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="226" y="49" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">5</text>
+<text x="137.5" y="70" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">التجهيز والشحن</text>
+<text x="137.5" y="95" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">FBM: البائع يشحن</text>
+<text x="137.5" y="115" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">FBL: مستودع السوق</text>
+<line x1="256" y1="90" x2="234" y2="90" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<rect x="935" y="210" width="155" height="100" rx="10" fill="#714B67"/>
+<circle cx="1086" cy="214" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="1086" y="219" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">6</text>
+<text x="1012.5" y="240" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">التسليم</text>
+<text x="1012.5" y="265" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">البائع يبلغ أو</text>
+<text x="1012.5" y="285" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">العميل يؤكد</text>
+<rect x="755" y="210" width="155" height="100" rx="10" fill="#714B67"/>
+<circle cx="906" cy="214" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="906" y="219" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">7</text>
+<text x="832.5" y="240" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">أرباح معلقة</text>
+<text x="832.5" y="265" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">تظهر في المحفظة</text>
+<text x="832.5" y="285" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">حتى موعد التحرير</text>
+<line x1="931" y1="260" x2="914" y2="260" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<rect x="575" y="210" width="155" height="100" rx="10" fill="#714B67"/>
+<circle cx="726" cy="214" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="726" y="219" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">8</text>
+<text x="652.5" y="240" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">التحرير</text>
+<text x="652.5" y="265" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">تصبح الأرباح</text>
+<text x="652.5" y="285" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">متاحة</text>
+<line x1="751" y1="260" x2="734" y2="260" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<rect x="395" y="210" width="155" height="100" rx="10" fill="#714B67"/>
+<circle cx="546" cy="214" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="546" y="219" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">9</text>
+<text x="472.5" y="240" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">التسوية</text>
+<text x="472.5" y="265" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">حساب العمولة</text>
+<text x="472.5" y="285" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">حسب خطة العمولة</text>
+<line x1="571" y1="260" x2="554" y2="260" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<rect x="215" y="210" width="155" height="100" rx="10" fill="#714B67"/>
+<circle cx="366" cy="214" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="366" y="219" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">10</text>
+<text x="292.5" y="240" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">الاعتماد</text>
+<text x="292.5" y="265" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">مالية السوق</text>
+<text x="292.5" y="285" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">تعتمد التسوية</text>
+<line x1="391" y1="260" x2="374" y2="260" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<rect x="35" y="210" width="155" height="100" rx="10" fill="#714B67"/>
+<circle cx="186" cy="214" r="13" fill="#fff" stroke="#4d3246" stroke-width="2"/>
+<text x="186" y="219" font-size="14" fill="#4d3246" text-anchor="middle" direction="rtl" font-weight="700">11</text>
+<text x="112.5" y="240" font-size="16" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">الصرف</text>
+<text x="112.5" y="265" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">تحويل الصافي</text>
+<text x="112.5" y="285" font-size="13" fill="#f0e6ee" text-anchor="middle" direction="rtl">إلى حساب البائع</text>
+<line x1="211" y1="260" x2="194" y2="260" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<polyline points="137,140 137,175 1012,175 1012,206" fill="none" stroke="#4d3246" stroke-width="2.5" marker-end="url(#ah)"/>
+<rect x="10" y="330" width="1080" height="34" rx="8" fill="#f3ecf1"/>
+<text x="1080" y="352" font-size="13" fill="#4d3246" text-anchor="start" direction="rtl">في وضع FBM فقط بدون مستودع للسوق تبقى الخطوات كما هي: كل بائع يشحن من مخزنه ويبلغ عن التسليم.</text>
+<text x="1090" y="395" font-size="15" fill="#b45f06" text-anchor="start" direction="rtl" font-weight="700">المسارات الجانبية عن الرحلة الأساسية</text>
+<rect x="832" y="410" width="258" height="150" rx="10" fill="#fff8ee" stroke="#b45f06" stroke-width="2"/>
+<text x="961.0" y="440" font-size="16" fill="#8a4a05" text-anchor="middle" direction="rtl" font-weight="700">إلغاء</text>
+<text x="961.0" y="472" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">قبل الشحن: العميل أو البائع أو المنصة</text>
+<text x="961.0" y="494" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">يعكس قيد الأمانة ويجهز الاسترداد</text>
+<text x="961.0" y="516" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">بعد شحن جزئي: إلغاء المتبقي</text>
+<rect x="891.0" y="528" width="140" height="24" rx="12" fill="#b45f06"/>
+<text x="961.0" y="545" font-size="12" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">من الخطوة 3 إلى 5</text>
+<rect x="558" y="410" width="258" height="150" rx="10" fill="#fff8ee" stroke="#b45f06" stroke-width="2"/>
+<text x="687.0" y="440" font-size="16" fill="#8a4a05" text-anchor="middle" direction="rtl" font-weight="700">مرتجع واستبدال واسترداد</text>
+<text x="687.0" y="472" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">بعد التسليم وخلال مهلة المرتجع</text>
+<text x="687.0" y="494" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">موافقة البائع أو قرار السوق</text>
+<text x="687.0" y="516" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">استلام البضاعة ثم استرداد أو بدل</text>
+<rect x="617.0" y="528" width="140" height="24" rx="12" fill="#b45f06"/>
+<text x="687.0" y="545" font-size="12" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">بعد الخطوة 6</text>
+<rect x="284" y="410" width="258" height="150" rx="10" fill="#fff8ee" stroke="#b45f06" stroke-width="2"/>
+<text x="413.0" y="440" font-size="16" fill="#8a4a05" text-anchor="middle" direction="rtl" font-weight="700">نزاع</text>
+<text x="413.0" y="472" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">يفتحه العميل على الطلب</text>
+<text x="413.0" y="494" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">البائع يرد ثم يصعد للسوق</text>
+<text x="413.0" y="516" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">مراجع السوق يكتب القرار</text>
+<rect x="343.0" y="528" width="140" height="24" rx="12" fill="#b45f06"/>
+<text x="413.0" y="545" font-size="12" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">بعد الخطوة 5</text>
+<rect x="10" y="410" width="258" height="150" rx="10" fill="#fff8ee" stroke="#b45f06" stroke-width="2"/>
+<text x="139.0" y="440" font-size="16" fill="#8a4a05" text-anchor="middle" direction="rtl" font-weight="700">رفض الاستلام عند الباب</text>
+<text x="139.0" y="472" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">للدفع عند الاستلام بعد الشحن</text>
+<text x="139.0" y="494" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">يلغى الطلب وتعود البضاعة</text>
+<text x="139.0" y="516" font-size="13" fill="#3a2a10" text-anchor="middle" direction="rtl">لا أرباح ويزيد عداد الرفض</text>
+<rect x="69.0" y="528" width="140" height="24" rx="12" fill="#b45f06"/>
+<text x="139.0" y="545" font-size="12" fill="#fff" text-anchor="middle" direction="rtl" font-weight="700">بين الخطوتين 5 و6</text>
+<line x1="961.0" y1="560" x2="961.0" y2="560" />
+<rect x="10" y="580" width="1080" height="160" rx="10" fill="#f3ecf1" stroke="#714B67" stroke-width="1.5"/>
+<text x="1080" y="608" font-size="15" fill="#4d3246" text-anchor="start" direction="rtl" font-weight="700">أين المال في كل مرحلة؟</text>
+<text x="1080" y="640" font-size="14" fill="#714B67" text-anchor="start" direction="rtl" font-weight="700">الخطوات 3 و4</text>
+<text x="930" y="640" font-size="13" fill="#222" text-anchor="start" direction="rtl">المال عند المنصة في الأمانة ولا يظهر للبائع كرصيد.</text>
+<text x="1080" y="667" font-size="14" fill="#714B67" text-anchor="start" direction="rtl" font-weight="700">الخطوتان 6 و7</text>
+<text x="930" y="667" font-size="13" fill="#222" text-anchor="start" direction="rtl">تسجل الأرباح في المحفظة بحالة معلق مع احتجاز احتياطي المرتجعات إن فعل.</text>
+<text x="1080" y="694" font-size="14" fill="#714B67" text-anchor="start" direction="rtl" font-weight="700">الخطوتان 8 و9</text>
+<text x="930" y="694" font-size="13" fill="#222" text-anchor="start" direction="rtl">تصبح الحركة متاح ثم تجمع في تسوية تخصم منها العمولة.</text>
+<text x="1080" y="721" font-size="14" fill="#714B67" text-anchor="start" direction="rtl" font-weight="700">الخطوتان 10 و11</text>
+<text x="930" y="721" font-size="13" fill="#222" text-anchor="start" direction="rtl">بعد الاعتماد والصرف تصبح الحركات تمت التسوية.</text>
+</svg>
