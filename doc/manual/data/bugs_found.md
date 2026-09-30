@@ -144,3 +144,38 @@
 - Expected: rows over 10 are highlighted and filtered.
 - Actual: highlighting and filters stay at 20.
 - Found by: CH02B.
+
+## Adding a duplicate governorate in the vendor portal delivery zones is not handled (CH09B, from code reading, not reproduced)
+- Where: controllers/portal.py `vendor_delivery_zone_create` (catches only `UserError`/`ValidationError`) + models/delivery.py SQL constraint `vendor_state_uniq` (`unique(vendor_id, state_id)`).
+- Steps: as a vendor owner open Delivery zones and add a price for a governorate that already has a zone.
+- Expected: a readable message in the red banner ("Only one delivery price per governorate per vendor.").
+- Actual (per Odoo 18 `odoo/http.py` error mapping: an uncaught database IntegrityError becomes InternalServerError; only RPC calls convert it to a ValidationError): the create runs an INSERT that raises `psycopg2.IntegrityError`, which the controller does not catch, so the owner is expected to get an HTTP 500 page. Not reproduced on a database copy.
+- Found by: CH09B (scripts/manual_error_tables.py, error row `sql:vendor_state_uniq`).
+
+## The "Collect Transactions" button of a settlement fails for the Finance user (AccessError on wallet transactions) (CH05)
+- Where: models/settlement.py `action_collect_transactions` (`txs.write({"settlement_id": rec.id})`, run as the current user); security/ir.model.access.csv `access_wallet_finance` gives Marketplace Finance READ ONLY on `leaders.wallet.transaction`.
+- Steps: as finance@leaders.demo create a settlement (Marketplace > Finance > Settlements > New) for a vendor and period that have available earnings, press "Collect Transactions". (Verified on a copy of lm_manual_ref: home vendor, 2026-08-01..2026-08-27 after SET/000003 was cancelled by the manager.)
+- Expected: Finance collects the transactions (the same numbers the manager gets: gross 4794.00, deductions 2069.80, net 2724.20).
+- Actual: `AccessError: You are not allowed to modify 'Vendor Wallet Transaction' (leaders.wallet.transaction). This operation is allowed for the groups: Marketplace / Marketplace Manager.` With nothing to collect the button silently does nothing (no write). The vendor portal "Request Settlement" is not affected (runs as sudo).
+- Found by: CH05 (manual chapter 5).
+
+## Returns reserve is consumed by a return AND the return is charged in full to the vendor (CH05, suspected, medium)
+- Where: models/returns.py (about line 565-579: the `return` wallet transaction is created for `-rec.vendor_deduction`, then `leaders.vendor.reserve._consume_for_return(rec)` is called under the tier policy `reserve_first`; its return value is not used) and models/settlement.py `_consume_for_return` / `_leaders_pay_back`.
+- Steps: enforce_returns_reserve = on, tier policy "Use reserve, then deduct next"; a vendor order earns (reserve row + negative `reserve` wallet transaction), the earning is released, then a return of that vendor is refunded (demo: RET/000002 of nour, deduction 1808.38).
+- Expected (per the tier policy label and the test text "reserve 100, return eats 60, release pays 40"): the vendor loses 1808.38 in total, the reserve covering part of it.
+- Actual: the wallet gets `return -1808.38` in full AND the consumed reserve rows (nour: 6 rows, 193.29 in total) stay consumed, so their negative `reserve` transactions are never paid back: the vendor loses 193.29 more than the return, and the vendor payable account keeps a liability for it (nour payable 2980.83 = wallet unsettled 2665.51 + all reserves 315.32, of which 193.29 are consumed and will never be released).
+- Found by: CH05 while reconciling `_leaders_check_ledger` with the wallet.
+
+## Whole-checkout cancel by the customer sends ONE confirmation email whose refund amount is only the clicked vendor order (CH07, from code reading)
+- Where: models/customer_cancel.py `VendorOrder.action_customer_cancel` (last line: `Notification.notify_customer("customer_order_cancelled_by_customer", self, self.partner_id)`, one mail for `self` even when `scope == "all"`); template `mail_template_customer_order_cancelled_by_customer` prints `object.amount_total` of the vendor order.
+- Steps: as a customer with a checkout of two sellers (e.g. S00002-like: VO nour 1863.38 + VO home 2760.00) pay online, then cancel the whole order from the page of one of the vendor orders before anything ships.
+- Expected: one mail stating the refund of everything cancelled (all vendor orders and the company part), or one mail per cancelled part.
+- Actual: one mail "You cancelled the order" with "a refund of <amount_total of the vendor order you pressed cancel on> is being processed"; the other parts are cancelled and refunded but not mentioned in the amount. (Not reproduced by sending mail; the template and the call site were read.)
+- Found by: CH07.
+
+## "Leaders" label of the delivery estimate stays in Latin letters in the Arabic UI (CH07, cosmetic)
+- Where: models/delivery.py `_leaders_delivery_estimates` (`_("Leaders")`), i18n/ar.po maps `Leaders` to `Leaders` (msgstr equals msgid).
+- Steps: open /shop/cart as customer2 (S00023): the row reads "Leaders: يصل خلال 2–3 يومًا" while the delivery row above it reads "توصيل ليدرز".
+- Expected: an Arabic label (e.g. "ليدرز").
+- Actual: the Latin word in the middle of Arabic text.
+- Found by: CH07.
