@@ -7,6 +7,15 @@
         <field name="provider_type">manual</field>
         <field name="sequence">1</field>
     </record>
+    <!-- F4 webhook rate limits (calls per minute); a missing parameter also reads as these defaults. -->
+    <record id="param_shipping_webhook_rate_limit" model="ir.config_parameter">
+        <field name="key">leaders_marketplace.shipping_webhook_rate_limit_per_minute</field>
+        <field name="value">120</field>
+    </record>
+    <record id="param_shipping_webhook_provider_rate_limit" model="ir.config_parameter">
+        <field name="key">leaders_marketplace.shipping_webhook_provider_rate_limit_per_minute</field>
+        <field name="value">600</field>
+    </record>
     <!-- Test provider, inactive: activate it (and set a webhook secret) to try the framework. -->
     <record id="shipping_provider_dummy" model="leaders.shipping.provider">
         <field name="name">Dummy (tests)</field>

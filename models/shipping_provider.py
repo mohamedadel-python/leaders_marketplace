@@ -46,6 +46,10 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 
 PARAM_ENABLED = "leaders_marketplace.shipping_providers_enabled"
+PARAM_WEBHOOK_IP = "leaders_marketplace.shipping_webhook_rate_limit_per_minute"
+PARAM_WEBHOOK_PROVIDER = "leaders_marketplace.shipping_webhook_provider_rate_limit_per_minute"
+WEBHOOK_DEFAULT_LIMITS = {PARAM_WEBHOOK_IP: 120, PARAM_WEBHOOK_PROVIDER: 600}
+EVENT_PAYLOAD_MAX = 20 * 1024  # characters of the raw body kept per event, for support
 NORMALIZED_STATUSES = [
     ("created", "Created"), ("picked_up", "Picked Up"), ("in_transit", "In Transit"),
     ("delivered", "Delivered"), ("returned", "Returned"), ("refused", "Refused"),
@@ -208,6 +212,36 @@ class LeadersShippingProvider(models.Model):
         expected = hmac.new(secret, signed, hashlib.sha256).hexdigest()
         return hmac.compare_digest(expected, signature.lower())
 
+    @api.model
+    def _leaders_webhook_limit(self, param):
+        """Webhook limit for a setting key; a missing / invalid parameter reads as the default, 0 = off."""
+        value = self.env["ir.config_parameter"].sudo().get_param(param)
+        if value in (None, False, ""):
+            return WEBHOOK_DEFAULT_LIMITS[param]
+        try:
+            return max(int(value), 0)
+        except (TypeError, ValueError):
+            return WEBHOOK_DEFAULT_LIMITS[param]
+
+    def _webhook_rate_check(self, remote_addr):
+        """Count one webhook call. Returns None when allowed, else the Retry-After seconds.
+
+        The (provider, source IP) counter is hit first (cheap, before any HMAC work); a call
+        rejected there is not counted against the provider total, so one noisy address cannot
+        lock the carrier's other addresses out. ``remote_addr`` is werkzeug's; behind a
+        reverse proxy the operator must enable proxy_mode so it is fixed from the trusted proxy
+        header (X-Forwarded-For is never read here).
+        """
+        self.ensure_one()
+        Rate = self.env["leaders.shipping.webhook.rate"].sudo()
+        ip_allowed, ip_retry = Rate._hit(
+            "ip:%s:%s" % (self.code, remote_addr or "?"), self._leaders_webhook_limit(PARAM_WEBHOOK_IP))
+        if not ip_allowed:
+            return ip_retry
+        allowed, retry = Rate._hit(
+            "provider:%s" % self.code, self._leaders_webhook_limit(PARAM_WEBHOOK_PROVIDER))
+        return None if allowed else retry
+
     def _process_webhook(self, body, headers):
         """Parse and apply a verified webhook body. Returns (counts dict, http status)."""
         self.ensure_one()
@@ -216,15 +250,20 @@ class LeadersShippingProvider(models.Model):
             events = provider._parse_webhook(body, headers)
         except Exception:  # malformed body: never leak parser internals
             return {"error": "invalid_payload"}, 400
-        counts = {"received": len(events), "applied": 0, "ignored": 0, "duplicates": 0, "unknown": 0}
+        counts = {"received": len(events), "applied": 0, "ignored": 0, "duplicates": 0, "unknown": 0,
+                  "failed": 0}
         body_hash = hashlib.sha256(body).hexdigest()
+        payload = body.decode("utf-8", errors="replace")[:EVENT_PAYLOAD_MAX]
         for event in events:
-            counts[provider._apply_event(event, body_hash)] += 1
+            counts[provider._apply_event(event, body_hash, payload)] += 1
         status = 202 if counts["received"] and counts["unknown"] == counts["received"] else 200
         return counts, status
 
-    def _apply_event(self, event, body_hash):
-        """Idempotently apply one normalized event. Returns applied/ignored/duplicates/unknown."""
+    def _apply_event(self, event, body_hash, payload=False):
+        """Idempotently apply one normalized event.
+
+        Returns applied/ignored/duplicates/unknown/failed.
+        """
         self.ensure_one()
         Event = self.env["leaders.shipping.event"].sudo()
         Group = self.env["leaders.fulfillment.group"].sudo()
@@ -245,7 +284,7 @@ class LeadersShippingProvider(models.Model):
             "provider_id": self.id, "event_id": event_id, "group_id": group.id or False,
             "awb": awb or False, "raw_status": (event.get("raw_status") or "")[:100],
             "status": status if status in dict(NORMALIZED_STATUSES) else False,
-            "payload_hash": body_hash, "occurred_at": (event.get("occurred_at") or "")[:40],
+            "payload_hash": body_hash, "payload": payload or False, "occurred_at": (event.get("occurred_at") or "")[:40],
         }
         try:
             with self.env.cr.savepoint():
@@ -262,7 +301,38 @@ class LeadersShippingProvider(models.Model):
             record.write({"processed": False, "note": str(error.args[0])[:500]})
             return "ignored"
         record.write({"processed": outcome[0], "note": outcome[1]})
+        if len(outcome) > 2:
+            return outcome[2]
         return "applied" if outcome[0] else "ignored"
+
+
+class LeadersShippingWebhookRate(models.Model):
+    """F4: fixed one-minute counters of the public carrier webhook (per provider+IP, per provider)."""
+    _name = "leaders.shipping.webhook.rate"
+    _description = "Shipping Webhook Rate Counter"
+
+    scope = fields.Char(required=True, index=True, help="ip:<provider>:<address> or provider:<code>.")
+    window_start = fields.Integer(required=True, help="Minute number since the epoch.")
+    count = fields.Integer(default=0)
+
+    _sql_constraints = [
+        ("scope_window_unique", "unique(scope, window_start)", "One counter per scope and minute."),
+    ]
+
+    @api.model
+    def _hit(self, scope, limit):
+        """Count one call. Returns (allowed, retry_after_seconds); limit 0 = off (nothing counted)."""
+        if not limit:
+            return True, 0
+        now = self.env["leaders.vendor.api.key"]._leaders_now()
+        window = int(now // 60)
+        self.env.cr.execute("""
+            INSERT INTO leaders_shipping_webhook_rate (scope, window_start, count)
+            VALUES (%s, %s, 1)
+            ON CONFLICT (scope, window_start) DO UPDATE SET count = leaders_shipping_webhook_rate.count + 1
+            RETURNING count""", [scope, window])
+        count = self.env.cr.fetchone()[0]
+        return count <= limit, max(int((window + 1) * 60 - now) + 1, 1)
 
 
 class LeadersShippingEvent(models.Model):
@@ -278,6 +348,7 @@ class LeadersShippingEvent(models.Model):
     status = fields.Selection(NORMALIZED_STATUSES)
     occurred_at = fields.Char()
     payload_hash = fields.Char()
+    payload = fields.Text(help="Raw webhook body (capped), kept so support can replay the event.")
     received_at = fields.Datetime(default=fields.Datetime.now, readonly=True)
     processed = fields.Boolean(default=True, help="False when the event was logged but no action was taken.")
     note = fields.Char()
@@ -353,6 +424,17 @@ class FulfillmentGroupShipping(models.Model):
             self.message_post(body=_("%s picked up the parcel: shipped.", label))
             return True, "Shipped."
         if status == "delivered":
+            if self.state in self._SHIPPING_OPEN_STATES:
+                # F4: "delivered" arrived before (or without) "picked_up": apply the ship
+                # step first, exactly like picked_up does, then the delivery below.
+                if self.fulfillment_type == "fbl":
+                    return False, "FBL parcels are shipped by the marketplace warehouse, delivery ignored."
+                try:
+                    with self.env.cr.savepoint():
+                        self.action_ship(tracking_ref=self.awb)
+                except (UserError, ValidationError) as error:
+                    return False, "Could not ship before delivery: %s" % str(error.args[0])[:400], "failed"
+                self.message_post(body=_("%s reported delivery before pickup: shipped first.", label))
             if self.state == "shipped" and self._leaders_fbm_delivery_mode() == "customer_confirm":
                 self.action_delivered(confirmed_by=carrier)
             elif self.state == "shipped":

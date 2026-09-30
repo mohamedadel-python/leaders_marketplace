@@ -156,6 +156,8 @@ class LeadersVendorApiKey(models.Model):
             [("create_date", "<", cutoff)]).unlink()
         window = int(self._leaders_now() // 60) - 120
         self.env.cr.execute("DELETE FROM leaders_vendor_api_rate WHERE window_start < %s", [window])
+        self.env.cr.execute(
+            "DELETE FROM leaders_shipping_webhook_rate WHERE window_start < %s", [window])
         return True
 
 

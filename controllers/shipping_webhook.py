@@ -26,6 +26,13 @@ class ShippingWebhook(http.Controller):
         if not provider or provider.provider_type == "manual":
             return _json({"error": "not_found"}, 404)
         httpreq = request.httprequest
+        # F4: rate limit before any body read or HMAC work. remote_addr is werkzeug's; behind a
+        # reverse proxy the operator must enable proxy_mode (X-Forwarded-For is not read here).
+        retry_after = provider._webhook_rate_check(httpreq.remote_addr)
+        if retry_after is not None:
+            response = _json({"error": "rate_limited", "retry_after": retry_after}, 429)
+            response.headers["Retry-After"] = str(retry_after)
+            return response
         if (httpreq.content_length or 0) > WEBHOOK_MAX_BYTES:
             return _json({"error": "payload_too_large"}, 413)
         body = httpreq.stream.read(WEBHOOK_MAX_BYTES + 1) if httpreq.content_length is None \

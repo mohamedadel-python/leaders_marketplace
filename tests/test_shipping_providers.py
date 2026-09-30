@@ -177,10 +177,11 @@ class TestShippingWebhook(ShippingCommon):
         self.assertEqual(group.state, "delivered")
         self.assertEqual(group.delivered_confirmed_by, self.env.ref("base.user_root"))
 
-    def test_delivered_before_shipping_is_logged_only(self):
+    def test_delivered_before_shipping_ships_then_delivers(self):
+        # F4: was "logged only"; an out-of-order delivered now applies the ship step first.
         group = self._shipment()
         self._hook([self._ev(group, "delivered", "d")])
-        self.assertEqual(group.state, "ready")
+        self.assertEqual(group.state, "delivered")
 
     def test_refused_cod_runs_refusal_flow(self):
         group = self._shipment(cod=True)

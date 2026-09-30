@@ -183,6 +183,10 @@
                         <setting string="Shipping Carrier Framework" help="Let vendors create shipments and labels with the active shipping providers (Marketplace > Configuration > Shipping Providers) and let carriers report pickup, delivery and refusal through a signed webhook.">
                             <field name="marketplace_shipping_providers_enabled"/>
                         </setting>
+                        <setting string="Shipping Webhook Rate Limits" invisible="not marketplace_shipping_providers_enabled" help="Carrier webhook calls per minute: per provider and source IP, and per provider overall. 0 = no limit. Behind a reverse proxy enable proxy_mode so the real source address is used.">
+                            <field name="marketplace_shipping_webhook_rate_limit"/>
+                            <field name="marketplace_shipping_webhook_provider_rate_limit"/>
+                        </setting>
                         <setting string="Vendor Variants, Images and Specifications" help="Let vendors build variants from existing attributes (one offer per variant), add extra images and write specifications on products they own. Off keeps the single-variant product form.">
                             <field name="marketplace_vendor_variants_enabled"/>
                         </setting>

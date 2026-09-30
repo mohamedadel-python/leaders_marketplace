@@ -1,6 +1,8 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+from .shipping_provider import PARAM_WEBHOOK_IP, PARAM_WEBHOOK_PROVIDER
+
 NOTIFICATION_EVENTS = [('vendor_order_confirmed', 'Vendor: new order confirmed'), ('vendor_return_requested', 'Vendor: return requested'), ('vendor_return_escalated', 'Vendor: return escalated'), ('vendor_return_decided', 'Vendor: return decided by the marketplace'), ('vendor_dispute_opened', 'Vendor: dispute opened'), ('vendor_dispute_escalated', 'Vendor: dispute escalated'), ('vendor_dispute_resolved', 'Vendor: dispute resolved'), ('vendor_settlement_approved', 'Vendor: settlement approved'), ('vendor_settlement_paid', 'Vendor: settlement paid'), ('vendor_settlement_debt', 'Vendor: settlement debt to pay'), ('vendor_offer_approved', 'Vendor: offer approved'), ('vendor_offer_rejected', 'Vendor: offer rejected'), ('vendor_product_approved', 'Vendor: product approved'), ('vendor_product_rejected', 'Vendor: product rejected'), ('vendor_application_approved', 'Vendor: application approved'), ('vendor_application_rejected', 'Vendor: application rejected'), ('vendor_penalty_applied', 'Vendor: penalty applied'), ('vendor_penalty_lifted', 'Vendor: penalty lifted'), ('customer_order_shipped', 'Customer: order shipped'), ('customer_order_delivered', 'Customer: order delivered'), ('customer_return_approved', 'Customer: return approved'), ('customer_return_rejected', 'Customer: return rejected'), ('customer_return_refunded', 'Customer: return refunded'), ('customer_order_cancelled', 'Customer: order cancelled'), ('customer_order_cancelled_by_customer', 'Customer: cancellation confirmed'), ('vendor_order_cancelled_by_customer', 'Vendor: order cancelled by the customer'), ('vendor_bank_change_approved', 'Vendor: payout account change approved'), ('vendor_bank_change_rejected', 'Vendor: payout account change rejected'), ('vendor_order_late', 'Vendor: order not shipped by its ship-by date'), ('vendor_question_asked', 'Vendor: customer question on your product'), ('customer_question_answered', 'Customer: question answered')]
 
 class ResConfigSettings(models.TransientModel):
@@ -376,6 +378,18 @@ class ResConfigSettings(models.TransientModel):
              "the active providers and carriers can report status through "
              "/api/v1/shipping/webhook/<provider code>.",
     )
+    marketplace_shipping_webhook_rate_limit = fields.Integer(
+        string="Webhook Calls per Minute per Provider and IP",
+        default=120,
+        help="Carrier webhook calls one source IP may make per minute for one provider "
+             "(429 with Retry-After beyond). 0 = no limit.",
+    )
+    marketplace_shipping_webhook_provider_rate_limit = fields.Integer(
+        string="Webhook Calls per Minute per Provider",
+        default=600,
+        help="Carrier webhook calls a provider may receive per minute from all IPs "
+             "(429 with Retry-After beyond). 0 = no limit.",
+    )
     marketplace_vendor_variants_enabled = fields.Boolean(
         string="Vendor Variants, Images and Specifications",
         config_parameter="leaders_marketplace.vendor_variants_enabled",
@@ -496,6 +510,12 @@ class ResConfigSettings(models.TransientModel):
         raw = self.env["ir.config_parameter"].sudo().get_param("leaders_marketplace.commission_tax_ids") or ""
         ids = [int(x) for x in raw.split(",") if x.strip().isdigit()]
         res["marketplace_commission_tax_ids"] = [(6, 0, self.env["account.tax"].browse(ids).exists().ids)]
+        # F4: stored as text even when 0 (a cleared integer would delete its parameter,
+        # and a missing parameter reads as the default, so 0 must be kept explicitly).
+        Provider = self.env["leaders.shipping.provider"]
+        res["marketplace_shipping_webhook_rate_limit"] = Provider._leaders_webhook_limit(PARAM_WEBHOOK_IP)
+        res["marketplace_shipping_webhook_provider_rate_limit"] = Provider._leaders_webhook_limit(
+            PARAM_WEBHOOK_PROVIDER)
         return res
 
     def _leaders_fbl_blockers(self):
@@ -532,6 +552,10 @@ class ResConfigSettings(models.TransientModel):
                     "FBL cannot be turned off while it is in use:\n%s",
                     "\n".join("- %s" % line for line in blockers)))
         super().set_values()
+        icp = self.env["ir.config_parameter"].sudo()
+        icp.set_param(PARAM_WEBHOOK_IP, str(max(self.marketplace_shipping_webhook_rate_limit, 0)))
+        icp.set_param(PARAM_WEBHOOK_PROVIDER,
+                      str(max(self.marketplace_shipping_webhook_provider_rate_limit, 0)))
         self.env["ir.config_parameter"].sudo().set_param(
             "leaders_marketplace.commission_tax_ids",
             ",".join(str(i) for i in self.marketplace_commission_tax_ids.ids) or False)
