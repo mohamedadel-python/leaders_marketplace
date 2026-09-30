@@ -7,6 +7,39 @@ STANDARD_MODES = ("only_if_documents", "always", "never")
 # Odoo's own "configuration" cards a customer always keeps (no documents behind them).
 KEPT_STANDARD_URLS = ("/my/security",)
 
+# ONE colour map for every state the portal shows (TASK 29 / C2). The value is the
+# "tone" of the badge: the SCSS maps each tone to theme colours (.lm-badge--<tone>).
+# Selection values shared by several models (approved, pending, done ...) share the tone.
+STATE_TONES = {
+    # waiting for somebody
+    "pending": "warning", "requested": "warning", "submitted": "warning", "under_review": "warning",
+    "pending_approval": "warning", "hold": "warning", "held": "warning", "open": "warning",
+    "not_paid": "warning", "vendor_reply": "warning", "delivery_reported": "warning",
+    "returned": "warning", "late": "danger", "draft": "secondary",
+    # in progress
+    "confirmed": "info", "processing": "info", "allocated": "info", "picking": "info",
+    "packing": "info", "validating": "info", "scheduled": "info", "created": "info",
+    "picked_up": "info", "in_transit": "info", "uploaded": "secondary", "not_started": "secondary",
+    # moving on / nearly done
+    "partially_fulfilled": "primary", "fulfilled": "primary", "partially_shipped": "primary",
+    "shipped": "primary", "ready": "primary", "received": "primary", "available": "primary",
+    "validated": "primary", "released": "primary",
+    # good
+    "completed": "success", "delivered": "success", "done": "success", "active": "success",
+    "published": "success", "verified": "success", "refunded": "success", "resolved": "success",
+    "paid": "success", "settled": "success", "posted": "success", "valid": "success",
+    "applied": "success", "signed": "success", "lifted": "success", "approved": "success",
+    # bad
+    "cancelled": "danger", "cancel": "danger", "rejected": "danger", "failed": "danger",
+    "escalated": "danger", "refused": "danger", "banned": "danger", "invalid": "danger",
+    "expired": "danger",
+    # stopped
+    "suspended": "dark", "frozen": "dark",
+    # neutral
+    "closed": "secondary", "none": "secondary", "consumed": "secondary",
+}
+TIMELINE_KEYS = ("ordered", "confirmed", "shipped", "delivered")
+
 
 class LeadersPortalNav(models.AbstractModel):
     """Data-driven navigation of the customer and vendor portal areas.
@@ -185,3 +218,70 @@ class LeadersPortalNav(models.AbstractModel):
             "is_owner": is_owner,
             "purchases_url": "/my/marketplace/orders",
         }
+
+    # ------------------------------------------------------------------
+    # Shared UI components (state badge, order timeline)
+    # ------------------------------------------------------------------
+    @api.model
+    def _state_badge(self, record, field="state"):
+        """{'tone', 'label', 'value'} of a record's state, for ``lm_state_badge``."""
+        value = record[field] if record and field in record._fields else False
+        label = dict(record._fields[field]._description_selection(record.env)).get(value) if value else ""
+        return {"tone": STATE_TONES.get(value, "secondary"), "label": label or "", "value": value or ""}
+
+    @api.model
+    def _timeline(self, record):
+        """Steps of the order timeline (ordered > confirmed > shipped > delivered).
+
+        ``record`` is a ``leaders.vendor.order`` or a ``leaders.fulfillment.group``.
+        Returns {'steps': [{key, label, status, date}], 'terminal': {key, label, icon, tone} | False}
+        where status is done / current / todo. A cancelled record freezes the
+        steps reached so far and adds a red "Cancelled" branch; a returned one
+        keeps every step done and adds an amber "Returned" branch.
+        """
+        labels = {
+            "ordered": _("Ordered"), "confirmed": _("Confirmed"),
+            "shipped": _("Shipped"), "delivered": _("Delivered"),
+        }
+        dates = dict.fromkeys(TIMELINE_KEYS, False)
+        terminal = False
+        if record._name == "leaders.fulfillment.group":
+            stage = {
+                "allocated": 1, "picking": 1, "packing": 1, "ready": 1,
+                "partially_shipped": 2, "shipped": 2, "delivery_reported": 2,
+                "delivered": 3, "cancelled": 1,
+            }.get(record.state, 1)
+            dates["ordered"] = record.vendor_order_id.date_order
+            dates["delivered"] = record.delivered_date
+            cancelled = record.state == "cancelled"
+            returned = record.shipping_status in ("returned", "refused")
+            cancel_date = False
+        else:
+            stage = {
+                "pending": 0, "confirmed": 1, "processing": 1, "partially_fulfilled": 2,
+                "fulfilled": 2, "completed": 3, "cancelled": 0,
+            }.get(record.state, 0)
+            dates["ordered"] = record.date_order
+            dates["shipped"] = record.date_shipped
+            cancelled = record.state == "cancelled"
+            cancel_date = record.cancel_date
+            returned = bool(record.return_ids.filtered(lambda r: r.state in ("received", "refunded")))
+        if cancelled:
+            terminal = {"key": "cancelled", "label": _("Cancelled"), "icon": "fa-times", "tone": "danger",
+                        "date": cancel_date}
+        elif returned:
+            stage = 3
+            terminal = {"key": "returned", "label": _("Returned"), "icon": "fa-undo", "tone": "warning",
+                        "date": False}
+        steps = []
+        for index, key in enumerate(TIMELINE_KEYS):
+            if cancelled:
+                status = "done" if index <= stage else "todo"
+            elif index < stage or (index == stage and (key == "delivered" or returned)):
+                status = "done"
+            elif index == stage:
+                status = "current"
+            else:
+                status = "todo"
+            steps.append({"key": key, "label": labels[key], "status": status, "date": dates[key]})
+        return {"steps": steps, "terminal": terminal}

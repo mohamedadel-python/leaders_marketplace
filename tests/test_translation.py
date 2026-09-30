@@ -1,4 +1,5 @@
 """Arabic translation stays complete and safe, and the portal SCSS stays RTL-friendly."""
+import os
 import re
 from collections import Counter
 
@@ -39,9 +40,15 @@ class TestPortalScssIsRtlSafe(TransactionCase):
         r"(^|[\s{;])(left|right)\s*:|float\s*:\s*(left|right)|text-align\s*:\s*(left|right)")
 
     def test_no_physical_left_right_in_the_portal_scss(self):
-        with open(file_path("leaders_marketplace/static/src/scss/portal.scss"), encoding="utf-8") as handle:
-            lines = handle.read().splitlines()
-        offenders = [
-            "%s: %s" % (n, line.strip()) for n, line in enumerate(lines, 1)
-            if not line.strip().startswith("//") and self.PHYSICAL.search(line)]
+        root = file_path("leaders_marketplace/static/src/scss")
+        files = sorted(
+            os.path.join(folder, name) for folder, _dirs, names in os.walk(root)
+            for name in names if name.endswith(".scss"))
+        self.assertGreaterEqual(len(files), 4, files)  # portal.scss + tokens, components, vendor partials
+        offenders = []
+        for path in files:
+            with open(path, encoding="utf-8") as handle:
+                for n, line in enumerate(handle.read().splitlines(), 1):
+                    if not line.strip().startswith("//") and self.PHYSICAL.search(line):
+                        offenders.append("%s:%s: %s" % (os.path.basename(path), n, line.strip()))
         self.assertFalse(offenders, offenders)

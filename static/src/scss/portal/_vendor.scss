@@ -1,0 +1,314 @@
+// Vendor portal pages (home cards, navigation shell, dashboard). C2b restyles these with the shared components.
+// ---------------------------------------------------------------------------
+// Portal home (vendors)
+// ---------------------------------------------------------------------------
+.lm-vendor-home {
+    .lm-vh-hero {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        padding: 22px;
+        margin-bottom: 28px;
+        border-radius: 18px;
+        color: #fff;
+        background: linear-gradient(135deg, $primary 0%, mix($primary, #000, 70%) 100%);
+        box-shadow: 0 10px 30px rgba($primary, .25);
+        h4 { color: #fff; font-weight: 700; }
+    }
+    .lm-vh-avatar {
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 700;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.3);
+    }
+    .lm-vh-welcome { font-size: .85rem; opacity: .8; }
+    .lm-vh-tier {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: .78rem;
+        font-weight: 600;
+        background: #fff4d6;
+        color: #8a6100;
+    }
+    .lm-vh-cta { font-weight: 600; border-radius: 10px; }
+    .lm-vh-section {
+        margin-bottom: 12px;
+        color: #6c757d;
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    // Cards
+    .lm-hc {
+        --lm-hc-color: #495057;
+        --lm-hc-bg: #f1f3f5;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 100%;
+        padding: 16px 18px;
+        background: #fff;
+        border: 1px solid #e8eaed;
+        border-radius: 14px;
+        color: inherit;
+        text-decoration: none;
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+        &:hover {
+            transform: translateY(-2px);
+            border-color: var(--lm-hc-color);
+            box-shadow: 0 10px 24px rgba(0,0,0,.07);
+            .lm-hc-arrow { color: var(--lm-hc-color); transform: translateX(3px); }
+            .lm-hc-icon { background: var(--lm-hc-color); color: #fff; }
+        }
+    }
+    .lm-hc-icon {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: var(--lm-hc-color);
+        background: var(--lm-hc-bg);
+        transition: background .15s ease, color .15s ease;
+    }
+    .lm-hc-body { display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }
+    .lm-hc-title { font-weight: 600; font-size: 1rem; color: #212529; }
+    .lm-hc-text { color: #6c757d; font-size: .85rem; line-height: 1.35; }
+    .lm-hc-badge {
+        flex-shrink: 0;
+        min-width: 26px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        text-align: center;
+        font-size: .8rem;
+        font-weight: 700;
+        color: #fff;
+        background: var(--lm-hc-color);
+    }
+    .lm-hc-arrow { color: #ced4da; font-size: 1.2rem; transition: transform .15s ease, color .15s ease; }
+
+    .lm-hc-blue   { --lm-hc-color: #1f6feb; --lm-hc-bg: #e7f0ff; }
+    .lm-hc-purple { --lm-hc-color: #7c3aed; --lm-hc-bg: #f1e9ff; }
+    .lm-hc-teal   { --lm-hc-color: #0f9488; --lm-hc-bg: #e0f5f3; }
+    .lm-hc-indigo { --lm-hc-color: #4f46e5; --lm-hc-bg: #ebeafd; }
+    .lm-hc-orange { --lm-hc-color: #d9480f; --lm-hc-bg: #fff1e0; }
+    .lm-hc-red    { --lm-hc-color: #dc3545; --lm-hc-bg: #fdebed; }
+    .lm-hc-green  { --lm-hc-color: #198754; --lm-hc-bg: #e4f7ec; }
+    .lm-hc-slate  { --lm-hc-color: #495057; --lm-hc-bg: #f1f3f5; }
+}
+.o_rtl .lm-vendor-home, [dir="rtl"] .lm-vendor-home {
+    .lm-hc-arrow { transform: scaleX(-1); }
+    .lm-hc:hover .lm-hc-arrow { transform: scaleX(-1) translateX(3px); }
+}
+
+// ---------------------------------------------------------------------------
+// Vendor navigation
+// ---------------------------------------------------------------------------
+.lm-vendor-nav {
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    background: #fff;
+    border: 1px solid #e8eaed;
+    border-radius: 14px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+.lm-vendor-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    color: #495057;
+    font-weight: 500;
+    transition: background .15s ease, color .15s ease;
+    .fa { opacity: .75; }
+    &:hover { background: #f1f3f5; color: #212529; }
+    &.active {
+        background: $primary;
+        color: #fff;
+        .fa { opacity: 1; }
+    }
+}
+
+// Vendor shell: sidebar on >= lg, compact scrolling top bar below.
+.lm-vendor-shell {
+    .lm-vendor-crumbs { margin-bottom: 12px; }
+    .lm-vendor-layout { display: block; }
+    .lm-vendor-sidebar { margin-bottom: 16px; min-width: 0; }
+    .lm-vendor-main { min-width: 0; }
+    // The pages still bring their own container; the layout owns the width now.
+    .lm-vendor-main > .container {
+        max-width: none;
+        padding-inline: 0;
+        margin: 0 !important;
+    }
+    .lm-vendor-nav-sep { flex: 0 0 auto; width: 1px; background: #e8eaed; margin-block: 4px; }
+    .lm-vendor-nav-link.disabled { opacity: .5; pointer-events: none; }
+}
+@include media-breakpoint-up(lg) {
+    .lm-vendor-shell {
+        .lm-vendor-layout {
+            display: grid;
+            grid-template-columns: 230px minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+        .lm-vendor-sidebar {
+            position: sticky;
+            inset-block-start: 16px;
+            margin-bottom: 0;
+        }
+        .lm-vendor-nav { flex-direction: column; overflow-x: visible; }
+        .lm-vendor-nav-sep { width: auto; height: 1px; margin-block: 4px; margin-inline: 6px; }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Dashboard
+// ---------------------------------------------------------------------------
+.lm-dashboard {
+    .lm-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+        background: $primary;
+        flex-shrink: 0;
+    }
+    .lm-tier-badge { background: #fff4d6; color: #8a6100; font-weight: 600; }
+
+    // KPI cards
+    .lm-kpi {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 18px;
+        background: #fff;
+        border: 1px solid #e8eaed;
+        border-radius: 14px;
+        color: inherit;
+        text-decoration: none;
+        transition: transform .15s ease, box-shadow .15s ease;
+        &[href]:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.07); }
+    }
+    .lm-kpi-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+    .lm-kpi-label { color: #6c757d; font-size: .85rem; }
+    .lm-kpi-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin: 2px 0;
+        overflow-wrap: anywhere;
+    }
+    .lm-kpi-sub { color: #6c757d; font-size: .8rem; }
+    .lm-kpi-blue   .lm-kpi-icon { background: #e7f0ff; color: #1f6feb; }
+    .lm-kpi-purple .lm-kpi-icon { background: #f1e9ff; color: #7c3aed; }
+    .lm-kpi-green  .lm-kpi-icon { background: #e4f7ec; color: #198754; }
+    .lm-kpi-orange .lm-kpi-icon { background: #fff1e0; color: #d9480f; }
+
+    // Panels
+    .lm-panel {
+        background: #fff;
+        border: 1px solid #e8eaed;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    .lm-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 18px;
+        border-bottom: 1px solid #eef0f2;
+        h5 { font-size: 1rem; font-weight: 600; }
+        h5 .fa { color: #adb5bd; margin-inline-end: 4px; }
+        a { text-decoration: none; }
+    }
+    .lm-panel-footer {
+        padding: 10px 18px;
+        border-top: 1px solid #eef0f2;
+        background: #fafbfc;
+    }
+    .lm-panel .table {
+        thead th {
+            background: #fafbfc;
+            color: #6c757d;
+            font-size: .78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            border-bottom-width: 1px;
+            white-space: nowrap;
+        }
+        th:first-child, td:first-child { padding-inline-start: 18px; }
+        th:last-child, td:last-child { padding-inline-end: 18px; }
+        a { text-decoration: none; }
+    }
+
+    // Side lists
+    .lm-attention-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        color: inherit;
+        text-decoration: none;
+        & + .lm-attention-row { border-top: 1px solid #f1f3f5; }
+        .fa { width: 18px; text-align: center; margin-inline-end: 6px; }
+    }
+    a.lm-attention-row:hover { background: #f8f9fa; }
+
+    .lm-quick-links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 14px 18px;
+        a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px;
+            border: 1px solid #e8eaed;
+            border-radius: 10px;
+            color: inherit;
+            text-decoration: none;
+            font-size: .9rem;
+            &:hover { background: #f8f9fa; border-color: #dee2e6; }
+        }
+    }
+}

@@ -1,0 +1,42 @@
+<odoo>
+    <!-- Shared portal components (TASK 29 / C2). Styles: static/src/scss/portal/_components.scss -->
+
+    <!-- State badge: ONE colour map for every state (leaders.portal.nav STATE_TONES).
+         Call with `lm_record` (any record) and optional `lm_field` (default 'state'). -->
+    <template id="lm_state_badge" name="Marketplace State Badge">
+        <t t-set="lm_b" t-value="lm_record.env['leaders.portal.nav']._state_badge(lm_record, lm_field or 'state')"/>
+        <span t-attf-class="lm-badge lm-badge--#{lm_b['tone']}" t-att-data-state="lm_b['value']" t-out="lm_b['label']"/>
+    </template>
+
+    <!-- Empty state: `lm_icon` (fa-*), `lm_message`, optional `lm_action_url` + `lm_action_label`. -->
+    <template id="lm_empty_state" name="Marketplace Empty State">
+        <div class="lm-empty" role="status">
+            <i t-attf-class="fa #{lm_icon or 'fa-inbox'}" aria-hidden="true"/>
+            <p class="lm-empty-message" t-out="lm_message"/>
+            <a t-if="lm_action_url" t-att-href="lm_action_url" class="btn btn-primary" t-out="lm_action_label"/>
+        </div>
+    </template>
+
+    <!-- Order timeline: ordered > confirmed > shipped > delivered, plus a cancelled / returned branch.
+         Call with `lm_record` = leaders.vendor.order or leaders.fulfillment.group. -->
+    <template id="lm_timeline" name="Marketplace Order Timeline">
+        <t t-set="lm_tl" t-value="lm_record.env['leaders.portal.nav']._timeline(lm_record)"/>
+        <t t-set="lm_tl_icons" t-value="dict(ordered='fa-shopping-basket', confirmed='fa-thumbs-o-up', shipped='fa-truck', delivered='fa-home')"/>
+        <ol class="lm-timeline" aria-label="Order progress">
+            <li t-foreach="lm_tl['steps']" t-as="st" t-attf-class="lm-timeline-step is-#{st['status']}"
+                t-att-data-step="st['key']" t-att-aria-current="'step' if st['status'] == 'current' else None">
+                <span class="lm-timeline-dot">
+                    <i t-attf-class="fa #{'fa-check' if st['status'] == 'done' else lm_tl_icons[st['key']]}" aria-hidden="true"/>
+                </span>
+                <span class="lm-timeline-label" t-out="st['label']"/>
+                <span t-if="st['date']" class="lm-timeline-date" t-out="st['date']" t-options="{'widget': 'date'}"/>
+            </li>
+            <li t-if="lm_tl['terminal']" t-attf-class="lm-timeline-step #{'is-terminal' if lm_tl['terminal']['tone'] == 'danger' else 'is-terminal-warning'}"
+                t-att-data-step="lm_tl['terminal']['key']" aria-current="step">
+                <span class="lm-timeline-dot"><i t-attf-class="fa #{lm_tl['terminal']['icon']}" aria-hidden="true"/></span>
+                <span class="lm-timeline-label" t-out="lm_tl['terminal']['label']"/>
+                <span t-if="lm_tl['terminal']['date']" class="lm-timeline-date" t-out="lm_tl['terminal']['date']" t-options="{'widget': 'date'}"/>
+            </li>
+        </ol>
+    </template>
+</odoo>

@@ -45,3 +45,4 @@ from . import test_vendor_api
 from . import test_vendor_statement
 from . import test_shipping_providers
 from . import test_portal_menus
+from . import test_portal_components

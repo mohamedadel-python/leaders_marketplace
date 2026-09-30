@@ -1,0 +1,328 @@
+// ---------------------------------------------------------------------------
+// Shared portal components (TASK 29 / C2). Logical properties only (RTL first).
+// ---------------------------------------------------------------------------
+.lm-portal { color: var(--lm-text); }
+.lm-portal .card { border-radius: var(--lm-radius); border-color: var(--lm-border); }
+.lm-portal h1, .lm-portal h2, .lm-portal h3 { overflow-wrap: anywhere; }
+
+// Icons that point somewhere are mirrored in RTL. Odoo marks RTL pages with .o_rtl on #wrapwrap
+// (it does not set dir on <html>); [dir="rtl"] is kept for embedded/standalone use.
+.o_rtl .lm-flip, [dir="rtl"] .lm-flip { transform: scaleX(-1); }
+
+// Main actions have a comfortable tap target.
+.lm-portal .btn:not(.btn-sm):not(.btn-lg) { min-block-size: var(--lm-tap-size); display: inline-flex; align-items: center; justify-content: center; gap: var(--lm-space-1); }
+.lm-portal .btn-sm { min-block-size: 36px; display: inline-flex; align-items: center; justify-content: center; gap: var(--lm-space-1); }
+.lm-portal .form-control, .lm-portal .form-select { min-block-size: var(--lm-tap-size); }
+.lm-portal textarea.form-control { min-block-size: 0; }
+
+// --- Page header: title + subtitle + actions ---------------------------------
+.lm-page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--lm-space-3);
+    margin-block: var(--lm-space-3);
+    .lm-page-title { margin: 0; font-size: 1.5rem; font-weight: 700; line-height: 1.25; }
+    .lm-page-heading { display: flex; flex-wrap: wrap; align-items: center; gap: var(--lm-space-2); min-inline-size: 0; }
+    .lm-page-subtitle { margin: var(--lm-space-1) 0 0; color: var(--lm-text-muted); }
+    .lm-page-actions { display: flex; flex-wrap: wrap; gap: var(--lm-space-2); }
+}
+@include media-breakpoint-up(md) {
+    .lm-page-header .lm-page-title { font-size: 1.85rem; }
+}
+
+// --- Summary cards -----------------------------------------------------------
+.lm-stat-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--lm-space-3);
+    margin-block-end: var(--lm-space-4);
+}
+@include media-breakpoint-up(lg) {
+    .lm-stat-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.lm-stat-card {
+    @include lm-tone(primary);
+    display: flex;
+    align-items: center;
+    gap: var(--lm-space-3);
+    padding: var(--lm-space-3);
+    background: var(--lm-surface);
+    border: 1px solid var(--lm-border);
+    border-radius: var(--lm-radius);
+    box-shadow: var(--lm-shadow-sm);
+    color: inherit;
+    text-decoration: none;
+    min-inline-size: 0;
+    &.lm-tone-success { @include lm-tone(success); }
+    &.lm-tone-warning { @include lm-tone(warning); }
+    &.lm-tone-info { @include lm-tone(info); }
+    &.lm-tone-danger { @include lm-tone(danger); }
+    &.lm-tone-secondary { @include lm-tone(secondary); }
+    .lm-stat-icon {
+        flex: 0 0 auto;
+        inline-size: 2.75rem;
+        block-size: 2.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--lm-radius);
+        font-size: 1.2rem;
+        color: var(--lm-tone-text);
+        background: var(--lm-tone-bg);
+    }
+    .lm-stat-body { min-inline-size: 0; }
+    .lm-stat-label { color: var(--lm-text-muted); font-size: .85rem; line-height: 1.2; }
+    .lm-stat-value { font-size: 1.35rem; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+}
+
+// --- State badges (ONE colour map, see leaders.portal.nav STATE_TONES) --------
+.lm-badge {
+    @include lm-tone(secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: .35em;
+    padding: .3em .75em;
+    border-radius: var(--lm-radius-pill);
+    font-size: .8rem;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    color: var(--lm-tone-text);
+    background: var(--lm-tone-bg);
+    border: 1px solid rgba(var(--lm-tone-secondary-rgb), 0);
+    &::before {
+        content: "";
+        inline-size: .5em;
+        block-size: .5em;
+        border-radius: 50%;
+        background: var(--lm-tone);
+    }
+    &.lm-badge--success { @include lm-tone(success); }
+    &.lm-badge--warning { @include lm-tone(warning); }
+    &.lm-badge--info { @include lm-tone(info); }
+    &.lm-badge--primary { @include lm-tone(primary); }
+    &.lm-badge--danger { @include lm-tone(danger); }
+    &.lm-badge--dark { @include lm-tone(dark); }
+    &.lm-badge--secondary { @include lm-tone(secondary); }
+}
+
+// --- Tables that become cards below md ---------------------------------------
+.lm-table-responsive {
+    .lm-table { margin-block-end: 0; inline-size: 100%; }
+    .lm-table thead th {
+        color: var(--lm-text-muted);
+        font-size: .78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+        white-space: nowrap;
+    }
+    .lm-table th.lm-num, .lm-table td.lm-num { text-align: end; }
+}
+@include media-breakpoint-down(md) {
+    .lm-table-responsive {
+        .lm-table, .lm-table tbody, .lm-table tfoot, .lm-table tr, .lm-table td, .lm-table th { display: block; inline-size: 100%; }
+        .lm-table thead {
+            position: absolute;
+            inline-size: 1px;
+            block-size: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
+        .lm-table tr {
+            margin-block-end: var(--lm-space-3);
+            padding: var(--lm-space-2) var(--lm-space-3);
+            background: var(--lm-surface);
+            border: 1px solid var(--lm-border);
+            border-radius: var(--lm-radius);
+            box-shadow: var(--lm-shadow-sm);
+        }
+        .lm-table td, .lm-table th {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--lm-space-3);
+            padding-inline: 0;
+            padding-block: var(--lm-space-2);
+            border-block-end: 1px solid var(--lm-border);
+            text-align: end;
+            overflow-wrap: anywhere;
+            &:last-child { border-block-end: 0; }
+            &::before {
+                content: attr(data-label);
+                flex: 0 0 38%;
+                max-inline-size: 45%;
+                color: var(--lm-text-muted);
+                font-size: .8rem;
+                font-weight: 600;
+                text-align: start;
+            }
+            &:not([data-label])::before { content: none; }
+            &:empty { display: none; }
+        }
+        .lm-table tfoot tr { background: var(--lm-surface-muted); }
+        .lm-table input.form-control, .lm-table input.form-control-sm { max-inline-size: 8rem; }
+    }
+}
+
+// --- Empty state --------------------------------------------------------------
+.lm-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--lm-space-2);
+    padding: var(--lm-space-5) var(--lm-space-3);
+    text-align: center;
+    color: var(--lm-text-muted);
+    background: var(--lm-surface-muted);
+    border: 1px dashed var(--lm-border);
+    border-radius: var(--lm-radius);
+    > .fa { font-size: 2.25rem; opacity: .45; margin-block-end: var(--lm-space-1); }
+    .lm-empty-message { margin: 0; font-size: 1rem; }
+}
+
+// --- Order timeline ------------------------------------------------------------
+.lm-timeline {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    .lm-timeline-step {
+        @include lm-tone(secondary);
+        position: relative;
+        flex: 1 1 0;
+        min-inline-size: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-inline: 2px;
+        // connector to the previous step (logical: it sits at the start side, mirrors in RTL)
+        &::before {
+            content: "";
+            position: absolute;
+            inset-block-start: 1rem;
+            inset-inline-start: -50%;
+            inline-size: 100%;
+            block-size: 2px;
+            transform: translateY(-50%);
+            background: var(--lm-border);
+        }
+        &:first-child::before { content: none; }
+        &.is-done, &.is-current { @include lm-tone(success); }
+        &.is-current { @include lm-tone(primary); }
+        &.is-done + .is-done::before, &.is-done + .is-current::before { background: var(--lm-tone-success); }
+        &.is-terminal { @include lm-tone(danger); }
+        &.is-terminal-warning { @include lm-tone(warning); }
+        &.is-terminal::before, &.is-terminal-warning::before { background: var(--lm-tone); }
+    }
+    .lm-timeline-dot {
+        position: relative;
+        z-index: 1;
+        inline-size: 2rem;
+        block-size: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: .9rem;
+        color: var(--lm-tone-text);
+        background: var(--lm-surface);
+        border: 2px solid var(--lm-border);
+    }
+    .is-done .lm-timeline-dot { color: #fff; background: var(--lm-tone); border-color: var(--lm-tone); }
+    .is-current .lm-timeline-dot { color: var(--lm-tone); border-color: var(--lm-tone); box-shadow: 0 0 0 4px var(--lm-tone-bg); }
+    .is-terminal .lm-timeline-dot, .is-terminal-warning .lm-timeline-dot { color: #fff; background: var(--lm-tone); border-color: var(--lm-tone); }
+    .lm-timeline-label { margin-block-start: var(--lm-space-1); font-size: .78rem; font-weight: 600; line-height: 1.2; overflow-wrap: anywhere; }
+    .is-todo .lm-timeline-label { color: var(--lm-text-muted); font-weight: 500; }
+    .lm-timeline-date { color: var(--lm-text-muted); font-size: .7rem; line-height: 1.2; }
+}
+@include media-breakpoint-up(sm) {
+    .lm-timeline .lm-timeline-label { font-size: .9rem; }
+}
+
+// --- Forms with inline validation ------------------------------------------------
+.lm-form-field {
+    margin-block-end: var(--lm-space-3);
+    .form-label { font-weight: 600; margin-block-end: var(--lm-space-1); }
+    .form-text { color: var(--lm-text-muted); }
+    .invalid-feedback { display: none; }
+    .is-invalid ~ .invalid-feedback,
+    &.has-error .invalid-feedback,
+    &:has(.lm-touched:invalid) > .invalid-feedback,
+    .form-control:invalid.lm-touched ~ .invalid-feedback,
+    .form-select:invalid.lm-touched ~ .invalid-feedback { display: block; }
+    .form-control:invalid.lm-touched, .form-select:invalid.lm-touched { border-color: var(--bs-form-invalid-border-color, var(--lm-tone-danger)); }
+}
+
+// --- Destructive / long actions --------------------------------------------------
+[data-lm-loading].lm-is-loading { pointer-events: none; opacity: .75; }
+.lm-spinner {
+    display: inline-block;
+    inline-size: 1em;
+    block-size: 1em;
+    border: .15em solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: lm-spin .7s linear infinite;
+}
+@keyframes lm-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+    .lm-spinner { animation-duration: 2s; }
+}
+
+// --- Sections used by the customer pages ------------------------------------------
+.lm-section { margin-block-start: var(--lm-space-4); }
+.lm-section-title { font-size: 1.15rem; font-weight: 700; margin-block-end: var(--lm-space-3); }
+.lm-card {
+    background: var(--lm-surface);
+    border: 1px solid var(--lm-border);
+    border-radius: var(--lm-radius);
+    box-shadow: var(--lm-shadow-sm);
+    padding: var(--lm-space-3);
+}
+.lm-totals {
+    margin: 0;
+    max-inline-size: 26rem;
+    margin-inline-start: auto;
+    > div { display: flex; justify-content: space-between; gap: var(--lm-space-3); padding-block: var(--lm-space-1); }
+    .lm-totals-grand { font-weight: 700; font-size: 1.1rem; border-block-start: 1px solid var(--lm-border); margin-block-start: var(--lm-space-2); padding-block-start: var(--lm-space-2); }
+}
+.lm-rating-input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lm-space-2);
+    label {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--lm-space-1);
+        min-block-size: var(--lm-tap-size);
+        padding-inline: var(--lm-space-3);
+        border: 1px solid var(--lm-border);
+        border-radius: var(--lm-radius-pill);
+        cursor: pointer;
+    }
+}
+.lm-conversation {
+    max-block-size: 320px;
+    overflow-y: auto;
+    padding: var(--lm-space-2);
+    border: 1px solid var(--lm-border);
+    border-radius: var(--lm-radius);
+    margin-block-end: var(--lm-space-2);
+}
+.lm-store-card {
+    display: block;
+    block-size: 100%;
+    color: inherit;
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform .15s ease, box-shadow .15s ease;
+    &:hover { transform: translateY(-2px); box-shadow: var(--lm-shadow); }
+    img { inline-size: 100%; aspect-ratio: 1; object-fit: cover; }
+}

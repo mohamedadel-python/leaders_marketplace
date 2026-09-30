@@ -1,0 +1,61 @@
+// ---------------------------------------------------------------------------
+// Design tokens of the marketplace portal (TASK 29 / C2).
+// Everything derives from the website theme: Bootstrap 5 `--bs-*` variables (which
+// Odoo fills from the theme colour palette) so a re-themed website re-colours the
+// portal. Fallbacks keep the pages readable when a variable is missing.
+// ---------------------------------------------------------------------------
+:root {
+    // Colours
+    --lm-primary: var(--bs-primary, #{$primary});
+    --lm-primary-rgb: var(--bs-primary-rgb, 13, 110, 253);
+    --lm-surface: var(--bs-body-bg, #fff);
+    --lm-surface-muted: var(--bs-tertiary-bg, #f8f9fa);
+    --lm-border: var(--bs-border-color, #dee2e6);
+    --lm-text: var(--bs-body-color, #212529);
+    --lm-text-muted: var(--bs-secondary-color, #6c757d);
+
+    // Radii, spacing, shadows
+    --lm-radius-sm: var(--bs-border-radius-sm, .25rem);
+    --lm-radius: var(--bs-border-radius-lg, .5rem);
+    --lm-radius-lg: var(--bs-border-radius-xl, 1rem);
+    --lm-radius-pill: var(--bs-border-radius-pill, 50rem);
+    --lm-space-1: .25rem;
+    --lm-space-2: .5rem;
+    --lm-space-3: 1rem;
+    --lm-space-4: 1.5rem;
+    --lm-space-5: 3rem;
+    --lm-shadow-sm: var(--bs-box-shadow-sm, 0 .125rem .25rem rgba(0, 0, 0, .075));
+    --lm-shadow: 0 .5rem 1.25rem rgba(0, 0, 0, .08);
+    --lm-tap-size: 44px;
+
+    // Tones: ONE colour per meaning, shared by badges, stat cards and timeline.
+    // --lm-tone is the strong colour, --lm-tone-bg its soft background, --lm-tone-text the readable text colour.
+    --lm-tone-success: var(--bs-success, #198754);
+    --lm-tone-success-rgb: var(--bs-success-rgb, 25, 135, 84);
+    --lm-tone-success-text: var(--bs-success-text-emphasis, #0a3622);
+    --lm-tone-warning: var(--bs-warning, #ffc107);
+    --lm-tone-warning-rgb: var(--bs-warning-rgb, 255, 193, 7);
+    --lm-tone-warning-text: var(--bs-warning-text-emphasis, #664d03);
+    --lm-tone-info: var(--bs-info, #0dcaf0);
+    --lm-tone-info-rgb: var(--bs-info-rgb, 13, 202, 240);
+    --lm-tone-info-text: var(--bs-info-text-emphasis, #055160);
+    --lm-tone-primary: var(--bs-primary, #0d6efd);
+    --lm-tone-primary-rgb: var(--bs-primary-rgb, 13, 110, 253);
+    --lm-tone-primary-text: var(--bs-primary-text-emphasis, #052c65);
+    --lm-tone-danger: var(--bs-danger, #dc3545);
+    --lm-tone-danger-rgb: var(--bs-danger-rgb, 220, 53, 69);
+    --lm-tone-danger-text: var(--bs-danger-text-emphasis, #58151c);
+    --lm-tone-dark: var(--bs-dark, #212529);
+    --lm-tone-dark-rgb: var(--bs-dark-rgb, 33, 37, 41);
+    --lm-tone-dark-text: var(--bs-dark-text-emphasis, #495057);
+    --lm-tone-secondary: var(--bs-secondary, #6c757d);
+    --lm-tone-secondary-rgb: var(--bs-secondary-rgb, 108, 117, 125);
+    --lm-tone-secondary-text: var(--bs-secondary-text-emphasis, #2b2f32);
+}
+
+// Tone helper: sets --lm-tone* on an element from a tone name.
+@mixin lm-tone($name) {
+    --lm-tone: var(--lm-tone-#{$name});
+    --lm-tone-bg: rgba(var(--lm-tone-#{$name}-rgb), .16);
+    --lm-tone-text: var(--lm-tone-#{$name}-text);
+}
