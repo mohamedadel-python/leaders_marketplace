@@ -1,0 +1,2849 @@
+{
+  "generated_by": "scripts/manual_demo/scenario_e2e.py",
+  "currency": "EGP",
+  "vendor": "مكتبة النيل",
+  "clock": "freezegun 2026-09-01 .. 2026-09-30 (UTC)",
+  "steps": [
+    {
+      "key": "1a",
+      "title": "يقدّم التاجر طلب الانضمام",
+      "when_utc": "2026-09-01 06:30:00",
+      "actor": "زائر / مقدّم الطلب (نموذج /vendor/apply)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {},
+      "facts": {
+        "vendor_orders": [],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 20.0
+        }
+      },
+      "extra": {
+        "application": "VAPP/00001",
+        "state": "submitted"
+      }
+    },
+    {
+      "key": "1b",
+      "title": "المراجع يعتمد الطلب والمدير يعيّن الفئة",
+      "when_utc": "2026-09-01 08:40:00",
+      "actor": "المراجع (Reviewer) ثم مدير السوق",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 0.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 20.0
+        }
+      },
+      "extra": {
+        "application_state": "approved",
+        "partner": "شركة مكتبة النيل للنشر والتوزيع",
+        "is_marketplace_vendor": true,
+        "vendor_state": "approved",
+        "kyc": "verified",
+        "tier": "فضي",
+        "owner_user_login": "owner.nile@vendor.demo",
+        "owner_has_vendor_owner_group": true,
+        "warehouse": "البائع - مكتبة النيل",
+        "warehouse_code": "VE",
+        "fbl_location": "Marketplace FBL/مكتبة النيل",
+        "payout_bank": "EG380019000500000000263180099 - البنك الأهلي المصري",
+        "release_policy": "deliver_plus_days",
+        "release_days": 7,
+        "reserve_percent": 5.0
+      }
+    },
+    {
+      "key": "1c",
+      "title": "مالك المتجر يقبل الشروط والأحكام",
+      "when_utc": "2026-09-01 09:00:00",
+      "actor": "مالك المتجر (البوابة)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 0.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 20.0
+        }
+      },
+      "extra": {
+        "terms": "شروط وأحكام البائعين - الإصدار 1",
+        "terms_version": 1,
+        "contract_state": "signed",
+        "signed_at": "2026-09-01 09:00:00",
+        "contract_pdf_attached": true
+      }
+    },
+    {
+      "key": "1d",
+      "title": "أسعار التوصيل وخطة العمولة",
+      "when_utc": "2026-09-01 09:30:00",
+      "actor": "البائع (المناطق) والمالية (الخطة)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 0.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 20.0
+        }
+      },
+      "extra": {
+        "plan": "خطة الإنجاز 10% - مكتبة النيل",
+        "plan_state": "approved",
+        "rate": 0.1,
+        "delivery_zones": [
+          "Cairo 50",
+          "Giza 50"
+        ]
+      }
+    },
+    {
+      "key": "1e",
+      "title": "يضيف التاجر منتجين وعرضين ويعتمدهما المراجع",
+      "when_utc": "2026-09-01 11:00:00",
+      "actor": "مالك المتجر ثم المراجع",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 0.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 20.0,
+          "book_vendor_on_hand": 20.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "book": {
+          "state_after_submit": "pending",
+          "state": "active",
+          "price": 500.0,
+          "product_state": "published"
+        },
+        "pens": {
+          "state_after_submit": "pending",
+          "state": "active",
+          "price": 200.0,
+          "product_state": "published"
+        }
+      }
+    },
+    {
+      "key": "2",
+      "title": "العميل A يشتري 3 كتب + كابل الشركة ويدفع أونلاين",
+      "when_utc": "2026-09-03 07:07:00",
+      "actor": "العميل A (المتجر الإلكتروني)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "MKT/2026/09/0001",
+          "ref": "تحصيل السوق VO/000001 (شركة مكتبة النيل للنشر والتوزيع)",
+          "journal": "MKT - قيود السوق (الوسيط والعمولات)",
+          "date": "2026-09-03",
+          "lines": [
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 1550.0,
+              "credit": 0.0,
+              "label": "تم التحصيل لطلب البائع VO/000001",
+              "partner": "محمد إبراهيم"
+            },
+            {
+              "account": "219000 ضمان أموال البائعين (حساب الوسيط)",
+              "code": "219000",
+              "debit": 0.0,
+              "credit": 1550.0,
+              "label": "الأمانة VO/000001",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            }
+          ]
+        },
+        {
+          "name": "الفات/2026/00001",
+          "ref": "",
+          "journal": "الفات - فواتير العملاء",
+          "date": "2026-09-03",
+          "lines": [
+            {
+              "account": "400000 Product Sales",
+              "code": "400000",
+              "debit": 0.0,
+              "credit": 100.0,
+              "label": "كابل HDMI بطول 2 متر (منتج ليدرز)",
+              "partner": "محمد إبراهيم"
+            },
+            {
+              "account": "400000 Product Sales",
+              "code": "400000",
+              "debit": 0.0,
+              "credit": 40.0,
+              "label": "[MKT_DELIVERY] توصيل السوق توصيل السوق (لكل محافظة)",
+              "partner": "محمد إبراهيم"
+            },
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 140.0,
+              "credit": 0.0,
+              "label": "الفات/2026/00001",
+              "partner": "محمد إبراهيم"
+            }
+          ]
+        },
+        {
+          "name": "PBNK1/2026/00001",
+          "ref": "MP-S00001-01 - محمد إبراهيم - ",
+          "journal": "BNK1 - البنك",
+          "date": "2026-09-03",
+          "lines": [
+            {
+              "account": "101403 الإيصالات المستحقة ",
+              "code": "101403",
+              "debit": 1690.0,
+              "credit": 0.0,
+              "label": "النسخة التجريبية: MP-S00001-01 - محمد إبراهيم - ",
+              "partner": "محمد إبراهيم"
+            },
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 0.0,
+              "credit": 1690.0,
+              "label": "النسخة التجريبية: MP-S00001-01 - محمد إبراهيم - ",
+              "partner": "محمد إبراهيم"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [
+        {
+          "name": "PBNK1/2026/00001",
+          "type": "inbound",
+          "amount": 1690.0,
+          "state": "paid",
+          "memo": "MP-S00001-01 - محمد إبراهيم - ",
+          "journal": "البنك",
+          "new": true,
+          "was": null
+        }
+      ],
+      "vendor_documents": [
+        {
+          "name": "VE/INV/2026/00001",
+          "type": "invoice",
+          "amount_total": 1550.0,
+          "state": "posted",
+          "payment_state": "paid",
+          "order": "VO/000001"
+        }
+      ],
+      "pickings": [
+        {
+          "name": "WH/OUT/00001",
+          "type": "أوامر التوصيل",
+          "state": "assigned",
+          "new": true
+        },
+        {
+          "name": "VE/OUT/00001",
+          "type": "أوامر التوصيل",
+          "state": "assigned",
+          "new": true
+        }
+      ],
+      "ledger": {
+        "escrow": 1550.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 0.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "processing",
+            "amount_total": 1550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 1550.0,
+            "groups": [
+              "FG/000001: ready"
+            ],
+            "pickings": [
+              "VE/OUT/00001: assigned"
+            ]
+          }
+        ],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 20.0,
+          "book_vendor_on_hand": 20.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "sale_order": "S00001",
+        "amount_total": 140.0,
+        "sale_lines": [
+          {
+            "product": "كابل HDMI بطول 2 متر (منتج ليدرز)",
+            "qty": 1.0,
+            "price_unit": 100.0,
+            "subtotal": 100.0,
+            "is_delivery": false,
+            "vendor": ""
+          },
+          {
+            "product": "توصيل السوق",
+            "qty": 1.0,
+            "price_unit": 40.0,
+            "subtotal": 40.0,
+            "is_delivery": true,
+            "vendor": ""
+          }
+        ],
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "vendor": "مكتبة النيل",
+            "amount_total": 1550.0,
+            "lines": [
+              {
+                "product": "كتاب أساسيات المحاسبة",
+                "qty": 3.0,
+                "price_unit": 500.0,
+                "is_delivery": false
+              },
+              {
+                "product": "توصيل السوق",
+                "qty": 1.0,
+                "price_unit": 50.0,
+                "is_delivery": true
+              }
+            ]
+          }
+        ],
+        "cart_total": 1690.0,
+        "sale_state": "sale",
+        "payment_tx_state": "done",
+        "payment_tx_ref": "MP-S00001-01"
+      }
+    },
+    {
+      "key": "3a",
+      "title": "التاجر يشحن قطعتين من ثلاث (شحن جزئي)",
+      "when_utc": "2026-09-04 07:03:00",
+      "actor": "مالك المتجر (البوابة: شحن)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [
+        {
+          "name": "VE/OUT/00001",
+          "type": "أوامر التوصيل",
+          "state": "done",
+          "new": false
+        },
+        {
+          "name": "VE/OUT/00002",
+          "type": "أوامر التوصيل",
+          "state": "assigned",
+          "new": true
+        }
+      ],
+      "ledger": {
+        "escrow": 1550.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 0.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "partially_fulfilled",
+            "amount_total": 1550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 1550.0,
+            "groups": [
+              "FG/000001: partially_shipped"
+            ],
+            "pickings": [
+              "VE/OUT/00002: assigned",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 20.0,
+          "book_vendor_on_hand": 18.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "shipped": 2,
+        "ordered": 3.0,
+        "tracking": "NILE-TRK-001"
+      }
+    },
+    {
+      "key": "3b",
+      "title": "المدير يلغي الكمية المتبقية (Cancel Remaining)",
+      "when_utc": "2026-09-04 09:00:00",
+      "actor": "مدير السوق (المجموعة: إلغاء المتبقي)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "MKT/2026/09/0002",
+          "ref": "إلغاء كمية في السوق (VO/000001)",
+          "journal": "MKT - قيود السوق (الوسيط والعمولات)",
+          "date": "2026-09-04",
+          "lines": [
+            {
+              "account": "219000 ضمان أموال البائعين (حساب الوسيط)",
+              "code": "219000",
+              "debit": 500.0,
+              "credit": 0.0,
+              "label": "استرداد الأمانة VO/000001",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            },
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 0.0,
+              "credit": 500.0,
+              "label": "الكمية الملغاة من VO/000001",
+              "partner": "محمد إبراهيم"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [
+        {
+          "name": "(مسودة)",
+          "type": "outbound",
+          "amount": 500.0,
+          "state": "draft",
+          "memo": "استرداد الكمية الملغاة VO/000001",
+          "journal": "البنك",
+          "new": true,
+          "was": null
+        }
+      ],
+      "vendor_documents": [
+        {
+          "name": "VE/RINV/2026/00002",
+          "type": "credit_note",
+          "amount_total": 500.0,
+          "state": "posted",
+          "payment_state": "not_paid",
+          "order": "VO/000001"
+        }
+      ],
+      "pickings": [
+        {
+          "name": "VE/OUT/00002",
+          "type": "أوامر التوصيل",
+          "state": "cancel",
+          "new": false
+        }
+      ],
+      "ledger": {
+        "escrow": 1050.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 0.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "fulfilled",
+            "amount_total": 1050.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 1050.0,
+            "groups": [
+              "FG/000001: shipped"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 20.0,
+          "book_vendor_on_hand": 18.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "group_state": "shipped"
+      }
+    },
+    {
+      "key": "3c",
+      "title": "ترحيل دفعة الاسترداد (Refund payment)",
+      "when_utc": "2026-09-04 10:00:00",
+      "actor": "المالية (وعند الرفض المدير)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "PBNK1/2026/00002",
+          "ref": "استرداد الكمية الملغاة VO/000001",
+          "journal": "BNK1 - البنك",
+          "date": "2026-09-04",
+          "lines": [
+            {
+              "account": "101404 المدفوعات المستحقة ",
+              "code": "101404",
+              "debit": 0.0,
+              "credit": 500.0,
+              "label": "Manual Payment: استرداد الكمية الملغاة VO/000001",
+              "partner": "محمد إبراهيم"
+            },
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 500.0,
+              "credit": 0.0,
+              "label": "Manual Payment: استرداد الكمية الملغاة VO/000001",
+              "partner": "محمد إبراهيم"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [
+        {
+          "name": "PBNK1/2026/00002",
+          "type": "outbound",
+          "amount": 500.0,
+          "state": "in_process",
+          "memo": "استرداد الكمية الملغاة VO/000001",
+          "journal": "البنك",
+          "new": false,
+          "was": "draft"
+        }
+      ],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 1050.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 0.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "fulfilled",
+            "amount_total": 1050.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 1050.0,
+            "groups": [
+              "FG/000001: shipped"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 20.0,
+          "book_vendor_on_hand": 18.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "posted_by": [
+          "finance@leaders.demo"
+        ],
+        "finance_refusal": null
+      }
+    },
+    {
+      "key": "3d",
+      "title": "المخزن يجهّز ويسلّم منتج الشركة (الكابل)",
+      "when_utc": "2026-09-04 12:04:00",
+      "actor": "أمين المخزن",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [
+        {
+          "name": "WH/OUT/00001",
+          "type": "أوامر التوصيل",
+          "state": "done",
+          "new": false
+        }
+      ],
+      "ledger": {
+        "escrow": 1050.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 0.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "fulfilled",
+            "amount_total": 1050.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 1050.0,
+            "groups": [
+              "FG/000001: shipped"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 18.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {}
+    },
+    {
+      "key": "3e",
+      "title": "التاجر يبلّغ بالتسليم: قيد الأرباح (محتجزة)",
+      "when_utc": "2026-09-05 07:02:00",
+      "actor": "مالك المتجر (البوابة: تم التسليم)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "MKT/2026/09/0003",
+          "ref": "إيراد السوق VO/000001",
+          "journal": "MKT - قيود السوق (الوسيط والعمولات)",
+          "date": "2026-09-05",
+          "lines": [
+            {
+              "account": "219000 ضمان أموال البائعين (حساب الوسيط)",
+              "code": "219000",
+              "debit": 1050.0,
+              "credit": 0.0,
+              "label": "تحرير الأمانة VO/000001",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            },
+            {
+              "account": "219100 مستحقات البائعين",
+              "code": "219100",
+              "debit": 0.0,
+              "credit": 1050.0,
+              "label": "مستحقات البائع VO/000001",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [
+        {
+          "type": "earning",
+          "amount": 1050.0,
+          "state": "hold",
+          "reference": "VO/000001",
+          "order": "VO/000001",
+          "available_date": "2026-09-12",
+          "settlement": "",
+          "note": ""
+        }
+      ],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 1050.0,
+        "wallet": {
+          "hold": 1050.0,
+          "available": 0.0,
+          "settled": 0.0,
+          "unsettled": 1050.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 1050.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 18.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {}
+    },
+    {
+      "key": "3f",
+      "title": "الإفراج عن المبلغ المحتجز بعد 7 أيام (cron)",
+      "when_utc": "2026-09-12 07:00:00",
+      "actor": "النظام (cron_release_holds)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [
+        {
+          "type": "earning",
+          "amount": 1050.0,
+          "reference": "VO/000001",
+          "order": "VO/000001",
+          "from": "hold",
+          "to": "available",
+          "settlement": ""
+        }
+      ],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 1050.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 1050.0,
+          "settled": 0.0,
+          "unsettled": 1050.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 1050.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 18.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {}
+    },
+    {
+      "key": "4a",
+      "title": "العميل A يطلب إرجاع كتاب واحد",
+      "when_utc": "2026-09-14 08:00:00",
+      "actor": "العميل A (بوابة الطلبات: طلب إرجاع)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 1050.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 1050.0,
+          "settled": 0.0,
+          "unsettled": 1050.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 1050.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "requested",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 18.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "return": "RET/000001",
+        "state": "requested",
+        "reason": "ليس كما هو موصوف",
+        "refund_amount": 500.0
+      }
+    },
+    {
+      "key": "4b",
+      "title": "التاجر يوافق على الإرجاع",
+      "when_utc": "2026-09-14 09:00:00",
+      "actor": "مالك المتجر (البوابة: موافقة)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [
+        {
+          "name": "VE/IN/00001",
+          "type": "الإيصالات",
+          "state": "assigned",
+          "new": true
+        }
+      ],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 1050.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 1050.0,
+          "settled": 0.0,
+          "unsettled": 1050.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 1050.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "approved",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 18.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "state": "approved",
+        "pickings": [
+          "VE/IN/00001"
+        ]
+      }
+    },
+    {
+      "key": "4c",
+      "title": "التاجر يستلم البضاعة المرتجعة: الاسترداد",
+      "when_utc": "2026-09-14 12:00:00",
+      "actor": "مالك المتجر (البوابة: استلام)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "MKT/2026/09/0004",
+          "ref": "مرتجع السوق RET/000001 (VO/000001)",
+          "journal": "MKT - قيود السوق (الوسيط والعمولات)",
+          "date": "2026-09-14",
+          "lines": [
+            {
+              "account": "219100 مستحقات البائعين",
+              "code": "219100",
+              "debit": 500.0,
+              "credit": 0.0,
+              "label": "تم تحميل المرتجع RET/000001 على البائع",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            },
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 0.0,
+              "credit": 500.0,
+              "label": "استرداد مستحق للمرتجع RET/000001",
+              "partner": "محمد إبراهيم"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [
+        {
+          "type": "return",
+          "amount": -500.0,
+          "state": "available",
+          "reference": "RET/000001",
+          "order": "VO/000001",
+          "available_date": "2026-09-14",
+          "settlement": "",
+          "note": ""
+        }
+      ],
+      "wallet_moved": [],
+      "payments": [
+        {
+          "name": "(مسودة)",
+          "type": "outbound",
+          "amount": 500.0,
+          "state": "draft",
+          "memo": "استرداد RET/000001 (VO/000001)",
+          "journal": "البنك",
+          "new": true,
+          "was": null
+        }
+      ],
+      "vendor_documents": [
+        {
+          "name": "VE/RINV/2026/00003",
+          "type": "credit_note",
+          "amount_total": 500.0,
+          "state": "posted",
+          "payment_state": "not_paid",
+          "order": "VO/000001"
+        }
+      ],
+      "pickings": [
+        {
+          "name": "VE/IN/00001",
+          "type": "الإيصالات",
+          "state": "done",
+          "new": false
+        }
+      ],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 550.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 550.0,
+          "settled": 0.0,
+          "unsettled": 550.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "state": "refunded",
+        "refund_amount": 500.0,
+        "commission_refund": 0.0,
+        "vendor_deduction": 500.0,
+        "fee": 0.0
+      }
+    },
+    {
+      "key": "4d",
+      "title": "ترحيل دفعة استرداد المرتجع",
+      "when_utc": "2026-09-14 13:00:00",
+      "actor": "المالية (وعند الرفض المدير)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "PBNK1/2026/00003",
+          "ref": "استرداد RET/000001 (VO/000001)",
+          "journal": "BNK1 - البنك",
+          "date": "2026-09-14",
+          "lines": [
+            {
+              "account": "101404 المدفوعات المستحقة ",
+              "code": "101404",
+              "debit": 0.0,
+              "credit": 500.0,
+              "label": "Manual Payment: استرداد RET/000001 (VO/000001)",
+              "partner": "محمد إبراهيم"
+            },
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 500.0,
+              "credit": 0.0,
+              "label": "Manual Payment: استرداد RET/000001 (VO/000001)",
+              "partner": "محمد إبراهيم"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [
+        {
+          "name": "PBNK1/2026/00003",
+          "type": "outbound",
+          "amount": 500.0,
+          "state": "in_process",
+          "memo": "استرداد RET/000001 (VO/000001)",
+          "journal": "البنك",
+          "new": false,
+          "was": "draft"
+        }
+      ],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 550.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 550.0,
+          "settled": 0.0,
+          "unsettled": 550.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "posted_by": [
+          "manager@leaders.demo"
+        ],
+        "finance_refusal": "لا يُسمح لك بتغيير سجل 'فاتورة البائع' (leaders.vendor.invoice). "
+      }
+    },
+    {
+      "key": "5a",
+      "title": "العميل B يشتري كتابًا ويدفع أونلاين",
+      "when_utc": "2026-09-15 08:07:00",
+      "actor": "العميل B (المتجر الإلكتروني)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "MKT/2026/09/0005",
+          "ref": "تحصيل السوق VO/000002 (شركة مكتبة النيل للنشر والتوزيع)",
+          "journal": "MKT - قيود السوق (الوسيط والعمولات)",
+          "date": "2026-09-15",
+          "lines": [
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 550.0,
+              "credit": 0.0,
+              "label": "تم التحصيل لطلب البائع VO/000002",
+              "partner": "سلمى عادل"
+            },
+            {
+              "account": "219000 ضمان أموال البائعين (حساب الوسيط)",
+              "code": "219000",
+              "debit": 0.0,
+              "credit": 550.0,
+              "label": "الأمانة VO/000002",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            }
+          ]
+        },
+        {
+          "name": "PBNK1/2026/00004",
+          "ref": "MP-S00002-02 - سلمى عادل - ",
+          "journal": "BNK1 - البنك",
+          "date": "2026-09-15",
+          "lines": [
+            {
+              "account": "101403 الإيصالات المستحقة ",
+              "code": "101403",
+              "debit": 550.0,
+              "credit": 0.0,
+              "label": "النسخة التجريبية: MP-S00002-02 - سلمى عادل - ",
+              "partner": "سلمى عادل"
+            },
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 0.0,
+              "credit": 550.0,
+              "label": "النسخة التجريبية: MP-S00002-02 - سلمى عادل - ",
+              "partner": "سلمى عادل"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [
+        {
+          "name": "PBNK1/2026/00004",
+          "type": "inbound",
+          "amount": 550.0,
+          "state": "in_process",
+          "memo": "MP-S00002-02 - سلمى عادل - ",
+          "journal": "البنك",
+          "new": true,
+          "was": null
+        }
+      ],
+      "vendor_documents": [
+        {
+          "name": "VE/INV/2026/00004",
+          "type": "invoice",
+          "amount_total": 550.0,
+          "state": "posted",
+          "payment_state": "paid",
+          "order": "VO/000002"
+        }
+      ],
+      "pickings": [
+        {
+          "name": "VE/OUT/00003",
+          "type": "أوامر التوصيل",
+          "state": "assigned",
+          "new": true
+        }
+      ],
+      "ledger": {
+        "escrow": 550.0,
+        "payable": 550.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 550.0,
+          "settled": 0.0,
+          "unsettled": 550.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "processing",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: ready"
+            ],
+            "pickings": [
+              "VE/OUT/00003: assigned"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "sale_order": "S00002",
+        "amount_total": 0.0,
+        "sale_lines": [],
+        "vendor_orders": [
+          {
+            "name": "VO/000002",
+            "vendor": "مكتبة النيل",
+            "amount_total": 550.0,
+            "lines": [
+              {
+                "product": "كتاب أساسيات المحاسبة",
+                "qty": 1.0,
+                "price_unit": 500.0,
+                "is_delivery": false
+              },
+              {
+                "product": "توصيل السوق",
+                "qty": 1.0,
+                "price_unit": 50.0,
+                "is_delivery": true
+              }
+            ]
+          }
+        ],
+        "sale_state": "cancel",
+        "payment_tx_state": "done"
+      }
+    },
+    {
+      "key": "5b",
+      "title": "العميل B يلغي الطلب كله قبل الشحن",
+      "when_utc": "2026-09-15 10:00:00",
+      "actor": "العميل B (بوابة الطلبات: إلغاء الطلب)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "MKT/2026/09/0006",
+          "ref": "إلغاء تحصيل السوق VO/000002",
+          "journal": "MKT - قيود السوق (الوسيط والعمولات)",
+          "date": "2026-09-15",
+          "lines": [
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 0.0,
+              "credit": 550.0,
+              "label": "تم التحصيل لطلب البائع VO/000002",
+              "partner": "سلمى عادل"
+            },
+            {
+              "account": "219000 ضمان أموال البائعين (حساب الوسيط)",
+              "code": "219000",
+              "debit": 550.0,
+              "credit": 0.0,
+              "label": "الأمانة VO/000002",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [
+        {
+          "name": "(مسودة)",
+          "type": "outbound",
+          "amount": 550.0,
+          "state": "draft",
+          "memo": "تم إلغاء الاسترداد VO/000002",
+          "journal": "البنك",
+          "new": true,
+          "was": null
+        }
+      ],
+      "vendor_documents": [],
+      "pickings": [
+        {
+          "name": "VE/OUT/00003",
+          "type": "أوامر التوصيل",
+          "state": "cancel",
+          "new": false
+        }
+      ],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 550.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 550.0,
+          "settled": 0.0,
+          "unsettled": 550.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "vendor_order": "VO/000002",
+        "state": "cancelled",
+        "reason": "غيّرت رأيي",
+        "cancelled_by": "customer"
+      }
+    },
+    {
+      "key": "5c",
+      "title": "ترحيل دفعة استرداد الإلغاء",
+      "when_utc": "2026-09-15 11:00:00",
+      "actor": "المالية (وعند الرفض المدير)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "PBNK1/2026/00005",
+          "ref": "تم إلغاء الاسترداد VO/000002",
+          "journal": "BNK1 - البنك",
+          "date": "2026-09-15",
+          "lines": [
+            {
+              "account": "101404 المدفوعات المستحقة ",
+              "code": "101404",
+              "debit": 0.0,
+              "credit": 550.0,
+              "label": "Manual Payment: تم إلغاء الاسترداد VO/000002",
+              "partner": "سلمى عادل"
+            },
+            {
+              "account": "121000 Account Receivable",
+              "code": "121000",
+              "debit": 550.0,
+              "credit": 0.0,
+              "label": "Manual Payment: تم إلغاء الاسترداد VO/000002",
+              "partner": "سلمى عادل"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [
+        {
+          "name": "PBNK1/2026/00005",
+          "type": "outbound",
+          "amount": 550.0,
+          "state": "in_process",
+          "memo": "تم إلغاء الاسترداد VO/000002",
+          "journal": "البنك",
+          "new": false,
+          "was": "draft"
+        }
+      ],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 550.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 550.0,
+          "settled": 0.0,
+          "unsettled": 550.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "posted_by": [
+          "finance@leaders.demo"
+        ],
+        "finance_refusal": null
+      }
+    },
+    {
+      "key": "6a",
+      "title": "العميل C يطلب بالدفع عند الاستلام (COD)",
+      "when_utc": "2026-09-16 08:08:00",
+      "actor": "العميل C (المتجر: الدفع عند الاستلام + OTP)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [
+        {
+          "name": "VE/INV/2026/00005",
+          "type": "invoice",
+          "amount_total": 450.0,
+          "state": "posted",
+          "payment_state": "not_paid",
+          "order": "VO/000003"
+        }
+      ],
+      "pickings": [
+        {
+          "name": "VE/OUT/00004",
+          "type": "أوامر التوصيل",
+          "state": "assigned",
+          "new": true
+        }
+      ],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 550.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 550.0,
+          "settled": 0.0,
+          "unsettled": 550.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          },
+          {
+            "name": "VO/000003",
+            "state": "processing",
+            "amount_total": 450.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 450.0,
+            "groups": [
+              "FG/000003: ready"
+            ],
+            "pickings": [
+              "VE/OUT/00004: assigned"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 30.0
+        }
+      },
+      "extra": {
+        "sale_order": "S00003",
+        "amount_total": 0.0,
+        "sale_lines": [],
+        "vendor_orders": [
+          {
+            "name": "VO/000003",
+            "vendor": "مكتبة النيل",
+            "amount_total": 450.0,
+            "lines": [
+              {
+                "product": "طقم أقلام مكتبية",
+                "qty": 2.0,
+                "price_unit": 200.0,
+                "is_delivery": false
+              },
+              {
+                "product": "توصيل السوق",
+                "qty": 1.0,
+                "price_unit": 50.0,
+                "is_delivery": true
+              }
+            ]
+          }
+        ],
+        "sale_state": "cancel",
+        "payment_method": "cod"
+      }
+    },
+    {
+      "key": "6b",
+      "title": "التاجر يشحن ويسلّم الطلب للعميل C",
+      "when_utc": "2026-09-18 07:05:00",
+      "actor": "مالك المتجر (البوابة)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [
+        {
+          "name": "VE/OUT/00004",
+          "type": "أوامر التوصيل",
+          "state": "done",
+          "new": false
+        }
+      ],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 550.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 550.0,
+          "settled": 0.0,
+          "unsettled": 550.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          },
+          {
+            "name": "VO/000003",
+            "state": "completed",
+            "amount_total": 450.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 450.0,
+            "groups": [
+              "FG/000003: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00004: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 28.0
+        }
+      },
+      "extra": {
+        "state": "completed"
+      }
+    },
+    {
+      "key": "6c",
+      "title": "التاجر يؤكد استلام النقد",
+      "when_utc": "2026-09-18 08:00:00",
+      "actor": "مالك المتجر (البوابة: تأكيد استلام النقد)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [
+        {
+          "type": "cod_collected",
+          "amount": 450.0,
+          "state": "available",
+          "reference": "VO/000003",
+          "order": "VO/000003",
+          "available_date": "2026-09-18",
+          "settlement": "",
+          "note": ""
+        }
+      ],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 550.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 550.0,
+          "settled": 0.0,
+          "unsettled": 550.0
+        },
+        "commission": 0.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          },
+          {
+            "name": "VO/000003",
+            "state": "completed",
+            "amount_total": 450.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 450.0,
+            "groups": [
+              "FG/000003: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00004: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 28.0
+        }
+      },
+      "extra": {
+        "cod_cash_confirmed": true
+      }
+    },
+    {
+      "key": "7a",
+      "title": "طلب التسوية الأولى (1-17 سبتمبر): تجميع الحركات وحساب العمولة",
+      "when_utc": "2026-09-30 07:00:00",
+      "actor": "مالك المتجر (البوابة: طلب تسوية)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [
+        {
+          "type": "commission",
+          "amount": -50.0,
+          "state": "available",
+          "reference": "خطة الإنجاز 10% - مكتبة النيل",
+          "order": "",
+          "available_date": "2026-09-30",
+          "settlement": "SET/000001",
+          "note": "مبيعات الفترة: 550.0؛ المعدل لكل إنجاز"
+        }
+      ],
+      "wallet_moved": [
+        {
+          "type": "earning",
+          "amount": 1050.0,
+          "reference": "VO/000001",
+          "order": "VO/000001",
+          "from": "available",
+          "to": "available",
+          "settlement": "SET/000001"
+        },
+        {
+          "type": "return",
+          "amount": -500.0,
+          "reference": "RET/000001",
+          "order": "VO/000001",
+          "from": "available",
+          "to": "available",
+          "settlement": "SET/000001"
+        }
+      ],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 550.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 500.0,
+          "settled": 0.0,
+          "unsettled": 500.0
+        },
+        "commission": 50.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          },
+          {
+            "name": "VO/000003",
+            "state": "completed",
+            "amount_total": 450.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 450.0,
+            "groups": [
+              "FG/000003: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00004: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [
+          {
+            "name": "SET/000001",
+            "state": "draft",
+            "gross": 1050.0,
+            "deductions": 550.0,
+            "net": 500.0
+          }
+        ],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 28.0
+        }
+      },
+      "extra": {
+        "settlement": "SET/000001",
+        "gross": 1050.0,
+        "deductions": 550.0,
+        "net": 500.0,
+        "achievement": [
+          {
+            "plan": "خطة الإنجاز 10% - مكتبة النيل",
+            "sales": 550.0,
+            "commission": 50.0,
+            "percent": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "key": "7b",
+      "title": "المالية تعتمد التسوية الأولى: قيد العمولة",
+      "when_utc": "2026-09-30 08:00:00",
+      "actor": "المالية (اعتماد)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "MKT/2026/09/0007",
+          "ref": "عمولة السوق SET/000001",
+          "journal": "MKT - قيود السوق (الوسيط والعمولات)",
+          "date": "2026-09-30",
+          "lines": [
+            {
+              "account": "219100 مستحقات البائعين",
+              "code": "219100",
+              "debit": 50.0,
+              "credit": 0.0,
+              "label": "تم خصم العمولة SET/000001",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            },
+            {
+              "account": "419000 إيراد عمولة السوق",
+              "code": "419000",
+              "debit": 0.0,
+              "credit": 50.0,
+              "label": "عمولة السوق SET/000001",
+              "partner": ""
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 500.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 500.0,
+          "settled": 0.0,
+          "unsettled": 500.0
+        },
+        "commission": 50.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          },
+          {
+            "name": "VO/000003",
+            "state": "completed",
+            "amount_total": 450.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 450.0,
+            "groups": [
+              "FG/000003: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00004: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [
+          {
+            "name": "SET/000001",
+            "state": "approved",
+            "gross": 1050.0,
+            "deductions": 550.0,
+            "net": 500.0
+          }
+        ],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 28.0
+        }
+      },
+      "extra": {
+        "state": "approved"
+      }
+    },
+    {
+      "key": "7c",
+      "title": "دفع التسوية الأولى للتاجر: قيد التحويل",
+      "when_utc": "2026-09-30 09:00:00",
+      "actor": "المالية (وعند الرفض المدير): تحديد كمدفوعة",
+      "notes": "",
+      "moves": [
+        {
+          "name": "BNK1/2026/00001",
+          "ref": "تسوية البائع SET/000001 - الحساب ****0099",
+          "journal": "BNK1 - البنك",
+          "date": "2026-09-30",
+          "lines": [
+            {
+              "account": "219100 مستحقات البائعين",
+              "code": "219100",
+              "debit": 500.0,
+              "credit": 0.0,
+              "label": "تسوية SET/000001",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            },
+            {
+              "account": "101401 البنك",
+              "code": "101401",
+              "debit": 0.0,
+              "credit": 500.0,
+              "label": "صرف مستحقات SET/000001",
+              "partner": ""
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [
+        {
+          "type": "earning",
+          "amount": 1050.0,
+          "reference": "VO/000001",
+          "order": "VO/000001",
+          "from": "available",
+          "to": "settled",
+          "settlement": "SET/000001"
+        },
+        {
+          "type": "return",
+          "amount": -500.0,
+          "reference": "RET/000001",
+          "order": "VO/000001",
+          "from": "available",
+          "to": "settled",
+          "settlement": "SET/000001"
+        },
+        {
+          "type": "commission",
+          "amount": -50.0,
+          "reference": "خطة الإنجاز 10% - مكتبة النيل",
+          "order": "",
+          "from": "available",
+          "to": "settled",
+          "settlement": "SET/000001"
+        }
+      ],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 500.0,
+          "unsettled": 0.0
+        },
+        "commission": 50.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          },
+          {
+            "name": "VO/000003",
+            "state": "completed",
+            "amount_total": 450.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 450.0,
+            "groups": [
+              "FG/000003: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00004: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [
+          {
+            "name": "SET/000001",
+            "state": "paid",
+            "gross": 1050.0,
+            "deductions": 550.0,
+            "net": 500.0
+          }
+        ],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 28.0
+        }
+      },
+      "extra": {
+        "state": "paid",
+        "paid_by": "manager@leaders.demo",
+        "finance_refusal": "لا يُسمح لك بتغيير سجل 'حركة محفظة البائع' (leaders.wallet.transaction). "
+      }
+    },
+    {
+      "key": "7d",
+      "title": "طلب التسوية الثانية (18-30 سبتمبر): طلب COD فقط",
+      "when_utc": "2026-09-30 10:00:00",
+      "actor": "مالك المتجر (البوابة: طلب تسوية)",
+      "notes": "",
+      "moves": [],
+      "wallet_new": [
+        {
+          "type": "commission",
+          "amount": -40.0,
+          "state": "available",
+          "reference": "خطة الإنجاز 10% - مكتبة النيل",
+          "order": "",
+          "available_date": "2026-09-30",
+          "settlement": "SET/000002",
+          "note": "مبيعات الفترة: 450.0؛ المعدل لكل إنجاز"
+        }
+      ],
+      "wallet_moved": [
+        {
+          "type": "cod_collected",
+          "amount": 450.0,
+          "reference": "VO/000003",
+          "order": "VO/000003",
+          "from": "available",
+          "to": "available",
+          "settlement": "SET/000002"
+        }
+      ],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": -40.0,
+          "settled": 500.0,
+          "unsettled": -40.0
+        },
+        "commission": 90.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          },
+          {
+            "name": "VO/000003",
+            "state": "completed",
+            "amount_total": 450.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 450.0,
+            "groups": [
+              "FG/000003: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00004: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [
+          {
+            "name": "SET/000001",
+            "state": "paid",
+            "gross": 1050.0,
+            "deductions": 550.0,
+            "net": 500.0
+          },
+          {
+            "name": "SET/000002",
+            "state": "draft",
+            "gross": 0.0,
+            "deductions": 40.0,
+            "net": -40.0
+          }
+        ],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 28.0
+        }
+      },
+      "extra": {
+        "settlement": "SET/000002",
+        "gross": 0.0,
+        "deductions": 40.0,
+        "net": -40.0
+      }
+    },
+    {
+      "key": "7e",
+      "title": "اعتماد التسوية الثانية (صافيها سالب): قيد العمولة",
+      "when_utc": "2026-09-30 11:00:00",
+      "actor": "المالية (اعتماد)",
+      "notes": "",
+      "moves": [
+        {
+          "name": "MKT/2026/09/0008",
+          "ref": "عمولة السوق SET/000002",
+          "journal": "MKT - قيود السوق (الوسيط والعمولات)",
+          "date": "2026-09-30",
+          "lines": [
+            {
+              "account": "219100 مستحقات البائعين",
+              "code": "219100",
+              "debit": 40.0,
+              "credit": 0.0,
+              "label": "تم خصم العمولة SET/000002",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            },
+            {
+              "account": "419000 إيراد عمولة السوق",
+              "code": "419000",
+              "debit": 0.0,
+              "credit": 40.0,
+              "label": "عمولة السوق SET/000002",
+              "partner": ""
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": -40.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": -40.0,
+          "settled": 500.0,
+          "unsettled": -40.0
+        },
+        "commission": 90.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          },
+          {
+            "name": "VO/000003",
+            "state": "completed",
+            "amount_total": 450.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 450.0,
+            "groups": [
+              "FG/000003: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00004: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [
+          {
+            "name": "SET/000001",
+            "state": "paid",
+            "gross": 1050.0,
+            "deductions": 550.0,
+            "net": 500.0
+          },
+          {
+            "name": "SET/000002",
+            "state": "approved",
+            "gross": 0.0,
+            "deductions": 40.0,
+            "net": -40.0
+          }
+        ],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 28.0
+        }
+      },
+      "extra": {
+        "state": "approved",
+        "mark_paid_error": "يدين هذا البائع للسوق بمبلغ 40.0 عن هذه الفترة (نقد محصّل عند التسليم). استخدم 'تسجيل دفعة البائع' عند استلامه."
+      }
+    },
+    {
+      "key": "7f",
+      "title": "تسجيل دفعة التاجر (تحصيل المديونية)",
+      "when_utc": "2026-09-30 15:00:00",
+      "actor": "المالية (وعند الرفض المدير): تسجيل دفعة البائع",
+      "notes": "",
+      "moves": [
+        {
+          "name": "BNK1/2026/00002",
+          "ref": "تحصيل مديونية البائع SET/000002",
+          "journal": "BNK1 - البنك",
+          "date": "2026-09-30",
+          "lines": [
+            {
+              "account": "101401 البنك",
+              "code": "101401",
+              "debit": 40.0,
+              "credit": 0.0,
+              "label": "مستلَم من SET/000002",
+              "partner": ""
+            },
+            {
+              "account": "219100 مستحقات البائعين",
+              "code": "219100",
+              "debit": 0.0,
+              "credit": 40.0,
+              "label": "تم تحصيل المديونية SET/000002",
+              "partner": "شركة مكتبة النيل للنشر والتوزيع"
+            }
+          ]
+        }
+      ],
+      "wallet_new": [],
+      "wallet_moved": [
+        {
+          "type": "cod_collected",
+          "amount": 450.0,
+          "reference": "VO/000003",
+          "order": "VO/000003",
+          "from": "available",
+          "to": "settled",
+          "settlement": "SET/000002"
+        },
+        {
+          "type": "commission",
+          "amount": -40.0,
+          "reference": "خطة الإنجاز 10% - مكتبة النيل",
+          "order": "",
+          "from": "available",
+          "to": "settled",
+          "settlement": "SET/000002"
+        }
+      ],
+      "payments": [],
+      "vendor_documents": [],
+      "pickings": [],
+      "ledger": {
+        "escrow": 0.0,
+        "payable": 0.0,
+        "wallet": {
+          "hold": 0.0,
+          "available": 0.0,
+          "settled": 460.0,
+          "unsettled": 0.0
+        },
+        "commission": 90.0
+      },
+      "facts": {
+        "vendor_orders": [
+          {
+            "name": "VO/000001",
+            "state": "completed",
+            "amount_total": 1050.0,
+            "refunded": 500.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000001: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00002: cancel",
+              "VE/OUT/00001: done"
+            ]
+          },
+          {
+            "name": "VO/000002",
+            "state": "cancelled",
+            "amount_total": 550.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 550.0,
+            "groups": [
+              "FG/000002: cancelled"
+            ],
+            "pickings": [
+              "VE/OUT/00003: cancel"
+            ]
+          },
+          {
+            "name": "VO/000003",
+            "state": "completed",
+            "amount_total": 450.0,
+            "refunded": 0.0,
+            "commission": 0.0,
+            "vendor_net": 450.0,
+            "groups": [
+              "FG/000003: delivered"
+            ],
+            "pickings": [
+              "VE/OUT/00004: done"
+            ]
+          }
+        ],
+        "returns": [
+          {
+            "name": "RET/000001",
+            "state": "refunded",
+            "refund_amount": 500.0,
+            "vendor_deduction": 500.0
+          }
+        ],
+        "settlements": [
+          {
+            "name": "SET/000001",
+            "state": "paid",
+            "gross": 1050.0,
+            "deductions": 550.0,
+            "net": 500.0
+          },
+          {
+            "name": "SET/000002",
+            "state": "paid",
+            "gross": 0.0,
+            "deductions": 40.0,
+            "net": -40.0
+          }
+        ],
+        "stock": {
+          "cable_company_on_hand": 19.0,
+          "book_vendor_on_hand": 19.0,
+          "pens_vendor_on_hand": 28.0
+        }
+      },
+      "extra": {
+        "state": "paid",
+        "registered_by": "manager@leaders.demo",
+        "finance_refusal": "لا يُسمح لك بتغيير سجل 'حركة محفظة البائع' (leaders.wallet.transaction). "
+      }
+    }
+  ],
+  "final": {
+    "ledger": {
+      "escrow": 0.0,
+      "payable": 0.0,
+      "wallet": {
+        "hold": 0.0,
+        "available": 0.0,
+        "settled": 460.0,
+        "unsettled": 0.0
+      },
+      "commission": 90.0
+    },
+    "accounts": {
+      "219000": {
+        "name": "ضمان أموال البائعين (حساب الوسيط)",
+        "debit": 2100.0,
+        "credit": 2100.0,
+        "balance_credit_minus_debit": 0.0
+      },
+      "219100": {
+        "name": "مستحقات البائعين",
+        "debit": 1090.0,
+        "credit": 1090.0,
+        "balance_credit_minus_debit": 0.0
+      },
+      "419000": {
+        "name": "إيراد عمولة السوق",
+        "debit": 0.0,
+        "credit": 90.0,
+        "balance_credit_minus_debit": 90.0
+      },
+      "419100": {
+        "name": "إيراد رسوم الشحن والتخزين",
+        "debit": 0,
+        "credit": 0,
+        "balance_credit_minus_debit": 0
+      }
+    },
+    "customer_receivables": {
+      "A": {
+        "receivable_balance": 0.0,
+        "unreconciled_open": 0
+      },
+      "B": {
+        "receivable_balance": 0.0,
+        "unreconciled_open": 0
+      },
+      "C": {
+        "receivable_balance": 0,
+        "unreconciled_open": 0
+      }
+    }
+  }
+}
