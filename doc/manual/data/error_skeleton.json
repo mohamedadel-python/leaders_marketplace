@@ -1,0 +1,4393 @@
+[
+ {
+  "key": "Cash on Delivery is not available.",
+  "kind": "exception",
+  "message": "Cash on Delivery is not available.",
+  "arabic": "الدفع عند الاستلام غير متاح.",
+  "where": [
+   "controllers/checkout.py:55 MarketplaceCheckout.shop_pay_cod"
+  ],
+  "callers": [
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this order.",
+  "kind": "exception",
+  "message": "You cannot access this order.",
+  "arabic": "لا يمكنك الوصول إلى هذا الطلب.",
+  "where": [
+   "controllers/checkouts.py:46 MarketplaceCheckouts._customer_checkout",
+   "controllers/portal.py:1961 MarketplacePortal._customer_vendor_order"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/marketplace/checkouts/<int:sale_order_id>",
+   "ANY (GET+POST...) /my/marketplace/orders/<int:order_id>",
+   "ANY (GET+POST...) /my/marketplace/orders/<int:order_id>/invoice",
+   "POST /my/marketplace/checkouts/<int:sale_order_id>/buy-again",
+   "POST /my/marketplace/checkouts/<int:sale_order_id>/cancel",
+   "POST /my/marketplace/orders/<int:order_id>/cancel",
+   "POST /my/marketplace/orders/<int:order_id>/dispute",
+   "POST /my/marketplace/orders/<int:order_id>/rate",
+   "POST /my/marketplace/orders/<int:order_id>/return"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Your vendor account is frozen, so you cannot list or change products. You can still handle your existing orders and returns.",
+  "kind": "exception",
+  "message": "Your vendor account is frozen, so you cannot list or change products. You can still handle your existing orders and returns.",
+  "arabic": "حساب البائع الخاص بك مجمَّد، لذا لا يمكنك إضافة المنتجات أو تعديلها. لا يزال بإمكانك التعامل مع طلباتك ومرتجعاتك الحالية.",
+  "where": [
+   "controllers/portal.py:64 MarketplacePortal._require_vendor"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/vendor",
+   "ANY (GET+POST...) /my/vendor/delivery-zones",
+   "ANY (GET+POST...) /my/vendor/disputes",
+   "ANY (GET+POST...) /my/vendor/disputes/<int:dispute_id>",
+   "ANY (GET+POST...) /my/vendor/finance",
+   "ANY (GET+POST...) /my/vendor/orders",
+   "ANY (GET+POST...) /my/vendor/orders/<int:order_id>",
+   "ANY (GET+POST...) /my/vendor/orders/<int:order_id>/invoice",
+   "ANY (GET+POST...) /my/vendor/performance",
+   "GET /my/vendor/fulfillment/<int:group_id>/label",
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new",
+   "POST /my/vendor/delivery-zones/<int:zone_id>/delete",
+   "POST /my/vendor/delivery-zones/<int:zone_id>/update",
+   "POST /my/vendor/delivery-zones/new",
+   "POST /my/vendor/disputes/<int:dispute_id>/reply",
+   "POST /my/vendor/fulfillment/<int:group_id>/create-shipment",
+   "POST /my/vendor/fulfillment/<int:group_id>/delivered",
+   "POST /my/vendor/fulfillment/<int:group_id>/refused",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "POST /my/vendor/orders/<int:order_id>/cancel",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm-cod-payment",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/profile/bank-change"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Your account is not an approved marketplace vendor.",
+  "kind": "exception",
+  "message": "Your account is not an approved marketplace vendor.",
+  "arabic": "حسابك ليس حساب بائع معتمد في السوق.",
+  "where": [
+   "controllers/portal.py:67 MarketplacePortal._require_vendor"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/vendor",
+   "ANY (GET+POST...) /my/vendor/delivery-zones",
+   "ANY (GET+POST...) /my/vendor/disputes",
+   "ANY (GET+POST...) /my/vendor/disputes/<int:dispute_id>",
+   "ANY (GET+POST...) /my/vendor/finance",
+   "ANY (GET+POST...) /my/vendor/orders",
+   "ANY (GET+POST...) /my/vendor/orders/<int:order_id>",
+   "ANY (GET+POST...) /my/vendor/orders/<int:order_id>/invoice",
+   "ANY (GET+POST...) /my/vendor/performance",
+   "GET /my/vendor/fulfillment/<int:group_id>/label",
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new",
+   "POST /my/vendor/delivery-zones/<int:zone_id>/delete",
+   "POST /my/vendor/delivery-zones/<int:zone_id>/update",
+   "POST /my/vendor/delivery-zones/new",
+   "POST /my/vendor/disputes/<int:dispute_id>/reply",
+   "POST /my/vendor/fulfillment/<int:group_id>/create-shipment",
+   "POST /my/vendor/fulfillment/<int:group_id>/delivered",
+   "POST /my/vendor/fulfillment/<int:group_id>/refused",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "POST /my/vendor/orders/<int:order_id>/cancel",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm-cod-payment",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/profile/bank-change"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can accept the terms.",
+  "kind": "exception",
+  "message": "Only the vendor owner can accept the terms.",
+  "arabic": "مالك البائع فقط يمكنه قبول الشروط.",
+  "where": [
+   "controllers/portal.py:103 MarketplacePortal.vendor_terms_accept"
+  ],
+  "callers": [
+   "POST /my/vendor/terms/accept"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this offer.",
+  "kind": "exception",
+  "message": "You cannot access this offer.",
+  "arabic": "لا يمكنك الوصول إلى هذا العرض.",
+  "where": [
+   "controllers/portal.py:128 MarketplacePortal._offer_owned_by_vendor"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/<int:offer_id>/stock",
+   "POST /my/vendor/products/<int:offer_id>/submit",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Adding new attribute values is not allowed.",
+  "kind": "exception",
+  "message": "Adding new attribute values is not allowed.",
+  "arabic": "إضافة قيم جديدة للخصائص غير مسموحة.",
+  "where": [
+   "controllers/portal.py:257 MarketplacePortal._vendor_b3_parse",
+   "models/vendor_variants.py:99 ProductTemplate._leaders_create_vendor_attribute_values"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "DYN:image_error@controllers/portal.py:262",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "controllers/portal.py:262 MarketplacePortal._vendor_b3_parse"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This attribute cannot be used.",
+  "kind": "exception",
+  "message": "This attribute cannot be used.",
+  "arabic": "لا يمكن استخدام هذه الخاصية.",
+  "where": [
+   "controllers/portal.py:284 MarketplacePortal._vendor_b3_apply",
+   "controllers/portal.py:291 MarketplacePortal._vendor_b3_apply",
+   "models/vendor_variants.py:158 ProductTemplate._leaders_apply_attribute_selection"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this product.",
+  "kind": "exception",
+  "message": "You cannot access this product.",
+  "arabic": "لا يمكنك الوصول إلى هذا المنتج.",
+  "where": [
+   "controllers/portal.py:306 MarketplacePortal._template_owned_by_vendor"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "POST /my/vendor/templates/<int:tmpl_id>/submit"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Vendor discounts are not enabled.",
+  "kind": "exception",
+  "message": "Vendor discounts are not enabled.",
+  "arabic": "خصومات البائعين غير مفعّلة.",
+  "where": [
+   "controllers/portal.py:363 MarketplacePortal.vendor_template_variants"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A product can have at most %s extra images.",
+  "kind": "exception",
+  "message": "A product can have at most %s extra images.",
+  "arabic": "يمكن أن يحتوي المنتج على %s صور إضافية كحد أقصى.",
+  "where": [
+   "controllers/portal.py:554 MarketplacePortal.vendor_product_create",
+   "models/vendor_variants.py:232 ProductTemplate._leaders_check_extra_images"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Your vendor tier product limit has been reached.",
+  "kind": "exception",
+  "message": "Your vendor tier product limit has been reached.",
+  "arabic": "تم بلوغ الحد الأقصى للمنتجات في مستوى البائع الخاص بك.",
+  "where": [
+   "controllers/portal.py:568 MarketplacePortal.vendor_product_create",
+   "models/vendor_variants.py:271 MarketplaceOffer._leaders_create_variant_offers"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/new",
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The discount dates are not valid.",
+  "kind": "exception",
+  "message": "The discount dates are not valid.",
+  "arabic": "تواريخ الخصم غير صالحة.",
+  "where": [
+   "controllers/portal.py:751 MarketplacePortal._dt_from_local",
+   "models/offer_discount.py:222 MarketplaceOfferDiscount._leaders_set_discount"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "FBL stock is controlled by warehouse inbound receipts, not direct vendor adjustments.",
+  "kind": "exception",
+  "message": "FBL stock is controlled by warehouse inbound receipts, not direct vendor adjustments.",
+  "arabic": "يتحكم في مخزون FBL إيصالات استلام المستودع الواردة، وليس تعديلات البائع المباشرة.",
+  "where": [
+   "controllers/portal.py:840 MarketplacePortal.vendor_product_stock",
+   "models/vendor_import.py:442 VendorImport._leaders_check_rules",
+   "models/vendor_import.py:909 MarketplaceOfferImportHelpers._leaders_set_fbm_stock",
+   "models/vendor_variants.py:289 MarketplaceOffer._leaders_create_variant_offers"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/import/upload",
+   "POST /my/vendor/products/<int:offer_id>/stock",
+   "cron Marketplace: process vendor imports"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Marketplace stock updates require a goods product, not a service.",
+  "kind": "exception",
+  "message": "Marketplace stock updates require a goods product, not a service.",
+  "arabic": "تحديثات مخزون السوق تتطلب منتجًا ماديًا وليس خدمة.",
+  "where": [
+   "controllers/portal.py:842 MarketplacePortal.vendor_product_stock",
+   "models/vendor_import.py:911 MarketplaceOfferImportHelpers._leaders_set_fbm_stock"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/stock"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Unknown stock update mode.",
+  "kind": "exception",
+  "message": "Unknown stock update mode.",
+  "arabic": "وضع تحديث المخزون غير معروف.",
+  "where": [
+   "controllers/portal.py:845 MarketplacePortal.vendor_product_stock"
+  ],
+  "callers": [
+   "POST /my/vendor/products/<int:offer_id>/stock"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The added stock quantity cannot be negative.",
+  "kind": "exception",
+  "message": "The added stock quantity cannot be negative.",
+  "arabic": "لا يمكن أن تكون كمية المخزون المضافة سالبة.",
+  "where": [
+   "controllers/portal.py:855 MarketplacePortal.vendor_product_stock"
+  ],
+  "callers": [
+   "POST /my/vendor/products/<int:offer_id>/stock"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this vendor order.",
+  "kind": "exception",
+  "message": "You cannot access this vendor order.",
+  "arabic": "لا يمكنك الوصول إلى طلب البائع هذا.",
+  "where": [
+   "controllers/portal.py:990 MarketplacePortal.vendor_order_detail",
+   "controllers/portal.py:1008 MarketplacePortal.vendor_order_confirm",
+   "controllers/portal.py:1026 MarketplacePortal.vendor_order_cancel",
+   "controllers/portal.py:1045 MarketplacePortal.vendor_order_confirm_cod_payment"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/vendor/orders/<int:order_id>",
+   "POST /my/vendor/orders/<int:order_id>/cancel",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm-cod-payment"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can confirm orders.",
+  "kind": "exception",
+  "message": "Only the vendor owner can confirm orders.",
+  "arabic": "يمكن لمالك البائع فقط تأكيد الطلبات.",
+  "where": [
+   "controllers/portal.py:1003 MarketplacePortal.vendor_order_confirm"
+  ],
+  "callers": [
+   "POST /my/vendor/orders/<int:order_id>/confirm"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can cancel orders.",
+  "kind": "exception",
+  "message": "Only the vendor owner can cancel orders.",
+  "arabic": "يمكن لمالك البائع فقط إلغاء الطلبات.",
+  "where": [
+   "controllers/portal.py:1021 MarketplacePortal.vendor_order_cancel"
+  ],
+  "callers": [
+   "POST /my/vendor/orders/<int:order_id>/cancel"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can confirm cash collection.",
+  "kind": "exception",
+  "message": "Only the vendor owner can confirm cash collection.",
+  "arabic": "يمكن لمالك البائع فقط تأكيد تحصيل النقدية.",
+  "where": [
+   "controllers/portal.py:1040 MarketplacePortal.vendor_order_confirm_cod_payment"
+  ],
+  "callers": [
+   "POST /my/vendor/orders/<int:order_id>/confirm-cod-payment"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this fulfillment group.",
+  "kind": "exception",
+  "message": "You cannot access this fulfillment group.",
+  "arabic": "لا يمكنك الوصول إلى مجموعة التنفيذ هذه.",
+  "where": [
+   "controllers/portal.py:1060 MarketplacePortal.vendor_fulfillment_ship",
+   "controllers/portal.py:1096 MarketplacePortal.vendor_fulfillment_create_shipment",
+   "controllers/portal.py:1136 MarketplacePortal.vendor_fulfillment_delivered",
+   "controllers/portal.py:1165 MarketplacePortal.vendor_fulfillment_refused"
+  ],
+  "callers": [
+   "POST /my/vendor/fulfillment/<int:group_id>/create-shipment",
+   "POST /my/vendor/fulfillment/<int:group_id>/delivered",
+   "POST /my/vendor/fulfillment/<int:group_id>/refused",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "FBL shipments are handled by the Leaders warehouse.",
+  "kind": "exception",
+  "message": "FBL shipments are handled by the Leaders warehouse.",
+  "arabic": "يتم التعامل مع شحنات FBL في مستودع ليدرز.",
+  "where": [
+   "controllers/portal.py:1062 MarketplacePortal.vendor_fulfillment_ship",
+   "controllers/portal.py:1098 MarketplacePortal.vendor_fulfillment_create_shipment",
+   "controllers/vendor_api.py:539 VendorAPI._ship_spec"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship",
+   "POST /my/vendor/fulfillment/<int:group_id>/create-shipment",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Invalid shipment quantity.",
+  "kind": "exception",
+  "message": "Invalid shipment quantity.",
+  "arabic": "كمية الشحن غير صالحة.",
+  "where": [
+   "controllers/portal.py:1075 MarketplacePortal.vendor_fulfillment_ship",
+   "models/sale.py:1239 FulfillmentGroup._ship_normalize_quantities"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "Ship [action_ship] (leaders_marketplace.view_leaders_ship_wizard_form)",
+   "Ship [action_ship] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Choose a shipping provider.",
+  "kind": "exception",
+  "message": "Choose a shipping provider.",
+  "arabic": "اختر مزوّد شحن.",
+  "where": [
+   "controllers/portal.py:1105 MarketplacePortal.vendor_fulfillment_create_shipment"
+  ],
+  "callers": [
+   "POST /my/vendor/fulfillment/<int:group_id>/create-shipment"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this invoice.",
+  "kind": "exception",
+  "message": "You cannot access this invoice.",
+  "arabic": "لا يمكنك الوصول إلى هذه الفاتورة.",
+  "where": [
+   "controllers/portal.py:1182 MarketplacePortal.vendor_order_invoice_pdf",
+   "controllers/portal.py:1264 MarketplacePortal.vendor_settlement_invoice_pdf"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/vendor/finance/settlement/<int:settlement_id>/invoice",
+   "ANY (GET+POST...) /my/vendor/orders/<int:order_id>/invoice"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can access financial information.",
+  "kind": "exception",
+  "message": "Only the vendor owner can access financial information.",
+  "arabic": "يمكن لمالك البائع فقط الوصول إلى المعلومات المالية.",
+  "where": [
+   "controllers/portal.py:1202 MarketplacePortal.vendor_finance",
+   "controllers/portal.py:1258 MarketplacePortal.vendor_settlement_invoice_pdf",
+   "controllers/portal.py:1312 MarketplacePortal._statement_owner"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/vendor/finance",
+   "ANY (GET+POST...) /my/vendor/finance/settlement/<int:settlement_id>/invoice",
+   "ANY (GET+POST...) /my/vendor/finance/statement",
+   "ANY (GET+POST...) /my/vendor/finance/statement.pdf",
+   "ANY (GET+POST...) /my/vendor/finance/statement.xlsx"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can request a settlement.",
+  "kind": "exception",
+  "message": "Only the vendor owner can request a settlement.",
+  "arabic": "يمكن لمالك البائع فقط طلب تسوية.",
+  "where": [
+   "controllers/portal.py:1279 MarketplacePortal.vendor_request_settlement"
+  ],
+  "callers": [
+   "POST /my/vendor/finance/settlement/request"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Please select a valid period.",
+  "kind": "exception",
+  "message": "Please select a valid period.",
+  "arabic": "يرجى اختيار فترة صالحة.",
+  "where": [
+   "controllers/portal.py:1286 MarketplacePortal.vendor_request_settlement"
+  ],
+  "callers": [
+   "POST /my/vendor/finance/settlement/request"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The period cannot end in the future.",
+  "kind": "exception",
+  "message": "The period cannot end in the future.",
+  "arabic": "لا يمكن أن تنتهي الفترة في المستقبل.",
+  "where": [
+   "controllers/portal.py:1288 MarketplacePortal.vendor_request_settlement"
+  ],
+  "callers": [
+   "POST /my/vendor/finance/settlement/request"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A settlement already exists for an overlapping period.",
+  "kind": "exception",
+  "message": "A settlement already exists for an overlapping period.",
+  "arabic": "توجد تسوية بالفعل لفترة متداخلة.",
+  "where": [
+   "controllers/portal.py:1294 MarketplacePortal.vendor_request_settlement"
+  ],
+  "callers": [
+   "POST /my/vendor/finance/settlement/request"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "No available earnings were found for this period.",
+  "kind": "exception",
+  "message": "No available earnings were found for this period.",
+  "arabic": "لم يتم العثور على أرباح متاحة لهذه الفترة.",
+  "where": [
+   "controllers/portal.py:1300 MarketplacePortal.vendor_request_settlement"
+  ],
+  "callers": [
+   "POST /my/vendor/finance/settlement/request"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only marketplace managers and finance can print vendor statements.",
+  "kind": "exception",
+  "message": "Only marketplace managers and finance can print vendor statements.",
+  "arabic": "يمكن لمديري السوق والمالية فقط طباعة كشوف حساب البائعين.",
+  "where": [
+   "controllers/portal.py:1376 MarketplacePortal.backend_vendor_statement_xlsx",
+   "models/vendor_statement.py:252 VendorStatementWizard._check_staff"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /leaders/vendor_statement/xlsx",
+   "Download XLSX [action_xlsx] (leaders_marketplace.view_vendor_statement_wizard_form)",
+   "Print PDF [action_print] (leaders_marketplace.view_vendor_statement_wizard_form)"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can manage API keys.",
+  "kind": "exception",
+  "message": "Only the vendor owner can manage API keys.",
+  "arabic": "يمكن لمالك البائع فقط إدارة مفاتيح API.",
+  "where": [
+   "controllers/portal.py:1398 MarketplacePortal._api_keys_owner"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/vendor/api",
+   "POST /my/vendor/api/keys",
+   "POST /my/vendor/api/keys/<int:key_id>/revoke"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can manage delivery zones.",
+  "kind": "exception",
+  "message": "Only the vendor owner can manage delivery zones.",
+  "arabic": "يمكن لمالك البائع فقط إدارة مناطق التوصيل.",
+  "where": [
+   "controllers/portal.py:1466 MarketplacePortal.vendor_delivery_zone_create",
+   "controllers/portal.py:1497 MarketplacePortal.vendor_delivery_zone_update",
+   "controllers/portal.py:1522 MarketplacePortal.vendor_delivery_zone_delete"
+  ],
+  "callers": [
+   "POST /my/vendor/delivery-zones/<int:zone_id>/delete",
+   "POST /my/vendor/delivery-zones/<int:zone_id>/update",
+   "POST /my/vendor/delivery-zones/new"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Please select a governorate and a valid price.",
+  "kind": "exception",
+  "message": "Please select a governorate and a valid price.",
+  "arabic": "يرجى اختيار محافظة وسعر صالح.",
+  "where": [
+   "controllers/portal.py:1473 MarketplacePortal.vendor_delivery_zone_create"
+  ],
+  "callers": [
+   "POST /my/vendor/delivery-zones/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this delivery zone.",
+  "kind": "exception",
+  "message": "You cannot access this delivery zone.",
+  "arabic": "لا يمكنك الوصول إلى منطقة التوصيل هذه.",
+  "where": [
+   "controllers/portal.py:1489 MarketplacePortal._delivery_zone_owned_by_vendor"
+  ],
+  "callers": [
+   "POST /my/vendor/delivery-zones/<int:zone_id>/delete",
+   "POST /my/vendor/delivery-zones/<int:zone_id>/update"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Please enter a valid price.",
+  "kind": "exception",
+  "message": "Please enter a valid price.",
+  "arabic": "يرجى إدخال سعر صالح.",
+  "where": [
+   "controllers/portal.py:1504 MarketplacePortal.vendor_delivery_zone_update"
+  ],
+  "callers": [
+   "POST /my/vendor/delivery-zones/<int:zone_id>/update"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this return.",
+  "kind": "exception",
+  "message": "You cannot access this return.",
+  "arabic": "لا يمكنك الوصول إلى هذا المرتجع.",
+  "where": [
+   "controllers/portal.py:1540 MarketplacePortal._vendor_return",
+   "controllers/portal.py:1914 MarketplacePortal._customer_return",
+   "controllers/portal.py:2152 MarketplacePortal.customer_escalate_return"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/marketplace/returns/<int:return_id>",
+   "ANY (GET+POST...) /my/marketplace/returns/<int:return_id>/photo/<int:attachment_id>",
+   "ANY (GET+POST...) /my/vendor/returns/<int:return_id>",
+   "ANY (GET+POST...) /my/vendor/returns/<int:return_id>/photo/<int:attachment_id>",
+   "POST /my/marketplace/returns/<int:return_id>/escalate",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "This return is received by the Leaders warehouse.",
+  "kind": "exception",
+  "message": "This return is received by the Leaders warehouse.",
+  "arabic": "يستلم مستودع ليدرز هذا المرتجع.",
+  "where": [
+   "controllers/portal.py:1571 MarketplacePortal.vendor_return_decide"
+  ],
+  "callers": [
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Unknown action.",
+  "kind": "exception",
+  "message": "Unknown action.",
+  "arabic": "إجراء غير معروف.",
+  "where": [
+   "controllers/portal.py:1574 MarketplacePortal.vendor_return_decide"
+  ],
+  "callers": [
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this dispute.",
+  "kind": "exception",
+  "message": "You cannot access this dispute.",
+  "arabic": "لا يمكنك الوصول إلى هذا النزاع.",
+  "where": [
+   "controllers/portal.py:1589 MarketplacePortal._vendor_dispute",
+   "controllers/portal.py:2204 MarketplacePortal._customer_dispute"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/vendor/disputes/<int:dispute_id>",
+   "POST /my/marketplace/disputes/<int:dispute_id>/escalate",
+   "POST /my/marketplace/disputes/<int:dispute_id>/message",
+   "POST /my/vendor/disputes/<int:dispute_id>/reply"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this question.",
+  "kind": "exception",
+  "message": "You cannot access this question.",
+  "arabic": "لا يمكنك الوصول إلى هذا السؤال.",
+  "where": [
+   "controllers/portal.py:1652 MarketplacePortal.vendor_question_answer"
+  ],
+  "callers": [
+   "POST /my/vendor/questions/<int:question_id>/answer"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can access the vendor profile.",
+  "kind": "exception",
+  "message": "Only the vendor owner can access the vendor profile.",
+  "arabic": "مالك البائع فقط يمكنه الوصول إلى ملف البائع الشخصي.",
+  "where": [
+   "controllers/portal.py:1698 MarketplacePortal.vendor_profile"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/vendor/profile"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can change the payout account.",
+  "kind": "exception",
+  "message": "Only the vendor owner can change the payout account.",
+  "arabic": "مالك البائع فقط يمكنه تغيير حساب صرف المستحقات.",
+  "where": [
+   "controllers/portal.py:1706 MarketplacePortal.vendor_bank_change_request"
+  ],
+  "callers": [
+   "POST /my/vendor/profile/bank-change"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only the vendor owner can manage staff.",
+  "kind": "exception",
+  "message": "Only the vendor owner can manage staff.",
+  "arabic": "يمكن لمالك البائع فقط إدارة الموظفين.",
+  "where": [
+   "controllers/portal.py:1744 MarketplacePortal.vendor_staff",
+   "controllers/portal.py:1830 MarketplacePortal.vendor_staff_deactivate",
+   "controllers/portal.py:1839 MarketplacePortal.vendor_staff_reactivate",
+   "controllers/portal.py:1848 MarketplacePortal.vendor_staff_resend"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/staff",
+   "POST /my/vendor/staff/<int:user_id>/deactivate",
+   "POST /my/vendor/staff/<int:user_id>/reactivate",
+   "POST /my/vendor/staff/<int:user_id>/resend"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "You cannot manage this user.",
+  "kind": "exception",
+  "message": "You cannot manage this user.",
+  "arabic": "لا يمكنك إدارة هذا المستخدم.",
+  "where": [
+   "controllers/portal.py:1820 MarketplacePortal._vendor_staff_member"
+  ],
+  "callers": [
+   "POST /my/vendor/staff/<int:user_id>/deactivate",
+   "POST /my/vendor/staff/<int:user_id>/reactivate",
+   "POST /my/vendor/staff/<int:user_id>/resend"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Vendor owners cannot be managed from the portal.",
+  "kind": "exception",
+  "message": "Vendor owners cannot be managed from the portal.",
+  "arabic": "لا يمكن إدارة مالكي البائعين من البوابة.",
+  "where": [
+   "controllers/portal.py:1822 MarketplacePortal._vendor_staff_member"
+  ],
+  "callers": [
+   "POST /my/vendor/staff/<int:user_id>/deactivate",
+   "POST /my/vendor/staff/<int:user_id>/reactivate",
+   "POST /my/vendor/staff/<int:user_id>/resend"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Please tell us why you are returning the products.",
+  "kind": "exception",
+  "message": "Please tell us why you are returning the products.",
+  "arabic": "يرجى إخبارنا بسبب إرجاعك المنتجات.",
+  "where": [
+   "controllers/portal.py:2060 MarketplacePortal.customer_request_return"
+  ],
+  "callers": [
+   "POST /my/marketplace/orders/<int:order_id>/return"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please choose why you are returning the products.",
+  "kind": "exception",
+  "message": "Please choose why you are returning the products.",
+  "arabic": "يرجى اختيار سبب إرجاع المنتجات.",
+  "where": [
+   "controllers/portal.py:2074 MarketplacePortal._center_return_vals"
+  ],
+  "callers": [
+   "POST /my/marketplace/orders/<int:order_id>/return"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You can attach at most %s photos.",
+  "kind": "exception",
+  "message": "You can attach at most %s photos.",
+  "arabic": "يمكنك إرفاق %s صور كحد أقصى.",
+  "where": [
+   "controllers/portal.py:2077 MarketplacePortal._center_return_vals",
+   "models/returns.py:147 VendorReturn._check_photos"
+  ],
+  "callers": [
+   "POST /my/marketplace/orders/<int:order_id>/return"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "DYN:error@controllers/portal.py:2082",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "controllers/portal.py:2082 MarketplacePortal._center_return_vals"
+  ],
+  "callers": [
+   "POST /my/marketplace/orders/<int:order_id>/return"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Choose a valid pickup date.",
+  "kind": "exception",
+  "message": "Choose a valid pickup date.",
+  "arabic": "اختر موعد استلام صالحًا.",
+  "where": [
+   "controllers/portal.py:2105 MarketplacePortal._center_return_vals"
+  ],
+  "callers": [
+   "POST /my/marketplace/orders/<int:order_id>/return"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this shipment.",
+  "kind": "exception",
+  "message": "You cannot access this shipment.",
+  "arabic": "لا يمكنك الوصول إلى هذه الشحنة.",
+  "where": [
+   "controllers/portal.py:2117 MarketplacePortal._customer_reported_group"
+  ],
+  "callers": [
+   "POST /my/marketplace/fulfillment/<int:group_id>/confirm-delivery",
+   "POST /my/marketplace/fulfillment/<int:group_id>/not-received"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "You cannot access this document.",
+  "kind": "exception",
+  "message": "You cannot access this document.",
+  "arabic": "لا يمكنك الوصول إلى هذا المستند.",
+  "where": [
+   "controllers/portal.py:2243 MarketplacePortal.marketplace_invoice_pdf"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/marketplace/vendor-invoices/<int:invoice_id>"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "This order has no vendor invoice.",
+  "kind": "exception",
+  "message": "This order has no vendor invoice.",
+  "arabic": "ليس لهذا الطلب فاتورة بائع.",
+  "where": [
+   "controllers/portal.py:2250 MarketplacePortal.customer_marketplace_invoice_pdf"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /my/marketplace/orders/<int:order_id>/invoice"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "There is nothing left to ship on this order.",
+  "kind": "exception",
+  "message": "There is nothing left to ship on this order.",
+  "arabic": "لم يتبق شيء للشحن في هذا الطلب.",
+  "where": [
+   "controllers/vendor_api.py:531 VendorAPI._ship_spec"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This shipment cannot be shipped in state %s.",
+  "kind": "exception",
+  "message": "This shipment cannot be shipped in state %s.",
+  "arabic": "لا يمكن شحن هذه الشحنة في الحالة %s.",
+  "where": [
+   "controllers/vendor_api.py:541 VendorAPI._ship_spec"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only shipped groups can be reported as delivered.",
+  "kind": "exception",
+  "message": "Only shipped groups can be reported as delivered.",
+  "arabic": "لا يمكن الإبلاغ عن التسليم إلا للمجموعات التي تم شحنها.",
+  "where": [
+   "controllers/vendor_api.py:597 VendorAPI._order_delivered",
+   "models/sale.py:1379 FulfillmentGroup.action_report_delivery"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/delivered",
+   "POST /my/vendor/fulfillment/<int:group_id>/delivered"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "No bank/cash journal found to pay the settlement.",
+  "kind": "exception",
+  "message": "No bank/cash journal found to pay the settlement.",
+  "arabic": "لم يتم العثور على يومية بنك/نقدية لدفع التسوية.",
+  "where": [
+   "models/accounting.py:598 MarketplaceAccounting.post_settlement_payment"
+  ],
+  "callers": [
+   "Mark Paid [action_mark_paid] (leaders_marketplace.view_settlement_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "No bank/cash journal found to register the vendor payment.",
+  "kind": "exception",
+  "message": "No bank/cash journal found to register the vendor payment.",
+  "arabic": "لم يتم العثور على يومية بنك/نقدية لتسجيل دفعة البائع.",
+  "where": [
+   "models/accounting.py:689 MarketplaceAccounting.post_vendor_debt_collection"
+  ],
+  "callers": [
+   "Register Vendor Payment [action_register_vendor_payment] (leaders_marketplace.view_settlement_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A payout account change is already waiting for review for this vendor.",
+  "kind": "exception",
+  "message": "A payout account change is already waiting for review for this vendor.",
+  "arabic": "يوجد طلب تغيير لحساب صرف المستحقات قيد المراجعة لهذا البائع.",
+  "where": [
+   "models/bank_change.py:93 VendorBankChange.create",
+   "models/bank_change.py:115 VendorBankChange._check_one_pending"
+  ],
+  "callers": [],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A bank proof is required to change the payout account.",
+  "kind": "exception",
+  "message": "A bank proof is required to change the payout account.",
+  "arabic": "مطلوب إثبات بنكي لتغيير حساب صرف المستحقات.",
+  "where": [
+   "models/bank_change.py:108 VendorBankChange._check_proof"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Only a pending request can be approved.",
+  "kind": "exception",
+  "message": "Only a pending request can be approved.",
+  "arabic": "لا يمكن اعتماد إلا الطلب قيد الانتظار.",
+  "where": [
+   "models/bank_change.py:150 VendorBankChange.action_approve"
+  ],
+  "callers": [
+   "Approve [action_approve] (leaders_marketplace.view_vendor_bank_change_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only a pending request can be rejected.",
+  "kind": "exception",
+  "message": "Only a pending request can be rejected.",
+  "arabic": "لا يمكن رفض إلا الطلب قيد الانتظار.",
+  "where": [
+   "models/bank_change.py:171 VendorBankChange.action_reject"
+  ],
+  "callers": [
+   "Reject [action_reject] (leaders_marketplace.view_vendor_bank_change_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please provide a rejection reason.",
+  "kind": "exception",
+  "message": "Please provide a rejection reason.",
+  "arabic": "يرجى تقديم سبب الرفض.",
+  "where": [
+   "models/bank_change.py:173 VendorBankChange.action_reject",
+   "models/vendor_core.py:426 VendorApplication.action_reject"
+  ],
+  "callers": [
+   "Reject [action_reject] (leaders_marketplace.view_vendor_application_form)",
+   "Reject [action_reject] (leaders_marketplace.view_vendor_bank_change_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please enter a valid mobile number, digits only with an optional leading +.",
+  "kind": "exception",
+  "message": "Please enter a valid mobile number, digits only with an optional leading +.",
+  "arabic": "يرجى إدخال رقم هاتف محمول صحيح، أرقام فقط مع علامة + اختيارية في البداية.",
+  "where": [
+   "models/cod_protection.py:57 CodOtp._leaders_normalize_phone"
+  ],
+  "callers": [
+   "POST /shop/payment/cod/otp/send",
+   "POST /shop/payment/cod/otp/verify"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Too many codes were requested. Please try again later.",
+  "kind": "exception",
+  "message": "Too many codes were requested. Please try again later.",
+  "arabic": "تم طلب رموز كثيرة جدًا. يرجى المحاولة لاحقًا.",
+  "where": [
+   "models/cod_protection.py:109 CodOtp.leaders_send_code"
+  ],
+  "callers": [
+   "POST /shop/payment/cod/otp/send"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please wait a minute before asking for a new code.",
+  "kind": "exception",
+  "message": "Please wait a minute before asking for a new code.",
+  "arabic": "يرجى الانتظار دقيقة قبل طلب رمز جديد.",
+  "where": [
+   "models/cod_protection.py:111 CodOtp.leaders_send_code"
+  ],
+  "callers": [
+   "POST /shop/payment/cod/otp/send"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "We could not send the code. Please check your number or email and try again.",
+  "kind": "exception",
+  "message": "We could not send the code. Please check your number or email and try again.",
+  "arabic": "تعذّر إرسال الرمز. يرجى التحقق من رقمك أو بريدك الإلكتروني والمحاولة مرة أخرى.",
+  "where": [
+   "models/cod_protection.py:121 CodOtp.leaders_send_code"
+  ],
+  "callers": [
+   "POST /shop/payment/cod/otp/send"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Ask for a verification code first.",
+  "kind": "exception",
+  "message": "Ask for a verification code first.",
+  "arabic": "اطلب رمز التحقق أولًا.",
+  "where": [
+   "models/cod_protection.py:132 CodOtp.leaders_verify_code"
+  ],
+  "callers": [
+   "POST /shop/payment/cod/otp/verify"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This code has expired. Please ask for a new one.",
+  "kind": "exception",
+  "message": "This code has expired. Please ask for a new one.",
+  "arabic": "انتهت صلاحية هذا الرمز. يرجى طلب رمز جديد.",
+  "where": [
+   "models/cod_protection.py:134 CodOtp.leaders_verify_code"
+  ],
+  "callers": [
+   "POST /shop/payment/cod/otp/verify"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Too many wrong attempts. Please ask for a new code.",
+  "kind": "exception",
+  "message": "Too many wrong attempts. Please ask for a new code.",
+  "arabic": "محاولات خاطئة كثيرة جدًا. يرجى طلب رمز جديد.",
+  "where": [
+   "models/cod_protection.py:136 CodOtp.leaders_verify_code"
+  ],
+  "callers": [
+   "POST /shop/payment/cod/otp/verify"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "DYN:message@models/cod_protection.py:204",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "models/cod_protection.py:204 SaleOrder._leaders_cod_check_allowed_for_otp"
+  ],
+  "callers": [
+   "POST /shop/payment/cod/otp/send",
+   "POST /shop/payment/cod/otp/verify"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "DYN:message@models/cod_protection.py:212",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "models/cod_protection.py:212 SaleOrder._leaders_cod_check_allowed"
+  ],
+  "callers": [
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please verify your phone number to pay Cash on Delivery.",
+  "kind": "exception",
+  "message": "Please verify your phone number to pay Cash on Delivery.",
+  "arabic": "يرجى التحقق من رقم هاتفك للدفع عند الاستلام.",
+  "where": [
+   "models/cod_protection.py:214 SaleOrder._leaders_cod_check_allowed"
+  ],
+  "callers": [
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only marketplace managers can reset the COD refusal counter.",
+  "kind": "exception",
+  "message": "Only marketplace managers can reset the COD refusal counter.",
+  "arabic": "يمكن لمديري السوق فقط إعادة تعيين عداد حالات الرفض في الدفع عند الاستلام.",
+  "where": [
+   "models/cod_protection.py:234 ResPartner.action_reset_cod_refusals"
+  ],
+  "callers": [
+   "Reset COD refusals [action_reset_cod_refusals] (leaders_marketplace.view_partner_form_marketplace)"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Only Cash on Delivery shipments can be refused at the door.",
+  "kind": "exception",
+  "message": "Only Cash on Delivery shipments can be refused at the door.",
+  "arabic": "يمكن رفض الاستلام عند الباب لشحنات الدفع عند الاستلام فقط.",
+  "where": [
+   "models/cod_protection.py:326 FulfillmentGroup.action_customer_refused"
+  ],
+  "callers": [
+   "Customer refused [action_customer_refused] (leaders_marketplace.view_vendor_order_form)",
+   "POST /my/vendor/fulfillment/<int:group_id>/refused"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only a shipped group can be marked as refused by the customer.",
+  "kind": "exception",
+  "message": "Only a shipped group can be marked as refused by the customer.",
+  "arabic": "لا يمكن وضع علامة رفض العميل الاستلام إلا على مجموعة تم شحنها.",
+  "where": [
+   "models/cod_protection.py:328 FulfillmentGroup.action_customer_refused"
+  ],
+  "callers": [
+   "Customer refused [action_customer_refused] (leaders_marketplace.view_vendor_order_form)",
+   "POST /my/vendor/fulfillment/<int:group_id>/refused"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "%(order)s already has a delivered shipment; handle this refusal as a return.",
+  "kind": "exception",
+  "message": "%(order)s already has a delivered shipment; handle this refusal as a return.",
+  "arabic": "يحتوي %(order)s بالفعل على شحنة تم تسليمها؛ تعامل مع هذا الرفض على أنه مرتجع.",
+  "where": [
+   "models/cod_protection.py:332 FulfillmentGroup.action_customer_refused"
+  ],
+  "callers": [
+   "Customer refused [action_customer_refused] (leaders_marketplace.view_vendor_order_form)",
+   "POST /my/vendor/fulfillment/<int:group_id>/refused"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Pick a metric for this achievement plan.",
+  "kind": "exception",
+  "message": "Pick a metric for this achievement plan.",
+  "arabic": "اختر مقياساً لخطة الإنجاز هذه.",
+  "where": [
+   "models/commission.py:215 CommissionRule._check_achieve_type"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Listing Days cannot use target tiers; it only supports a flat rate.",
+  "kind": "exception",
+  "message": "Listing Days cannot use target tiers; it only supports a flat rate.",
+  "arabic": "لا يمكن لأيام العرض استخدام مستويات المستهدف؛ فهي تدعم نسبة ثابتة فقط.",
+  "where": [
+   "models/commission.py:217 CommissionRule._check_achieve_type"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "%(vendor)s is already covered by another active commission plan (%(plan)s) for an overlapping period. A vendor can only be in one commission plan at a time.",
+  "kind": "exception",
+  "message": "%(vendor)s is already covered by another active commission plan (%(plan)s) for an overlapping period. A vendor can only be in one commission plan at a time.",
+  "arabic": "%(vendor)s مشمول بالفعل بخطة عمولة نشطة أخرى (%(plan)s) لفترة متداخلة. لا يمكن أن يكون البائع إلا في خطة عمولة واحدة في الوقت نفسه.",
+  "where": [
+   "models/commission.py:247 CommissionRule._check_one_plan_per_vendor"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "The minimum amount cannot exceed the maximum amount.",
+  "kind": "exception",
+  "message": "The minimum amount cannot exceed the maximum amount.",
+  "arabic": "لا يمكن أن يتجاوز الحد الأدنى للمبلغ الحد الأقصى.",
+  "where": [
+   "models/commission.py:546 CommissionPlanLine._check_range"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Commission percentage must be between 0 and 100.",
+  "kind": "exception",
+  "message": "Commission percentage must be between 0 and 100.",
+  "arabic": "يجب أن تكون نسبة العمولة بين 0 و100.",
+  "where": [
+   "models/commission.py:548 CommissionPlanLine._check_range"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "The company part of order %s is already shipped and can no longer be cancelled.",
+  "kind": "exception",
+  "message": "The company part of order %s is already shipped and can no longer be cancelled.",
+  "arabic": "تم شحن جزء الشركة من الطلب %s بالفعل ولم يعد من الممكن إلغاؤه.",
+  "where": [
+   "models/customer_cancel.py:124 SaleOrder._leaders_cancel_company_part"
+  ],
+  "callers": [
+   "POST /my/marketplace/checkouts/<int:sale_order_id>/cancel",
+   "POST /my/marketplace/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please choose a reason for cancelling.",
+  "kind": "exception",
+  "message": "Please choose a reason for cancelling.",
+  "arabic": "يرجى اختيار سبب الإلغاء.",
+  "where": [
+   "models/customer_cancel.py:282 VendorOrder._customer_cancel_reason"
+  ],
+  "callers": [
+   "POST /my/marketplace/checkouts/<int:sale_order_id>/cancel",
+   "POST /my/marketplace/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Customers cannot cancel orders on this marketplace.",
+  "kind": "exception",
+  "message": "Customers cannot cancel orders on this marketplace.",
+  "arabic": "لا يمكن للعملاء إلغاء الطلبات في هذا السوق.",
+  "where": [
+   "models/customer_cancel.py:289 VendorOrder._customer_cancel_raise"
+  ],
+  "callers": [
+   "POST /my/marketplace/checkouts/<int:sale_order_id>/cancel",
+   "POST /my/marketplace/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This order is already cancelled.",
+  "kind": "exception",
+  "message": "This order is already cancelled.",
+  "arabic": "هذا الطلب ملغى بالفعل.",
+  "where": [
+   "models/customer_cancel.py:291 VendorOrder._customer_cancel_raise"
+  ],
+  "callers": [
+   "POST /my/marketplace/checkouts/<int:sale_order_id>/cancel",
+   "POST /my/marketplace/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This order has already shipped and can no longer be cancelled. Request a return after delivery.",
+  "kind": "exception",
+  "message": "This order has already shipped and can no longer be cancelled. Request a return after delivery.",
+  "arabic": "تم شحن هذا الطلب بالفعل ولم يعد من الممكن إلغاؤه. اطلب مرتجعًا بعد التسليم.",
+  "where": [
+   "models/customer_cancel.py:293 VendorOrder._customer_cancel_raise"
+  ],
+  "callers": [
+   "POST /my/marketplace/checkouts/<int:sale_order_id>/cancel",
+   "POST /my/marketplace/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The time to cancel this order has passed (%s hours after ordering).",
+  "kind": "exception",
+  "message": "The time to cancel this order has passed (%s hours after ordering).",
+  "arabic": "انقضى وقت إلغاء هذا الطلب (%s ساعة بعد الطلب).",
+  "where": [
+   "models/customer_cancel.py:297 VendorOrder._customer_cancel_raise"
+  ],
+  "callers": [
+   "POST /my/marketplace/checkouts/<int:sale_order_id>/cancel",
+   "POST /my/marketplace/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Unknown cancellation scope.",
+  "kind": "exception",
+  "message": "Unknown cancellation scope.",
+  "arabic": "نطاق الإلغاء غير معروف.",
+  "where": [
+   "models/customer_cancel.py:310 VendorOrder.action_customer_cancel"
+  ],
+  "callers": [
+   "POST /my/marketplace/checkouts/<int:sale_order_id>/cancel",
+   "POST /my/marketplace/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A platform delivery price cannot belong to a vendor.",
+  "kind": "exception",
+  "message": "A platform delivery price cannot belong to a vendor.",
+  "arabic": "لا يمكن أن يكون سعر توصيل المنصة تابعًا لبائع.",
+  "where": [
+   "models/delivery.py:49 VendorDeliveryZone._check_scope"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Please choose the vendor of this delivery price.",
+  "kind": "exception",
+  "message": "Please choose the vendor of this delivery price.",
+  "arabic": "يرجى اختيار البائع الخاص بسعر التوصيل هذا.",
+  "where": [
+   "models/delivery.py:51 VendorDeliveryZone._check_scope"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Only one platform delivery price per governorate.",
+  "kind": "exception",
+  "message": "Only one platform delivery price per governorate.",
+  "arabic": "سعر توصيل واحد فقط للمنصة لكل محافظة.",
+  "where": [
+   "models/delivery.py:57 VendorDeliveryZone._check_scope"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Delivery prices and thresholds cannot be negative.",
+  "kind": "exception",
+  "message": "Delivery prices and thresholds cannot be negative.",
+  "arabic": "لا يمكن أن تكون أسعار التوصيل وحدودها سالبة.",
+  "where": [
+   "models/delivery.py:63 VendorDeliveryZone._check_amounts"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Delivery days cannot be negative.",
+  "kind": "exception",
+  "message": "Delivery days cannot be negative.",
+  "arabic": "لا يمكن أن تكون أيام التوصيل سالبة.",
+  "where": [
+   "models/delivery.py:69 VendorDeliveryZone._check_lead_days"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "The maximum delivery days cannot be below the minimum.",
+  "kind": "exception",
+  "message": "The maximum delivery days cannot be below the minimum.",
+  "arabic": "لا يمكن أن يكون الحد الأقصى لأيام التوصيل أقل من الحد الأدنى.",
+  "where": [
+   "models/delivery.py:71 VendorDeliveryZone._check_lead_days"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "DYN:self.env[\"res.partner\"]._leaders_fbl_disabled_message()@models/fulfillment.py:109",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "models/fulfillment.py:109 FulfillmentPolicy._check_fbl_allowed"
+  ],
+  "callers": [],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "DYN:self.env[\"res.partner\"]._leaders_fbl_disabled_message()@models/fulfillment.py:154",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "models/fulfillment.py:154 FulfillmentInbound.create"
+  ],
+  "callers": [],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Add at least one product before receiving this inbound.",
+  "kind": "exception",
+  "message": "Add at least one product before receiving this inbound.",
+  "arabic": "أضف منتجاً واحداً على الأقل قبل استلام هذه الشحنة الواردة.",
+  "where": [
+   "models/fulfillment.py:179 FulfillmentInbound.action_receive"
+  ],
+  "callers": [
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>",
+   "Receive [action_receive] (leaders_marketplace.view_fulfillment_inbound_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only storable products can be received into FBL stock.",
+  "kind": "exception",
+  "message": "Only storable products can be received into FBL stock.",
+  "arabic": "لا يمكن استلام سوى المنتجات القابلة للتخزين في مخزون FBL.",
+  "where": [
+   "models/fulfillment.py:182 FulfillmentInbound.action_receive"
+  ],
+  "callers": [
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>",
+   "Receive [action_receive] (leaders_marketplace.view_fulfillment_inbound_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Inbound quantities must be greater than zero.",
+  "kind": "exception",
+  "message": "Inbound quantities must be greater than zero.",
+  "arabic": "يجب أن تكون الكميات الواردة أكبر من صفر.",
+  "where": [
+   "models/fulfillment.py:184 FulfillmentInbound.action_receive"
+  ],
+  "callers": [
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>",
+   "Receive [action_receive] (leaders_marketplace.view_fulfillment_inbound_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This product does not have an FBL offer for the selected vendor.",
+  "kind": "exception",
+  "message": "This product does not have an FBL offer for the selected vendor.",
+  "arabic": "ليس لهذا المنتج عرض FBL للبائع المحدد.",
+  "where": [
+   "models/fulfillment.py:191 FulfillmentInbound.action_receive"
+  ],
+  "callers": [
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>",
+   "Receive [action_receive] (leaders_marketplace.view_fulfillment_inbound_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A percentage discount must be above 0 and below 100.",
+  "kind": "exception",
+  "message": "A percentage discount must be above 0 and below 100.",
+  "arabic": "خصم النسبة المئوية يجب أن يكون أكبر من 0 وأقل من 100.",
+  "where": [
+   "models/offer_discount.py:88 MarketplaceOfferDiscount._check_discount_values",
+   "models/offer_discount.py:233 MarketplaceOfferDiscount._leaders_set_discount"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "A discount sale price must be above 0.",
+  "kind": "exception",
+  "message": "A discount sale price must be above 0.",
+  "arabic": "سعر البيع بعد الخصم يجب أن يكون أكبر من 0.",
+  "where": [
+   "models/offer_discount.py:90 MarketplaceOfferDiscount._check_discount_values"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "The discount must end after it starts.",
+  "kind": "exception",
+  "message": "The discount must end after it starts.",
+  "arabic": "يجب أن ينتهي الخصم بعد بدايته.",
+  "where": [
+   "models/offer_discount.py:92 MarketplaceOfferDiscount._check_discount_values",
+   "models/offer_discount.py:247 MarketplaceOfferDiscount._leaders_set_discount"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Vendor discounts are not enabled on this marketplace.",
+  "kind": "exception",
+  "message": "Vendor discounts are not enabled on this marketplace.",
+  "arabic": "خصومات البائعين غير مفعّلة في هذا السوق.",
+  "where": [
+   "models/offer_discount.py:217 MarketplaceOfferDiscount._leaders_set_discount"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The discount percentage is not a number.",
+  "kind": "exception",
+  "message": "The discount percentage is not a number.",
+  "arabic": "نسبة الخصم ليست رقمًا.",
+  "where": [
+   "models/offer_discount.py:231 MarketplaceOfferDiscount._leaders_set_discount"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The discount sale price is not a number.",
+  "kind": "exception",
+  "message": "The discount sale price is not a number.",
+  "arabic": "سعر البيع بعد الخصم ليس رقمًا.",
+  "where": [
+   "models/offer_discount.py:239 MarketplaceOfferDiscount._leaders_set_discount"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The sale price must be above 0 and below the regular price.",
+  "kind": "exception",
+  "message": "The sale price must be above 0 and below the regular price.",
+  "arabic": "يجب أن يكون سعر البيع أكبر من 0 وأقل من السعر الأصلي.",
+  "where": [
+   "models/offer_discount.py:241 MarketplaceOfferDiscount._leaders_set_discount"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Choose a discount type: percentage or sale price.",
+  "kind": "exception",
+  "message": "Choose a discount type: percentage or sale price.",
+  "arabic": "اختر نوع الخصم: نسبة مئوية أو سعر بيع.",
+  "where": [
+   "models/offer_discount.py:245 MarketplaceOfferDiscount._leaders_set_discount"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The discount end date is already in the past.",
+  "kind": "exception",
+  "message": "The discount end date is already in the past.",
+  "arabic": "تاريخ انتهاء الخصم في الماضي بالفعل.",
+  "where": [
+   "models/offer_discount.py:249 MarketplaceOfferDiscount._leaders_set_discount"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/discount",
+   "POST /my/vendor/products/discount-bulk"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "%s has already been lifted; create a new penalty instead.",
+  "kind": "exception",
+  "message": "%s has already been lifted; create a new penalty instead.",
+  "arabic": "تم رفع %s بالفعل؛ أنشئ عقوبة جديدة بدلاً منها.",
+  "where": [
+   "models/performance.py:280 VendorPenalty.action_apply"
+  ],
+  "callers": [
+   "Apply [action_apply] (leaders_marketplace.view_vendor_penalty_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please add a rejection reason.",
+  "kind": "exception",
+  "message": "Please add a rejection reason.",
+  "arabic": "يرجى إضافة سبب الرفض.",
+  "where": [
+   "models/product.py:85 ProductTemplate.action_marketplace_reject",
+   "models/product.py:394 MarketplaceOffer.action_reject"
+  ],
+  "callers": [
+   "Reject Product [action_marketplace_reject] (leaders_marketplace.view_product_template_marketplace)",
+   "Reject [action_reject] (leaders_marketplace.view_marketplace_offer_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Unsupported search on the offer stock: %s",
+  "kind": "exception",
+  "message": "Unsupported search on the offer stock: %s",
+  "arabic": "بحث غير مدعوم على مخزون العرض: %s",
+  "where": [
+   "models/product.py:190 MarketplaceOffer._search_available_qty_cache"
+  ],
+  "callers": [],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "DYN:self.env[\"res.partner\"]._leaders_fbl_disabled_message()@models/product.py:334",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "models/product.py:334 MarketplaceOffer._leaders_check_fulfillment_type"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "DYN:self.env[\"res.partner\"]._leaders_fbl_disabled_message()@models/product.py:342",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "models/product.py:342 MarketplaceOffer._check_fbl_allowed"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "%(vendor)s is not allowed to sell on %(markets)s.",
+  "kind": "exception",
+  "message": "%(vendor)s is not allowed to sell on %(markets)s.",
+  "arabic": "%(vendor)s غير مسموح له بالبيع في %(markets)s.",
+  "where": [
+   "models/product.py:538 MarketplaceOffer._check_market_ids_allowed"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "A question can have at most %(n)s characters.",
+  "kind": "exception",
+  "message": "A question can have at most %(n)s characters.",
+  "arabic": "يجب ألا يتجاوز السؤال %(n)s حرفًا.",
+  "where": [
+   "models/product_question.py:93 ProductQuestion._check_lengths"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "An answer can have at most %(n)s characters.",
+  "kind": "exception",
+  "message": "An answer can have at most %(n)s characters.",
+  "arabic": "يجب ألا تتجاوز الإجابة %(n)s حرفًا.",
+  "where": [
+   "models/product_question.py:95 ProductQuestion._check_lengths",
+   "models/product_question.py:187 ProductQuestion.action_vendor_answer"
+  ],
+  "callers": [
+   "POST /my/vendor/questions/<int:question_id>/answer"
+  ],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "DYN:self._leaders_flash_message(code)[1]@models/product_question.py:139",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "models/product_question.py:139 ProductQuestion._leaders_ask"
+  ],
+  "callers": [
+   "POST /shop/product/<int:template_id>/question"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please write an answer.",
+  "kind": "exception",
+  "message": "Please write an answer.",
+  "arabic": "يرجى كتابة إجابة.",
+  "where": [
+   "models/product_question.py:185 ProductQuestion.action_vendor_answer"
+  ],
+  "callers": [
+   "POST /my/vendor/questions/<int:question_id>/answer"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only a seller with an active offer on this product can answer.",
+  "kind": "exception",
+  "message": "Only a seller with an active offer on this product can answer.",
+  "arabic": "يمكن للبائع صاحب العرض النشط على هذا المنتج فقط الإجابة.",
+  "where": [
+   "models/product_question.py:189 ProductQuestion.action_vendor_answer"
+  ],
+  "callers": [
+   "POST /my/vendor/questions/<int:question_id>/answer"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This question was hidden by the marketplace.",
+  "kind": "exception",
+  "message": "This question was hidden by the marketplace.",
+  "arabic": "أخفى السوق هذا السؤال.",
+  "where": [
+   "models/product_question.py:191 ProductQuestion.action_vendor_answer"
+  ],
+  "callers": [
+   "POST /my/vendor/questions/<int:question_id>/answer"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This question was already answered by another seller.",
+  "kind": "exception",
+  "message": "This question was already answered by another seller.",
+  "arabic": "سبقت الإجابة عن هذا السؤال من بائع آخر.",
+  "where": [
+   "models/product_question.py:193 ProductQuestion.action_vendor_answer"
+  ],
+  "callers": [
+   "POST /my/vendor/questions/<int:question_id>/answer"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "FBL cannot be turned off while it is in use:\n%s",
+  "kind": "exception",
+  "message": "FBL cannot be turned off while it is in use:\n%s",
+  "arabic": "لا يمكن إيقاف FBL أثناء استخدامه:\n%s",
+  "where": [
+   "models/res_config_settings.py:551 ResConfigSettings.set_values"
+  ],
+  "callers": [],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The marketplace has no main warehouse to keep FBL stock in.",
+  "kind": "exception",
+  "message": "The marketplace has no main warehouse to keep FBL stock in.",
+  "arabic": "لا يملك السوق مستودعًا رئيسيًا لحفظ مخزون FBL فيه.",
+  "where": [
+   "models/res_partner.py:181 ResPartner._marketplace_fbl_root_location"
+  ],
+  "callers": [
+   "Approve [action_approve] (leaders_marketplace.view_vendor_application_form)",
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new",
+   "POST /my/vendor/products/<int:offer_id>/stock",
+   "POST /my/vendor/products/sell-existing",
+   "Receive [action_receive] (leaders_marketplace.view_fulfillment_inbound_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "DYN:self._leaders_fbl_disabled_message()@models/res_partner.py:241",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "models/res_partner.py:241 ResPartner._marketplace_stock_location"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "Confirm [action_confirm] (leaders_marketplace.view_vendor_order_form)",
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new",
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "Goods Received [action_receive] (leaders_marketplace.view_vendor_return_form)",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/import/<int:job_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /my/vendor/products/<int:offer_id>/stock",
+   "POST /my/vendor/products/sell-existing",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>",
+   "POST /shop/payment/cod",
+   "Receive [action_receive] (leaders_marketplace.view_fulfillment_inbound_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The uploaded image is empty.",
+  "kind": "exception",
+  "message": "The uploaded image is empty.",
+  "arabic": "الصورة المرفوعة فارغة.",
+  "where": [
+   "models/returns.py:151 VendorReturn._check_photos"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "The image is too large (max %(size)s MB).",
+  "kind": "exception",
+  "message": "The image is too large (max %(size)s MB).",
+  "arabic": "الصورة كبيرة جدًا (الحد الأقصى %(size)s ميجابايت).",
+  "where": [
+   "models/returns.py:153 VendorReturn._check_photos"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Only image files (PNG, JPEG, GIF, WebP) can be uploaded.",
+  "kind": "exception",
+  "message": "Only image files (PNG, JPEG, GIF, WebP) can be uploaded.",
+  "arabic": "يمكن رفع ملفات الصور فقط (PNG وJPEG وGIF وWebP).",
+  "where": [
+   "models/returns.py:157 VendorReturn._check_photos"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Please attach at least one photo: it is required for the reason \"%s\".",
+  "kind": "exception",
+  "message": "Please attach at least one photo: it is required for the reason \"%s\".",
+  "arabic": "يرجى إرفاق صورة واحدة على الأقل: فهي مطلوبة للسبب \"%s\".",
+  "where": [
+   "models/returns.py:159 VendorReturn._check_photos"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "A pickup date can only be chosen for goods stored in the marketplace warehouse.",
+  "kind": "exception",
+  "message": "A pickup date can only be chosen for goods stored in the marketplace warehouse.",
+  "arabic": "لا يمكن اختيار موعد الاستلام من العميل إلا للبضائع المخزّنة في مستودع السوق.",
+  "where": [
+   "models/returns.py:173 VendorReturn._check_pickup_date"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Choose a pickup date between %(first)s and %(last)s.",
+  "kind": "exception",
+  "message": "Choose a pickup date between %(first)s and %(last)s.",
+  "arabic": "اختر موعد الاستلام من العميل بين %(first)s و%(last)s.",
+  "where": [
+   "models/returns.py:177 VendorReturn._check_pickup_date"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Only stocked products can be exchanged.",
+  "kind": "exception",
+  "message": "Only stocked products can be exchanged.",
+  "arabic": "لا يمكن استبدال إلا المنتجات المخزّنة.",
+  "where": [
+   "models/returns.py:202 VendorReturn._check_exchange"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "The seller does not have enough stock to exchange: %s. Ask for a refund instead.",
+  "kind": "exception",
+  "message": "The seller does not have enough stock to exchange: %s. Ask for a refund instead.",
+  "arabic": "لا يملك البائع مخزونًا كافيًا للاستبدال: %s. اطلب استردادًا بدلًا من ذلك.",
+  "where": [
+   "models/returns.py:205 VendorReturn._check_exchange"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Only shipped vendor orders can be returned.",
+  "kind": "exception",
+  "message": "Only shipped vendor orders can be returned.",
+  "arabic": "لا يمكن إرجاع سوى طلبات البائعين التي تم شحنها.",
+  "where": [
+   "models/returns.py:302 VendorReturn._check_returnable"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "POST /api/v1/vendor/returns/<int:return_id>/decision",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Select at least one product to return.",
+  "kind": "exception",
+  "message": "Select at least one product to return.",
+  "arabic": "اختر منتجًا واحدًا على الأقل للإرجاع.",
+  "where": [
+   "models/returns.py:304 VendorReturn._check_returnable"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "POST /api/v1/vendor/returns/<int:return_id>/decision",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "The return window of %s days for this order has passed.",
+  "kind": "exception",
+  "message": "The return window of %s days for this order has passed.",
+  "arabic": "انتهت مهلة المرتجع البالغة %s يومًا لهذا الطلب.",
+  "where": [
+   "models/returns.py:306 VendorReturn._check_returnable"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "POST /api/v1/vendor/returns/<int:return_id>/decision",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Returned products must belong to the vendor order.",
+  "kind": "exception",
+  "message": "Returned products must belong to the vendor order.",
+  "arabic": "يجب أن تنتمي المنتجات المرتجعة إلى طلب البائع.",
+  "where": [
+   "models/returns.py:309 VendorReturn._check_returnable"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "POST /api/v1/vendor/returns/<int:return_id>/decision",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Return quantities must be positive.",
+  "kind": "exception",
+  "message": "Return quantities must be positive.",
+  "arabic": "يجب أن تكون كميات المرتجع موجبة.",
+  "where": [
+   "models/returns.py:311 VendorReturn._check_returnable"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "POST /api/v1/vendor/returns/<int:return_id>/decision",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "You cannot return more %s than was delivered.",
+  "kind": "exception",
+  "message": "You cannot return more %s than was delivered.",
+  "arabic": "لا يمكنك إرجاع %s أكثر مما تم تسليمه.",
+  "where": [
+   "models/returns.py:314 VendorReturn._check_returnable"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "POST /api/v1/vendor/returns/<int:return_id>/decision",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Only new return requests can be approved by the vendor.",
+  "kind": "exception",
+  "message": "Only new return requests can be approved by the vendor.",
+  "arabic": "لا يمكن للبائع الموافقة إلا على طلبات المرتجعات الجديدة.",
+  "where": [
+   "models/returns.py:322 VendorReturn.action_vendor_approve"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/returns/<int:return_id>/decision",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only new return requests can be rejected by the vendor.",
+  "kind": "exception",
+  "message": "Only new return requests can be rejected by the vendor.",
+  "arabic": "لا يمكن للبائع رفض إلا طلبات المرتجعات الجديدة.",
+  "where": [
+   "models/returns.py:328 VendorReturn.action_vendor_reject"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/returns/<int:return_id>/decision",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please explain why the return is rejected.",
+  "kind": "exception",
+  "message": "Please explain why the return is rejected.",
+  "arabic": "يرجى توضيح سبب رفض المرتجع.",
+  "where": [
+   "models/returns.py:330 VendorReturn.action_vendor_reject"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/returns/<int:return_id>/decision",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only pending or vendor-rejected returns can be escalated.",
+  "kind": "exception",
+  "message": "Only pending or vendor-rejected returns can be escalated.",
+  "arabic": "لا يمكن تصعيد سوى المرتجعات قيد الانتظار أو المرفوضة من البائع.",
+  "where": [
+   "models/returns.py:340 VendorReturn.action_escalate"
+  ],
+  "callers": [
+   "POST /my/marketplace/disputes/<int:dispute_id>/escalate",
+   "POST /my/marketplace/returns/<int:return_id>/escalate",
+   "cron Marketplace: Escalate Unanswered Disputes",
+   "cron Marketplace: Escalate Unanswered Returns"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This return cannot be approved in its current state.",
+  "kind": "exception",
+  "message": "This return cannot be approved in its current state.",
+  "arabic": "لا يمكن اعتماد هذا المرتجع في حالته الحالية.",
+  "where": [
+   "models/returns.py:349 VendorReturn.action_platform_approve"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This return cannot be rejected in its current state.",
+  "kind": "exception",
+  "message": "This return cannot be rejected in its current state.",
+  "arabic": "لا يمكن رفض هذا المرتجع في حالته الحالية.",
+  "where": [
+   "models/returns.py:357 VendorReturn.action_platform_reject"
+  ],
+  "callers": [
+   "Reject Return [action_platform_reject] (leaders_marketplace.view_vendor_return_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please write the platform decision before rejecting.",
+  "kind": "exception",
+  "message": "Please write the platform decision before rejecting.",
+  "arabic": "يرجى كتابة قرار المنصة قبل الرفض.",
+  "where": [
+   "models/returns.py:359 VendorReturn.action_platform_reject"
+  ],
+  "callers": [
+   "Reject Return [action_platform_reject] (leaders_marketplace.view_vendor_return_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Received returns cannot be cancelled.",
+  "kind": "exception",
+  "message": "Received returns cannot be cancelled.",
+  "arabic": "لا يمكن إلغاء المرتجعات المستلمة.",
+  "where": [
+   "models/returns.py:367 VendorReturn.action_cancel"
+  ],
+  "callers": [
+   "Cancel [action_cancel] (leaders_marketplace.view_vendor_return_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only approved returns can be received.",
+  "kind": "exception",
+  "message": "Only approved returns can be received.",
+  "arabic": "لا يمكن استلام سوى المرتجعات المعتمدة.",
+  "where": [
+   "models/returns.py:441 VendorReturn.action_receive"
+  ],
+  "callers": [
+   "Goods Received [action_receive] (leaders_marketplace.view_vendor_return_form)",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This dispute is closed.",
+  "kind": "exception",
+  "message": "This dispute is closed.",
+  "arabic": "هذا النزاع مغلق.",
+  "where": [
+   "models/returns.py:677 VendorDispute.action_vendor_reply",
+   "models/returns.py:689 VendorDispute.action_customer_message"
+  ],
+  "callers": [
+   "POST /my/marketplace/disputes/<int:dispute_id>/message",
+   "POST /my/vendor/disputes/<int:dispute_id>/reply"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only an open dispute can be escalated.",
+  "kind": "exception",
+  "message": "Only an open dispute can be escalated.",
+  "arabic": "لا يمكن تصعيد سوى نزاع مفتوح.",
+  "where": [
+   "models/returns.py:700 VendorDispute.action_escalate"
+  ],
+  "callers": [
+   "Escalate [action_escalate] (leaders_marketplace.view_vendor_dispute_form)",
+   "POST /my/marketplace/disputes/<int:dispute_id>/escalate",
+   "cron Marketplace: Escalate Unanswered Disputes",
+   "cron Marketplace: Escalate Unanswered Returns"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please write the marketplace decision before resolving.",
+  "kind": "exception",
+  "message": "Please write the marketplace decision before resolving.",
+  "arabic": "يرجى كتابة قرار السوق قبل الحل.",
+  "where": [
+   "models/returns.py:713 VendorDispute.action_resolve"
+  ],
+  "callers": [
+   "Resolve [action_resolve] (leaders_marketplace.view_vendor_dispute_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "%(vendor)s does not deliver to %(state)s.",
+  "kind": "exception",
+  "message": "%(vendor)s does not deliver to %(state)s.",
+  "arabic": "%(vendor)s لا يوصّل إلى %(state)s.",
+  "where": [
+   "models/sale.py:291 SaleOrder._marketplace_split_vendor_lines"
+  ],
+  "callers": [
+   "Confirm [action_confirm] (leaders_marketplace.view_vendor_order_form)",
+   "POST /my/vendor/import/<int:job_id>/confirm",
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The vendor delivery prices for this address add up to %(moved)s, more than the %(charged)s charged at checkout. Please reload the cart so the delivery is priced again.",
+  "kind": "exception",
+  "message": "The vendor delivery prices for this address add up to %(moved)s, more than the %(charged)s charged at checkout. Please reload the cart so the delivery is priced again.",
+  "arabic": "مجموع أسعار توصيل البائعين لهذا العنوان يبلغ %(moved)s، وهو أكثر من %(charged)s المحمَّل عند إتمام الطلب. يرجى إعادة تحميل السلة ليُعاد تسعير التوصيل.",
+  "where": [
+   "models/sale.py:433 SaleOrder._leaders_reduce_company_delivery"
+  ],
+  "callers": [
+   "POST /my/vendor/import/<int:job_id>/confirm",
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Vendor order %s has no lines.",
+  "kind": "exception",
+  "message": "Vendor order %s has no lines.",
+  "arabic": "طلب البائع %s لا يحتوي على بنود.",
+  "where": [
+   "models/sale.py:578 VendorOrder.action_confirm"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "Confirm [action_confirm] (leaders_marketplace.view_vendor_order_form)",
+   "Goods Received [action_receive] (leaders_marketplace.view_vendor_return_form)",
+   "POST /my/vendor/import/<int:job_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This is not a Cash on Delivery order.",
+  "kind": "exception",
+  "message": "This is not a Cash on Delivery order.",
+  "arabic": "هذا ليس طلبًا بالدفع عند الاستلام.",
+  "where": [
+   "models/sale.py:743 VendorOrder.action_confirm_cod_payment"
+  ],
+  "callers": [
+   "Confirm Cash Collected [action_confirm_cod_payment] (leaders_marketplace.view_vendor_order_form)",
+   "POST /my/vendor/orders/<int:order_id>/confirm-cod-payment"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only vendor-fulfilled (FBM) orders need this confirmation.",
+  "kind": "exception",
+  "message": "Only vendor-fulfilled (FBM) orders need this confirmation.",
+  "arabic": "طلبات الشحن بواسطة البائع (FBM) فقط تحتاج إلى هذا التأكيد.",
+  "where": [
+   "models/sale.py:745 VendorOrder.action_confirm_cod_payment"
+  ],
+  "callers": [
+   "Confirm Cash Collected [action_confirm_cod_payment] (leaders_marketplace.view_vendor_order_form)",
+   "POST /my/vendor/orders/<int:order_id>/confirm-cod-payment"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The order must be fully delivered before confirming cash collection.",
+  "kind": "exception",
+  "message": "The order must be fully delivered before confirming cash collection.",
+  "arabic": "يجب تسليم الطلب بالكامل قبل تأكيد تحصيل النقد.",
+  "where": [
+   "models/sale.py:747 VendorOrder.action_confirm_cod_payment"
+  ],
+  "callers": [
+   "Confirm Cash Collected [action_confirm_cod_payment] (leaders_marketplace.view_vendor_order_form)",
+   "POST /my/vendor/orders/<int:order_id>/confirm-cod-payment"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Vendor order %s is already shipped; use a return instead.",
+  "kind": "exception",
+  "message": "Vendor order %s is already shipped; use a return instead.",
+  "arabic": "طلب البائع %s تم شحنه بالفعل؛ استخدم المرتجع بدلاً من ذلك.",
+  "where": [
+   "models/sale.py:762 VendorOrder.action_cancel"
+  ],
+  "callers": [
+   "Cancel [action_cancel] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Vendor order %s has no shipment to cancel the remaining part of.",
+  "kind": "exception",
+  "message": "Vendor order %s has no shipment to cancel the remaining part of.",
+  "arabic": "طلب البائع %s ليس فيه شحنة لإلغاء الجزء المتبقي منها.",
+  "where": [
+   "models/sale.py:831 VendorOrder._leaders_cancel_quantities"
+  ],
+  "callers": [
+   "Cancel Remaining [action_cancel_remaining] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Line %s does not belong to vendor order %s.",
+  "kind": "exception",
+  "message": "Line %s does not belong to vendor order %s.",
+  "arabic": "البند %s لا يخص طلب البائع %s.",
+  "where": [
+   "models/sale.py:836 VendorOrder._leaders_cancel_quantities"
+  ],
+  "callers": [
+   "Cancel Remaining [action_cancel_remaining] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Invalid quantity to cancel.",
+  "kind": "exception",
+  "message": "Invalid quantity to cancel.",
+  "arabic": "كمية الإلغاء غير صالحة.",
+  "where": [
+   "models/sale.py:840 VendorOrder._leaders_cancel_quantities"
+  ],
+  "callers": [
+   "Cancel Remaining [action_cancel_remaining] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A quantity to cancel cannot be negative.",
+  "kind": "exception",
+  "message": "A quantity to cancel cannot be negative.",
+  "arabic": "لا يمكن أن تكون الكمية المراد إلغاؤها سالبة.",
+  "where": [
+   "models/sale.py:843 VendorOrder._leaders_cancel_quantities"
+  ],
+  "callers": [
+   "Cancel Remaining [action_cancel_remaining] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only %(remaining)s of %(product)s is left to cancel (asked %(asked)s).",
+  "kind": "exception",
+  "message": "Only %(remaining)s of %(product)s is left to cancel (asked %(asked)s).",
+  "arabic": "المتبقي من %(product)s للإلغاء هو %(remaining)s فقط (المطلوب %(asked)s).",
+  "where": [
+   "models/sale.py:848 VendorOrder._leaders_cancel_quantities"
+  ],
+  "callers": [
+   "Cancel Remaining [action_cancel_remaining] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Nothing would be left of vendor order %s: cancel the whole order instead.",
+  "kind": "exception",
+  "message": "Nothing would be left of vendor order %s: cancel the whole order instead.",
+  "arabic": "لن يتبقى شيء من طلب البائع %s: قم بإلغاء الطلب بالكامل بدلًا من ذلك.",
+  "where": [
+   "models/sale.py:856 VendorOrder._leaders_cancel_quantities"
+  ],
+  "callers": [
+   "Cancel Remaining [action_cancel_remaining] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The cash collection of %s is already booked; use a return for the cancelled part.",
+  "kind": "exception",
+  "message": "The cash collection of %s is already booked; use a return for the cancelled part.",
+  "arabic": "تم تسجيل تحصيل النقد لـ %s بالفعل؛ استخدم المرتجع للجزء الملغى.",
+  "where": [
+   "models/sale.py:860 VendorOrder._leaders_cancel_quantities"
+  ],
+  "callers": [
+   "Cancel Remaining [action_cancel_remaining] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You can rate an order once it is completed.",
+  "kind": "exception",
+  "message": "You can rate an order once it is completed.",
+  "arabic": "يمكنك تقييم الطلب بعد اكتماله.",
+  "where": [
+   "models/sale.py:918 VendorOrder._marketplace_submit_rating"
+  ],
+  "callers": [
+   "POST /my/marketplace/orders/<int:order_id>/rate"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You already rated this order.",
+  "kind": "exception",
+  "message": "You already rated this order.",
+  "arabic": "لقد قيّمت هذا الطلب بالفعل.",
+  "where": [
+   "models/sale.py:922 VendorOrder._marketplace_submit_rating"
+  ],
+  "callers": [
+   "POST /my/marketplace/orders/<int:order_id>/rate"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please choose a rating between 1 and 5.",
+  "kind": "exception",
+  "message": "Please choose a rating between 1 and 5.",
+  "arabic": "يرجى اختيار تقييم بين 1 و5.",
+  "where": [
+   "models/sale.py:928 VendorOrder._marketplace_submit_rating"
+  ],
+  "callers": [
+   "POST /my/marketplace/orders/<int:order_id>/rate"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Vendors cannot cancel orders on this marketplace.",
+  "kind": "exception",
+  "message": "Vendors cannot cancel orders on this marketplace.",
+  "arabic": "لا يمكن للبائعين إلغاء الطلبات في هذا السوق.",
+  "where": [
+   "models/sale.py:951 VendorOrder.action_vendor_cancel"
+  ],
+  "callers": [
+   "POST /my/vendor/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please give a reason for cancelling this order.",
+  "kind": "exception",
+  "message": "Please give a reason for cancelling this order.",
+  "arabic": "يرجى ذكر سبب إلغاء هذا الطلب.",
+  "where": [
+   "models/sale.py:954 VendorOrder.action_vendor_cancel"
+  ],
+  "callers": [
+   "POST /my/vendor/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Vendor order %s is already cancelled.",
+  "kind": "exception",
+  "message": "Vendor order %s is already cancelled.",
+  "arabic": "طلب البائع %s ملغى بالفعل.",
+  "where": [
+   "models/sale.py:956 VendorOrder.action_vendor_cancel"
+  ],
+  "callers": [
+   "POST /my/vendor/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Vendor order %s is already shipped and can no longer be cancelled.",
+  "kind": "exception",
+  "message": "Vendor order %s is already shipped and can no longer be cancelled.",
+  "arabic": "طلب البائع %s تم شحنه بالفعل ولم يعد من الممكن إلغاؤه.",
+  "where": [
+   "models/sale.py:959 VendorOrder.action_vendor_cancel"
+  ],
+  "callers": [
+   "POST /my/vendor/orders/<int:order_id>/cancel"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The marketplace has no main warehouse to ship FBL orders from.",
+  "kind": "exception",
+  "message": "The marketplace has no main warehouse to ship FBL orders from.",
+  "arabic": "لا يملك السوق مستودعًا رئيسيًا لشحن طلبات FBL منه.",
+  "where": [
+   "models/sale.py:1134 FulfillmentGroup._picking_type"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "Confirm [action_confirm] (leaders_marketplace.view_vendor_order_form)",
+   "Customer refused [action_customer_refused] (leaders_marketplace.view_vendor_order_form)",
+   "Goods Received [action_receive] (leaders_marketplace.view_vendor_return_form)",
+   "POST /my/vendor/fulfillment/<int:group_id>/refused",
+   "POST /my/vendor/import/<int:job_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "No warehouse configured for vendor %s.",
+  "kind": "exception",
+  "message": "No warehouse configured for vendor %s.",
+  "arabic": "لم يتم إعداد مستودع للبائع %s.",
+  "where": [
+   "models/sale.py:1136 FulfillmentGroup._picking_type"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "Confirm [action_confirm] (leaders_marketplace.view_vendor_order_form)",
+   "Customer refused [action_customer_refused] (leaders_marketplace.view_vendor_order_form)",
+   "Goods Received [action_receive] (leaders_marketplace.view_vendor_return_form)",
+   "POST /my/vendor/fulfillment/<int:group_id>/refused",
+   "POST /my/vendor/import/<int:job_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Some of the products to ship do not belong to this shipment.",
+  "kind": "exception",
+  "message": "Some of the products to ship do not belong to this shipment.",
+  "arabic": "بعض المنتجات المراد شحنها لا تنتمي إلى هذه الشحنة.",
+  "where": [
+   "models/sale.py:1245 FulfillmentGroup._ship_normalize_quantities"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "Ship [action_ship] (leaders_marketplace.view_leaders_ship_wizard_form)",
+   "Ship [action_ship] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The quantity to ship of %s cannot be negative.",
+  "kind": "exception",
+  "message": "The quantity to ship of %s cannot be negative.",
+  "arabic": "لا يمكن أن تكون كمية الشحن للمنتج %s سالبة.",
+  "where": [
+   "models/sale.py:1251 FulfillmentGroup._ship_normalize_quantities"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "Ship [action_ship] (leaders_marketplace.view_leaders_ship_wizard_form)",
+   "Ship [action_ship] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot ship more %(product)s than ordered (%(qty)s of %(needed)s).",
+  "kind": "exception",
+  "message": "You cannot ship more %(product)s than ordered (%(qty)s of %(needed)s).",
+  "arabic": "لا يمكنك شحن كمية من %(product)s أكبر من المطلوب (%(qty)s من %(needed)s).",
+  "where": [
+   "models/sale.py:1254 FulfillmentGroup._ship_normalize_quantities"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "Ship [action_ship] (leaders_marketplace.view_leaders_ship_wizard_form)",
+   "Ship [action_ship] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Not enough vendor stock to ship %(product)s (%(done)s of %(needed)s available).",
+  "kind": "exception",
+  "message": "Not enough vendor stock to ship %(product)s (%(done)s of %(needed)s available).",
+  "arabic": "مخزون البائع غير كافٍ لشحن %(product)s (المتاح %(done)s من %(needed)s).",
+  "where": [
+   "models/sale.py:1258 FulfillmentGroup._ship_normalize_quantities",
+   "models/sale.py:1296 FulfillmentGroup.action_ship"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "Ship [action_ship] (leaders_marketplace.view_leaders_ship_wizard_form)",
+   "Ship [action_ship] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Enter a quantity to ship for at least one product.",
+  "kind": "exception",
+  "message": "Enter a quantity to ship for at least one product.",
+  "arabic": "أدخل كمية للشحن لمنتج واحد على الأقل.",
+  "where": [
+   "models/sale.py:1264 FulfillmentGroup._ship_normalize_quantities"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "Ship [action_ship] (leaders_marketplace.view_leaders_ship_wizard_form)",
+   "Ship [action_ship] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Partial quantities can only be shipped for one shipment at a time.",
+  "kind": "exception",
+  "message": "Partial quantities can only be shipped for one shipment at a time.",
+  "arabic": "لا يمكن شحن كميات جزئية إلا لشحنة واحدة في كل مرة.",
+  "where": [
+   "models/sale.py:1279 FulfillmentGroup.action_ship"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "Ship [action_ship] (leaders_marketplace.view_leaders_ship_wizard_form)",
+   "Ship [action_ship] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Tracking reference is required for FBM shipments.",
+  "kind": "exception",
+  "message": "Tracking reference is required for FBM shipments.",
+  "arabic": "رقم التتبع مطلوب لشحنات FBM.",
+  "where": [
+   "models/sale.py:1287 FulfillmentGroup.action_ship"
+  ],
+  "callers": [
+   "POST /api/v1/vendor/orders/<int:order_id>/ship",
+   "POST /my/vendor/fulfillment/<int:group_id>/ship",
+   "Ship [action_ship] (leaders_marketplace.view_leaders_ship_wizard_form)",
+   "Ship [action_ship] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only a partially shipped group has a remaining part to cancel.",
+  "kind": "exception",
+  "message": "Only a partially shipped group has a remaining part to cancel.",
+  "arabic": "لا يوجد جزء متبقٍ للإلغاء إلا في المجموعة التي تم شحنها جزئيًا.",
+  "where": [
+   "models/sale.py:1343 FulfillmentGroup.action_cancel_remaining"
+  ],
+  "callers": [
+   "Cancel Remaining [action_cancel_remaining] (leaders_marketplace.view_vendor_order_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only shipped groups can be marked as delivered.",
+  "kind": "exception",
+  "message": "Only shipped groups can be marked as delivered.",
+  "arabic": "لا يمكن تعليم المجموعات كمسلَّمة إلا إذا تم شحنها.",
+  "where": [
+   "models/sale.py:1413 FulfillmentGroup.action_delivered"
+  ],
+  "callers": [
+   "Delivered [action_delivered] (leaders_marketplace.view_vendor_order_form)",
+   "POST /api/v1/vendor/orders/<int:order_id>/delivered",
+   "POST /my/marketplace/fulfillment/<int:group_id>/confirm-delivery",
+   "POST /my/vendor/fulfillment/<int:group_id>/delivered",
+   "cron Marketplace: Auto-confirm Reported FBM Deliveries"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only a reported delivery can be disputed as not received.",
+  "kind": "exception",
+  "message": "Only a reported delivery can be disputed as not received.",
+  "arabic": "لا يمكن رفع نزاع بعدم الاستلام إلا على تسليم تم الإبلاغ عنه.",
+  "where": [
+   "models/sale.py:1430 FulfillmentGroup.action_delivery_disputed"
+  ],
+  "callers": [
+   "POST /my/marketplace/fulfillment/<int:group_id>/not-received"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only the marketplace back-office can run this action on %(model)s.",
+  "kind": "exception",
+  "message": "Only the marketplace back-office can run this action on %(model)s.",
+  "arabic": "يمكن للمكتب الخلفي للسوق فقط تنفيذ هذا الإجراء على %(model)s.",
+  "where": [
+   "models/security_mixin.py:40 LeadersBackofficeMixin._leaders_check_backoffice"
+  ],
+  "callers": [
+   "Approve Answer [action_approve] (leaders_marketplace.view_product_question_form)",
+   "Approve Product [action_marketplace_approve] (leaders_marketplace.view_product_template_marketplace)",
+   "Approve [action_approve] (leaders_marketplace.view_commission_rule_form)",
+   "Approve [action_approve] (leaders_marketplace.view_marketplace_offer_form)",
+   "Approve [action_approve] (leaders_marketplace.view_settlement_form)",
+   "Approve [action_approve] (leaders_marketplace.view_vendor_bank_change_form)",
+   "Approve [action_approve_discount] (leaders_marketplace.view_offer_discount_review_tree)",
+   "Approve discount [action_approve_discount] (leaders_marketplace.view_marketplace_offer_form)",
+   "Approve product and offer [action_approve_with_product] (leaders_marketplace.view_marketplace_offer_form)",
+   "Back to Draft [action_marketplace_reset] (leaders_marketplace.view_product_template_marketplace)",
+   "Cancel [action_cancel] (leaders_marketplace.view_commission_rule_form)",
+   "Cancel [action_cancel] (leaders_marketplace.view_settlement_form)",
+   "Create shipment / label [action_create_shipment] (leaders_marketplace.view_fulfillment_group_form)",
+   "Hide [action_hide] (leaders_marketplace.view_product_question_form)",
+   "Mark Paid [action_mark_paid] (leaders_marketplace.view_settlement_form)",
+   "Mark as done [action_mark_done] (leaders_marketplace.view_commission_rule_form)",
+   "Register Vendor Payment [action_register_vendor_payment] (leaders_marketplace.view_settlement_form)",
+   "Reject Product [action_marketplace_reject] (leaders_marketplace.view_product_template_marketplace)",
+   "Reject [action_reject] (leaders_marketplace.view_marketplace_offer_form)",
+   "Reject [action_reject_discount] (leaders_marketplace.view_offer_discount_review_tree)",
+   "Reject discount [action_reject_discount] (leaders_marketplace.view_marketplace_offer_form)",
+   "Remove discount [action_clear_discount] (leaders_marketplace.view_marketplace_offer_form)",
+   "Reset to draft [action_reset_to_draft] (leaders_marketplace.view_commission_rule_form)",
+   "Show Again [action_unhide] (leaders_marketplace.view_product_question_form)",
+   "Suspend [action_marketplace_suspend] (leaders_marketplace.view_product_template_marketplace)"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Wallet transactions are immutable. Create an adjustment instead.",
+  "kind": "exception",
+  "message": "Wallet transactions are immutable. Create an adjustment instead.",
+  "arabic": "حركات المحفظة غير قابلة للتعديل. أنشئ تسوية بدلاً من ذلك.",
+  "where": [
+   "models/settlement.py:181 WalletTransaction.write"
+  ],
+  "callers": [],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Wallet transactions cannot be deleted.",
+  "kind": "exception",
+  "message": "Wallet transactions cannot be deleted.",
+  "arabic": "لا يمكن حذف حركات المحفظة.",
+  "where": [
+   "models/settlement.py:185 WalletTransaction.unlink"
+  ],
+  "callers": [],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only a draft or approved settlement can be cancelled; %(name)s is %(state)s.",
+  "kind": "exception",
+  "message": "Only a draft or approved settlement can be cancelled; %(name)s is %(state)s.",
+  "arabic": "لا يمكن إلغاء سوى التسوية بحالة مسودة أو معتمدة؛ %(name)s حالتها %(state)s.",
+  "where": [
+   "models/settlement.py:639 Settlement.action_cancel"
+  ],
+  "callers": [
+   "Cancel [action_cancel] (leaders_marketplace.view_settlement_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "%s has already been paid; reverse the payout before cancelling.",
+  "kind": "exception",
+  "message": "%s has already been paid; reverse the payout before cancelling.",
+  "arabic": "تم دفع %s بالفعل؛ اعكس عملية صرف المستحقات قبل الإلغاء.",
+  "where": [
+   "models/settlement.py:644 Settlement.action_cancel"
+  ],
+  "callers": [
+   "Cancel [action_cancel] (leaders_marketplace.view_settlement_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "%(vendor)s has a payout account change waiting for review. Approve or reject it before paying %(name)s.",
+  "kind": "exception",
+  "message": "%(vendor)s has a payout account change waiting for review. Approve or reject it before paying %(name)s.",
+  "arabic": "لدى %(vendor)s طلب تغيير لحساب صرف المستحقات قيد المراجعة. اعتمده أو ارفضه قبل الدفع إلى %(name)s.",
+  "where": [
+   "models/settlement.py:707 Settlement.action_mark_paid"
+  ],
+  "callers": [
+   "Mark Paid [action_mark_paid] (leaders_marketplace.view_settlement_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This vendor owes the marketplace %(amount)s for this period (cash collected on delivery). Use 'Register Vendor Payment' once received.",
+  "kind": "exception",
+  "message": "This vendor owes the marketplace %(amount)s for this period (cash collected on delivery). Use 'Register Vendor Payment' once received.",
+  "arabic": "يدين هذا البائع للسوق بمبلغ %(amount)s عن هذه الفترة (نقد محصّل عند التسليم). استخدم 'تسجيل دفعة البائع' عند استلامه.",
+  "where": [
+   "models/settlement.py:713 Settlement.action_mark_paid"
+  ],
+  "callers": [
+   "Mark Paid [action_mark_paid] (leaders_marketplace.view_settlement_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This settlement has no vendor debt to collect.",
+  "kind": "exception",
+  "message": "This settlement has no vendor debt to collect.",
+  "arabic": "ليس على هذه التسوية دين على البائع لتحصيله.",
+  "where": [
+   "models/settlement.py:729 Settlement.action_register_vendor_payment"
+  ],
+  "callers": [
+   "Register Vendor Payment [action_register_vendor_payment] (leaders_marketplace.view_settlement_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This shipment can no longer be shipped.",
+  "kind": "exception",
+  "message": "This shipment can no longer be shipped.",
+  "arabic": "لم يعد من الممكن شحن هذه الشحنة.",
+  "where": [
+   "models/ship_wizard.py:21 ShipWizard.default_get"
+  ],
+  "callers": [],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The provider code may only contain lowercase letters, digits, - and _.",
+  "kind": "exception",
+  "message": "The provider code may only contain lowercase letters, digits, - and _.",
+  "arabic": "يجوز أن يحتوي رمز المزوّد على أحرف صغيرة وأرقام و - و _ فقط.",
+  "where": [
+   "models/shipping_provider.py:97 LeadersShippingProvider._check_code"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Only marketplace managers can generate a webhook secret.",
+  "kind": "exception",
+  "message": "Only marketplace managers can generate a webhook secret.",
+  "arabic": "يمكن لمديري السوق فقط إنشاء سر Webhook.",
+  "where": [
+   "models/shipping_provider.py:121 LeadersShippingProvider.action_generate_secret"
+  ],
+  "callers": [
+   "Generate secret [action_generate_secret] (leaders_marketplace.view_shipping_provider_form)"
+  ],
+  "exception": "AccessError",
+  "explained": true
+ },
+ {
+  "key": "Shipping providers are not enabled.",
+  "kind": "exception",
+  "message": "Shipping providers are not enabled.",
+  "arabic": "مزوّدو الشحن غير مفعّلين.",
+  "where": [
+   "models/shipping_provider.py:377 FulfillmentGroupShipping.action_create_shipment"
+  ],
+  "callers": [
+   "Create shipment / label [action_create_shipment] (leaders_marketplace.view_fulfillment_group_form)",
+   "POST /my/vendor/fulfillment/<int:group_id>/create-shipment"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A shipment can only be created before the group ships.",
+  "kind": "exception",
+  "message": "A shipment can only be created before the group ships.",
+  "arabic": "يمكن إنشاء الشحنة قبل شحن المجموعة فقط.",
+  "where": [
+   "models/shipping_provider.py:380 FulfillmentGroupShipping.action_create_shipment"
+  ],
+  "callers": [
+   "Create shipment / label [action_create_shipment] (leaders_marketplace.view_fulfillment_group_form)",
+   "POST /my/vendor/fulfillment/<int:group_id>/create-shipment"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A shipment was already created for %s.",
+  "kind": "exception",
+  "message": "A shipment was already created for %s.",
+  "arabic": "تم إنشاء شحنة بالفعل لـ %s.",
+  "where": [
+   "models/shipping_provider.py:382 FulfillmentGroupShipping.action_create_shipment"
+  ],
+  "callers": [
+   "Create shipment / label [action_create_shipment] (leaders_marketplace.view_fulfillment_group_form)",
+   "POST /my/vendor/fulfillment/<int:group_id>/create-shipment"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Choose an active shipping provider.",
+  "kind": "exception",
+  "message": "Choose an active shipping provider.",
+  "arabic": "اختر مزوّد شحن نشطًا.",
+  "where": [
+   "models/shipping_provider.py:386 FulfillmentGroupShipping.action_create_shipment"
+  ],
+  "callers": [
+   "Create shipment / label [action_create_shipment] (leaders_marketplace.view_fulfillment_group_form)",
+   "POST /my/vendor/fulfillment/<int:group_id>/create-shipment"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This shipment has no label.",
+  "kind": "exception",
+  "message": "This shipment has no label.",
+  "arabic": "لا يوجد ملصق لهذه الشحنة.",
+  "where": [
+   "models/shipping_provider.py:406 FulfillmentGroupShipping.action_download_label"
+  ],
+  "callers": [
+   "Download label [action_download_label] (leaders_marketplace.view_fulfillment_group_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Marketplace stock can only be managed for storable products.",
+  "kind": "exception",
+  "message": "Marketplace stock can only be managed for storable products.",
+  "arabic": "لا يمكن إدارة مخزون السوق إلا للمنتجات القابلة للتخزين.",
+  "where": [
+   "models/stock.py:29 StockQuant._leaders_adjust_vendor_stock"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/stock",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>",
+   "Receive [action_receive] (leaders_marketplace.view_fulfillment_inbound_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Not enough vendor stock of %s to remove.",
+  "kind": "exception",
+  "message": "Not enough vendor stock of %s to remove.",
+  "arabic": "مخزون البائع من %s غير كافٍ للإزالة.",
+  "where": [
+   "models/stock.py:41 StockQuant._leaders_adjust_vendor_stock"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/stock",
+   "POST /my/vendor/returns/<int:return_id>/<string:decision>",
+   "Receive [action_receive] (leaders_marketplace.view_fulfillment_inbound_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please give the key a name.",
+  "kind": "exception",
+  "message": "Please give the key a name.",
+  "arabic": "يرجى إعطاء المفتاح اسمًا.",
+  "where": [
+   "models/vendor_api.py:79 LeadersVendorApiKey._leaders_generate"
+  ],
+  "callers": [
+   "POST /my/vendor/api/keys"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The key name is too long.",
+  "kind": "exception",
+  "message": "The key name is too long.",
+  "arabic": "اسم المفتاح طويل جدًا.",
+  "where": [
+   "models/vendor_api.py:81 LeadersVendorApiKey._leaders_generate"
+  ],
+  "callers": [
+   "POST /my/vendor/api/keys"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Unknown key scope.",
+  "kind": "exception",
+  "message": "Unknown key scope.",
+  "arabic": "نطاق مفتاح غير معروف.",
+  "where": [
+   "models/vendor_api.py:83 LeadersVendorApiKey._leaders_generate"
+  ],
+  "callers": [
+   "POST /my/vendor/api/keys"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The price cannot be negative.",
+  "kind": "exception",
+  "message": "The price cannot be negative.",
+  "arabic": "لا يمكن أن يكون السعر سالبًا.",
+  "where": [
+   "models/vendor_api.py:203 MarketplaceOfferApiHelpers._leaders_vendor_set_price"
+  ],
+  "callers": [
+   "PATCH /api/v1/vendor/offers/<int:offer_id>"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "This application cannot be approved yet:\n%s",
+  "kind": "exception",
+  "message": "This application cannot be approved yet:\n%s",
+  "arabic": "لا يمكن اعتماد طلب الانضمام هذا بعد:\n%s",
+  "where": [
+   "models/vendor_core.py:281 VendorApplication._check_ready_for_approval"
+  ],
+  "callers": [
+   "Approve [action_approve] (leaders_marketplace.view_vendor_application_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The owner email %s is already used by another account.",
+  "kind": "exception",
+  "message": "The owner email %s is already used by another account.",
+  "arabic": "البريد الإلكتروني للمالك %s مستخدم بالفعل في حساب آخر.",
+  "where": [
+   "models/vendor_core.py:291 VendorApplication._check_owner_email_available"
+  ],
+  "callers": [
+   "Approve [action_approve] (leaders_marketplace.view_vendor_application_form)",
+   "GET/POST /vendor/apply",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/submit",
+   "POST /my/vendor/templates/<int:tmpl_id>/submit",
+   "Resend Portal Invitation [action_create_portal_user] (leaders_marketplace.view_vendor_application_form)",
+   "Submit [action_submit] (leaders_marketplace.view_vendor_application_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Vendor owner email is required before approval.",
+  "kind": "exception",
+  "message": "Vendor owner email is required before approval.",
+  "arabic": "البريد الإلكتروني لمالك البائع مطلوب قبل الاعتماد.",
+  "where": [
+   "models/vendor_core.py:323 VendorApplication._ensure_vendor_owner_user"
+  ],
+  "callers": [
+   "Approve [action_approve] (leaders_marketplace.view_vendor_application_form)",
+   "Resend Portal Invitation [action_create_portal_user] (leaders_marketplace.view_vendor_application_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "At least one vendor document is required.",
+  "kind": "exception",
+  "message": "At least one vendor document is required.",
+  "arabic": "مستند واحد على الأقل للبائع مطلوب.",
+  "where": [
+   "models/vendor_core.py:367 VendorApplication.action_submit"
+  ],
+  "callers": [
+   "GET/POST /vendor/apply",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/submit",
+   "POST /my/vendor/templates/<int:tmpl_id>/submit",
+   "Submit [action_submit] (leaders_marketplace.view_vendor_application_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Approve the vendor before creating portal access.",
+  "kind": "exception",
+  "message": "Approve the vendor before creating portal access.",
+  "arabic": "اعتمد البائع قبل إنشاء صلاحية الوصول إلى البوابة.",
+  "where": [
+   "models/vendor_core.py:419 VendorApplication.action_create_portal_user"
+  ],
+  "callers": [
+   "Resend Portal Invitation [action_create_portal_user] (leaders_marketplace.view_vendor_application_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "KYC cannot be verified. Required documents missing or not verified:\n%s",
+  "kind": "exception",
+  "message": "KYC cannot be verified. Required documents missing or not verified:\n%s",
+  "arabic": "لا يمكن التحقق من KYC. المستندات المطلوبة مفقودة أو لم يتم التحقق منها:\n%s",
+  "where": [
+   "models/vendor_core.py:445 VendorApplication.verify_kyc"
+  ],
+  "callers": [
+   "Verify KYC [verify_kyc] (leaders_marketplace.view_vendor_application_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The expiry date of %s cannot be before its issue date.",
+  "kind": "exception",
+  "message": "The expiry date of %s cannot be before its issue date.",
+  "arabic": "لا يمكن أن يسبق تاريخ انتهاء %s تاريخ إصداره.",
+  "where": [
+   "models/vendor_core.py:496 VendorDocument._check_dates"
+  ],
+  "callers": [],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Add a note explaining why %s is rejected.",
+  "kind": "exception",
+  "message": "Add a note explaining why %s is rejected.",
+  "arabic": "أضف ملاحظة توضح سبب رفض %s.",
+  "where": [
+   "models/vendor_core.py:538 VendorDocument.action_reject"
+  ],
+  "callers": [
+   "Reject [action_reject] (leaders_marketplace.view_vendor_application_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only one vendor terms version can be active at a time.",
+  "kind": "exception",
+  "message": "Only one vendor terms version can be active at a time.",
+  "arabic": "يمكن أن يكون إصدار واحد فقط من شروط البائع نشطًا في كل مرة.",
+  "where": [
+   "models/vendor_core.py:587 VendorTerms._check_single_active"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "%(vendor)s already signed these terms.",
+  "kind": "exception",
+  "message": "%(vendor)s already signed these terms.",
+  "arabic": "وقّع %(vendor)s هذه الشروط بالفعل.",
+  "where": [
+   "models/vendor_core.py:644 VendorContract._check_one_signed_per_terms"
+  ],
+  "callers": [],
+  "exception": "ValidationError",
+  "explained": true
+ },
+ {
+  "key": "Signature is required.",
+  "kind": "exception",
+  "message": "Signature is required.",
+  "arabic": "التوقيع مطلوب.",
+  "where": [
+   "models/vendor_core.py:649 VendorContract.action_sign"
+  ],
+  "callers": [
+   "Sign [action_sign] (leaders_marketplace.view_vendor_contract_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The uploaded file is empty.",
+  "kind": "exception",
+  "message": "The uploaded file is empty.",
+  "arabic": "الملف المرفوع فارغ.",
+  "where": [
+   "models/vendor_import.py:216 VendorImport._leaders_read_rows"
+  ],
+  "callers": [
+   "POST /my/vendor/import/upload",
+   "cron Marketplace: process vendor imports"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The file is too large (max %s MB).",
+  "kind": "exception",
+  "message": "The file is too large (max %s MB).",
+  "arabic": "الملف كبير جدًا (الحد الأقصى %s ميجابايت).",
+  "where": [
+   "models/vendor_import.py:218 VendorImport._leaders_read_rows"
+  ],
+  "callers": [
+   "POST /my/vendor/import/upload",
+   "cron Marketplace: process vendor imports"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The file is not a valid .xlsx workbook.",
+  "kind": "exception",
+  "message": "The file is not a valid .xlsx workbook.",
+  "arabic": "الملف ليس مصنف .xlsx صالحًا.",
+  "where": [
+   "models/vendor_import.py:226 VendorImport._leaders_read_rows"
+  ],
+  "callers": [
+   "POST /my/vendor/import/upload",
+   "cron Marketplace: process vendor imports"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Upload an .xlsx or .csv file.",
+  "kind": "exception",
+  "message": "Upload an .xlsx or .csv file.",
+  "arabic": "ارفع ملف .xlsx أو .csv.",
+  "where": [
+   "models/vendor_import.py:244 VendorImport._leaders_read_rows"
+  ],
+  "callers": [
+   "POST /my/vendor/import/upload",
+   "cron Marketplace: process vendor imports"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The file has no header row.",
+  "kind": "exception",
+  "message": "The file has no header row.",
+  "arabic": "لا يحتوي الملف على صف عناوين.",
+  "where": [
+   "models/vendor_import.py:247 VendorImport._leaders_read_rows"
+  ],
+  "callers": [
+   "POST /my/vendor/import/upload",
+   "cron Marketplace: process vendor imports"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The file has more than %s rows; split it.",
+  "kind": "exception",
+  "message": "The file has more than %s rows; split it.",
+  "arabic": "يحتوي الملف على أكثر من %s صف؛ قسّمه.",
+  "where": [
+   "models/vendor_import.py:258 VendorImport._leaders_read_rows"
+  ],
+  "callers": [
+   "POST /my/vendor/import/upload",
+   "cron Marketplace: process vendor imports"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Missing column(s): %s. Download the template for the right headers.",
+  "kind": "exception",
+  "message": "Missing column(s): %s. Download the template for the right headers.",
+  "arabic": "أعمدة مفقودة: %s. حمّل القالب للحصول على العناوين الصحيحة.",
+  "where": [
+   "models/vendor_import.py:574 VendorImport._leaders_validate"
+  ],
+  "callers": [
+   "POST /my/vendor/import/upload",
+   "cron Marketplace: process vendor imports"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Only a validated import can be confirmed.",
+  "kind": "exception",
+  "message": "Only a validated import can be confirmed.",
+  "arabic": "لا يمكن تأكيد إلا الاستيراد الذي تم التحقق منه.",
+  "where": [
+   "models/vendor_import.py:656 VendorImport.action_confirm"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "Confirm [action_confirm] (leaders_marketplace.view_vendor_order_form)",
+   "Goods Received [action_receive] (leaders_marketplace.view_vendor_return_form)",
+   "POST /my/vendor/import/<int:job_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "There is no valid row to import.",
+  "kind": "exception",
+  "message": "There is no valid row to import.",
+  "arabic": "لا يوجد صف صالح للاستيراد.",
+  "where": [
+   "models/vendor_import.py:658 VendorImport.action_confirm"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "Confirm [action_confirm] (leaders_marketplace.view_vendor_order_form)",
+   "Goods Received [action_receive] (leaders_marketplace.view_vendor_return_form)",
+   "POST /my/vendor/import/<int:job_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Your vendor account is not active.",
+  "kind": "exception",
+  "message": "Your vendor account is not active.",
+  "arabic": "حساب البائع الخاص بك غير نشط.",
+  "where": [
+   "models/vendor_import.py:660 VendorImport.action_confirm"
+  ],
+  "callers": [
+   "Approve Return [action_platform_approve] (leaders_marketplace.view_vendor_return_form)",
+   "Confirm [action_confirm] (leaders_marketplace.view_vendor_order_form)",
+   "Goods Received [action_receive] (leaders_marketplace.view_vendor_return_form)",
+   "POST /my/vendor/import/<int:job_id>/confirm",
+   "POST /my/vendor/orders/<int:order_id>/confirm",
+   "POST /shop/payment/cod"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "DYN:\"; \".join(\"%s: %s\" % (c, m) for c, m in errors)@models/vendor_import.py:804",
+  "kind": "exception",
+  "message": null,
+  "arabic": null,
+  "where": [
+   "models/vendor_import.py:804 VendorImportLine._leaders_apply"
+  ],
+  "callers": [
+   "cron Marketplace: process vendor imports"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The stock quantity cannot be negative.",
+  "kind": "exception",
+  "message": "The stock quantity cannot be negative.",
+  "arabic": "لا يمكن أن تكون كمية المخزون سالبة.",
+  "where": [
+   "models/vendor_import.py:913 MarketplaceOfferImportHelpers._leaders_set_fbm_stock",
+   "models/vendor_variants.py:287 MarketplaceOffer._leaders_create_variant_offers"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/stock"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot set the stock of %(product)s to %(qty)s: %(reserved)s are already reserved for open orders.",
+  "kind": "exception",
+  "message": "You cannot set the stock of %(product)s to %(qty)s: %(reserved)s are already reserved for open orders.",
+  "arabic": "لا يمكنك ضبط مخزون %(product)s على %(qty)s: %(reserved)s محجوز بالفعل للطلبات المفتوحة.",
+  "where": [
+   "models/vendor_import.py:922 MarketplaceOfferImportHelpers._leaders_set_fbm_stock"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants",
+   "PATCH /api/v1/vendor/offers/<int:offer_id>",
+   "POST /my/vendor/products/<int:offer_id>/stock"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Invalid date: %s. Use the format YYYY-MM-DD.",
+  "kind": "exception",
+  "message": "Invalid date: %s. Use the format YYYY-MM-DD.",
+  "arabic": "تاريخ غير صالح: %s. استخدم الصيغة YYYY-MM-DD.",
+  "where": [
+   "models/vendor_statement.py:118 VendorStatement._resolve_dates"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /leaders/vendor_statement/xlsx",
+   "ANY (GET+POST...) /my/vendor/finance/statement",
+   "ANY (GET+POST...) /my/vendor/finance/statement.pdf",
+   "ANY (GET+POST...) /my/vendor/finance/statement.xlsx",
+   "Download XLSX [action_xlsx] (leaders_marketplace.view_vendor_statement_wizard_form)",
+   "Print PDF [action_print] (leaders_marketplace.view_vendor_statement_wizard_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Please give both the start and the end date.",
+  "kind": "exception",
+  "message": "Please give both the start and the end date.",
+  "arabic": "يرجى إدخال تاريخ البداية والنهاية معًا.",
+  "where": [
+   "models/vendor_statement.py:125 VendorStatement._resolve_dates"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /leaders/vendor_statement/xlsx",
+   "ANY (GET+POST...) /my/vendor/finance/statement",
+   "ANY (GET+POST...) /my/vendor/finance/statement.pdf",
+   "ANY (GET+POST...) /my/vendor/finance/statement.xlsx",
+   "Download XLSX [action_xlsx] (leaders_marketplace.view_vendor_statement_wizard_form)",
+   "Print PDF [action_print] (leaders_marketplace.view_vendor_statement_wizard_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The start date cannot be after the end date.",
+  "kind": "exception",
+  "message": "The start date cannot be after the end date.",
+  "arabic": "لا يمكن أن يكون تاريخ البداية بعد تاريخ النهاية.",
+  "where": [
+   "models/vendor_statement.py:127 VendorStatement._resolve_dates"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /leaders/vendor_statement/xlsx",
+   "ANY (GET+POST...) /my/vendor/finance/statement",
+   "ANY (GET+POST...) /my/vendor/finance/statement.pdf",
+   "ANY (GET+POST...) /my/vendor/finance/statement.xlsx",
+   "Download XLSX [action_xlsx] (leaders_marketplace.view_vendor_statement_wizard_form)",
+   "Print PDF [action_print] (leaders_marketplace.view_vendor_statement_wizard_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A statement cannot cover more than one year.",
+  "kind": "exception",
+  "message": "A statement cannot cover more than one year.",
+  "arabic": "لا يمكن أن يغطي كشف الحساب أكثر من سنة.",
+  "where": [
+   "models/vendor_statement.py:129 VendorStatement._resolve_dates"
+  ],
+  "callers": [
+   "ANY (GET+POST...) /leaders/vendor_statement/xlsx",
+   "ANY (GET+POST...) /my/vendor/finance/statement",
+   "ANY (GET+POST...) /my/vendor/finance/statement.pdf",
+   "ANY (GET+POST...) /my/vendor/finance/statement.xlsx",
+   "Download XLSX [action_xlsx] (leaders_marketplace.view_vendor_statement_wizard_form)",
+   "Print PDF [action_print] (leaders_marketplace.view_vendor_statement_wizard_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "%s is not a marketplace vendor.",
+  "kind": "exception",
+  "message": "%s is not a marketplace vendor.",
+  "arabic": "%s ليس بائعًا في السوق.",
+  "where": [
+   "models/vendor_statement.py:258 VendorStatementWizard._dates"
+  ],
+  "callers": [
+   "Download XLSX [action_xlsx] (leaders_marketplace.view_vendor_statement_wizard_form)",
+   "Print PDF [action_print] (leaders_marketplace.view_vendor_statement_wizard_form)"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "At most %s specification lines are allowed.",
+  "kind": "exception",
+  "message": "At most %s specification lines are allowed.",
+  "arabic": "يسمح بـ %s سطر مواصفات كحد أقصى.",
+  "where": [
+   "models/vendor_variants.py:65 ProductTemplate._leaders_clean_specs"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The specifications are too long (max %s characters).",
+  "kind": "exception",
+  "message": "The specifications are too long (max %s characters).",
+  "arabic": "المواصفات طويلة جدًا (الحد الأقصى %s حرفًا).",
+  "where": [
+   "models/vendor_variants.py:68 ProductTemplate._leaders_clean_specs"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A name is too long (max %s characters).",
+  "kind": "exception",
+  "message": "A name is too long (max %s characters).",
+  "arabic": "أحد الأسماء طويل جدًا (الحد الأقصى %s حرفًا).",
+  "where": [
+   "models/vendor_variants.py:116 ProductTemplate._leaders_clean_names",
+   "models/vendor_variants.py:132 ProductTemplate._leaders_create_vendor_attribute"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "At most %s new values can be added at once.",
+  "kind": "exception",
+  "message": "At most %s new values can be added at once.",
+  "arabic": "يمكن إضافة %s قيمة جديدة كحد أقصى دفعة واحدة.",
+  "where": [
+   "models/vendor_variants.py:120 ProductTemplate._leaders_clean_names"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Creating new attributes is not allowed.",
+  "kind": "exception",
+  "message": "Creating new attributes is not allowed.",
+  "arabic": "إنشاء خصائص جديدة غير مسموح.",
+  "where": [
+   "models/vendor_variants.py:127 ProductTemplate._leaders_create_vendor_attribute"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "The attribute name is required.",
+  "kind": "exception",
+  "message": "The attribute name is required.",
+  "arabic": "اسم الخاصية مطلوب.",
+  "where": [
+   "models/vendor_variants.py:130 ProductTemplate._leaders_create_vendor_attribute"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Unknown value for attribute %s.",
+  "kind": "exception",
+  "message": "Unknown value for attribute %s.",
+  "arabic": "قيمة غير معروفة للخاصية %s.",
+  "where": [
+   "models/vendor_variants.py:161 ProductTemplate._leaders_apply_attribute_selection"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Too many variants (%(n)s): the limit is %(max)s.",
+  "kind": "exception",
+  "message": "Too many variants (%(n)s): the limit is %(max)s.",
+  "arabic": "متغيرات كثيرة جدًا (%(n)s): الحد الأقصى %(max)s.",
+  "where": [
+   "models/vendor_variants.py:171 ProductTemplate._leaders_apply_attribute_selection"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot remove %(values)s: variants using it already have offers or orders.",
+  "kind": "exception",
+  "message": "You cannot remove %(values)s: variants using it already have offers or orders.",
+  "arabic": "لا يمكنك إزالة %(values)s: المتغيرات التي تستخدمها لديها عروض أو طلبات بالفعل.",
+  "where": [
+   "models/vendor_variants.py:180 ProductTemplate._leaders_apply_attribute_selection"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot add a new option to a product whose variants already have offers or orders. Add values to an existing option instead.",
+  "kind": "exception",
+  "message": "You cannot add a new option to a product whose variants already have offers or orders. Add values to an existing option instead.",
+  "arabic": "لا يمكنك إضافة خيار جديد إلى منتج لدى متغيراته عروض أو طلبات بالفعل. أضف قيمًا إلى خيار موجود بدلًا من ذلك.",
+  "where": [
+   "models/vendor_variants.py:187 ProductTemplate._leaders_apply_attribute_selection"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You cannot remove the option %s: its variants already have offers or orders.",
+  "kind": "exception",
+  "message": "You cannot remove the option %s: its variants already have offers or orders.",
+  "arabic": "لا يمكنك إزالة الخيار %s: متغيراته لديها عروض أو طلبات بالفعل.",
+  "where": [
+   "models/vendor_variants.py:196 ProductTemplate._leaders_apply_attribute_selection"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/products/<int:offer_id>/edit",
+   "GET/POST /my/vendor/products/new"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Select at least one variant.",
+  "kind": "exception",
+  "message": "Select at least one variant.",
+  "arabic": "اختر متغيرًا واحدًا على الأقل.",
+  "where": [
+   "models/vendor_variants.py:266 MarketplaceOffer._leaders_create_variant_offers"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Seller SKU is required for %s.",
+  "kind": "exception",
+  "message": "Seller SKU is required for %s.",
+  "arabic": "SKU البائع مطلوب لـ %s.",
+  "where": [
+   "models/vendor_variants.py:277 MarketplaceOffer._leaders_create_variant_offers"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Seller SKU %s is used twice.",
+  "kind": "exception",
+  "message": "Seller SKU %s is used twice.",
+  "arabic": "SKU البائع %s مستخدم مرتين.",
+  "where": [
+   "models/vendor_variants.py:279 MarketplaceOffer._leaders_create_variant_offers"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "Seller SKU %s is already used by another of your offers.",
+  "kind": "exception",
+  "message": "Seller SKU %s is already used by another of your offers.",
+  "arabic": "SKU البائع %s مستخدم بالفعل في أحد عروضك الأخرى.",
+  "where": [
+   "models/vendor_variants.py:283 MarketplaceOffer._leaders_create_variant_offers"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "A valid price is required for %s.",
+  "kind": "exception",
+  "message": "A valid price is required for %s.",
+  "arabic": "مطلوب سعر صالح لـ %s.",
+  "where": [
+   "models/vendor_variants.py:285 MarketplaceOffer._leaders_create_variant_offers"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "You already have an offer for this product with the same fulfillment.",
+  "kind": "exception",
+  "message": "You already have an offer for this product with the same fulfillment.",
+  "arabic": "لديك بالفعل عرض لهذا المنتج بنفس طريقة الشحن.",
+  "where": [
+   "models/vendor_variants.py:293 MarketplaceOffer._leaders_create_variant_offers"
+  ],
+  "callers": [
+   "GET/POST /my/vendor/templates/<int:tmpl_id>/variants"
+  ],
+  "exception": "UserError",
+  "explained": true
+ },
+ {
+  "key": "route:You must tick the box to accept the terms.",
+  "kind": "route",
+  "message": "You must tick the box to accept the terms.",
+  "arabic": "يجب تحديد المربع لقبول الشروط.",
+  "where": [
+   "controllers/portal.py:108 MarketplacePortal.vendor_terms_accept"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Product name, seller SKU and a valid price are required.",
+  "kind": "route",
+  "message": "Product name, seller SKU and a valid price are required.",
+  "arabic": "اسم المنتج ورمز SKU للبائع وسعر صالح مطلوبة.",
+  "where": [
+   "controllers/portal.py:518 MarketplacePortal.vendor_product_create"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:This document cannot be replaced.",
+  "kind": "route",
+  "message": "This document cannot be replaced.",
+  "arabic": "لا يمكن استبدال هذا المستند.",
+  "where": [
+   "controllers/vendor_apply.py:220 VendorApplyController.vendor_apply_reupload"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Please choose a file to upload.",
+  "kind": "route",
+  "message": "Please choose a file to upload.",
+  "arabic": "يرجى اختيار ملف لرفعه.",
+  "where": [
+   "controllers/vendor_apply.py:224 VendorApplyController.vendor_apply_reupload"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Choose a published product from the catalog.",
+  "kind": "route",
+  "message": "Choose a published product from the catalog.",
+  "arabic": "اختر منتجًا منشورًا من الكتالوج.",
+  "where": [
+   "controllers/portal.py:611 vendor_product_sell_existing"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Seller SKU and a valid price are required.",
+  "kind": "route",
+  "message": "Seller SKU and a valid price are required.",
+  "arabic": "SKU البائع وسعر صحيح مطلوبان.",
+  "where": [
+   "controllers/portal.py:613 vendor_product_sell_existing"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Choose what you want to import.",
+  "kind": "route",
+  "message": "Choose what you want to import.",
+  "arabic": "اختر ما تريد استيراده.",
+  "where": [
+   "controllers/portal.py:919 vendor_import_upload"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Choose a file to upload.",
+  "kind": "route",
+  "message": "Choose a file to upload.",
+  "arabic": "اختر ملفًا لرفعه.",
+  "where": [
+   "controllers/portal.py:921 vendor_import_upload"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:The file is empty or larger than 10 MB.",
+  "kind": "route",
+  "message": "The file is empty or larger than 10 MB.",
+  "arabic": "الملف فارغ أو أكبر من 10 ميجابايت.",
+  "where": [
+   "controllers/portal.py:926 vendor_import_upload"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Select at least one offer.",
+  "kind": "route",
+  "message": "Select at least one offer.",
+  "arabic": "اختر عرضًا واحدًا على الأقل.",
+  "where": [
+   "controllers/portal.py:795 vendor_products_discount_bulk"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:The delivery proof is too large.",
+  "kind": "route",
+  "message": "The delivery proof is too large.",
+  "arabic": "إثبات التسليم كبير جدًا.",
+  "where": [
+   "controllers/portal.py:1144 vendor_fulfillment_delivered"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Please write a reply.",
+  "kind": "route",
+  "message": "Please write a reply.",
+  "arabic": "يرجى كتابة رد.",
+  "where": [
+   "controllers/portal.py:1611 vendor_dispute_reply"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Bank name, account holder and account number are required.",
+  "kind": "route",
+  "message": "Bank name, account holder and account number are required.",
+  "arabic": "اسم البنك وصاحب الحساب ورقم الحساب مطلوبة.",
+  "where": [
+   "controllers/portal.py:1712 vendor_bank_change_request"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:A payout account change is already waiting for review.",
+  "kind": "route",
+  "message": "A payout account change is already waiting for review.",
+  "arabic": "يوجد طلب تغيير لحساب صرف المستحقات قيد المراجعة بالفعل.",
+  "where": [
+   "controllers/portal.py:1714 vendor_bank_change_request"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:A bank proof (statement or letter from the bank) is required.",
+  "kind": "route",
+  "message": "A bank proof (statement or letter from the bank) is required.",
+  "arabic": "مطلوب إثبات بنكي (كشف حساب أو خطاب من البنك).",
+  "where": [
+   "controllers/portal.py:1718 vendor_bank_change_request"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:A name and a valid email address are required.",
+  "kind": "route",
+  "message": "A name and a valid email address are required.",
+  "arabic": "الاسم وعنوان بريد إلكتروني صالح مطلوبان.",
+  "where": [
+   "controllers/portal.py:1751 vendor_staff"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:This email belongs to a deactivated account; reactivate it from the list.",
+  "kind": "route",
+  "message": "This email belongs to a deactivated account; reactivate it from the list.",
+  "arabic": "هذا البريد الإلكتروني يخص حسابًا معطلًا؛ أعد تفعيله من القائمة.",
+  "where": [
+   "controllers/portal.py:1759 vendor_staff"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:A user with this email already exists.",
+  "kind": "route",
+  "message": "A user with this email already exists.",
+  "arabic": "يوجد مستخدم بهذا البريد الإلكتروني بالفعل.",
+  "where": [
+   "controllers/portal.py:1762 vendor_staff"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Your account is frozen: %s",
+  "kind": "route",
+  "message": "Your account is frozen: %s",
+  "arabic": "حسابك مجمَّد: %s",
+  "where": [
+   "controllers/portal.py:120 _vendor_freeze_notice"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Business name is required.",
+  "kind": "route",
+  "message": "Business name is required.",
+  "arabic": "اسم النشاط التجاري مطلوب.",
+  "where": [
+   "controllers/vendor_apply.py:112 vendor_apply"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Please enter a valid owner email address.",
+  "kind": "route",
+  "message": "Please enter a valid owner email address.",
+  "arabic": "يرجى إدخال عنوان بريد إلكتروني صالح للمالك.",
+  "where": [
+   "controllers/vendor_apply.py:117 vendor_apply"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Please enter a valid business email address.",
+  "kind": "route",
+  "message": "Please enter a valid business email address.",
+  "arabic": "يرجى إدخال عنوان بريد إلكتروني تجاري صالح.",
+  "where": [
+   "controllers/vendor_apply.py:119 vendor_apply"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Too many applications from your address today. Please try again tomorrow.",
+  "kind": "route",
+  "message": "Too many applications from your address today. Please try again tomorrow.",
+  "arabic": "عدد كبير جدًا من طلبات الانضمام من عنوانك اليوم. يرجى المحاولة مرة أخرى غدًا.",
+  "where": [
+   "controllers/vendor_apply.py:122 vendor_apply"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:The file %s is empty.",
+  "kind": "route",
+  "message": "The file %s is empty.",
+  "arabic": "الملف %s فارغ.",
+  "where": [
+   "controllers/vendor_apply.py:47 _document_error"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:The file %(name)s is too large (max %(size)s MB).",
+  "kind": "route",
+  "message": "The file %(name)s is too large (max %(size)s MB).",
+  "arabic": "الملف %(name)s كبير جدًا (الحد الأقصى %(size)s ميجابايت).",
+  "where": [
+   "controllers/vendor_apply.py:50 _document_error"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:The file %s must be a PDF or an image.",
+  "kind": "route",
+  "message": "The file %s must be a PDF or an image.",
+  "arabic": "يجب أن يكون الملف %s بصيغة PDF أو صورة.",
+  "where": [
+   "controllers/vendor_apply.py:53 _document_error"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Please tell us what went wrong.",
+  "kind": "route",
+  "message": "Please tell us what went wrong.",
+  "arabic": "يرجى إخبارنا بما حدث من خطأ.",
+  "where": [
+   "controllers/portal.py:2171 customer_open_dispute"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Please write a message.",
+  "kind": "route",
+  "message": "Please write a message.",
+  "arabic": "يرجى كتابة رسالة.",
+  "where": [
+   "controllers/portal.py:2214 customer_dispute_message"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "route:Some items could not be added again: %s",
+  "kind": "route",
+  "message": "Some items could not be added again: %s",
+  "arabic": "تعذرت إضافة بعض العناصر مرة أخرى: %s",
+  "where": [
+   "controllers/checkouts.py:159 customer_checkout_buy_again"
+  ],
+  "callers": [],
+  "exception": "route",
+  "explained": true
+ },
+ {
+  "key": "sql:vendor_uniq",
+  "kind": "sql",
+  "message": "The vendor is already present in the plan.",
+  "arabic": "البائع موجود بالفعل في الخطة.",
+  "where": [
+   "models/commission.py:601 leaders.commission.plan.vendor (unique(plan_id, vendor_id))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ },
+ {
+  "key": "sql:seller_sku_vendor_uniq",
+  "kind": "sql",
+  "message": "Seller SKU must be unique per vendor.",
+  "arabic": "يجب أن يكون SKU البائع فريدًا لكل بائع.",
+  "where": [
+   "models/product.py:137 leaders.marketplace.offer (unique(vendor_id, seller_sku))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ },
+ {
+  "key": "sql:offer_date_uniq",
+  "kind": "sql",
+  "message": "The offer already has a publish log for this day.",
+  "arabic": "يوجد بالفعل سجل نشر للعرض في هذا اليوم.",
+  "where": [
+   "models/product.py:686 leaders.marketplace.offer.publish.log (unique(offer_id, date))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ },
+ {
+  "key": "sql:provider_event_uniq",
+  "kind": "sql",
+  "message": "This shipping event was already received.",
+  "arabic": "تم استلام حدث الشحن هذا من قبل.",
+  "where": [
+   "models/shipping_provider.py:356 leaders.shipping.event (unique(provider_id, event_id))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ },
+ {
+  "key": "sql:code_uniq",
+  "kind": "sql",
+  "message": "The provider code must be unique.",
+  "arabic": "يجب أن يكون رمز المزوّد فريدًا.",
+  "where": [
+   "models/shipping_provider.py:91 leaders.shipping.provider (unique(code))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ },
+ {
+  "key": "sql:scope_window_unique",
+  "kind": "sql",
+  "message": "One counter per scope and minute.",
+  "arabic": "عدّاد واحد لكل نطاق ولكل دقيقة.",
+  "where": [
+   "models/shipping_provider.py:319 leaders.shipping.webhook.rate (unique(scope, window_start))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ },
+ {
+  "key": "sql:key_idem_unique",
+  "kind": "sql",
+  "message": "Idempotency key already used.",
+  "arabic": "مفتاح Idempotency مستخدم من قبل.",
+  "where": [
+   "models/vendor_api.py:188 leaders.vendor.api.idempotency (unique(key_id, idempotency_key))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ },
+ {
+  "key": "sql:key_window_unique",
+  "kind": "sql",
+  "message": "One counter per key and minute.",
+  "arabic": "عداد واحد لكل مفتاح ودقيقة.",
+  "where": [
+   "models/vendor_api.py:173 leaders.vendor.api.rate (unique(key_id, window_start))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ },
+ {
+  "key": "sql:vendor_state_uniq",
+  "kind": "sql",
+  "message": "Only one delivery price per governorate per vendor.",
+  "arabic": "سعر توصيل واحد فقط لكل محافظة لكل بائع.",
+  "where": [
+   "models/delivery.py:41 leaders.vendor.delivery.zone (unique(vendor_id, state_id))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ },
+ {
+  "key": "sql:vendor_period_uniq",
+  "kind": "sql",
+  "message": "A vendor already has a KPI snapshot for this month.",
+  "arabic": "لدى البائع لقطة مؤشرات أداء لهذا الشهر بالفعل.",
+  "where": [
+   "models/performance.py:22 leaders.vendor.kpi (unique(vendor_id, period))"
+  ],
+  "callers": [],
+  "exception": "sql",
+  "explained": true
+ }
+]
