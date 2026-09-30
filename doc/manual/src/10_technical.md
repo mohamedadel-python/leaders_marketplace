@@ -468,7 +468,7 @@ curl -s -X POST "$BASE/api/v1/shipping/webhook/dummy" \
 | 2 | توليد بيانات العرض | `odoo-bin shell -d lm_manual < scripts/generate_manual_demo_data.py` (يشغّل `scripts/manual_demo/partN_*.py` بالترتيب على ساعة مجمَّدة بـ freezegun عند `2026-09-01`) | مستخدمون وبائعون وطلبات وتسويات تجريبية |
 | 3 | استخراج الجرد | `odoo-bin shell -d lm_manual < scripts/extract_manual_inventory.py` | `doc/manual/data/inventory.json` و`inventory_summary.md` |
 | 4 | بناء قائمة الشاشات | `python3 scripts/gen_screens_manifest.py` | `doc/manual/data/screens_manifest.json` |
-| 5 | التقاط لقطات الشاشة | `/home/mohamed/.venvs/lm_manual/bin/python scripts/capture_manual_screens.py --serve --db lm_manual` | `doc/manual/screens/{role}/{id}_{desktop\|mobile}.png` و`data/callouts/{id}.json` |
+| 5 | التقاط لقطات الشاشة | `/home/mohamed/.venvs/lm_manual/bin/python scripts/capture_manual_screens.py --serve --db lm_manual` | `doc/manual/screens/{role}/{id}_{desktop أو mobile}.png` و`data/callouts/{id}.json` |
 | 6 | بناء ملفات PDF | `/home/mohamed/.venvs/lm_manual/bin/python scripts/build_manual.py --target all` | `doc/manual/dist/` (الدليل الشامل ودليل البائع ودليل العميل) |
 
 قواعد مهمة:
