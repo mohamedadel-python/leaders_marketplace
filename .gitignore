@@ -1,14 +1,6 @@
-# Python bytecode
 __pycache__/
 *.pyc
-*.pyo
-
-# Tooling / agent artifacts (screenshots, console logs, session locks)
-.playwright-mcp/
-
-# built manual PDFs (made by scripts/make_manual.sh; too big for git)
-doc/manual/dist/
-# local backups and archives
 *.bak_*
 *.tgz
 .pw
+spark_fu_addons/leaders_marketplace/doc/manual/dist/

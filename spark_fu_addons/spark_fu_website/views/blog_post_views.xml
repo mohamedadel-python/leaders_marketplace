@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_spark_blog_post_form" model="ir.ui.view">
+        <field name="name">spark.blog.post.form</field>
+        <field name="model">spark.blog.post</field>
+        <field name="arch" type="xml">
+            <form string="Blog Post">
+                <header>
+                    <button name="action_publish"
+                            string="Publish"
+                            type="object"
+                            class="btn-primary"
+                            invisible="is_published"/>
+                    <button name="action_unpublish"
+                            string="Unpublish"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="not is_published"/>
+                    <field name="is_published" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar" options="{'size': [150, 150]}"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="increment_visits"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-eye">
+                            <field name="visits" widget="statinfo" string="Visits"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="title" placeholder="Enter blog post title..."/>
+                            <field name="slug"/>
+                            <!-- <field name="type"/> -->
+                            <field name="author_id"/>
+                            <field name="publish_date"/>
+                        </group>
+                        <group>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            <field name="is_featured"/>
+                            <field name="featured_order" invisible="not is_featured"/>
+                            <field name="content_updated_at"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="excerpt" placeholder="Brief description of the post..."/>
+                    </group>
+                    <notebook>
+                        <page string="Content (ar)">
+                            <field name="content" widget="html"/>
+                        </page>
+                        <page string="Content (en)">
+                            <field name="content_en" widget="html"/>
+                        </page>
+                        <page string="Comments">
+                            <field name="comment_ids" context="{'active_test': False}">
+                                <list editable="bottom" create="0">
+                                    <field name="create_date" string="Date" readonly="1"/>
+                                    <field name="user_id" readonly="1"/>
+                                    <field name="body" readonly="1"/>
+                                    <field name="parent_id" readonly="1"/>
+                                    <field name="state" readonly="1" widget="badge" decoration-success="state == 'published'" decoration-warning="state == 'draft'"/>
+                                    <field name="like_count"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Old Slugs">
+                            <field name="slug_history_ids" readonly="1">
+                                <list>
+                                    <field name="slug"/>
+                                    <field name="create_date" string="Saved On"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_spark_blog_post_list" model="ir.ui.view">
+        <field name="name">spark.blog.post.list</field>
+        <field name="model">spark.blog.post</field>
+        <field name="arch" type="xml">
+            <list string="Blog Posts" decoration-muted="not is_published">
+                <field name="title"/>
+                <field name="type"/>
+                <field name="author_id"/>
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                <field name="visits"/>
+                <field name="publish_date"/>
+                <field name="is_published" widget="boolean_toggle"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_spark_blog_post_search" model="ir.ui.view">
+        <field name="name">spark.blog.post.search</field>
+        <field name="model">spark.blog.post</field>
+        <field name="arch" type="xml">
+            <search string="Search Blog Posts">
+                <field name="title" string="Title" filter_domain="[('title', 'ilike', self)]"/>
+                <field name="content" string="Content (ar)" filter_domain="[('content', 'ilike', self)]"/>
+                <field name="content_en" string="Content (en)" filter_domain="[('content_en', 'ilike', self)]"/>
+                <field name="author_id"/>
+                <field name="tag_ids"/>
+                <separator/>
+                <filter name="published" string="Published" domain="[('is_published', '=', True)]"/>
+                <filter name="unpublished" string="Unpublished" domain="[('is_published', '=', False)]"/>
+                <filter name="my_posts" string="My Posts" domain="[('author_id', '=', uid)]"/>
+                <separator/>
+                <filter name="blog_type" string="Blog" domain="[('type', '=', 'blog')]"/>
+                <filter name="news_type" string="News" domain="[('type', '=', 'news')]"/>
+                <separator/>
+                <filter name="inactive" string="Archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_author" string="Author" context="{'group_by': 'author_id'}"/>
+                    <filter name="group_published" string="Published Status" context="{'group_by': 'is_published'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'type'}"/>
+                    <filter name="group_date" string="Publish Date" context="{'group_by': 'publish_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_spark_blog_tag_form" model="ir.ui.view">
+        <field name="name">spark.blog.tag.form</field>
+        <field name="model">spark.blog.tag</field>
+        <field name="arch" type="xml">
+            <form string="Blog Tag">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="color" widget="color_picker"/>
+                        <field name="post_count"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_spark_blog_tag_list" model="ir.ui.view">
+        <field name="name">spark.blog.tag.list</field>
+        <field name="model">spark.blog.tag</field>
+        <field name="arch" type="xml">
+            <list string="Blog Tags">
+                <field name="name"/>
+                <field name="post_count"/>
+                <field name="color" widget="color_picker"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_spark_blog_post" model="ir.actions.act_window">
+        <field name="name">Blog Posts</field>
+        <field name="res_model">spark.blog.post</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_published': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first blog post!
+            </p>
+            <p>
+                Start writing engaging content for your audience.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_spark_blog_tag" model="ir.actions.act_window">
+        <field name="name">Blog Tags</field>
+        <field name="res_model">spark.blog.tag</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_spark_blog_root"
+              name="Blog"
+              sequence="10"/>
+
+    <menuitem id="menu_spark_blog_posts"
+              name="Posts"
+              parent="menu_spark_blog_root"
+              action="action_spark_blog_post"
+              sequence="10"/>
+
+    <menuitem id="menu_spark_blog_tags"
+              name="Tags"
+              parent="menu_spark_blog_root"
+              action="action_spark_blog_tag"
+              sequence="20"/>
+</odoo>

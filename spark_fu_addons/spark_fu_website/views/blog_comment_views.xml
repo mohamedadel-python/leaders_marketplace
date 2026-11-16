@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_spark_blog_comment_form" model="ir.ui.view">
+        <field name="name">spark.blog.comment.form</field>
+        <field name="model">spark.blog.comment</field>
+        <field name="arch" type="xml">
+            <form string="Blog Comment">
+                <header>
+                    <button name="action_toggle_like"
+                            string="Like"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-heart-o"
+                            invisible="is_liked_by_me"/>
+                    <button name="action_toggle_like"
+                            string="Unlike"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-heart"
+                            invisible="not is_liked_by_me"/>
+                    <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="post_id"/>
+                            <field name="user_id"/>
+                            <field name="parent_id"/>
+                        </group>
+                        <group>
+                            <field name="create_date" string="Date" readonly="1"/>
+                            <field name="like_count"/>
+                            <field name="is_liked_by_me" invisible="1"/>
+                            <field name="edited_at"/>
+                            <field name="is_deleted"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="body"/>
+                    </group>
+                    <notebook>
+                        <page string="Replies">
+                            <field name="reply_ids" readonly="1">
+                                <list>
+                                    <field name="create_date" string="Date"/>
+                                    <field name="user_id"/>
+                                    <field name="body"/>
+                                    <field name="like_count"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Likes">
+                            <field name="like_ids" readonly="1">
+                                <list>
+                                    <field name="create_date" string="Date"/>
+                                    <field name="user_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_spark_blog_comment_list" model="ir.ui.view">
+        <field name="name">spark.blog.comment.list</field>
+        <field name="model">spark.blog.comment</field>
+        <field name="arch" type="xml">
+            <list string="Blog Comments" create="0">
+                <field name="create_date" string="Date"/>
+                <field name="post_id"/>
+                <field name="user_id"/>
+                <field name="body"/>
+                <field name="parent_id"/>
+                <field name="like_count"/>
+                <field name="state" widget="badge" decoration-warning="state == 'draft'" decoration-success="state == 'published'"/>
+                <field name="is_deleted" optional="hide"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_spark_blog_comment_search" model="ir.ui.view">
+        <field name="name">spark.blog.comment.search</field>
+        <field name="model">spark.blog.comment</field>
+        <field name="arch" type="xml">
+            <search string="Search Comments">
+                <field name="body"/>
+                <field name="post_id"/>
+                <field name="user_id"/>
+                <separator/>
+                <filter name="main_comments" string="Main Comments" domain="[('parent_id', '=', False)]"/>
+                <filter name="replies" string="Replies" domain="[('parent_id', '!=', False)]"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="deleted_by_author" string="Deleted By Author" domain="[('is_deleted', '=', True)]"/>
+                <filter name="hidden" string="Hidden" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_post" string="Post" context="{'group_by': 'post_id'}"/>
+                    <filter name="group_user" string="Author" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_spark_blog_comment" model="ir.actions.act_window">
+        <field name="name">Comments</field>
+        <field name="res_model">spark.blog.comment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('parent_id', '=', False)]</field>
+    </record>
+
+    <!-- <record id="action_spark_blog_comment_review" model="ir.actions.act_window">
+        <field name="name">Comments To Review</field>
+        <field name="res_model">spark.blog.comment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'pending')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Nothing to review
+            </p>
+            <p>
+                New comments of visitors wait here until you approve or reject them.
+            </p>
+        </field>
+    </record>
+
+    <record id="server_action_comment_approve" model="ir.actions.server">
+        <field name="name">Approve</field>
+        <field name="model_id" ref="model_spark_blog_comment"/>
+        <field name="binding_model_id" ref="model_spark_blog_comment"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.action_approve()</field>
+    </record>
+
+    <record id="server_action_comment_reject" model="ir.actions.server">
+        <field name="name">Reject</field>
+        <field name="model_id" ref="model_spark_blog_comment"/>
+        <field name="binding_model_id" ref="model_spark_blog_comment"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.action_reject()</field>
+    </record> -->
+
+    <record id="action_spark_blog_reply" model="ir.actions.act_window">
+        <field name="name">Replies</field>
+        <field name="res_model">spark.blog.comment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('parent_id', '!=', False)]</field>
+    </record>
+
+    <record id="view_spark_blog_comment_like_list" model="ir.ui.view">
+        <field name="name">spark.blog.comment.like.list</field>
+        <field name="model">spark.blog.comment.like</field>
+        <field name="arch" type="xml">
+            <list string="Likes" create="0">
+                <field name="create_date" string="Date"/>
+                <field name="post_id"/>
+                <field name="comment_id"/>
+                <field name="user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_spark_blog_comment_like_search" model="ir.ui.view">
+        <field name="name">spark.blog.comment.like.search</field>
+        <field name="model">spark.blog.comment.like</field>
+        <field name="arch" type="xml">
+            <search string="Search Likes">
+                <field name="post_id"/>
+                <field name="comment_id"/>
+                <field name="user_id"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_post" string="Post" context="{'group_by': 'post_id'}"/>
+                    <filter name="group_comment" string="Comment" context="{'group_by': 'comment_id'}"/>
+                    <filter name="group_user" string="User" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_spark_blog_comment_like" model="ir.actions.act_window">
+        <field name="name">Likes</field>
+        <field name="res_model">spark.blog.comment.like</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="menu_spark_blog_comments_root"
+              name="Comments"
+              parent="menu_spark_blog_root"
+              sequence="30"/>
+
+    <menuitem id="menu_spark_blog_comments"
+              name="Comments"
+              parent="menu_spark_blog_comments_root"
+              action="action_spark_blog_comment"
+              sequence="30"/>
+
+    <!-- <menuitem id="menu_spark_blog_comments_review"
+              name="To Review"
+              parent="menu_spark_blog_comments_root"
+              action="action_spark_blog_comment_review"
+              sequence="25"/> -->
+
+    <menuitem id="menu_spark_blog_replies"
+              name="Replies"
+              parent="menu_spark_blog_comments_root"
+              action="action_spark_blog_reply"
+              sequence="40"/>
+
+    <menuitem id="menu_spark_blog_likes"
+              name="Likes"
+              parent="menu_spark_blog_comments_root"
+              action="action_spark_blog_comment_like"
+              sequence="50"/>
+</odoo>

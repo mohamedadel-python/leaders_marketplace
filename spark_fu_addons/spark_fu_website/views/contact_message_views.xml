@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_spark_contact_message_form" model="ir.ui.view">
+        <field name="name">spark.contact.message.form</field>
+        <field name="model">spark.contact.message</field>
+        <field name="arch" type="xml">
+            <form string="Contact Message">
+                <header>
+                    <button name="action_start"
+                            string="Start"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'new'"/>
+                    <button name="action_done"
+                            string="Mark as Done"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_reset"
+                            string="Reset to New"
+                            type="object"
+                            invisible="state == 'new'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="reference"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Sender">
+                            <field name="name"/>
+                            <field name="email" widget="email"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="locale"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group string="Ticket">
+                            <field name="issue_type"/>
+                            <field name="subject"/>
+                            <field name="responsible_id"/>
+                            <field name="create_date" string="Date" readonly="1"/>
+                            <field name="ip_address"/>
+                        </group>
+                    </group>
+                    <group string="Message">
+                        <field name="message" nolabel="1" colspan="2"/>
+                    </group>
+                    <group string="Attachments">
+                        <field name="attachment_ids" widget="many2many_binary" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_spark_contact_message_list" model="ir.ui.view">
+        <field name="name">spark.contact.message.list</field>
+        <field name="model">spark.contact.message</field>
+        <field name="arch" type="xml">
+            <list string="Contact Messages" create="0" decoration-muted="state == 'done'" decoration-bf="state == 'new'">
+                <field name="reference"/>
+                <field name="create_date" string="Date"/>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="issue_type"/>
+                <field name="subject"/>
+                <field name="responsible_id"/>
+                <field name="state" widget="badge" decoration-info="state == 'new'" decoration-warning="state == 'in_progress'" decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_spark_contact_message_search" model="ir.ui.view">
+        <field name="name">spark.contact.message.search</field>
+        <field name="model">spark.contact.message</field>
+        <field name="arch" type="xml">
+            <search string="Search Contact Messages">
+                <field name="reference"/>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="message"/>
+                <separator/>
+                <filter name="new" string="New" domain="[('state', '=', 'new')]"/>
+                <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="my_messages" string="Assigned to Me" domain="[('responsible_id', '=', uid)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_subject" string="Subject" context="{'group_by': 'subject'}"/>
+                    <filter name="group_issue_type" string="Issue Type" context="{'group_by': 'issue_type'}"/>
+                    <filter name="group_responsible" string="Responsible" context="{'group_by': 'responsible_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_spark_contact_message" model="ir.actions.act_window">
+        <field name="name">Contact Messages</field>
+        <field name="res_model">spark.contact.message</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_spark_contact_route_list" model="ir.ui.view">
+        <field name="name">spark.contact.route.list</field>
+        <field name="model">spark.contact.route</field>
+        <field name="arch" type="xml">
+            <list string="Subject Routing" editable="bottom">
+                <field name="subject"/>
+                <field name="user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_spark_contact_route" model="ir.actions.act_window">
+        <field name="name">Subject Routing</field>
+        <field name="res_model">spark.contact.route</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="menu_spark_contact_root"
+              name="Contact Us"
+              sequence="11"/>
+
+    <menuitem id="menu_spark_contact_messages"
+              name="Messages"
+              parent="menu_spark_contact_root"
+              action="action_spark_contact_message"
+              sequence="10"/>
+
+    <menuitem id="menu_spark_contact_config"
+              name="Configuration"
+              parent="menu_spark_contact_root"
+              sequence="90"/>
+
+    <menuitem id="menu_spark_contact_routes"
+              name="Subject Routing"
+              parent="menu_spark_contact_config"
+              action="action_spark_contact_route"
+              sequence="10"/>
+</odoo>

@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_spark_blog_post_user,spark.blog.post.user,model_spark_blog_post,base.group_user,1,1,1,1
+access_spark_blog_tag_user,spark.blog.tag.user,model_spark_blog_tag,base.group_user,1,1,1,1
+access_spark_blog_comment_user,spark.blog.comment.user,model_spark_blog_comment,base.group_user,1,1,1,1
+access_spark_blog_comment_like_user,spark.blog.comment.like.user,model_spark_blog_comment_like,base.group_user,1,1,1,1
+access_spark_blog_slug_history_user,spark.blog.slug.history.user,model_spark_blog_slug_history,base.group_user,1,1,1,1
+access_spark_contact_message_user,spark.contact.message.user,model_spark_contact_message,base.group_user,1,1,1,1
+access_spark_contact_route_user,spark.contact.route.user,model_spark_contact_route,base.group_user,1,1,1,1
+access_spark_testimonial_user,spark.testimonial.user,model_spark_testimonial,base.group_user,1,1,1,1
+access_spark_blog_post_public,spark.blog.post.public,model_spark_blog_post,,1,0,0,0
+access_spark_blog_tag_public,spark.blog.tag.public,model_spark_blog_tag,,1,0,0,0

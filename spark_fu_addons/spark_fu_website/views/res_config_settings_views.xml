@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_company_story" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.company.story</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="leaders_marketplace.res_config_settings_view_form_marketplace"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='leaders_marketplace']" position="inside">
+                <block title="Company Story" help="The film shown on the landing page. Paste a YouTube or Google Drive video link: it is changed to the embed link when you save. A Google Drive video plays only when the file is shared as Anyone with the link (Viewer), is a video file (MP4 recommended, not a folder or document) and Drive has finished processing it. Google may block a file watched a lot for a while (too many views), so YouTube (unlisted is fine) is the safer choice for this busy page. With Drive the visitor presses play twice, and a file larger than about 100 MB may not get a streamable preview.">
+                    <setting string="Arabic Video" help="Shown on the Arabic page, and on the English page when it has no video of its own.">
+                        <field name="company_story_video_url_ar"/>
+                    </setting>
+                    <setting string="English Video" help="Shown on the English page. Leave it empty to use the Arabic video.">
+                        <field name="company_story_video_url_en"/>
+                    </setting>
+                    <setting string="Poster" help="The picture shown before play. At least 1560 x 872 px, JPG or WebP, under 500 KB. Keep the subject away from the side edges.">
+                        <field name="company_story_poster" widget="image"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,989 @@
+{
+  "info": {
+    "name": "Spark Blogs API",
+    "description": "Blog endpoints of the spark_blogs module. Demo users password: {{demo_password}}. Run a request from \"0. Auth\" first to fill {{token}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8070"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "demo_password",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Auth (login first)",
+      "description": "Run one login request first. It saves the access token in the collection variable {{token}} automatically. The token lives 15 minutes.",
+      "item": [
+        {
+          "name": "Login as Sara",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/auth/login",
+            "description": "Logs in as Sara and saves the token. Sara liked comment 1.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"sara.demo@spark.test\",\n    \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data.accessToken) {",
+                  "    pm.collectionVariables.set('token', data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Ahmed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/auth/login",
+            "description": "Logs in as Ahmed and saves the token. Ahmed liked comment 2 and reply 8.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"ahmed.demo@spark.test\",\n    \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data.accessToken) {",
+                  "    pm.collectionVariables.set('token', data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Mohamed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/auth/login",
+            "description": "Logs in as Mohamed and saves the token. Mohamed liked comment 1.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"mohamed.demo@spark.test\",\n    \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data.accessToken) {",
+                  "    pm.collectionVariables.set('token', data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3.1 List posts",
+      "description": "GET /blog/posts",
+      "item": [
+        {
+          "name": "List posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts?locale=en&page=1&pageSize=4",
+            "description": "Expected: 200, 4 newest published posts, totalCount 9. No draft, scheduled or archived posts.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "List posts - Arabic",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts?locale=ar&page=1&pageSize=4",
+            "description": "Expected: titles and excerpts in Arabic.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "List posts - page 2",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts?locale=en&page=2&pageSize=4",
+            "description": "Expected: posts 5 to 8. solar-vs-diesel has no \"image\" key.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "List posts - Arabic page 2 (untranslated post)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts?locale=ar&page=2&pageSize=4",
+            "description": "Expected: solar-vs-diesel comes back in English (no Arabic translation).",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "List posts - page past the end",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts?page=50",
+            "description": "Expected: 200 with items [] and the real totalCount.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "List posts - bad params",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts?page=abc&pageSize=-3",
+            "description": "Expected: falls back to page 1 and pageSize 4.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "List posts - pageSize cap",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts?pageSize=999",
+            "description": "Expected: pageSize 50.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "List posts - same date tie-break",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts?pageSize=50",
+            "description": "Expected: oil-change-schedule (id 8) before forklift-safety (id 7). Same publish date, bigger id first.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3.2 Featured posts",
+      "description": "GET /blog/posts/featured",
+      "item": [
+        {
+          "name": "Featured posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/featured?locale=en&limit=3",
+            "description": "Expected: plain array: generator-sizing-guide, generator-maintenance, used-generator-inspection (admin order 1, 2, 10).",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Featured posts - limit 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/featured?limit=1",
+            "description": "Expected: generator-sizing-guide only.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Featured posts - Arabic",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/featured?locale=ar",
+            "description": "Expected: same posts in Arabic.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3.3 Post details",
+      "description": "GET /blog/posts/{slug}",
+      "item": [
+        {
+          "name": "Post details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance?locale=en",
+            "description": "Expected: content, author, commentCount 7 and updatedAt (the post was edited). Images and links inside content are absolute URLs.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Post details - Arabic",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance?locale=ar",
+            "description": "Expected: title, excerpt and content in Arabic.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Post details - never edited (no updatedAt)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-sizing-guide",
+            "description": "Expected: no \"updatedAt\" key.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Post details - untranslated in Arabic",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/solar-vs-diesel?locale=ar",
+            "description": "Expected: English text (fallback). No \"image\" key.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Post details - draft (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/draft-post-hidden",
+            "description": "Expected: 404 {\"message\": \"Post not found.\"}",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Post details - scheduled (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/scheduled-post-tomorrow",
+            "description": "Expected: 404. The publish date is tomorrow.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Post details - archived (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/archived-post",
+            "description": "Expected: 404.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Post details - unknown slug (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/abc",
+            "description": "Expected: 404.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3.4 Related posts",
+      "description": "GET /blog/posts/{slug}/related",
+      "item": [
+        {
+          "name": "Related posts - shared tags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/related?locale=en&limit=3",
+            "description": "Expected: generator-sizing-guide, used-generator-inspection, oil-change-schedule. Never the post itself.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Related posts - filled with newest",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/equipment-rental-guide/related?limit=3",
+            "description": "Expected: forklift-safety (same tag) then the 2 newest other posts.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Related posts - unknown slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/abc/related",
+            "description": "Expected: 200 with [] (not 404).",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3.5 Sitemap",
+      "description": "GET /blog/sitemap",
+      "item": [
+        {
+          "name": "Sitemap",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/sitemap",
+            "description": "Expected: every published post with slug and updatedAt only. updatedAt is never missing.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3.6 List comments",
+      "description": "GET /blog/posts/{slug}/comments. Token is optional.",
+      "item": [
+        {
+          "name": "Comments - newest, no token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments?page=1&pageSize=5&sort=newest",
+            "description": "Expected: 5 top-level comments newest first, totalCount 7, likedByMe false everywhere. Hidden comment 10 is not there.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Comments - page 2",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments?page=2&pageSize=5&sort=newest",
+            "description": "Expected: comments 2 and 1.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Comments - oldest with token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments?page=1&pageSize=5&sort=oldest",
+            "description": "Login first. Expected: comment 1 first with replies 8 and 9 (oldest first). As Sara: likedByMe true on comment 1.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Comments - wrong token (still 200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments?sort=oldest",
+            "description": "Expected: 200 (never 401), likedByMe false everywhere.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "abc",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Comments - unknown post (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/abc/comments",
+            "description": "Expected: 404 {\"message\": \"Post not found.\"}",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3.7 Add comment or reply",
+      "description": "POST /blog/posts/{slug}/comments. Token is required. Login first.",
+      "item": [
+        {
+          "name": "Add comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments",
+            "description": "Expected: 201 with the new comment. The author is the user from the token.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"Testing a new comment from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add reply to comment 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments",
+            "description": "Expected: 201. It shows inside the replies of comment 2.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"Testing a reply from Postman\",\n    \"parentId\": \"2\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add comment - no token (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments",
+            "description": "Expected: 401 {\"message\": \"Please sign in first.\"}",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"hello there\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add comment - too short (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments",
+            "description": "Expected: 422 with message and errors.body.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"a\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add comment - only spaces (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments",
+            "description": "Expected: 422. Spaces are trimmed first.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"      \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add reply - reply to a reply (422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments",
+            "description": "Expected: 422 {\"message\": \"You can not reply to a reply.\"}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"nested reply\",\n    \"parentId\": \"8\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add reply - parent on another post (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/generator-sizing-guide/comments",
+            "description": "Expected: 404 {\"message\": \"Comment not found.\"}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"wrong post\",\n    \"parentId\": \"1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add reply - hidden parent (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments",
+            "description": "Expected: 404. Comment 10 is hidden.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"reply to hidden\",\n    \"parentId\": \"10\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add comment - draft post (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/draft-post-hidden/comments",
+            "description": "Expected: 404 {\"message\": \"Post not found.\"}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"comment on draft\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add comment - author field is ignored",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments",
+            "description": "Expected: 201 and the author is the logged in user, not \"Someone Else\".",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"body\": \"who am i\",\n    \"author\": \"Someone Else\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3.8 Like / unlike",
+      "description": "POST /blog/posts/{slug}/comments/{id}/like. Token is required. Login first. Send it twice to see the toggle.",
+      "item": [
+        {
+          "name": "Toggle like - comment 2",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments/2/like",
+            "description": "Expected: {\"likes\": N, \"likedByMe\": true}. Send again: likedByMe false.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Toggle like - reply 8",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments/8/like",
+            "description": "Works on replies too.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Toggle like - no token (401)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments/2/like",
+            "description": "Expected: 401.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Toggle like - comment on another post (404)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-sizing-guide/comments/2/like",
+            "description": "Expected: 404 {\"message\": \"Comment not found.\"}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Toggle like - hidden comment (404)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/blog/posts/generator-maintenance/comments/10/like",
+            "description": "Expected: 404.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Extra - User avatar",
+      "description": "GET /blog/users/{id}/avatar",
+      "item": [
+        {
+          "name": "User avatar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/users/2/avatar",
+            "description": "Expected: the image itself (not JSON).",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "User avatar - unknown user (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/blog/users/9999/avatar",
+            "description": "Expected: 404.",
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

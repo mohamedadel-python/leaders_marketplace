@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_spark_testimonial_form" model="ir.ui.view">
+        <field name="name">spark.testimonial.form</field>
+        <field name="model">spark.testimonial</field>
+        <field name="arch" type="xml">
+            <form string="Testimonial">
+                <header>
+                    <button name="action_publish"
+                            string="Publish"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft' or not customer_permission"/>
+                    <button name="action_draft"
+                            string="Back to Draft"
+                            type="object"
+                            invisible="state != 'published'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Eng. Mohamed Ahmed"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="role"/>
+                            <field name="company"/>
+                            <field name="video_url"/>
+                        </group>
+                        <group>
+                            <field name="customer_permission"/>
+                            <field name="permission_user_id" invisible="not customer_permission"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="quote"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_spark_testimonial_list" model="ir.ui.view">
+        <field name="name">spark.testimonial.list</field>
+        <field name="model">spark.testimonial</field>
+        <field name="arch" type="xml">
+            <list string="Testimonials">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="role"/>
+                <field name="company"/>
+                <field name="customer_permission"/>
+                <field name="state"
+                       widget="badge"
+                       decoration-success="state == 'published'"
+                       decoration-warning="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_spark_testimonial" model="ir.actions.act_window">
+        <field name="name">Testimonials</field>
+        <field name="res_model">spark.testimonial</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_spark_landing_root"
+              name="Landing Page"
+              sequence="12"/>
+
+    <menuitem id="menu_spark_testimonials"
+              name="Testimonials"
+              parent="menu_spark_landing_root"
+              action="action_spark_testimonial"
+              sequence="10"/>
+</odoo>

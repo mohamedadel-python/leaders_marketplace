@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_spark_contact_message" model="ir.sequence">
+            <field name="name">Contact Message Reference</field>
+            <field name="code">spark.contact.message</field>
+            <field name="prefix">SC-</field>
+            <field name="padding">5</field>
+            <field name="number_next">10001</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="param_spark_cors_allowed_origins" model="ir.config_parameter">
+            <field name="key">spark_fu.cors_allowed_origins</field>
+            <field name="value">http://localhost:3000,https://spark-fu.com</field>
+        </record>
+
+        <!-- <record id="param_spark_api_no_cache" model="ir.config_parameter">
+            <field name="key">spark_fu.api_no_cache</field>
+            <field name="value">1</field>
+        </record> -->
+
+        <record id="mail_template_contact_confirmation" model="mail.template">
+            <field name="name">Contact Message: Confirmation</field>
+            <field name="model_id" ref="model_spark_contact_message"/>
+            <field name="subject">{{ object.get_confirmation_subject() }}</field>
+            <field name="email_from">{{ user.company_id.email_formatted }}</field>
+            <field name="email_to">{{ object.email }}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <div>
+                    <t t-if="object.locale == 'ar'">
+                        <div dir="rtl" style="text-align: right;">
+                            <p>مرحباً <t t-out="object.name"/>،</p>
+                            <p>استلمنا رسالتك، وفريقنا هيرد عليك في أقرب وقت.</p>
+                            <p>الرقم المرجعي: <strong t-out="object.reference"/></p>
+                            <p>من فضلك استخدم الرقم ده لو حبيت تتواصل معانا بخصوص الرسالة دي.</p>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div>
+                            <p>Hello <t t-out="object.name"/>,</p>
+                            <p>We received your message and our team will reply to you soon.</p>
+                            <p>Reference: <strong t-out="object.reference"/></p>
+                            <p>Please use this reference if you contact us about this message.</p>
+                        </div>
+                    </t>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

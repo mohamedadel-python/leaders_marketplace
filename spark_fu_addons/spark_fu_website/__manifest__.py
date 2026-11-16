@@ -1,0 +1,32 @@
+{
+    'name': 'Spark Fu Website',
+    'version': '18.0.1.0.2',
+    'category': 'Website/Blog',
+    'summary': 'Blog, comments, contact form and landing page backend with a REST API for the Spark Fu website',
+    'author': 'Mohamed Osama',
+    'website': 'https://www.mdarj.org',
+    'depends': [
+        'base',
+        'web',
+        'html_editor',
+        'mail',
+        'leaders_marketplace',
+    ],
+    'external_dependencies': {
+        'python': ['bs4'],
+    },
+    'data': [
+        'security/ir.model.access.csv',
+        'data/contact_data.xml',
+        'views/blog_post_views.xml',
+        'views/blog_comment_views.xml',
+        'views/contact_message_views.xml',
+        'views/res_users_views.xml',
+        'views/res_config_settings_views.xml',
+        'views/testimonial_views.xml',
+    ],
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+    'license': 'LGPL-3',
+}

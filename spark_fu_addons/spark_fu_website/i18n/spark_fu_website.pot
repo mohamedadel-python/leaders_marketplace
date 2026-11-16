@@ -1,0 +1,698 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* spark_fu_website
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-01 11:54+0000\n"
+"PO-Revision-Date: 2026-11-01 11:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: spark_fu_website
+#: model:mail.template,body_html:spark_fu_website.mail_template_contact_confirmation
+msgid ""
+"<div>\n"
+"                    <t t-if=\"object.locale == 'ar'\">\n"
+"                        <div dir=\"rtl\" style=\"text-align: right;\">\n"
+"                            <p>مرحباً <t t-out=\"object.name\"/>،</p>\n"
+"                            <p>استلمنا رسالتك، وفريقنا هيرد عليك في أقرب وقت.</p>\n"
+"                            <p>الرقم المرجعي: <strong t-out=\"object.reference\"/></p>\n"
+"                            <p>من فضلك استخدم الرقم ده لو حبيت تتواصل معانا بخصوص الرسالة دي.</p>\n"
+"                        </div>\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        <div>\n"
+"                            <p>Hello <t t-out=\"object.name\"/>,</p>\n"
+"                            <p>We received your message and our team will reply to you soon.</p>\n"
+"                            <p>Reference: <strong t-out=\"object.reference\"/></p>\n"
+"                            <p>Please use this reference if you contact us about this message.</p>\n"
+"                        </div>\n"
+"                    </t>\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.constraint,message:spark_fu_website.constraint_spark_blog_comment_like_uniq_comment_user
+msgid "A user can like a comment only once."
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__active
+msgid "Active"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__locale__ar
+msgid "Arabic"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Archived"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "Assigned to Me"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__attachment_ids
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_form
+msgid "Attachments"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__user_id
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__author_id
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_search
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Author"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__issue_type__billing
+msgid "Billing"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_blog_post__type__blog
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_blog_root
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Blog"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model,name:spark_fu_website.model_spark_blog_comment
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_form
+msgid "Blog Comment"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model,name:spark_fu_website.model_spark_blog_comment_like
+msgid "Blog Comment Like"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_list
+msgid "Blog Comments"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model,name:spark_fu_website.model_spark_blog_post
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_form
+msgid "Blog Post"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.actions.act_window,name:spark_fu_website.action_spark_blog_post
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_list
+msgid "Blog Posts"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model,name:spark_fu_website.model_spark_blog_tag
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_tag_form
+msgid "Blog Tag"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.actions.act_window,name:spark_fu_website.action_spark_blog_tag
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_tag_list
+msgid "Blog Tags"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_form
+msgid "Brief description of the post..."
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__color
+msgid "Color"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__body
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment_like__comment_id
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_like_search
+msgid "Comment"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.actions.act_window,name:spark_fu_website.action_spark_blog_comment
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__comment_ids
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_blog_comments
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_form
+msgid "Comments"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__comment_count
+msgid "Comments Count"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_contact_config
+msgid "Configuration"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model,name:spark_fu_website.model_spark_contact_message
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_form
+msgid "Contact Message"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:mail.template,name:spark_fu_website.mail_template_contact_confirmation
+msgid "Contact Message: Confirmation"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.actions.act_window,name:spark_fu_website.action_spark_contact_message
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_list
+msgid "Contact Messages"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model,name:spark_fu_website.model_spark_contact_route
+msgid "Contact Subject Routing"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_contact_root
+msgid "Contact Us"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__content
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_form
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Content"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,help:spark_fu_website.field_spark_blog_post__image
+msgid ""
+"Cover image, also used as the Open Graph image. At least 1200 x 630 px."
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.actions.act_window,help:spark_fu_website.action_spark_blog_post
+msgid "Create your first blog post!"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__create_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment_like__create_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__create_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__create_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__create_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_route__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__create_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment_like__create_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__create_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__create_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__create_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_route__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_form
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_like_list
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_list
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_form
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_form
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_list
+msgid "Date"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__display_name
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment_like__display_name
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__display_name
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__display_name
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__display_name
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_route__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__state__done
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "Done"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.constraint,message:spark_fu_website.constraint_spark_contact_route_uniq_subject
+msgid "Each subject can have only one routing line."
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__email
+msgid "Email"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__locale__en
+msgid "English"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_form
+msgid "Enter blog post title..."
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__excerpt
+msgid "Excerpt"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__is_featured
+msgid "Featured"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__featured_order
+msgid "Featured Order"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__issue_type__general
+msgid "General"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_like_search
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_search
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "Group By"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_search
+msgid "Hidden"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__id
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment_like__id
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__id
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__id
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__id
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_route__id
+msgid "ID"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__ip_address
+msgid "IP Address"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__image
+msgid "Image"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__state__in_progress
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "In Progress"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__issue_type
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "Issue Type"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__locale
+msgid "Language"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__content_updated_at
+msgid "Last Content Update"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__write_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment_like__write_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__write_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__write_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__write_uid
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_route__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__write_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment_like__write_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__write_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__write_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__write_date
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_route__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_form
+msgid "Like"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__is_liked_by_me
+msgid "Liked By Me"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.actions.act_window,name:spark_fu_website.action_spark_blog_comment_like
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__like_ids
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_blog_likes
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_form
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_like_list
+msgid "Likes"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__like_count
+msgid "Likes Count"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_search
+msgid "Main Comments"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_form
+msgid "Mark as Done"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__message
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_form
+msgid "Message"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_contact_messages
+msgid "Messages"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "My Posts"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__name
+msgid "Name"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__state__new
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "New"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_blog_post__type__news
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "News"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__post_count
+msgid "Number of Posts"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__issue_type__order
+msgid "Order"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__issue_type__other
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__subject__other
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_route__subject__other
+msgid "Other"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__subject__partnership
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_route__subject__partnership
+msgid "Partnership"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__subject__parts
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_route__subject__parts
+msgid "Parts"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__phone
+msgid "Phone"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__post_id
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment_like__post_id
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_like_search
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_search
+msgid "Post"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__post_ids
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_blog_posts
+msgid "Posts"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_form
+msgid "Publish"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__publish_date
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Publish Date"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__is_published
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Published"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Published Status"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__reference
+msgid "Reference"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__subject__rental
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_route__subject__rental
+msgid "Rental"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.actions.act_window,name:spark_fu_website.action_spark_blog_reply
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__reply_ids
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_blog_replies
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_form
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_search
+msgid "Replies"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__parent_id
+msgid "Reply To"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_form
+msgid "Reset to New"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__responsible_id
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_route__user_id
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "Responsible"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__subject__sales
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_route__subject__sales
+msgid "Sales"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Search Blog Posts"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_search
+msgid "Search Comments"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "Search Contact Messages"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_like_search
+msgid "Search Likes"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_form
+msgid "Sender"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__subject__services
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_route__subject__services
+msgid "Services"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__user_id
+msgid "Signed-in User"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__slug
+msgid "Slug"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.constraint,message:spark_fu_website.constraint_spark_blog_post_uniq_spark_blog_slug
+msgid "Slug must be unique."
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_form
+msgid "Start"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.actions.act_window,help:spark_fu_website.action_spark_blog_post
+msgid "Start writing engaging content for your audience."
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__state
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "Status"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_message__subject
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_contact_route__subject
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_search
+msgid "Subject"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.actions.act_window,name:spark_fu_website.action_spark_contact_route
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_contact_routes
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_route_list
+msgid "Subject Routing"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_tag__name
+msgid "Tag Name"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__tag_ids
+#: model:ir.ui.menu,name:spark_fu_website.menu_spark_blog_tags
+msgid "Tags"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields.selection,name:spark_fu_website.selection__spark_contact_message__issue_type__technical
+msgid "Technical"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_contact_message_form
+msgid "Ticket"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__title
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Title"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__type
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Type"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_form
+msgid "Unlike"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_form
+msgid "Unpublish"
+msgstr ""
+
+#. module: spark_fu_website
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_search
+msgid "Unpublished"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment_like__user_id
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_comment_like_search
+msgid "User"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_comment__active
+msgid "Visible"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:ir.model.fields,field_description:spark_fu_website.field_spark_blog_post__visits
+#: model_terms:ir.ui.view,arch_db:spark_fu_website.view_spark_blog_post_form
+msgid "Visits"
+msgstr ""
+
+#. module: spark_fu_website
+#: model:mail.template,subject:spark_fu_website.mail_template_contact_confirmation
+msgid "{{ object.get_confirmation_subject() }}"
+msgstr ""
