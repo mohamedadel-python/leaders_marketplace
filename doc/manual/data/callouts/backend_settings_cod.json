@@ -1,0 +1,60 @@
+{
+ "screen_id": "backend_settings_cod",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_cod_desktop.png",
+   "width": 1306,
+   "height": 307
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "السماح بالدفع عند الاستلام",
+   "selector": ".o_setting_box:has([name='marketplace_cod_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 89
+   }
+  },
+  {
+   "n": 2,
+   "label": "الحد الأقصى لمبلغ الدفع عند الاستلام",
+   "selector": ".o_setting_box:has([name='marketplace_cod_max_amount'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 89
+   }
+  },
+  {
+   "n": 3,
+   "label": "التحقق من الهاتف للدفع عند الاستلام",
+   "selector": ".o_setting_box:has([name='marketplace_cod_require_otp'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 179,
+    "w": 472,
+    "h": 110
+   }
+  },
+  {
+   "n": 4,
+   "label": "حظر الدفع عند الاستلام بعد حالات الرفض",
+   "selector": ".o_setting_box:has([name='marketplace_cod_refusal_block_count'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 179,
+    "w": 472,
+    "h": 110
+   }
+  }
+ ]
+}

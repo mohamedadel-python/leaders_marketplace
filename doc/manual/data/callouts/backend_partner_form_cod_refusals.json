@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_partner_form_cod_refusals",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_partner_form_cod_refusals_desktop.png",
+   "width": 1440,
+   "height": 1030
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "حالات الرفض في الدفع عند الاستلام",
+   "selector": ".o_form_view .o_field_widget[name='leaders_cod_refusal_count']",
+   "device": "desktop",
+   "bbox": {
+    "x": 301,
+    "y": 544,
+    "w": 932,
+    "h": 21
+   }
+  },
+  {
+   "n": 2,
+   "label": "زر إعادة تعيين حالات الرفض",
+   "selector": "button[name='action_reset_cod_refusals']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 543,
+    "w": 255,
+    "h": 23
+   }
+  }
+ ]
+}

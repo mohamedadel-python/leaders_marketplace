@@ -10,6 +10,7 @@
                 <field name="state_id"/>
                 <field name="price"/>
                 <field name="free_shipping_threshold" optional="show"/>
+                <field name="minimum_order" optional="show"/>
                 <field name="lead_days_min" optional="show"/>
                 <field name="lead_days_max" optional="show"/>
                 <field name="currency_id" column_invisible="1"/>
@@ -29,8 +30,10 @@
                         <field name="state_id"/>
                         <field name="price"/>
                         <field name="free_shipping_threshold"/>
+                        <field name="minimum_order" invisible="not is_platform"/>
                         <field name="lead_days_min"/>
                         <field name="lead_days_max"/>
+                        <field name="storefront_cities"/>
                         <field name="currency_id" invisible="1"/>
                         <field name="active" invisible="1"/>
                     </group>

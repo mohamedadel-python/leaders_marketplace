@@ -1,0 +1,120 @@
+{
+ "screen_id": "backend_offer_form_buybox_winner",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_offer_form_buybox_winner_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 336,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "قالب المنتج",
+   "selector": ".o_form_view .o_field_widget[name='product_tmpl_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 179,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 257,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "SKU البائع",
+   "selector": ".o_form_view .o_field_widget[name='seller_sku']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 296,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "السعر",
+   "selector": ".o_form_view .o_field_widget[name='price']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 335,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 6,
+   "label": "نوع التنفيذ",
+   "selector": ".o_form_view .o_field_widget[name='fulfillment_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 413,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 7,
+   "label": "درجة صندوق الشراء",
+   "selector": ".o_form_view .o_field_widget[name='buybox_score']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 523,
+    "w": 1234,
+    "h": 21
+   }
+  },
+  {
+   "n": 8,
+   "label": "الفائز بصندوق الشراء",
+   "selector": ".o_form_view .o_field_widget[name='is_buybox_winner']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1254,
+    "y": 557,
+    "w": 21,
+    "h": 23
+   }
+  },
+  {
+   "n": 9,
+   "label": "حالة العرض",
+   "selector": ".o_form_view .o_field_widget[name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 336,
+    "h": 33
+   }
+  }
+ ]
+}

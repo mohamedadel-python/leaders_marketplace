@@ -16,6 +16,9 @@ class LeadersReturnReason(models.Model):
     name = fields.Char(required=True, translate=True)
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
+    leaders_parts_allowed = fields.Boolean(
+        "Allowed for spare parts", help="A spare part is returned only when it does not match the order "
+                                        "(damaged, wrong item, not as described) and before it is installed.")
     requires_photo = fields.Boolean(
         string="Photo Required",
         help="The customer must attach at least one photo to request a return with this reason.")

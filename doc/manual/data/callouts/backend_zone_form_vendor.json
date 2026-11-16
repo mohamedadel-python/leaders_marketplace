@@ -1,0 +1,84 @@
+{
+ "screen_id": "backend_zone_form_vendor",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_zone_form_vendor_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 174,
+    "w": 1220,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "الحالة",
+   "selector": ".o_form_view .o_field_widget[name='state_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 213,
+    "w": 1220,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "السعر",
+   "selector": ".o_form_view .o_field_widget[name='price']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 252,
+    "w": 1220,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "حد الشحن المجاني",
+   "selector": ".o_form_view .o_field_widget[name='free_shipping_threshold']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 291,
+    "w": 1220,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "أدنى عدد لأيام التوصيل",
+   "selector": ".o_form_view .o_field_widget[name='lead_days_min']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 330,
+    "w": 1220,
+    "h": 26
+   }
+  },
+  {
+   "n": 6,
+   "label": "أقصى عدد لأيام التوصيل",
+   "selector": ".o_form_view .o_field_widget[name='lead_days_max']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 369,
+    "w": 1220,
+    "h": 26
+   }
+  }
+ ]
+}

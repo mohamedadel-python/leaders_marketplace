@@ -1,0 +1,210 @@
+<odoo>
+    <!-- Rentals: the platform rents the vendor's machine and re-rents it in its own name -->
+    <record id="view_leaders_rental_list" model="ir.ui.view">
+        <field name="name">leaders.rental.list</field>
+        <field name="model">leaders.rental</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state in ('returned', 'cancelled')" decoration-info="state == 'reserved'">
+                <field name="name"/>
+                <field name="product_tmpl_id"/>
+                <field name="partner_id"/>
+                <field name="vendor_id" optional="show"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="customer_price_day"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_leaders_rental_form" model="ir.ui.view">
+        <field name="name">leaders.rental.form</field>
+        <field name="model">leaders.rental</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_hand_over" type="object" string="Hand over" class="btn-primary" invisible="state != 'reserved'"/>
+                    <button name="action_return" type="object" string="Returned" class="btn-primary" invisible="state != 'with_customer'"/>
+                    <button name="action_cancel" type="object" string="Cancel reservation" invisible="state != 'reserved'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="reserved,with_customer,returned"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group string="Rental">
+                            <field name="product_tmpl_id"/>
+                            <field name="partner_id"/>
+                            <field name="state_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="sale_order_id"/>
+                        </group>
+                        <group string="Price and terms">
+                            <field name="vendor_id"/>
+                            <field name="supplier_price_day"/>
+                            <field name="customer_price_day"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="delivery_requested"/>
+                            <field name="maintenance_included"/>
+                            <field name="contract_accepted_on"/>
+                            <field name="contract_version"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Hand-over and return" name="handover">
+                            <group>
+                                <group string="Hand-over">
+                                    <field name="handover_meter"/>
+                                    <field name="handover_photo_ids" widget="many2many_binary"/>
+                                </group>
+                                <group string="Return">
+                                    <field name="return_meter"/>
+                                    <field name="return_photo_ids" widget="many2many_binary"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Agreed payments" name="payments">
+                            <p class="text-muted">What is still due after the booking, as agreed with the renter (amount, date and who agreed it).</p>
+                            <field name="payment_line_ids">
+                                <list editable="bottom">
+                                    <field name="due_date"/>
+                                    <field name="amount"/>
+                                    <field name="paid"/>
+                                    <field name="agreed_by"/>
+                                    <field name="note"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_leaders_rental_search" model="ir.ui.view">
+        <field name="name">leaders.rental.search</field>
+        <field name="model">leaders.rental</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="product_tmpl_id"/>
+                <field name="partner_id"/>
+                <filter name="open" string="Open" domain="[('state', 'in', ('reserved', 'with_customer'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="by_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_leaders_rental" model="ir.actions.act_window">
+        <field name="name">Rentals</field>
+        <field name="res_model">leaders.rental</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_open': 1}</field>
+    </record>
+    <record id="view_leaders_asset_move_list" model="ir.ui.view">
+        <field name="name">leaders.asset.move.list</field>
+        <field name="model">leaders.asset.move</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="date"/>
+                <field name="product_tmpl_id"/>
+                <field name="state"/>
+                <field name="partner_id"/>
+                <field name="rental_id"/>
+                <field name="note"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_leaders_asset_move" model="ir.actions.act_window">
+        <field name="name">Asset Log</field>
+        <field name="res_model">leaders.asset.move</field>
+        <field name="view_mode">list</field>
+    </record>
+    <menuitem id="menu_leaders_rentals" name="Rentals" parent="menu_marketplace_operations" sequence="25"
+              groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_manager"/>
+    <menuitem id="menu_leaders_rental" name="Rentals" parent="menu_leaders_rentals" action="action_leaders_rental" sequence="10"/>
+    <menuitem id="menu_leaders_asset_move" name="Asset Log" parent="menu_leaders_rentals" action="action_leaders_asset_move" sequence="20"/>
+
+    <!-- the rental side of a rentable machine on the product form -->
+    <record id="view_product_template_leaders_rent" model="ir.ui.view">
+        <field name="name">product.template.form.leaders.rent</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="leaders_marketplace.view_product_template_leaders_catalog"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='leaders_product_data']" position="after">
+                <page string="Rental" name="leaders_rental" invisible="not leaders_rentable"
+                      groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_manager">
+                    <group>
+                        <group string="Asset">
+                            <field name="leaders_asset_code" help="The platform&#x27;s number for this rental machine, used on rental papers and the asset log."/>
+                            <field name="leaders_asset_state" help="Where the machine is now: available, reserved, with a customer, in inspection, in maintenance or out of service. With a customer or out of service hides it from the website."/>
+                        </group>
+                        <group string="Vendor price agreement">
+                            <field name="leaders_rent_margin_percent" help="The platform&#x27;s margin added to the vendor&#x27;s rent per day for this machine only. 0: the subcategory&#x27;s margin, else the platform&#x27;s margin from the settings."/>
+                            <field name="leaders_rent_agreed_by" help="Who agreed the daily rent price with the vendor."/>
+                            <field name="leaders_rent_agreed_on" help="When the daily rent price was agreed with the vendor."/>
+                            <field name="leaders_rent_valid_until" help="Until when the vendor&#x27;s agreed daily price holds. Agree a new price after this date."/>
+                        </group>
+                    </group>
+                    <field name="leaders_rental_ids" readonly="1" help="The rentals of this machine: customer, dates and state.">
+                        <list>
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="state"/>
+                        </list>
+                    </field>
+                    <field name="leaders_asset_move_ids" readonly="1" help="Every change of the machine&#x27;s state, with the date, the customer and a note.">
+                        <list>
+                            <field name="date"/>
+                            <field name="state"/>
+                            <field name="partner_id"/>
+                            <field name="note"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- equipment requests (purchase / rent) on the customer request form -->
+    <record id="view_customer_request_form_equipment" model="ir.ui.view">
+        <field name="name">leaders.customer.request.form.equipment</field>
+        <field name="model">leaders.customer.request</field>
+        <field name="inherit_id" ref="leaders_marketplace.view_customer_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_send_service_prices" type="object" string="Send service prices" class="btn-primary"
+                        invisible="kind != 'purchase' or not equipment_services or state != 'pending'"/>
+                <button name="action_equipment_confirm" type="object" string="Confirm request" class="btn-primary"
+                        invisible="kind not in ('purchase', 'rent') or state not in ('pending', 'reviewing', 'contacting') or (kind == 'purchase' and equipment_services)"/>
+                <button name="action_equipment_execute" type="object" string="Start carrying out" class="btn-primary"
+                        invisible="kind not in ('purchase', 'rent') or state != 'inProgress'"/>
+                <button name="action_equipment_complete" type="object" string="Mark completed"
+                        invisible="kind not in ('purchase', 'rent') or state not in ('inProgress', 'executing')"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <group invisible="not included_rental_id">
+                    <field name="included_rental_id" string="Free: included in the rental"/>
+                </group>
+                <group string="Equipment request" invisible="kind not in ('purchase', 'rent')">
+                    <group>
+                        <field name="offer_id"/>
+                        <field name="unit_price"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="shipping_state_id"/>
+                        <field name="shipping_address"/>
+                    </group>
+                    <group>
+                        <field name="equipment_services"/>
+                        <field name="services_amount" invisible="kind != 'purchase' or not equipment_services"/>
+                        <field name="payment_order_id"/>
+                        <field name="rental_id" invisible="kind != 'rent'"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

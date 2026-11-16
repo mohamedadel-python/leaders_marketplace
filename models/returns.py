@@ -61,6 +61,9 @@ class VendorReturn(models.Model):
     refund_method = fields.Selection([("original", "Original Payment")], default="original")
     # -- D2: returns & disputes center ------------------------------------------
     reason_id = fields.Many2one("leaders.return.reason", string="Reason Code", index=True)
+    leaders_not_installed = fields.Boolean(
+        "Declared not installed", readonly=True,
+        help="The customer declared that the spare part was not installed (required to return a spare part).")
     photo_ids = fields.Many2many(
         "ir.attachment", "leaders_vendor_return_photo_rel", "return_id", "attachment_id",
         string="Photos", copy=False,

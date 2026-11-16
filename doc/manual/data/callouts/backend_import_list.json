@@ -1,0 +1,108 @@
+{
+ "screen_id": "backend_import_list",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_import_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "create_date",
+   "selector": "th[data-name='create_date']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1217,
+    "y": 106,
+    "w": 183,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1002,
+    "y": 106,
+    "w": 215,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "النوع",
+   "selector": "th[data-name='kind']",
+   "device": "desktop",
+   "bbox": {
+    "x": 773,
+    "y": 106,
+    "w": 229,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "اسم الملف",
+   "selector": "th[data-name='filename']",
+   "device": "desktop",
+   "bbox": {
+    "x": 530,
+    "y": 106,
+    "w": 243,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "الحالة",
+   "selector": "th[data-name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 413,
+    "y": 106,
+    "w": 117,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "إجمالي الصفوف",
+   "selector": "th[data-name='total_rows']",
+   "device": "desktop",
+   "bbox": {
+    "x": 332,
+    "y": 106,
+    "w": 80,
+    "h": 38
+   }
+  },
+  {
+   "n": 8,
+   "label": "الصفوف غير الصالحة",
+   "selector": "th[data-name='invalid_rows']",
+   "device": "desktop",
+   "bbox": {
+    "x": 172,
+    "y": 106,
+    "w": 80,
+    "h": 38
+   }
+  }
+ ]
+}

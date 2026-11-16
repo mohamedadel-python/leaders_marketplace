@@ -1,0 +1,113 @@
+{
+ "screen_id": "web_vendor_apply_form_step8",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_vendor_apply_form_step8_desktop.png",
+   "width": 1440,
+   "height": 1072
+  },
+  "mobile": {
+   "file": "visitor/web_vendor_apply_form_step8_mobile.png",
+   "width": 780,
+   "height": 3174
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "مؤشر الخطوات",
+   "selector": "#lm_apply_progress",
+   "device": "desktop",
+   "bbox": {
+    "x": 287,
+    "y": 203,
+    "w": 866,
+    "h": 6
+   }
+  },
+  {
+   "n": 2,
+   "label": "حقول الخطوة",
+   "selector": ".lm-step:not(.d-none)",
+   "device": "desktop",
+   "bbox": {
+    "x": 287,
+    "y": 225,
+    "w": 866,
+    "h": 379
+   }
+  },
+  {
+   "n": 3,
+   "label": "السابق",
+   "selector": "#lm_prev",
+   "device": "desktop",
+   "bbox": {
+    "x": 1077,
+    "y": 619,
+    "w": 76,
+    "h": 44
+   }
+  },
+  {
+   "n": 4,
+   "label": "إرسال الطلب",
+   "selector": "#lm_submit",
+   "device": "desktop",
+   "bbox": {
+    "x": 287,
+    "y": 619,
+    "w": 92,
+    "h": 44
+   }
+  },
+  {
+   "n": 1,
+   "label": "مؤشر الخطوات",
+   "selector": "#lm_apply_progress",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 388,
+    "w": 720,
+    "h": 11
+   }
+  },
+  {
+   "n": 2,
+   "label": "حقول الخطوة",
+   "selector": ".lm-step:not(.d-none)",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 432,
+    "w": 720,
+    "h": 752
+   }
+  },
+  {
+   "n": 3,
+   "label": "السابق",
+   "selector": "#lm_prev",
+   "device": "mobile",
+   "bbox": {
+    "x": 599,
+    "y": 1215,
+    "w": 151,
+    "h": 88
+   }
+  },
+  {
+   "n": 4,
+   "label": "إرسال الطلب",
+   "selector": "#lm_submit",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1215,
+    "w": 184,
+    "h": 88
+   }
+  }
+ ]
+}

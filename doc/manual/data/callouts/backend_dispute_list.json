@@ -1,0 +1,108 @@
+{
+ "screen_id": "backend_dispute_list",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_dispute_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "الاسم",
+   "selector": "th[data-name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1255,
+    "y": 106,
+    "w": 145,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "طلب البائع",
+   "selector": "th[data-name='vendor_order_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1117,
+    "y": 106,
+    "w": 137,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 848,
+    "y": 106,
+    "w": 270,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "العميل",
+   "selector": "th[data-name='partner_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 741,
+    "y": 106,
+    "w": 107,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "السبب",
+   "selector": "th[data-name='reason']",
+   "device": "desktop",
+   "bbox": {
+    "x": 308,
+    "y": 106,
+    "w": 433,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "الموعد النهائي للبائع",
+   "selector": "th[data-name='vendor_deadline']",
+   "device": "desktop",
+   "bbox": {
+    "x": 125,
+    "y": 106,
+    "w": 182,
+    "h": 38
+   }
+  },
+  {
+   "n": 8,
+   "label": "الحالة",
+   "selector": "th[data-name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 106,
+    "w": 125,
+    "h": 38
+   }
+  }
+ ]
+}

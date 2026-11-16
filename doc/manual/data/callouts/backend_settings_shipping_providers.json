@@ -1,0 +1,48 @@
+{
+ "screen_id": "backend_settings_shipping_providers",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_shipping_providers_desktop.png",
+   "width": 1306,
+   "height": 223
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "إطار عمل شركات الشحن",
+   "selector": ".o_setting_box:has([name='marketplace_shipping_providers_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 131
+   }
+  },
+  {
+   "n": 2,
+   "label": "عدد استدعاءات webhook في الدقيقة لكل مزوّد وعنوان IP",
+   "selector": ".o_setting_box:has([name='marketplace_shipping_webhook_rate_limit'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 131
+   }
+  },
+  {
+   "n": 3,
+   "label": "عدد استدعاءات webhook في الدقيقة لكل مزوّد",
+   "selector": ".o_setting_box:has([name='marketplace_shipping_webhook_provider_rate_limit'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 131
+   }
+  }
+ ]
+}

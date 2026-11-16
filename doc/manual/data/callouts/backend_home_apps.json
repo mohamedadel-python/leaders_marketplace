@@ -1,0 +1,11 @@
+{
+ "screen_id": "backend_home_apps",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_home_apps_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": []
+}

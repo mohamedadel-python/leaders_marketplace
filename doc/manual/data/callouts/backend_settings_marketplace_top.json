@@ -1,0 +1,60 @@
+{
+ "screen_id": "backend_settings_marketplace_top",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_marketplace_top_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "تبويب السوق",
+   "selector": ".settings_tab .tab[data-key='leaders_marketplace']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1287,
+    "y": 186,
+    "w": 153,
+    "h": 40
+   }
+  },
+  {
+   "n": 2,
+   "label": "عنوان القسم",
+   "selector": ".app_settings_block h2",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 106,
+    "w": 1286,
+    "h": 40
+   }
+  },
+  {
+   "n": 3,
+   "label": "أول إعداد",
+   "selector": ".o_setting_box:first-child",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 170,
+    "w": 472,
+    "h": 89
+   }
+  },
+  {
+   "n": 4,
+   "label": "زر الحفظ",
+   "selector": ".o_control_panel .o_form_button_save",
+   "device": "desktop",
+   "bbox": {
+    "x": 1383,
+    "y": 55,
+    "w": 41,
+    "h": 33
+   }
+  }
+ ]
+}

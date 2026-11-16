@@ -10,11 +10,11 @@ HOW TO RUN (a fresh copy of the pristine seed every time; the script is not idem
 
     cd /projects/odoo18/odoo-18.0
     ODOO=/odoo18/env-odoo18/bin/python
-    $ODOO odoo-bin db -c /etc/odoo/odoo18.conf.save --data-dir=/tmp/claude-1000/lmmanual duplicate lm_manual_base lm_manual_e2e
+    $ODOO odoo-bin db -c /etc/odoo/odoo18.conf.save --data-dir=/tmp/lmmanual duplicate lm_manual_base lm_manual_e2e
     $ODOO odoo-bin shell -c /etc/odoo/odoo18.conf.save -d lm_manual_e2e --addons-path=addons,custom \
-        --data-dir=/tmp/claude-1000/lmmanual --no-http \
+        --data-dir=/tmp/lmmanual --no-http \
         < custom/leaders_marketplace/scripts/manual_demo/scenario_e2e.py
-    $ODOO odoo-bin db -c /etc/odoo/odoo18.conf.save --data-dir=/tmp/claude-1000/lmmanual drop lm_manual_e2e
+    $ODOO odoo-bin db -c /etc/odoo/odoo18.conf.save --data-dir=/tmp/lmmanual drop lm_manual_e2e
 
 (never on ``lm_manual``).  Setup = part1_config.py of the demo driver (accounts, journals, settings, tiers,
 platform zones, terms, provider), executed through the driver with LM_MANUAL_PARTS=1; then the clock is moved to

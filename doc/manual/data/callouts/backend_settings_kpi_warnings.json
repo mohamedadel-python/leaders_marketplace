@@ -1,0 +1,24 @@
+{
+ "screen_id": "backend_settings_kpi_warnings",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_kpi_warnings_desktop.png",
+   "width": 1306,
+   "height": 171
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "تمييز معدلات الإلغاء المرتفعة",
+   "selector": ".o_setting_box:has([name='marketplace_kpi_auto_warning'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 79
+   }
+  }
+ ]
+}

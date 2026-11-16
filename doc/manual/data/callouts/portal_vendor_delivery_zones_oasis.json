@@ -1,0 +1,89 @@
+{
+ "screen_id": "portal_vendor_delivery_zones_oasis",
+ "images": {
+  "desktop": {
+   "file": "vendor_owner/portal_vendor_delivery_zones_oasis_desktop.png",
+   "width": 1440,
+   "height": 1214
+  },
+  "mobile": {
+   "file": "vendor_owner/portal_vendor_delivery_zones_oasis_mobile.png",
+   "width": 780,
+   "height": 5498
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قائمة البائع الجانبية",
+   "selector": ".lm-vendor-sidebar",
+   "device": "desktop",
+   "bbox": {
+    "x": 1135,
+    "y": 150,
+    "w": 230,
+    "h": 639
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 90,
+    "w": 1290,
+    "h": 48
+   }
+  },
+  {
+   "n": 3,
+   "label": "جدول المناطق",
+   "selector": "#lm_zones_table",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 497,
+    "w": 1036,
+    "h": 227
+   }
+  },
+  {
+   "n": 1,
+   "label": "قائمة البائع (شريط علوي في الجوال)",
+   "selector": ".lm-vendor-nav",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 296,
+    "w": 720,
+    "h": 108
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 176,
+    "w": 720,
+    "h": 96
+   }
+  },
+  {
+   "n": 3,
+   "label": "جدول المناطق",
+   "selector": "#lm_zones_table",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1789,
+    "w": 720,
+    "h": 1774
+   }
+  }
+ ]
+}

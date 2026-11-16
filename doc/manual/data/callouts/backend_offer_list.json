@@ -1,0 +1,96 @@
+{
+ "screen_id": "backend_offer_list",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_offer_list_desktop.png",
+   "width": 1440,
+   "height": 1427
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "المنتج",
+   "selector": "th[data-name='product_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1235,
+    "y": 106,
+    "w": 165,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1146,
+    "y": 106,
+    "w": 89,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "السعر",
+   "selector": "th[data-name='price']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1031,
+    "y": 106,
+    "w": 115,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "نوع الخصم",
+   "selector": "th[data-name='discount_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 942,
+    "y": 106,
+    "w": 89,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "نسبة الخصم من السعر الأصلي",
+   "selector": "th[data-name='discount_regular_percent']",
+   "device": "desktop",
+   "bbox": {
+    "x": 622,
+    "y": 106,
+    "w": 102,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "حالة الخصم",
+   "selector": "th[data-name='discount_state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 167,
+    "y": 106,
+    "w": 89,
+    "h": 38
+   }
+  }
+ ]
+}

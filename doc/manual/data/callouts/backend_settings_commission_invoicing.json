@@ -1,0 +1,24 @@
+{
+ "screen_id": "backend_settings_commission_invoicing",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_commission_invoicing_desktop.png",
+   "width": 1306,
+   "height": 202
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "فوترة العمولة",
+   "selector": ".o_setting_box:has([name='marketplace_commission_invoicing'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 110
+   }
+  }
+ ]
+}

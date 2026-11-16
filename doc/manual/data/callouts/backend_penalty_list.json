@@ -1,0 +1,120 @@
+{
+ "screen_id": "backend_penalty_list",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_penalty_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "زر إنشاء سجل جديد",
+   "selector": ".o_list_button_add",
+   "device": "desktop",
+   "bbox": {
+    "x": 1382,
+    "y": 55,
+    "w": 42,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1108,
+    "y": 106,
+    "w": 292,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "المستوى",
+   "selector": "th[data-name='level']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1003,
+    "y": 106,
+    "w": 105,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "السبب",
+   "selector": "th[data-name='reason']",
+   "device": "desktop",
+   "bbox": {
+    "x": 442,
+    "y": 106,
+    "w": 561,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "تاريخ البدء",
+   "selector": "th[data-name='date_start']",
+   "device": "desktop",
+   "bbox": {
+    "x": 337,
+    "y": 106,
+    "w": 105,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "تاريخ الانتهاء",
+   "selector": "th[data-name='date_end']",
+   "device": "desktop",
+   "bbox": {
+    "x": 232,
+    "y": 106,
+    "w": 105,
+    "h": 38
+   }
+  },
+  {
+   "n": 8,
+   "label": "غرامة",
+   "selector": "th[data-name='amount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 117,
+    "y": 106,
+    "w": 114,
+    "h": 38
+   }
+  },
+  {
+   "n": 9,
+   "label": "الحالة",
+   "selector": "th[data-name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 106,
+    "w": 117,
+    "h": 38
+   }
+  }
+ ]
+}

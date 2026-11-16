@@ -1,0 +1,48 @@
+{
+ "screen_id": "backend_settings_product_questions",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_product_questions_desktop.png",
+   "width": 1306,
+   "height": 259
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "أسئلة وأجوبة المنتجات",
+   "selector": ".o_setting_box:has([name='marketplace_product_questions_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 167
+   }
+  },
+  {
+   "n": 2,
+   "label": "مراجعة الإجابات قبل النشر",
+   "selector": ".o_setting_box:has([name='marketplace_product_questions_moderation'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 167
+   }
+  },
+  {
+   "n": 3,
+   "label": "الأسئلة لكل عميل في اليوم",
+   "selector": ".o_setting_box:has([name='marketplace_product_questions_daily_limit'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 167
+   }
+  }
+ ]
+}

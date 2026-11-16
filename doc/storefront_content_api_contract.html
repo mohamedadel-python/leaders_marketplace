@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storefront Content API Contract</title>
+<style>
+:root {
+  --bg: #f7f5ef; --panel: #ffffff; --ink: #191917; --muted: #6a695f; --line: #e3e0d5; --soft: #f1eee4;
+  --accent: #c2410c; --accent-ink: #ffffff; --code-bg: #f3f0e6;
+  --ok: #15803d; --ok-bg: #e4f4e8; --warn: #92600a; --warn-bg: #fcf0d6; --err: #b91c1c; --err-bg: #fbe6e6; --info: #1d4ed8; --info-bg: #e5edfd;
+  --k: #9a3412; --s: #166534; --n: #1d4ed8; --b: #7c3aed;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131311; --panel: #1c1c19; --ink: #efeee7; --muted: #a2a196; --line: #33322c; --soft: #242421;
+    --accent: #fb923c; --accent-ink: #1a1208; --code-bg: #232320;
+    --ok: #6ee79a; --ok-bg: #153020; --warn: #f5c451; --warn-bg: #33290f; --err: #fca5a5; --err-bg: #3a1919; --info: #93b4ff; --info-bg: #182340;
+    --k: #fdba74; --s: #86efac; --n: #93c5fd; --b: #c4b5fd;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+a { color: var(--accent); }
+.layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 36px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+nav { position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 64px); overflow: auto; padding: 24px 0; }
+nav h2 { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+nav a { display: block; color: var(--muted); text-decoration: none; padding: 3px 0 3px 10px; border-left: 2px solid transparent; font-size: 14px; }
+nav a:hover, nav a.on { color: var(--ink); border-left-color: var(--accent); }
+nav a.sub { padding-left: 22px; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; }
+main { padding: 30px 0 90px; min-width: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 { font-size: 36px; line-height: 1.12; margin: 6px 0 12px; letter-spacing: -.01em; }
+h2.section { font-size: 24px; margin: 54px 0 10px; }
+h3 { font-size: 16px; margin: 24px 0 6px; }
+p { margin: 9px 0; }
+.lede { color: var(--muted); max-width: 70ch; font-size: 16px; }
+.pill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-weight: 600; font-size: 12.5px; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); } .pill.err { color: var(--err); background: var(--err-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); } .pill.info { color: var(--info); background: var(--info-bg); }
+.callout { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px; overflow-x: auto; font-size: 12.8px; line-height: 1.55; margin: 8px 0 14px; }
+.tw { overflow-x: auto; margin: 10px 0 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th { text-align: left; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.method { color: var(--accent); font-weight: 700; font-size: 12.5px; letter-spacing: .04em; }
+.tag { font-size: 10.5px; padding: 1px 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-weight: 600; white-space: nowrap; }
+
+/* sticky playground dock */
+.dock { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.dock-in { max-width: 1200px; margin: 0 auto; padding: 8px 20px; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--panel); }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 5px 13px; font: 600 12.5px inherit; font-family: inherit; cursor: pointer; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+.dock input.base { width: 250px; max-width: 100%; }
+input, select, textarea { font: 13px/1.4 "IBM Plex Mono", ui-monospace, monospace; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 100%; }
+input:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); white-space: nowrap; }
+.chip b { color: var(--ink); font-weight: 600; }
+.chip.live { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.live .dot { background: var(--ok); animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+.dock .sp { flex: 1; }
+.mini { font: 600 12px inherit; font-family: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.mini:hover { color: var(--ink); border-color: var(--accent); }
+.drawer { max-width: 1200px; margin: 0 auto; padding: 0 20px 10px; display: none; }
+.drawer.open { display: block; }
+.drawer .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 12.5px; }
+.box h4 { margin: 0 0 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.box pre { margin: 0; border: 0; padding: 0; background: transparent; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+
+/* endpoint cards */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; margin: 22px 0; overflow: hidden; scroll-margin-top: 70px; }
+.card-h { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px 22px 4px; }
+.mpill { background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 6px; letter-spacing: .05em; }
+.path { font-size: 19px; font-weight: 700; }
+.what { color: var(--muted); }
+.auth { margin-left: auto; font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.card-b { padding: 4px 22px 18px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 14px; background: var(--soft); }
+.tabs button { border: 0; background: transparent; color: var(--muted); padding: 10px 16px; font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+.pane { display: none; padding: 16px 22px 22px; }
+.pane.on { display: block; }
+.vars { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.vars button { font: 600 12.5px "IBM Plex Mono", ui-monospace, monospace; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 5px 11px; cursor: pointer; }
+.vars button.on { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+.vars .s2 { color: var(--ok); } .vars .s4 { color: var(--warn); } .vars .s5 { color: var(--err); }
+.http { background: #14130f; color: #ece9dc; border-radius: 12px; padding: 14px 16px; font-size: 12.8px; line-height: 1.6; overflow-x: auto; margin: 0; border: 0; position: relative; }
+@media (prefers-color-scheme: dark) { .http { background: #0e0e0c; } }
+.http .sl { font-weight: 700; } .http .sl.c2 { color: #86efac; } .http .sl.c4 { color: #fcd34d; } .http .sl.c5 { color: #fca5a5; }
+.http .hn { color: #93c5fd; } .http .ck { color: #fdba74; } .http .dim { color: #8d8a7c; }
+.http .jk { color: #fdba74; } .http .js { color: #86efac; } .http .jn { color: #93c5fd; } .http .jb { color: #c4b5fd; }
+.copyb { position: absolute; top: 8px; right: 8px; background: #2a2923; color: #cfcbb9; border: 1px solid #3b3a32; border-radius: 6px; font: 600 11px inherit; font-family: inherit; padding: 3px 9px; cursor: pointer; }
+.note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.jwt { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.jwt .box pre { font-size: 12px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 14px; }
+.form label { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.form .chk { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
+.form .chk input { width: auto; }
+.form .hint { font-size: 11.5px; color: var(--muted); margin-top: 3px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.btn { font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-radius: 9px; padding: 8px 18px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.res { margin-top: 14px; }
+.res .meta { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 12.5px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.ec { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.3px; padding: 3px 10px; border-radius: 6px; color: var(--warn); background: var(--warn-bg); }
+.ec.a { color: var(--err); background: var(--err-bg); }
+.flows { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px 30px; }
+ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 8px 0; }
+ol.steps li { counter-increment: s; position: relative; padding-left: 36px; margin: 8px 0; }
+ol.steps li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); color: var(--accent); font-size: 12px; display: grid; place-items: center; background: var(--panel); }
+.toast { position: fixed; right: 18px; bottom: 18px; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 12px 16px; box-shadow: 0 8px 28px rgba(0,0,0,.18); max-width: 320px; display: none; font-size: 13.5px; }
+.toast.show { display: block; }
+.toast .big { font: 700 26px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 6px; margin: 4px 0; }
+
+.step { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); margin-top: 8px; }
+.col { padding: 14px 20px 18px; min-width: 0; }
+.col + .col { border-top: 1px solid var(--line); background: color-mix(in srgb, var(--soft) 55%, transparent); }
+.col > h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.col .vars { margin-bottom: 10px; }
+.http { max-height: 520px; overflow: auto; }
+.tryd { border-top: 1px solid var(--line); padding: 4px 22px 18px; }
+.tryd > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 12px 0; }
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; gap: 0; }
+  nav { position: static; max-height: none; padding-bottom: 0; }
+  .auth { margin-left: 0; }
+}
+
+.pane .tw { margin-top: 4px; }
+textarea { resize: vertical; }
+.dock .seg { margin-left: 4px; }
+main p code, main li code { overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+
+<div class="dock">
+  <div class="dock-in">
+    <input id="base" class="base" value="https://odooapp.mdarj.org" autocomplete="off" aria-label="API base URL">
+    <span class="chip" id="sessChip"><span class="dot"></span><span id="sessTxt">no session</span></span>
+    <button class="mini" id="demoBtn" type="button">Sign in as demo user</button>
+    <button class="mini" id="outBtn" type="button">Forget token</button>
+    <span class="seg" id="langSeg" aria-label="Accept-Language"><button type="button" data-l="ar" class="on">ar</button><button type="button" data-l="en">en</button></span>
+    <span class="sp"></span>
+    <span class="chip">Bearer token: <b id="tokTxt">none</b></span>
+  </div>
+</div>
+
+<div class="layout">
+<nav aria-label="Contents">
+  <h2>Contents</h2>
+  <a href="#summary">Summary</a>
+  <a href="#conventions">Conventions</a>
+  <a href="#listings">Equipment listings</a>
+  <a class="sub" href="#listing_create">POST /equipment-listings</a>
+  <a href="#content">Site content</a>
+  <a class="sub" href="#site_settings">GET /site-settings</a>
+  <a class="sub" href="#site_page">GET /pages/:slug</a>
+  <a class="sub" href="#company_story">GET /company-story</a>
+  <a class="sub" href="#testimonials">GET /testimonials</a>
+  <a href="#account">Account extras</a>
+  <a class="sub" href="#avatar">/account/avatar</a>
+  <a class="sub" href="#wishlist_get">GET /wishlist</a>
+  <a class="sub" href="#wishlist_item">/wishlist/:productId</a>
+  <a class="sub" href="#auth_google">POST /auth/google</a>
+  <a href="#arabic">Errors in Arabic</a>
+  <a href="#specs">Specs in Arabic</a>
+  <a href="#admin">Managed in Odoo</a>
+  <a href="#decisions">Open points</a>
+  <a href="#verify">How to verify</a>
+</nav>
+
+<main>
+<div class="eyebrow">Spark Fu · Frontend ↔ Backend</div>
+<h1>Storefront content API contract: listings, site content and account extras</h1>
+<p class="lede">The backend answer to <em>What the frontend needs from the team lead</em> (3 November). Every endpoint of its section 3 is live, with the shapes that document asked for. Every response below was captured from a running backend. The <strong>Try it</strong> tabs call a live server: set the base URL and the language in the bar above.</p>
+<span class="pill ok">Implemented by backend · live on odooapp.mdarj.org · 4 November 2026</span>
+<p class="note">Companion to <a href="storefront_api_contract.html">the storefront contract</a>, <a href="auth_api_contract.html">the auth contract</a> and <a href="services_api_contract.html">the services contract</a>. Nothing existing changed shape: the new endpoints below are additions, and the existing routes only answer their messages in Arabic when asked.</p>
+
+<h2 class="section" id="summary">Summary</h2><div class="tw"><table><thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Purpose</th><th></th></tr></thead><tbody><tr><td><span class="method">POST</span></td><td><span class="mono"><a href="#listing_create">/equipment-listings</a></span></td><td>no auth; Bearer optional</td><td>List your equipment form (3.1)</td><td><span class="tag">new</span></td></tr><tr><td><span class="method">GET</span></td><td><span class="mono"><a href="#site_settings">/site-settings</a></span></td><td>no auth</td><td>Company details: footer, contact page (3.2)</td><td><span class="tag">new</span></td></tr><tr><td><span class="method">GET</span></td><td><span class="mono"><a href="#site_page">/pages/:slug</a></span></td><td>no auth</td><td>Terms, privacy and about pages (3.2)</td><td><span class="tag">new</span></td></tr><tr><td><span class="method">GET</span></td><td><span class="mono"><a href="#company_story">/company-story</a></span></td><td>no auth</td><td>Company film of the landing page (3.3)</td><td><span class="tag">new</span></td></tr><tr><td><span class="method">GET</span></td><td><span class="mono"><a href="#testimonials">/testimonials</a></span></td><td>no auth</td><td>Customer quotes and videos (3.3)</td><td><span class="tag">new</span></td></tr><tr><td><span class="method">POST · DELETE</span></td><td><span class="mono"><a href="#avatar">/account/avatar</a></span></td><td>Bearer</td><td>Profile photo (3.8)</td><td><span class="tag">new</span></td></tr><tr><td><span class="method">GET</span></td><td><span class="mono"><a href="#wishlist_get">/wishlist</a></span></td><td>Bearer</td><td>The wishlist (3.8)</td><td><span class="tag">new</span></td></tr><tr><td><span class="method">PUT · DELETE</span></td><td><span class="mono"><a href="#wishlist_item">/wishlist/:productId</a></span></td><td>Bearer</td><td>Add or remove one product (3.8)</td><td><span class="tag">new</span></td></tr><tr><td><span class="method">POST</span></td><td><span class="mono"><a href="#auth_google">/auth/google</a></span></td><td>no auth</td><td>Sign in with Google (3.8)</td><td><span class="tag">new</span></td></tr><tr><td><span class="method">any</span></td><td><span class="mono"><a href="#arabic">13 existing routes</a></span></td><td>as before</td><td>Error messages in Arabic (3.4)</td><td><span class="tag">changed</span></td></tr><tr><td><span class="method">GET</span></td><td><span class="mono"><a href="#specs">/products, /products/:slug</a></span></td><td>no auth</td><td>Spec values in Arabic (3.5)</td><td><span class="tag">changed</span></td></tr></tbody></table></div><p>Paths are relative to <code>NEXT_PUBLIC_API_URL</code>, at the root of the Odoo host.</p>
+
+<h2 class="section" id="conventions">Conventions</h2>
+<ul>
+  <li>Same as the other contracts: JSON, no envelope, <code>camelCase</code>, optional fields are <strong>omitted</strong> when unset, errors are <code>{ code, message, fields? }</code>.</li>
+  <li><strong>No cache.</strong> Every endpoint here answers <code>Cache-Control: no-store</code>, the pictures too.</li>
+  <li><strong>Language.</strong> Texts the admin writes (address, legal name, page title and content, testimonial name, role, company and quote) and every error message come in the language of <code>Accept-Language</code>. A text without a translation falls back to English.</li>
+  <li><strong>CORS</strong> as before: <code>localhost:3000</code>, <code>spark-fu.com</code>, <code>new.spark-fu.com</code>.</li>
+  <li><strong>Pictures</strong> (company film poster, testimonial portraits) are absolute URLs on the API host with a <code>unique</code> stamp that changes when the picture changes. Use them as they come.</li>
+</ul>
+<h2 class="section" id="listings">Equipment listings</h2>
+<section class="card" id="listing_create" data-ep="listing_create">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/equipment-listings</span><span class="what">A customer offers a machine for sale or rent</span><span class="auth">no auth; Bearer optional</span></div>
+<div class="card-b"><p>The form of <em>List your equipment</em>. Every field is checked and <strong>every problem is reported in one answer</strong>, in the language of <code>Accept-Language</code>. Nothing is saved on a <code>422</code>. A valid Bearer links the listing to the user; an invalid one counts as a guest, <strong>never <code>401</code></strong>. Each listing gets an <code>SL-</code> reference and a to-do for the sales team in Odoo. <code>locale</code> is kept with the listing; when it is missing or not <code>ar</code>/<code>en</code>, the language of the request is used.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Body</h3><pre>interface EquipmentListingRequest {
+  name: string;           // 2 to 80 characters
+  phone: string;          // E.164, e.g. "+201001234567"
+  intent: "sell" | "rent";
+  equipmentType: string;  // free text, 2 to 120 characters
+  condition: "new" | "used" | "refurbished";
+  quantity: number;       // whole number, 1 or more
+  description?: string;   // up to 1000 characters
+  locale: "ar" | "en";
+}
+// 201 { "reference": "SL-1001" }</pre><h3>Rules</h3><div class="tw"><table><thead><tr><th>Field</th><th>Rule</th><th>Message (en)</th></tr></thead><tbody><tr><td><code>name</code></td><td>required, 2 to 80 characters after trimming</td><td>Name is required. / Name must be 2 to 80 characters.</td></tr><tr><td><code>phone</code></td><td>required, E.164</td><td>Phone is required. / Enter the phone in international format, e.g. +201001234567.</td></tr><tr><td><code>intent</code></td><td><code>sell</code> or <code>rent</code></td><td>Choose sell or rent.</td></tr><tr><td><code>equipmentType</code></td><td>required, 2 to 120 characters</td><td>Required. / Equipment must be 2 to 120 characters.</td></tr><tr><td><code>condition</code></td><td><code>new</code>, <code>used</code> or <code>refurbished</code></td><td>Choose new, used or refurbished.</td></tr><tr><td><code>quantity</code></td><td>whole number, 1 or more</td><td>Quantity must be a whole number, 1 or more.</td></tr><tr><td><code>description</code></td><td>optional, up to 1000 characters</td><td>The description can be at most 1000 characters.</td></tr></tbody></table></div><p class="note">Rate limit: <strong>5 per 10 minutes per IP</strong>, as an anti-spam rule. Listed IPs are exempt. An empty string counts as a missing field.</p></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">201</span> Created</h3><pre>{
+  "reference": "SL-1009"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Empty body, Arabic</h3><pre>{
+  "code": "validation_error",
+  "message": "البيانات غير صحيحة.",
+  "fields": {
+    "name": "الاسم مطلوب.",
+    "phone": "رقم الهاتف مطلوب.",
+    "intent": "اختر بيع أو إيجار.",
+    "equipmentType": "مطلوب.",
+    "condition": "اختر جديد أو مستعمل أو مجدَّد.",
+    "quantity": "يجب أن تكون الكمية رقمًا صحيحًا، 1 أو أكثر."
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Wrong values, English</h3><pre>{
+  "code": "validation_error",
+  "message": "Validation failed.",
+  "fields": {
+    "phone": "Enter the phone in international format, e.g. +201001234567.",
+    "intent": "Choose sell or rent.",
+    "condition": "Choose new, used or refurbished.",
+    "quantity": "Quantity must be a whole number, 1 or more."
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill warn">429</span> Sixth listing within 10 minutes</h3><pre>{
+  "code": "rate_limited",
+  "message": "Too many requests. Wait a moment."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/equipment-listings"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="11">{
+  "name": "Ali Hassan",
+  "phone": "+201001234567",
+  "intent": "sell",
+  "equipmentType": "Perkins 250 kVA generator",
+  "condition": "used",
+  "quantity": 1,
+  "description": "Runs well, 3200 hours, service history available.",
+  "locale": "ar"
+}</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+
+<h2 class="section" id="content">Site content</h2>
+<section class="card" id="site_settings" data-ep="site_settings">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/site-settings</span><span class="what">Company details for the footer and the contact page</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>One set of values for the whole site. <code>address</code> and <code>legalName</code> come in the language of the request. The five required fields are always sent; the three optional ones are omitted when the admin has not entered them.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><pre>interface SiteSettings {
+  phone: string;               // E.164
+  whatsapp: string;            // E.164; the phone when no WhatsApp number is set
+  email: string;
+  address: string;             // in the language of Accept-Language
+  legalName: string;           // in the language of Accept-Language
+  commercialRegister?: string;
+  appStoreUrl?: string;
+  googlePlayUrl?: string;
+}</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Arabic</h3><pre>{
+  "phone": "+201001234567",
+  "whatsapp": "+201009876543",
+  "email": "hello@spark-fu.com",
+  "address": "12 شارع عباس العقاد، مدينة نصر، القاهرة",
+  "legalName": "سباركفو للتجارة ش.ذ.م.م",
+  "commercialRegister": "CR-123456",
+  "googlePlayUrl": "https://play.google.com/store/apps/details?id=com.sparkfu"
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> English</h3><pre>{
+  "phone": "+201001234567",
+  "whatsapp": "+201009876543",
+  "email": "hello@spark-fu.com",
+  "address": "12 Abbas El Akkad St, Nasr City, Cairo",
+  "legalName": "Spark Fu Trading LLC",
+  "commercialRegister": "CR-123456",
+  "googlePlayUrl": "https://play.google.com/store/apps/details?id=com.sparkfu"
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/site-settings"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+
+<section class="card" id="site_page" data-ep="site_page">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/pages/:slug</span><span class="what">Terms, privacy or about</span><span class="auth">no auth</span></div>
+<div class="card-b"><p><code>terms</code>, <code>privacy</code> and <code>about</code> exist. A page answers only once the admin publishes it; before that, or for an unknown slug, it is <code>404 not_found</code>. <code>content</code> is an HTML fragment, already cleaned by Odoo; sanitise it as on the blog. <code>updatedAt</code> is the last edit, ISO 8601 in UTC.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><pre>interface Page {
+  slug: string;        // "terms" | "privacy" | "about"
+  title: string;
+  content: string;     // HTML fragment
+  updatedAt: string;   // "2026-11-04T01:20:39Z"
+}</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Arabic</h3><pre>{
+  "slug": "privacy",
+  "title": "سياسة الخصوصية",
+  "content": "&lt;h2&gt;ما الذي نجمعه&lt;/h2&gt;&lt;p&gt;اسمك ورقم هاتفك وعنوانك، لتوصيل طلباتك.&lt;/p&gt;",
+  "updatedAt": "2026-11-04T01:20:39Z"
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> English</h3><pre>{
+  "slug": "privacy",
+  "title": "Privacy policy",
+  "content": "&lt;h2&gt;ما الذي نجمعه&lt;/h2&gt;&lt;p&gt;اسمك ورقم هاتفك وعنوانك، لتوصيل طلباتك.&lt;/p&gt;",
+  "updatedAt": "2026-11-04T01:20:39Z"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">404</span> Unknown or unpublished, Arabic</h3><pre>{
+  "code": "not_found",
+  "message": "الصفحة غير موجودة."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/pages/privacy"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+
+<section class="card" id="company_story" data-ep="company_story">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/company-story</span><span class="what">The company film of the landing page</span><span class="auth">no auth</span></div>
+<div class="card-b"><p><code>{}</code> until the admin adds the film. A YouTube link is always sent as its <code>youtube-nocookie.com/embed/…</code> URL; an MP4 is an <code>https</code> link the admin enters.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><pre>interface VideoAsset { kind: "youtube" | "file"; url: string; }
+interface CompanyStory { video?: VideoAsset; poster?: string; }</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> With a film and a poster</h3><pre>{
+  "video": {
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+  },
+  "poster": "https://odooapp.mdarj.org/company-story/poster?unique=2026-11-04T01:20:39"
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/company-story"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+
+<section class="card" id="testimonials" data-ep="testimonials">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/testimonials?limit=4</span><span class="what">Customer quotes</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>Published testimonials in the admin's order. A testimonial can only be published once <em>Customer gave permission</em> is ticked in Odoo. <code>limit</code> is 1 to 12, default 4. <code>[]</code> when there are none. Quotes are at most 160 characters in every language.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><pre>interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  company?: string;
+  quote: string;        // up to 160 characters
+  image: string;        // portrait, also shown before play
+  video?: VideoAsset;
+}</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Arabic</h3><pre>[
+  {
+    "id": "15",
+    "name": "كريم مصطفى",
+    "role": "مدير موقع",
+    "quote": "تقرير الفحص أنقذنا من شراء مولد سيئ.",
+    "image": "https://odooapp.mdarj.org/testimonials/15/image?unique=2026-11-04T01:20:39",
+    "company": "دلتا للمقاولات",
+    "video": {
+      "kind": "youtube",
+      "url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+    }
+  },
+  {
+    "id": "16",
+    "name": "منى عادل",
+    "role": "صاحبة شركة",
+    "quote": "وصلت قطع الغيار خلال يومين، أصلية ومغلفة جيدًا.",
+    "image": "https://odooapp.mdarj.org/testimonials/16/image?unique=2026-11-04T01:20:39"
+  }
+]</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> English</h3><pre>[
+  {
+    "id": "15",
+    "name": "Karim Mostafa",
+    "role": "Site manager",
+    "quote": "The inspection report saved us from a bad generator.",
+    "image": "https://odooapp.mdarj.org/testimonials/15/image?unique=2026-11-04T01:20:39",
+    "company": "Delta Contracting",
+    "video": {
+      "kind": "youtube",
+      "url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
+    }
+  },
+  {
+    "id": "16",
+    "name": "Mona Adel",
+    "role": "Owner",
+    "quote": "Spare parts arrived in two days, genuine and well packed.",
+    "image": "https://odooapp.mdarj.org/testimonials/16/image?unique=2026-11-04T01:20:39"
+  }
+]</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/testimonials?limit=4"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+
+<h2 class="section" id="account">Account extras</h2>
+<section class="card" id="avatar" data-ep="avatar">
+<div class="card-h"><span class="mpill mono">POST · DELETE</span><span class="path mono">/account/avatar</span><span class="what">Upload or remove the profile photo</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p><strong>POST</strong>: <code>multipart/form-data</code> with one part named <code>file</code>, JPEG, PNG or WebP, up to 5 MB. The type is read from the file itself, not from its name. <strong>DELETE</strong> removes it. Both answer the usual <code>AccountProfile</code>, with <code>avatar: null</code> after a delete. The same <code>avatar</code> URL appears in <code>SessionResponse.user</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><pre>POST   /account/avatar   multipart, part "file"   → 200 AccountProfile
+DELETE /account/avatar                           → 200 AccountProfile, avatar: null
+// 422 validation_error, fields.file: "Choose a picture file." | "The picture can be at most 5 MB."
+//                                    | "The picture must be a JPEG, PNG or WebP file." </pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Uploaded</h3><pre>{
+  "id": "392",
+  "name": "Demo Buyer",
+  "email": "demo@spark-fu.example",
+  "phone": "+201001234567",
+  "avatar": "https://odooapp.mdarj.org/web/image/res.partner/794/avatar_256?unique=2026-11-04T01:21:16"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Not a picture, Arabic</h3><pre>{
+  "code": "validation_error",
+  "message": "البيانات غير صحيحة.",
+  "fields": {
+    "file": "يجب أن تكون الصورة بصيغة JPEG أو PNG أو WebP."
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> Deleted</h3><pre>{
+  "id": "392",
+  "name": "Demo Buyer",
+  "email": "demo@spark-fu.example",
+  "phone": "+201001234567",
+  "avatar": null
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/account/avatar"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>Picture (part "file")</label><input class="tf" type="file" accept="image/jpeg,image/png,image/webp"></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button><button type="button" class="btn go" data-m="DELETE">Send DELETE</button></div><div class="res"></div></div>
+</section>
+
+<section class="card" id="wishlist_get" data-ep="wishlist_get">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/wishlist</span><span class="what">The signed-in user's wishlist</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p><code>Product[]</code>, the same objects as <code>GET /products</code>, newest first. A product that leaves the shop disappears from the list on its own. The example below shows one of the two items.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><pre>// 200 Product[]   (401 session_expired without a valid Bearer)</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Arabic (first item of 2)</h3><pre>[
+  {
+    "id": "571",
+    "slug": "forklift-3-ton",
+    "brand": "",
+    "model": "",
+    "kind": "equipment",
+    "subcategory": "forklift",
+    "listing": "buy",
+    "inspected": false,
+    "listedAt": "2026-11-04T01:20:39Z",
+    "price": 95000000,
+    "specs": {
+      "power": "3 طن",
+      "condition": "used",
+      "changeInterval": "كل 500 ساعة",
+      "warranty": "12 شهر"
+    }
+  }
+]</pre><h3 style="margin-top:14px"><span class="pill warn">401</span> No Bearer, Arabic</h3><pre>{
+  "code": "session_expired",
+  "message": "انتهت الجلسة. سجّل الدخول مرة أخرى."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/wishlist"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+
+<section class="card" id="wishlist_item" data-ep="wishlist_item">
+<div class="card-h"><span class="mpill mono">PUT · DELETE</span><span class="path mono">/wishlist/:productId</span><span class="what">Add or remove one product</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p><code>productId</code> is the <code>id</code> of a product. Both answer <code>204</code> with no body, and both are idempotent: saving twice or deleting twice is not an error. Saving an unknown product is <code>404 not_found</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><pre>PUT    /wishlist/570   → 204
+DELETE /wishlist/570   → 204</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">204</span> Saved</h3><pre>(empty body)</pre><h3 style="margin-top:14px"><span class="pill warn">404</span> Unknown product, Arabic</h3><pre>{
+  "code": "not_found",
+  "message": "المنتج غير موجود."
+}</pre><h3 style="margin-top:14px"><span class="pill ok">204</span> Removed</h3><pre>(empty body)</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>PUT path</label><input class="tp" value="/wishlist/570"></div></div><div class="row"><button type="button" class="btn go" data-m="PUT">Send PUT</button><button type="button" class="btn go" data-m="DELETE">Send DELETE</button></div><div class="res"></div></div>
+</section>
+
+<section class="card" id="auth_google" data-ep="auth_google">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/auth/google</span><span class="what">Sign in with a Google ID token</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>Send the ID token from Google Identity Services. The backend checks it with Google: audience, issuer and a verified email. It answers exactly like <code>/auth/login</code>: <code>200 SessionResponse</code> and the same cookies. The first sign-in creates the account from the Google name and email; later ones sign in to the same account, whatever the case of the email. <strong>Until the backend enters the Google client ID it answers <code>503 google_disabled</code></strong>, as below.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><pre>// { "idToken": "…", "remember": true }
+// 200 SessionResponse (+ refresh cookie, as /auth/login)
+// 401 invalid_google_token   the token is not valid for our client ID
+// 403 account_disabled       the account exists but is disabled
+// 502 google_unavailable     Google could not be reached
+// 503 google_disabled        no client ID configured yet</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill warn">503</span> Not configured yet, Arabic</h3><pre>{
+  "code": "google_disabled",
+  "message": "تسجيل الدخول بجوجل غير متاح."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/auth/google"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="5">{
+  "idToken": "paste a Google ID token",
+  "remember": true
+}</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+
+<h2 class="section" id="arabic">Error messages in Arabic</h2>
+<p>With <code>Accept-Language: ar</code>, every route of section 3.4 now answers its <code>message</code> and its <code>fields</code> in Arabic: <code>/auth/login</code>, <code>/auth/register</code>, <code>/auth/password/forgot</code>, <code>/auth/password/verify</code>, <code>/auth/password/reset</code>, <code>/cart/items</code>, <code>/products</code>, <code>/products/:slug</code>, <code>/account/profile</code>, <code>/account/password</code>, <code>/account/orders</code>, <code>/orders/:reference</code>, <code>/promo-codes/:code</code>. <strong>Status, <code>code</code> and the keys of <code>fields</code> are unchanged</strong>, so nothing in the client's error handling changes. English is unchanged.</p>
+<div class="flows">
+<div><h3><span class="pill warn">401</span> /auth/login, wrong password</h3><pre>{
+  "code": "invalid_credentials",
+  "message": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+}</pre></div>
+<div><h3><span class="pill warn">422</span> /auth/register, every field wrong</h3><pre>{
+  "code": "validation_error",
+  "message": "البيانات غير صحيحة.",
+  "fields": {
+    "name": "يجب أن يكون الاسم من 2 إلى 80 حرفًا.",
+    "email": "البريد الإلكتروني غير صحيح.",
+    "phone": "أدخل الهاتف بالصيغة الدولية، مثل +201001234567.",
+    "password": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل وتحتوي على حرف كبير ورقم."
+  }
+}</pre></div>
+<div><h3><span class="pill warn">404</span> /products/:slug, unknown</h3><pre>{
+  "code": "not_found",
+  "message": "المنتج غير موجود."
+}</pre></div>
+<div><h3><span class="pill warn">401</span> /account/profile, no session</h3><pre>{
+  "code": "session_expired",
+  "message": "انتهت الجلسة. سجّل الدخول مرة أخرى."
+}</pre></div>
+</div>
+<h2 class="section" id="specs">Spec values in Arabic</h2>
+<p>On the Arabic site, three values of <code>specs</code> now come in Arabic. The keys and the rest of the product are unchanged; kVA, kW, brand and model names stay as they are.</p><div class="tw"><table><thead><tr><th>Key</th><th>English</th><th>Arabic</th></tr></thead><tbody><tr><td><code>warranty</code></td><td>12 months</td><td>12 شهر</td></tr><tr><td><code>power</code></td><td>3 ton</td><td>3 طن</td></tr><tr><td><code>changeInterval</code></td><td>every 500 h</td><td>كل 500 ساعة</td></tr></tbody></table></div><p class="note">Captured from <code>GET /products/forklift-3-ton</code> on the test backend. Warranties of 3 to 10 months read "أشهر", the others "شهر".</p>
+<h2 class="section" id="admin">Managed in Odoo</h2>
+<ul>
+  <li><strong>Equipment listings</strong>: Marketplace › Operations › Equipment Listings. Users in the <em>Equipment Listing Sales</em> group get a to-do for each new one.</li>
+  <li><strong>Site settings and company film</strong>: Marketplace › Configuration › Storefront › Site Settings (Arabic and English for the address and legal name).</li>
+  <li><strong>Pages</strong>: Marketplace › Configuration › Storefront › Pages. Write the text in both languages, then tick <em>Published</em>.</li>
+  <li><strong>Testimonials</strong>: Marketplace › Configuration › Storefront › Testimonials. <em>Published</em> needs <em>Customer gave permission</em>.</li>
+</ul>
+
+<h2 class="section" id="decisions">Open points</h2>
+<ul>
+  <li><strong>Content.</strong> The live server has no site settings, pages, film or testimonials entered yet. Until then <code>/pages/:slug</code> answers 404, <code>/company-story</code> <code>{}</code> and <code>/testimonials</code> <code>[]</code>. Do not show <code>/site-settings</code> until we confirm the company details are entered.</li>
+  <li><strong>Google sign-in.</strong> It answers <code>503 google_disabled</code> until we enter the client ID. We will send you the same client ID for the browser.</li>
+  <li><strong>Listings in the account.</strong> <code>GET /account/orders</code> has no fourth kind, so its answer stays as it is. Tell us if signed-in customers should see their listings.</li>
+  <li><strong>Rate limit.</strong> Send us the IPs of the build server, the development server, the production website server and each developer, and we will exempt them.</li>
+</ul>
+
+<h2 class="section" id="verify">How to verify</h2>
+<pre># Nothing cached: every line prints Cache-Control: no-store
+for p in /site-settings /company-story /testimonials /pages/privacy; do
+  curl -s -D - -o /dev/null "https://odooapp.mdarj.org$p" | grep -i '^cache-control'
+done
+
+# Equipment listing: an empty body is refused in Arabic, and nothing is saved
+curl -s -X POST https://odooapp.mdarj.org/equipment-listings \
+  -H "Content-Type: application/json" -H "Accept-Language: ar" -d '{}'
+
+# Error language: 401 with an Arabic message
+curl -s -X POST https://odooapp.mdarj.org/auth/login \
+  -H "Content-Type: application/json" -H "Accept-Language: ar" -d '{"email":"x@x.io","password":"x"}'</pre>
+</main>
+</div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var base = $('#base'), token = '';
+  try { token = sessionStorage.getItem('sf_token') || ''; base.value = sessionStorage.getItem('sf_base') || base.value; } catch (e) {}
+  function chip() {
+    $('#tokTxt').textContent = token ? token.slice(0, 14) + '…' : 'none';
+    $('#sessTxt').textContent = token ? 'token set' : 'no session';
+    $('#sessChip').classList.toggle('live', !!token);
+  }
+  function save() { try { sessionStorage.setItem('sf_token', token); sessionStorage.setItem('sf_base', base.value); } catch (e) {} }
+  base.addEventListener('change', save);
+  $('#demoBtn').onclick = function () {
+    fetch(base.value + '/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'demo@spark-fu.example', password: 'Secret123', remember: true }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j.accessToken) { token = j.accessToken; save(); chip(); } else alert(JSON.stringify(j)); })
+      .catch(function (e) { alert('Could not reach ' + base.value + ': ' + e.message); });
+  };
+  $('#outBtn').onclick = function () { token = ''; save(); chip(); };
+  var lang = 'ar';
+  try { lang = sessionStorage.getItem('sf_lang') || 'ar'; } catch (e) {}
+  document.querySelectorAll('#langSeg button').forEach(function (b) {
+    b.classList.toggle('on', b.dataset.l === lang);
+    b.onclick = function () { lang = b.dataset.l; try { sessionStorage.setItem('sf_lang', lang); } catch (e) {}
+      document.querySelectorAll('#langSeg button').forEach(function (x) { x.classList.toggle('on', x === b); }); };
+  });
+  chip();
+  document.querySelectorAll('.card').forEach(function (card) {
+    card.querySelectorAll('.tabs button').forEach(function (b) {
+      b.onclick = function () {
+        card.querySelectorAll('.tabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
+        card.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.dataset.p === b.dataset.t); });
+      };
+    });
+    card.querySelectorAll('.go').forEach(function (go) { go.onclick = function () {
+      var out = card.querySelector('.res'), body = card.querySelector('.tb'), file = card.querySelector('.tf');
+      var opts = { method: go.dataset.m, credentials: 'include', headers: { 'Accept-Language': lang } };
+      if (token) opts.headers.Authorization = 'Bearer ' + token;
+      if (body && go.dataset.m !== 'GET' && go.dataset.m !== 'DELETE') { opts.headers['Content-Type'] = 'application/json'; opts.body = body.value; }
+      if (file && go.dataset.m === 'POST') { var fd = new FormData(); if (file.files[0]) { fd.append('file', file.files[0]); } opts.body = fd; }
+      go.disabled = true; out.innerHTML = '';
+      var t0 = performance.now();
+      fetch(base.value + card.querySelector('.tp').value, opts).then(function (r) {
+        return r.text().then(function (t) {
+          var pretty = t; try { pretty = JSON.stringify(JSON.parse(t), null, 2); } catch (e) {}
+          var cls = r.status < 300 ? 'ok' : (r.status < 500 ? 'warn' : 'err');
+          out.innerHTML = '<div class="meta"><span class="pill ' + cls + '">' + r.status + '</span><span>' + Math.round(performance.now() - t0) + ' ms</span></div><pre></pre>';
+          out.querySelector('pre').textContent = pretty || '(empty body)';
+        });
+      }).catch(function (e) { out.innerHTML = '<p class="note">Request failed: ' + e.message + ' (is the base URL reachable, and its origin allowed by CORS?)</p>'; })
+        .then(function () { go.disabled = false; });
+    }; });
+  });
+})();
+</script>
+</body>
+</html>

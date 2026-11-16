@@ -1,0 +1,84 @@
+{
+ "screen_id": "backend_settings_returns_center",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_returns_center_desktop.png",
+   "width": 1306,
+   "height": 367
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "مهلة المرتجع (أيام)",
+   "selector": ".o_setting_box:has([name='marketplace_return_window_days'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 170
+   }
+  },
+  {
+   "n": 2,
+   "label": "مركز المرتجعات والنزاعات",
+   "selector": ".o_setting_box:has([name='marketplace_returns_center_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 170
+   }
+  },
+  {
+   "n": 3,
+   "label": "رسوم شحن الإرجاع",
+   "selector": ".o_setting_box:has([name='marketplace_return_shipping_fee'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 170
+   }
+  },
+  {
+   "n": 4,
+   "label": "نافذة موعد الاستلام من العميل (بالأيام)",
+   "selector": ".o_setting_box:has([name='marketplace_return_pickup_max_days'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 170
+   }
+  },
+  {
+   "n": 5,
+   "label": "استجابة البائع للمرتجع (بالأيام)",
+   "selector": ".o_setting_box:has([name='marketplace_return_vendor_sla_days'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 260,
+    "w": 472,
+    "h": 89
+   }
+  },
+  {
+   "n": 6,
+   "label": "اتفاقية مستوى الخدمة للنزاع (بالأيام)",
+   "selector": ".o_setting_box:has([name='marketplace_dispute_sla_days'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 260,
+    "w": 472,
+    "h": 89
+   }
+  }
+ ]
+}

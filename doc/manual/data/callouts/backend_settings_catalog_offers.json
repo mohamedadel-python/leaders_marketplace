@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_settings_catalog_offers",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_catalog_offers_desktop.png",
+   "width": 1306,
+   "height": 181
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "عروض الكتالوج والمتاجر والتقييمات",
+   "selector": ".o_setting_box:has([name='marketplace_catalog_offers_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 89
+   }
+  },
+  {
+   "n": 2,
+   "label": "التقييمات اللازمة لترتيب البائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_rating_min_count'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 89
+   }
+  }
+ ]
+}

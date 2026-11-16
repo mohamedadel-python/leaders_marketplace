@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_fbl_inbound_list",
+ "images": {
+  "desktop": {
+   "file": "warehouse/backend_fbl_inbound_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "الاسم",
+   "selector": "th[data-name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1135,
+    "y": 106,
+    "w": 265,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 704,
+    "y": 106,
+    "w": 431,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "الموقع",
+   "selector": "th[data-name='location_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 182,
+    "y": 106,
+    "w": 522,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "الحالة",
+   "selector": "th[data-name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 106,
+    "w": 182,
+    "h": 38
+   }
+  }
+ ]
+}

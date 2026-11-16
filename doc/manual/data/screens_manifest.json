@@ -15,8 +15,8 @@
   "counts": {
    "screens": 353,
    "by_role": {
-    "manager": 70,
-    "reviewer": 56,
+    "manager": 84,
+    "reviewer": 42,
     "finance": 26,
     "warehouse": 5,
     "admin": 29,
@@ -378,7 +378,8 @@
      "op": "click",
      "selector": ".o_menu_sections .dropdown-toggle >> nth=0",
      "safe": true,
-     "wait": 700
+     "wait": 700,
+     "optional": true
     }
    ],
    "capture": {
@@ -411,7 +412,8 @@
      "op": "click",
      "selector": ".o_menu_sections .dropdown-toggle >> nth=0",
      "safe": true,
-     "wait": 700
+     "wait": 700,
+     "optional": true
     }
    ],
    "capture": {
@@ -444,7 +446,8 @@
      "op": "click",
      "selector": ".o_menu_sections .dropdown-toggle >> nth=0",
      "safe": true,
-     "wait": 700
+     "wait": 700,
+     "optional": true
     }
    ],
    "capture": {
@@ -5166,12 +5169,7 @@
     },
     {
      "op": "click",
-     "selector": ".o_notebook .tab-pane.active .o_data_row >> nth=0",
-     "safe": true
-    },
-    {
-     "op": "click",
-     "selector": ".modal button[name='action_open_ship_wizard']",
+     "selector": ".o_notebook .tab-pane.active button[name='action_open_ship_wizard'] >> nth=0",
      "dialog": true,
      "wait": 1200
     }
@@ -5759,7 +5757,7 @@
   },
   {
    "id": "backend_return_form_requested",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "نموذج المرتجع (requested)",
    "state_note": "طلب مرتجع جديد ينتظر قرار البائع",
@@ -5855,7 +5853,7 @@
   },
   {
    "id": "backend_return_form_approved",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "نموذج المرتجع (approved)",
    "state_note": "مرتجع معتمد بانتظار استلام البضاعة",
@@ -5950,7 +5948,7 @@
   },
   {
    "id": "backend_return_form_rejected",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "نموذج المرتجع (rejected)",
    "state_note": "مرتجع مرفوض من البائع: يمكن للعميل التصعيد",
@@ -6046,7 +6044,7 @@
   },
   {
    "id": "backend_return_form_escalated",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "نموذج المرتجع (escalated)",
    "state_note": "مرتجع مُصعَّد لقرار السوق",
@@ -6142,7 +6140,7 @@
   },
   {
    "id": "backend_return_form_received",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "نموذج المرتجع (received)",
    "state_note": "بضاعة مستلمة",
@@ -6234,7 +6232,7 @@
   },
   {
    "id": "backend_return_form_refunded",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "نموذج المرتجع (refunded)",
    "state_note": "مرتجع تم استرداد قيمته (إشعار دائن وقيد استرداد)",
@@ -6326,7 +6324,7 @@
   },
   {
    "id": "backend_return_form_exchanged",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "نموذج المرتجع (exchanged)",
    "state_note": "مرتجع تم استبداله بشحنة بديلة",
@@ -6418,7 +6416,7 @@
   },
   {
    "id": "backend_return_form_closed",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "نموذج المرتجع (closed)",
    "state_note": "مرتجع مغلق (مرفوض نهائياً)",
@@ -6510,7 +6508,7 @@
   },
   {
    "id": "backend_return_form_cancelled",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "نموذج المرتجع (cancelled)",
    "state_note": "مرتجع ملغى",
@@ -6602,7 +6600,7 @@
   },
   {
    "id": "backend_return_form_tab_lines",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "تبويب البنود في المرتجع",
    "state_note": "تبويب البنود",
@@ -6668,7 +6666,7 @@
   },
   {
    "id": "backend_return_form_tab_photos",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "تبويب الصور في المرتجع",
    "state_note": "تبويب الصور",
@@ -6739,7 +6737,7 @@
   },
   {
    "id": "backend_return_form_tab_replacements",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "تبويب الشحنات البديلة في المرتجع",
    "state_note": "تبويب الشحنات البديلة",
@@ -6800,7 +6798,7 @@
   },
   {
    "id": "backend_return_form_tab_pickings",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "تبويب الاستلام في المرتجع",
    "state_note": "تبويب الاستلام",
@@ -6866,7 +6864,7 @@
   },
   {
    "id": "backend_return_form_tab_accounting",
-   "role": "reviewer",
+   "role": "manager",
    "kind": "backend",
    "title_ar": "تبويب المحاسبة في المرتجع",
    "state_note": "تبويب المحاسبة",
@@ -21669,7 +21667,7 @@
       [
        "partner_id.email",
        "=",
-       "customer2@customer.demo"
+       "customer1@customer.demo"
       ],
       [
        "state",
@@ -21687,11 +21685,12 @@
      ]
     }
    },
-   "login": "customer2@customer.demo",
+   "login": "customer1@customer.demo",
    "setup": [
     {
      "op": "scroll_to",
-     "selector": "#lm_checkout_cancel_form"
+     "selector": "#lm_checkout_cancel_form",
+     "optional": true
     }
    ],
    "markers": [
@@ -25064,21 +25063,16 @@
     "path": "/shop/payment"
    },
    "login": "customer2@customer.demo",
-   "setup": [
-    {
-     "op": "scroll_to",
-     "selector": "#lm_cod_box",
-     "optional": true
-    }
-   ],
    "markers": [
     {
      "label": "صندوق الدفع عند الاستلام",
-     "selector": "#lm_cod_box"
+     "selector": "#lm_cod_box",
+     "optional": true
     },
     {
      "label": "رقم الهاتف",
-     "selector": "#lm_cod_phone"
+     "selector": "#lm_cod_phone",
+     "optional": true
     },
     {
      "label": "رمز التحقق",

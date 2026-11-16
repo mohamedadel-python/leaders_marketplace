@@ -1,0 +1,16 @@
+{
+ "screen_id": "web_payment_step",
+ "images": {
+  "desktop": {
+   "file": "customer/web_payment_step_desktop.png",
+   "width": 1440,
+   "height": 1892
+  },
+  "mobile": {
+   "file": "customer/web_payment_step_mobile.png",
+   "width": 780,
+   "height": 6624
+  }
+ },
+ "markers": []
+}

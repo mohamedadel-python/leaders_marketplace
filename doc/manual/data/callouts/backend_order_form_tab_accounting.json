@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_order_form_tab_accounting",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_order_form_tab_accounting_desktop.png",
+   "width": 1440,
+   "height": 1494
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الحالة",
+   "selector": ".o_form_view .o_field_widget[name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 268,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "المحاسبة",
+   "selector": ".o_notebook .tab-pane.active",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 657,
+    "w": 1358,
+    "h": 198
+   }
+  }
+ ]
+}

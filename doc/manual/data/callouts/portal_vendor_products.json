@@ -1,0 +1,161 @@
+{
+ "screen_id": "portal_vendor_products",
+ "images": {
+  "desktop": {
+   "file": "vendor_owner/portal_vendor_products_desktop.png",
+   "width": 1440,
+   "height": 3079
+  },
+  "mobile": {
+   "file": "vendor_owner/portal_vendor_products_mobile.png",
+   "width": 780,
+   "height": 19322
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قائمة البائع الجانبية",
+   "selector": ".lm-vendor-sidebar",
+   "device": "desktop",
+   "bbox": {
+    "x": 1135,
+    "y": 150,
+    "w": 230,
+    "h": 639
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 90,
+    "w": 1290,
+    "h": 48
+   }
+  },
+  {
+   "n": 3,
+   "label": "جدول منتجاتي وعروضي",
+   "selector": "#lm_products_table",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 594,
+    "w": 1036,
+    "h": 2061
+   }
+  },
+  {
+   "n": 4,
+   "label": "مرشحات الحالة",
+   "selector": "#lm_product_filters",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 542,
+    "w": 1036,
+    "h": 36
+   }
+  },
+  {
+   "n": 5,
+   "label": "زر إضافة منتج",
+   "selector": "a[href='/my/vendor/products/new']",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 150,
+    "w": 108,
+    "h": 44
+   }
+  },
+  {
+   "n": 6,
+   "label": "زر الاستيراد الجماعي",
+   "selector": "a[href='/my/vendor/import']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1142,
+    "y": 245,
+    "w": 216,
+    "h": 40
+   }
+  },
+  {
+   "n": 1,
+   "label": "قائمة البائع (شريط علوي في الجوال)",
+   "selector": ".lm-vendor-nav",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 297,
+    "w": 720,
+    "h": 108
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 177,
+    "w": 720,
+    "h": 96
+   }
+  },
+  {
+   "n": 3,
+   "label": "جدول منتجاتي وعروضي",
+   "selector": "#lm_products_table",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 2317,
+    "w": 720,
+    "h": 15069
+   }
+  },
+  {
+   "n": 4,
+   "label": "مرشحات الحالة",
+   "selector": "#lm_product_filters",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 2125,
+    "w": 720,
+    "h": 160
+   }
+  },
+  {
+   "n": 5,
+   "label": "زر إضافة منتج",
+   "selector": "a[href='/my/vendor/products/new']",
+   "device": "mobile",
+   "bbox": {
+    "x": 258,
+    "y": 633,
+    "w": 217,
+    "h": 88
+   }
+  },
+  {
+   "n": 6,
+   "label": "زر الاستيراد الجماعي",
+   "selector": "a[href='/my/vendor/import']",
+   "device": "mobile",
+   "bbox": {
+    "x": 142,
+    "y": 311,
+    "w": 170,
+    "h": 80
+   }
+  }
+ ]
+}

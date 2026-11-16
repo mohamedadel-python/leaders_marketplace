@@ -1,0 +1,89 @@
+{
+ "screen_id": "portal_customer_order_cancelled",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_order_cancelled_desktop.png",
+   "width": 1440,
+   "height": 1826
+  },
+  "mobile": {
+   "file": "customer/portal_customer_order_cancelled_mobile.png",
+   "width": 780,
+   "height": 5392
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "مسار الطلب",
+   "selector": "#lm_order_timeline",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 259,
+    "w": 1290,
+    "h": 101
+   }
+  },
+  {
+   "n": 2,
+   "label": "بنود الطلب",
+   "selector": "#lm_order_items",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 496,
+    "w": 1290,
+    "h": 191
+   }
+  },
+  {
+   "n": 3,
+   "label": "المجاميع",
+   "selector": "#lm_order_totals",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 702,
+    "w": 1290,
+    "h": 81
+   }
+  },
+  {
+   "n": 1,
+   "label": "مسار الطلب",
+   "selector": "#lm_order_timeline",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 500,
+    "w": 720,
+    "h": 224
+   }
+  },
+  {
+   "n": 2,
+   "label": "بنود الطلب",
+   "selector": "#lm_order_items",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1044,
+    "w": 720,
+    "h": 952
+   }
+  },
+  {
+   "n": 3,
+   "label": "المجاميع",
+   "selector": "#lm_order_totals",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 2028,
+    "w": 720,
+    "h": 163
+   }
+  }
+ ]
+}

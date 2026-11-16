@@ -43,16 +43,19 @@
                     </div>
                     <group>
                         <group string="Business">
+                            <field name="business_type_id" options="{'no_create': True}" readonly="state == 'approved'"/>
                             <field name="store_name" placeholder="Shown to customers" readonly="state == 'approved'"/>
                             <field name="legal_type" readonly="state == 'approved'"/>
                             <field name="legal_name" readonly="state == 'approved'"/>
                             <field name="commercial_registration_number" invisible="legal_type == 'individual'" readonly="state == 'approved'"/>
                             <field name="tax_number" readonly="state == 'approved'"/>
                             <field name="business_activity" placeholder="What the vendor sells" readonly="state == 'approved'"/>
+                            <field name="delivery_method" readonly="state == 'approved'"/>
                             <field name="product_category_ids" widget="many2many_tags" readonly="state == 'approved'"/>
                             <field name="business_email" widget="email" readonly="state == 'approved'"/>
                             <field name="business_phone" widget="phone" readonly="state == 'approved'"/>
                             <field name="street" readonly="state == 'approved'"/>
+                            <field name="state_id" options="{'no_create': True}" readonly="state == 'approved'"/>
                             <field name="city" readonly="state == 'approved'"/>
                             <field name="country_id" readonly="state == 'approved'"/>
                         </group>
@@ -90,6 +93,13 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="Products sheet" name="leaders_products_sheet" invisible="not leaders_products_sheet">
+                            <group>
+                                <field name="leaders_products_sheet" filename="leaders_products_sheet_name"/>
+                                <field name="leaders_products_sheet_name" invisible="1"/>
+                                <field name="leaders_products_import_id"/>
+                            </group>
+                        </page>
                         <page string="Documents" name="documents">
                             <field name="document_ids" readonly="state == 'approved'">
                                 <list editable="bottom" decoration-success="verification_status == 'verified'"
@@ -119,6 +129,7 @@
                                 <group>
                                     <field name="terms_accepted" readonly="state == 'approved'"/>
                                     <field name="seller_agreement_accepted" readonly="state == 'approved'"/>
+                                    <field name="data_confirmed" readonly="state == 'approved'"/>
                                 </group>
                             </group>
                             <group>

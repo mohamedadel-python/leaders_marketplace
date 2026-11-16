@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_settings_ledger_accounts",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_ledger_accounts_desktop.png",
+   "width": 1306,
+   "height": 328
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "حساب الأمانة (مبالغ البائعين المحتجزة)",
+   "selector": ".o_setting_box:has([name='marketplace_escrow_account_id'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 68
+   }
+  },
+  {
+   "n": 2,
+   "label": "حساب إيراد العمولة",
+   "selector": ".o_setting_box:has([name='marketplace_commission_income_account_id'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 68
+   }
+  },
+  {
+   "n": 3,
+   "label": "حساب إيراد رسوم التنفيذ",
+   "selector": ".o_setting_box:has([name='marketplace_fee_income_account_id'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 158,
+    "w": 472,
+    "h": 68
+   }
+  },
+  {
+   "n": 4,
+   "label": "حساب مستحقات البائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_payable_account_id'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 158,
+    "w": 472,
+    "h": 68
+   }
+  },
+  {
+   "n": 5,
+   "label": "يومية السوق",
+   "selector": ".o_setting_box:has([name='marketplace_journal_id'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 242,
+    "w": 472,
+    "h": 68
+   }
+  }
+ ]
+}

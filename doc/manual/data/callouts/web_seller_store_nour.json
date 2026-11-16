@@ -1,0 +1,65 @@
+{
+ "screen_id": "web_seller_store_nour",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_seller_store_nour_desktop.png",
+   "width": 1440,
+   "height": 1440
+  },
+  "mobile": {
+   "file": "visitor/web_seller_store_nour_mobile.png",
+   "width": 780,
+   "height": 3956
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "صفحة المتجر",
+   "selector": "#lm_seller_store, #seller_store_page",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 106,
+    "w": 1320,
+    "h": 926
+   }
+  },
+  {
+   "n": 2,
+   "label": "اسم المتجر وتقييمه",
+   "selector": ".lm-seller-header, #lm_seller_store h1",
+   "device": "desktop",
+   "bbox": {
+    "x": 1192,
+    "y": 122,
+    "w": 173,
+    "h": 37
+   }
+  },
+  {
+   "n": 1,
+   "label": "صفحة المتجر",
+   "selector": "#lm_seller_store, #seller_store_page",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 160,
+    "w": 780,
+    "h": 1972
+   }
+  },
+  {
+   "n": 2,
+   "label": "اسم المتجر وتقييمه",
+   "selector": ".lm-seller-header, #lm_seller_store h1",
+   "device": "mobile",
+   "bbox": {
+    "x": 470,
+    "y": 192,
+    "w": 280,
+    "h": 60
+   }
+  }
+ ]
+}

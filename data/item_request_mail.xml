@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- POST /item-requests: the customer's confirmation, in the language of the form (locale). Sent only when
+         the form has an email. The text is in the template (Arabic or English by request_locale). -->
+    <record id="mail_template_item_request_received" model="mail.template">
+        <field name="name">Storefront: product request received</field>
+        <field name="model_id" ref="leaders_marketplace.model_leaders_customer_request"/>
+        <field name="subject">{{ ('استلمنا طلبك ' + object.name) if object.request_locale == 'ar' else ('We received your product request ' + object.name) }}</field>
+        <field name="email_from">{{ (user.company_id.email_formatted or user.email_formatted) }}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; background-color: #eef2f7;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#eef2f7" style="background-color: #eef2f7; padding: 32px 12px; font-family: Cairo, 'Segoe UI', Tahoma, Arial, sans-serif;">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 560px; background-color: #ffffff; border-radius: 16px; overflow: hidden;">
+    <tr><td align="center" bgcolor="#031c6e" style="background-color: #031c6e; padding: 28px 24px;">
+        <img t-att-src="object.get_base_url() + '/leaders_marketplace/static/src/img/email_logo.png'" width="190" alt="Spark Fu" style="display: block; width: 190px; height: auto; border: 0px;"/>
+    </td></tr>
+    <t t-if="object.request_locale == 'ar'">
+        <tr><td dir="rtl" style="padding: 30px 32px 6px 32px; text-align: right; color: #1f2326;">
+            <p style="margin: 0px 0px 10px 0px; font-size: 21px; font-weight: 800; color: #031c6e;">استلمنا طلبك</p>
+            <p style="margin: 0px; font-size: 15px; line-height: 1.9;">مرحبًا <strong t-out="object.contact_name or ''"/>،<br/>شكرًا لتواصلك مع Spark Fu. استلمنا طلبك لـ <strong t-out="object.title"/>، وسيتواصل معك فريق المبيعات قريبًا.</p>
+        </td></tr>
+        <tr><td align="center" style="padding: 20px 32px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#f3f7fd" style="background-color: #f3f7fd; border: 1px solid #cddcf0; border-radius: 12px; padding: 14px 26px; text-align: center;">
+                <span style="display: block; font-size: 12px; color: #6b7280;">رقم الطلب</span>
+                <strong dir="ltr" style="font-size: 24px; color: #031c6e; letter-spacing: 2px;" t-out="object.name"/>
+            </td></tr></table>
+        </td></tr>
+        <tr><td dir="rtl" style="padding: 0px 32px 28px 32px; text-align: right; font-size: 13px; color: #6b7280;">احتفظ برقم الطلب للمتابعة.</td></tr>
+    </t>
+    <t t-else="">
+        <tr><td dir="ltr" style="padding: 30px 32px 6px 32px; text-align: left; color: #1f2326;">
+            <p style="margin: 0px 0px 10px 0px; font-size: 21px; font-weight: 800; color: #031c6e;">We received your request</p>
+            <p style="margin: 0px; font-size: 15px; line-height: 1.8;">Hello <strong t-out="object.contact_name or ''"/>,<br/>Thank you for contacting Spark Fu. We received your request for <strong t-out="object.title"/>, and our sales team will contact you soon.</p>
+        </td></tr>
+        <tr><td align="center" style="padding: 20px 32px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#f3f7fd" style="background-color: #f3f7fd; border: 1px solid #cddcf0; border-radius: 12px; padding: 14px 26px; text-align: center;">
+                <span style="display: block; font-size: 12px; color: #6b7280;">Request reference</span>
+                <strong style="font-size: 24px; color: #031c6e; letter-spacing: 2px;" t-out="object.name"/>
+            </td></tr></table>
+        </td></tr>
+        <tr><td style="padding: 0px 32px 28px 32px; text-align: left; font-size: 13px; color: #6b7280;">Keep this reference to follow up on your request.</td></tr>
+    </t>
+    <tr><td align="center" bgcolor="#1f2326" style="background-color: #1f2326; padding: 18px 24px; font-size: 12px; color: #cbd5e1;">
+        <a href="https://spark-fu.com" style="color: #6399d0; text-decoration: none; font-weight: 700;">spark-fu.com</a>
+    </td></tr>
+</table>
+</td></tr>
+</table>
+</div>
+        </field>
+    </record>
+</odoo>

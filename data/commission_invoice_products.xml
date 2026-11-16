@@ -23,6 +23,13 @@
         <field name="purchase_ok" eval="False"/>
         <field name="list_price">0.0</field>
     </record>
+    <record id="product_inspection_fee" model="product.product">
+        <field name="name">Inspection Fee</field>
+        <field name="type">service</field>
+        <field name="sale_ok" eval="True"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+    </record>
     <record id="product_penalty" model="product.product">
         <field name="name">Penalty</field>
         <field name="type">service</field>

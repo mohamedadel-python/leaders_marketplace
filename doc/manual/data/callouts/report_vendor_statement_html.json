@@ -1,0 +1,24 @@
+{
+ "screen_id": "report_vendor_statement_html",
+ "images": {
+  "desktop": {
+   "file": "manager/report_vendor_statement_html_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "صفحة التقرير",
+   "selector": ".page",
+   "device": "desktop",
+   "bbox": {
+    "x": 102,
+    "y": 0,
+    "w": 1237,
+    "h": 401
+   }
+  }
+ ]
+}

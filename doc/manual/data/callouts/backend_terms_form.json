@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_terms_form",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_terms_form_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 138,
+    "w": 610,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "الإصدار",
+   "selector": ".o_form_view .o_field_widget[name='version']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 177,
+    "w": 610,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "نشط",
+   "selector": ".o_form_view .o_field_widget[name='active']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1325,
+    "y": 216,
+    "w": 21,
+    "h": 23
+   }
+  },
+  {
+   "n": 4,
+   "label": "العقود الموقّعة",
+   "selector": ".o_form_view .o_field_widget[name='signed_count']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 138,
+    "w": 586,
+    "h": 21
+   }
+  },
+  {
+   "n": 5,
+   "label": "المحتوى",
+   "selector": ".o_form_view .o_field_widget[name='body']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 305,
+    "w": 1358,
+    "h": 279
+   }
+  }
+ ]
+}

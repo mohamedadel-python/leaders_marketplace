@@ -7,6 +7,20 @@
             <xpath expr="//form" position="inside">
                 <app string="Marketplace" name="leaders_marketplace">
                     <block title="Vendor Finance &amp; Returns">
+                        <setting string="Rent margin" help="The platform rents the vendor's machine and re-rents it in its own name: the customer pays the vendor's daily price plus this margin. A subcategory or a machine can override it.">
+                            <field name="marketplace_rent_margin_percent"/>
+                            <div class="mt-2">
+                                <label for="marketplace_rent_margin_min" class="o_light_label"/>
+                                <field name="marketplace_rent_margin_min"/>
+                            </div>
+                        </setting>
+                        <setting string="Inspection that does not match" help="The vendor pays the inspection when it shows the product does not match its listing: deducted from the next settlement, or billed on its own invoice. The reviewer can change the amount and the way for one case.">
+                            <field name="marketplace_inspection_fee_mode" widget="radio"/>
+                            <div class="mt-2">
+                                <label for="marketplace_inspection_fee_amount" class="o_light_label"/>
+                                <field name="marketplace_inspection_fee_amount"/>
+                            </div>
+                        </setting>
                         <setting string="Default Vendor Hold Days">
                             <field name="marketplace_default_hold_days"/>
                         </setting>
@@ -56,44 +70,14 @@
                                 <div class="mt8"><label for="marketplace_vendor_document_max_mb"/> <field name="marketplace_vendor_document_max_mb"/></div>
                             </div>
                         </setting>
+                        <setting string="Approve vendors automatically" help="On: a website application is approved the moment it is sent; the documents are reviewed afterwards. Off: it waits until you approve it in Vendor Applications.">
+                            <field name="marketplace_vendor_instant_activation"/>
+                        </setting>
                         <setting string="Catalog Offers, Storefronts and Ratings" help="Sell existing products, show sellers on the product page, seller storefronts and customer ratings.">
                             <field name="marketplace_catalog_offers_enabled"/>
                             <div class="content-group" invisible="not marketplace_catalog_offers_enabled">
                                 <div class="mt8"><label for="marketplace_vendor_rating_min_count"/> <field name="marketplace_vendor_rating_min_count"/></div>
                             </div>
-                        </setting>
-                        <setting string="Email Notifications" help="Switch off the notifications you do not want the marketplace to send.">
-                            <div><field name="marketplace_notify_vendor_order_confirmed"/></div>
-                            <div><field name="marketplace_notify_vendor_return_requested"/></div>
-                            <div><field name="marketplace_notify_vendor_return_escalated"/></div>
-                            <div><field name="marketplace_notify_vendor_return_decided"/></div>
-                            <div><field name="marketplace_notify_vendor_dispute_opened"/></div>
-                            <div><field name="marketplace_notify_vendor_dispute_escalated"/></div>
-                            <div><field name="marketplace_notify_vendor_dispute_resolved"/></div>
-                            <div><field name="marketplace_notify_vendor_settlement_approved"/></div>
-                            <div><field name="marketplace_notify_vendor_settlement_paid"/></div>
-                            <div><field name="marketplace_notify_vendor_settlement_debt"/></div>
-                            <div><field name="marketplace_notify_vendor_offer_approved"/></div>
-                            <div><field name="marketplace_notify_vendor_offer_rejected"/></div>
-                            <div><field name="marketplace_notify_vendor_product_approved"/></div>
-                            <div><field name="marketplace_notify_vendor_product_rejected"/></div>
-                            <div><field name="marketplace_notify_vendor_application_approved"/></div>
-                            <div><field name="marketplace_notify_vendor_application_rejected"/></div>
-                            <div><field name="marketplace_notify_vendor_penalty_applied"/></div>
-                            <div><field name="marketplace_notify_vendor_penalty_lifted"/></div>
-                            <div><field name="marketplace_notify_customer_order_shipped"/></div>
-                            <div><field name="marketplace_notify_customer_order_delivered"/></div>
-                            <div><field name="marketplace_notify_customer_return_approved"/></div>
-                            <div><field name="marketplace_notify_customer_return_rejected"/></div>
-                            <div><field name="marketplace_notify_customer_return_refunded"/></div>
-                            <div><field name="marketplace_notify_customer_order_cancelled"/></div>
-                            <div><field name="marketplace_notify_customer_order_cancelled_by_customer"/></div>
-                            <div><field name="marketplace_notify_vendor_order_cancelled_by_customer"/></div>
-                            <div><field name="marketplace_notify_vendor_bank_change_approved"/></div>
-                            <div><field name="marketplace_notify_vendor_bank_change_rejected"/></div>
-                            <div><field name="marketplace_notify_vendor_order_late"/></div>
-                            <div><field name="marketplace_notify_vendor_question_asked"/></div>
-                            <div><field name="marketplace_notify_customer_question_answered"/></div>
                         </setting>
                         <setting string="Product Questions &amp; Answers" help="Let logged-in customers ask questions on the product page and sellers with an active offer on that product answer them from the vendor portal. Off: nothing is shown and the pages return 404.">
                             <field name="marketplace_product_questions_enabled"/>
@@ -207,6 +191,77 @@
                         </setting>
                         <setting string="Auto-confirm Delivery After (Days)" help="Only used when the customer confirms deliveries. Zero waits for the customer forever." invisible="marketplace_fbm_delivery_mode != 'customer_confirm'">
                             <field name="marketplace_fbm_auto_confirm_days"/>
+                        </setting>
+                    </block>
+                    <block title="Vendor Email Notifications">
+                        <setting string="Orders" help="Emails about the vendor's orders.">
+                            <div class="d-flex flex-column gap-2 mt-2">
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_order_confirmed"/><label for="marketplace_notify_vendor_order_confirmed" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_order_cancelled_by_customer"/><label for="marketplace_notify_vendor_order_cancelled_by_customer" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_order_late"/><label for="marketplace_notify_vendor_order_late" class="o_light_label mb-0"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Returns &amp; Disputes" help="Emails about returns and disputes on the vendor's orders.">
+                            <div class="d-flex flex-column gap-2 mt-2">
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_return_requested"/><label for="marketplace_notify_vendor_return_requested" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_return_escalated"/><label for="marketplace_notify_vendor_return_escalated" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_return_decided"/><label for="marketplace_notify_vendor_return_decided" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_dispute_opened"/><label for="marketplace_notify_vendor_dispute_opened" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_dispute_escalated"/><label for="marketplace_notify_vendor_dispute_escalated" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_dispute_resolved"/><label for="marketplace_notify_vendor_dispute_resolved" class="o_light_label mb-0"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Finance" help="Emails about settlements and payout account changes.">
+                            <div class="d-flex flex-column gap-2 mt-2">
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_settlement_approved"/><label for="marketplace_notify_vendor_settlement_approved" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_settlement_paid"/><label for="marketplace_notify_vendor_settlement_paid" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_settlement_debt"/><label for="marketplace_notify_vendor_settlement_debt" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_bank_change_approved"/><label for="marketplace_notify_vendor_bank_change_approved" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_bank_change_rejected"/><label for="marketplace_notify_vendor_bank_change_rejected" class="o_light_label mb-0"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Catalog &amp; Application" help="Emails about offers, products and the vendor application.">
+                            <div class="d-flex flex-column gap-2 mt-2">
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_offer_approved"/><label for="marketplace_notify_vendor_offer_approved" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_offer_rejected"/><label for="marketplace_notify_vendor_offer_rejected" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_product_approved"/><label for="marketplace_notify_vendor_product_approved" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_product_rejected"/><label for="marketplace_notify_vendor_product_rejected" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_application_approved"/><label for="marketplace_notify_vendor_application_approved" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_application_rejected"/><label for="marketplace_notify_vendor_application_rejected" class="o_light_label mb-0"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Penalties" help="Emails about penalties applied to or lifted from the vendor.">
+                            <div class="d-flex flex-column gap-2 mt-2">
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_penalty_applied"/><label for="marketplace_notify_vendor_penalty_applied" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_penalty_lifted"/><label for="marketplace_notify_vendor_penalty_lifted" class="o_light_label mb-0"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Product Questions" help="Email when a customer asks a question on the vendor's product.">
+                            <div class="d-flex flex-column gap-2 mt-2">
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_vendor_question_asked"/><label for="marketplace_notify_vendor_question_asked" class="o_light_label mb-0"/></div>
+                            </div>
+                        </setting>
+                    </block>
+                    <block title="Customer Email Notifications">
+                        <setting string="Orders" help="Emails about the customer's orders.">
+                            <div class="d-flex flex-column gap-2 mt-2">
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_customer_order_shipped"/><label for="marketplace_notify_customer_order_shipped" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_customer_order_delivered"/><label for="marketplace_notify_customer_order_delivered" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_customer_order_cancelled"/><label for="marketplace_notify_customer_order_cancelled" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_customer_order_cancelled_by_customer"/><label for="marketplace_notify_customer_order_cancelled_by_customer" class="o_light_label mb-0"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Returns" help="Emails about the customer's return requests.">
+                            <div class="d-flex flex-column gap-2 mt-2">
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_customer_return_approved"/><label for="marketplace_notify_customer_return_approved" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_customer_return_rejected"/><label for="marketplace_notify_customer_return_rejected" class="o_light_label mb-0"/></div>
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_customer_return_refunded"/><label for="marketplace_notify_customer_return_refunded" class="o_light_label mb-0"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Product Questions" help="Email when a seller answers the customer's question.">
+                            <div class="d-flex flex-column gap-2 mt-2">
+                                <div class="d-flex align-items-center gap-2"><field name="marketplace_notify_customer_question_answered"/><label for="marketplace_notify_customer_question_answered" class="o_light_label mb-0"/></div>
+                            </div>
                         </setting>
                     </block>
                     <block title="Marketplace Ledger Accounts" help="Real journal entries are posted for the escrow money flow. Configure the accounts and journal below.">

@@ -1,0 +1,144 @@
+{
+ "screen_id": "backend_partner_form_vendor_home",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_partner_form_vendor_home_desktop.png",
+   "width": 1440,
+   "height": 1640
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "حالة البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 568,
+    "w": 574,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "مستوى البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_tier_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 607,
+    "w": 574,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "حالة KYC للبائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_kyc_state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 646,
+    "w": 574,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "اسم متجر البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_store_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 532,
+    "w": 513,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "المعرّف المختصر لمتجر البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_store_slug']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 571,
+    "w": 513,
+    "h": 26
+   }
+  },
+  {
+   "n": 6,
+   "label": "أيام احتجاز البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_hold_days']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 755,
+    "w": 1192,
+    "h": 26
+   }
+  },
+  {
+   "n": 7,
+   "label": "الحد الأدنى لصرف مستحقات البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_min_payout']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 794,
+    "w": 1192,
+    "h": 26
+   }
+  },
+  {
+   "n": 8,
+   "label": "الحساب البنكي لصرف المستحقات",
+   "selector": ".o_form_view .o_field_widget[name='vendor_payout_bank_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 844,
+    "w": 1192,
+    "h": 24
+   }
+  },
+  {
+   "n": 9,
+   "label": "رصيد محفظة البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_wallet_balance']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 894,
+    "w": 1192,
+    "h": 21
+   }
+  },
+  {
+   "n": 10,
+   "label": "احتجاز محفظة البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_wallet_hold']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 928,
+    "w": 1192,
+    "h": 21
+   }
+  },
+  {
+   "n": 11,
+   "label": "زر كشف حساب البائع",
+   "selector": "button:has-text('كشف البائع')",
+   "device": "desktop",
+   "bbox": {
+    "x": 1306,
+    "y": 499,
+    "w": 93,
+    "h": 33
+   }
+  }
+ ]
+}

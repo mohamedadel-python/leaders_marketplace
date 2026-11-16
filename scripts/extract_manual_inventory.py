@@ -4,7 +4,7 @@ Run in the Odoo shell against an installed database (no demo data needed):
 
     cd /projects/odoo18/odoo-18.0
     /odoo18/env-odoo18/bin/python odoo-bin shell -c /etc/odoo/odoo18.conf.save -d <db> \
-        --addons-path=addons,custom --data-dir=/tmp/claude-1000/lmmanual --no-http \
+        --addons-path=addons,custom --data-dir=/tmp/lmmanual --no-http \
         < custom/leaders_marketplace/scripts/extract_manual_inventory.py
 
 Writes doc/manual/data/inventory.json and doc/manual/data/inventory_summary.md

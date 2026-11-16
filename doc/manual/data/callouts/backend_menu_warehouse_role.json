@@ -1,0 +1,11 @@
+{
+ "screen_id": "backend_menu_warehouse_role",
+ "images": {
+  "desktop": {
+   "file": "warehouse/backend_menu_warehouse_role_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": []
+}

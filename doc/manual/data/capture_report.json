@@ -1,0 +1,8010 @@
+{
+ "base_url": "http://localhost:8151",
+ "db": "lm_manual",
+ "generated": "2026-09-30T18:52:39+00:00",
+ "screens": {
+  "backend_apikey_form_active": {
+   "devices": {
+    "desktop": {
+     "bytes": 15694,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_api_key/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_apikey_form_revoked": {
+   "devices": {
+    "desktop": {
+     "bytes": 14098,
+     "markers": 4,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='is_revoked']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_api_key/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_apikey_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 20471,
+     "markers": 6,
+     "missing_markers": [
+      "th[data-name='is_revoked']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_api_key"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_application_form_approved": {
+   "devices": {
+    "desktop": {
+     "bytes": 93016,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2039
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_application_form_documents": {
+   "devices": {
+    "desktop": {
+     "bytes": 77873,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1973
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application/8"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 8,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_application_form_draft": {
+   "devices": {
+    "desktop": {
+     "bytes": 43551,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1615
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_application_form_expired_doc": {
+   "devices": {
+    "desktop": {
+     "bytes": 77606,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1973
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application/8"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 8,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_application_form_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 76424,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2003
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application/7"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 7,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_application_form_review": {
+   "devices": {
+    "desktop": {
+     "bytes": 54537,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1876
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application/6"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 6,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_application_form_submitted": {
+   "devices": {
+    "desktop": {
+     "bytes": 77653,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2057
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application/4"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 4,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_application_form_under_review": {
+   "devices": {
+    "desktop": {
+     "bytes": 77154,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2013
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application/6"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 6,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_application_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 37908,
+     "markers": 7,
+     "missing_markers": [
+      "th[data-name='reviewer_id']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_bankchange_form_approved": {
+   "devices": {
+    "desktop": {
+     "bytes": 50344,
+     "markers": 8,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='reject_reason']"
+     ],
+     "size": [
+      1440,
+      1190
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_bank_change/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_bankchange_form_pending": {
+   "devices": {
+    "desktop": {
+     "bytes": 36204,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      977
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_bank_change/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_bankchange_form_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 49426,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1176
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_bank_change/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_bankchange_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 12763,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_bank_change"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_buybox_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 17004,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_buybox_config/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_buybox_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 11676,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_buybox_config"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_cancel_reason_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 9525,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_cancel_reason/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_cancel_reason_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 19725,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_cancel_reason"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_cod_orders_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 12374,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_cod_vendor_order"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_commission_achievements": {
+   "devices": {
+    "desktop": {
+     "bytes": 34944,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_commission_achievement"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_commission_plan_form_achieve": {
+   "devices": {
+    "desktop": {
+     "bytes": 23236,
+     "markers": 8,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='periodicity']",
+      ".o_form_view .o_field_widget[name='plan_effect']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_commission_rule/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_commission_plan_form_cancel": {
+   "devices": {
+    "desktop": {
+     "bytes": 21001,
+     "markers": 7,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='periodicity']",
+      ".o_form_view .o_field_widget[name='plan_effect']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_commission_rule/5"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 5,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_commission_plan_form_done": {
+   "devices": {
+    "desktop": {
+     "bytes": 21819,
+     "markers": 7,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='periodicity']",
+      ".o_form_view .o_field_widget[name='plan_effect']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_commission_rule/4"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 4,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_commission_plan_form_draft": {
+   "devices": {
+    "desktop": {
+     "bytes": 21261,
+     "markers": 8,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='periodicity']",
+      ".o_form_view .o_field_widget[name='plan_effect']"
+     ],
+     "size": [
+      1440,
+      922
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_commission_rule/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_commission_plan_form_target": {
+   "devices": {
+    "desktop": {
+     "bytes": 31805,
+     "markers": 9,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='plan_effect']"
+     ],
+     "size": [
+      1440,
+      1098
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_commission_rule/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_commission_plan_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 23784,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_commission_rule"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_contract_form_signed": {
+   "devices": {
+    "desktop": {
+     "bytes": 19385,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_contract/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_contract_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 20186,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_contract"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_discount_review_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 13897,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_offer_discounts_to_review"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_dispute_form_closed": {
+   "devices": {
+    "desktop": {
+     "bytes": 37012,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1158
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_dispute/4"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 4,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_dispute_form_escalated": {
+   "devices": {
+    "desktop": {
+     "bytes": 52177,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1496
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_dispute/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_dispute_form_open": {
+   "devices": {
+    "desktop": {
+     "bytes": 34228,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1016
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_dispute/5"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 5,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_dispute_form_resolved": {
+   "devices": {
+    "desktop": {
+     "bytes": 63376,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1644
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_dispute/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_dispute_form_vendor_reply": {
+   "devices": {
+    "desktop": {
+     "bytes": 35978,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1067
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_dispute/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_dispute_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 13409,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_dispute"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_fbl_inbound_form_cancelled": {
+   "devices": {
+    "desktop": {
+     "bytes": 11998,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_inbound/4"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 4,
+   "role": "warehouse",
+   "status": "captured"
+  },
+  "backend_fbl_inbound_form_draft": {
+   "devices": {
+    "desktop": {
+     "bytes": 12918,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_inbound/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "warehouse",
+   "status": "captured"
+  },
+  "backend_fbl_inbound_form_received": {
+   "devices": {
+    "desktop": {
+     "bytes": 17017,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_inbound/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "warehouse",
+   "status": "captured"
+  },
+  "backend_fbl_inbound_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 18488,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_inbound"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "warehouse",
+   "status": "captured"
+  },
+  "backend_fulfillment_fee_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 11808,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_fee/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_fulfillment_fee_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 10106,
+     "markers": 3,
+     "missing_markers": [
+      "th[data-name='fee_type']",
+      "th[data-name='calc_method']",
+      "th[data-name='amount']",
+      "th[data-name='percent']",
+      "th[data-name='active']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_fee"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_fulfillment_group_form_fbl": {
+   "devices": {
+    "desktop": {
+     "bytes": 32999,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1339
+     ],
+     "url": "/odoo/leaders.fulfillment.group/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_fulfillment_group_form_fbm": {
+   "devices": {
+    "desktop": {
+     "bytes": 32331,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1330
+     ],
+     "url": "/odoo/leaders.fulfillment.group/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_fulfillment_group_form_provider": {
+   "devices": {
+    "desktop": {
+     "bytes": 58054,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1599
+     ],
+     "url": "/odoo/leaders.fulfillment.group/5"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 5,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_fulfillment_policy_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 12533,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_policy/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_fulfillment_policy_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 9137,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_policy"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_home_apps": {
+   "devices": {
+    "desktop": {
+     "bytes": 16354,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_import_form_done": {
+   "devices": {
+    "desktop": {
+     "bytes": 32442,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_import/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_import_form_failed": {
+   "devices": {
+    "desktop": {
+     "bytes": 29246,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_import/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_import_form_validated": {
+   "devices": {
+    "desktop": {
+     "bytes": 53704,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      949
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_import/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_import_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 25367,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_import"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_invoice_form": {
+   "devices": {},
+   "kind": "backend",
+   "reason": "no record for leaders.vendor.invoice [[\"move_type\", \"=\", \"invoice\"]] (requires part3)",
+   "role": "finance",
+   "status": "skipped"
+  },
+  "backend_invoice_form_credit_note": {
+   "devices": {
+    "desktop": {
+     "bytes": 33168,
+     "markers": 5,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='return_id']",
+      ".o_form_view .o_field_widget[name='reversed_invoice_id']"
+     ],
+     "size": [
+      1440,
+      994
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_invoice/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_invoice_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 159441,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1500
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_invoice"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_kpi_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 13955,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_kpi/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_kpi_graph": {
+   "devices": {
+    "desktop": {
+     "bytes": 10584,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_kpi?view_type=graph"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_kpi_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 18676,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_kpi"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_kpi_pivot": {
+   "devices": {
+    "desktop": {
+     "bytes": 17664,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_kpi?view_type=pivot"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_menu_configuration": {
+   "devices": {
+    "desktop": {
+     "bytes": 17342,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_tier"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_menu_finance": {
+   "devices": {
+    "desktop": {
+     "bytes": 34367,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_settlement"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_menu_finance_role": {
+   "devices": {
+    "desktop": {
+     "bytes": 34496,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_settlement"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_menu_fulfillment": {
+   "devices": {
+    "desktop": {
+     "bytes": 21448,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_inbound"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_menu_operations": {
+   "devices": {
+    "desktop": {
+     "bytes": 40697,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_menu_performance": {
+   "devices": {
+    "desktop": {
+     "bytes": 19967,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_kpi"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_menu_reporting": {
+   "devices": {
+    "desktop": {
+     "bytes": 26622,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order_report"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_menu_reviewer_role": {
+   "devices": {
+    "desktop": {
+     "bytes": 39976,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_application"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_menu_warehouse_role": {
+   "devices": {
+    "desktop": {
+     "bytes": 18488,
+     "markers": 0,
+     "missing_markers": [
+      ".o_menu_sections"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_fulfillment_inbound"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "warehouse",
+   "status": "captured"
+  },
+  "backend_offer_form_active": {
+   "devices": {
+    "desktop": {
+     "bytes": 22672,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_active_fbl": {
+   "devices": {
+    "desktop": {
+     "bytes": 23693,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/12"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 12,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_buybox_winner": {
+   "devices": {
+    "desktop": {
+     "bytes": 23477,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/16"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 16,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_discount_active": {
+   "devices": {
+    "desktop": {
+     "bytes": 26447,
+     "markers": 9,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='discount_price']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_discount_expired": {
+   "devices": {
+    "desktop": {
+     "bytes": 26898,
+     "markers": 9,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='discount_price']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/14"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 14,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_discount_pending": {
+   "devices": {
+    "desktop": {
+     "bytes": 27290,
+     "markers": 13,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='discount_price']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/17"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 17,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_discount_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 24376,
+     "markers": 7,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='discount_price']",
+      ".o_form_view .o_field_widget[name='discount_start']",
+      ".o_form_view .o_field_widget[name='discount_end']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/4"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 4,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_discount_scheduled": {
+   "devices": {
+    "desktop": {
+     "bytes": 24986,
+     "markers": 9,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='discount_price']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/18"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 18,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_draft": {
+   "devices": {
+    "desktop": {
+     "bytes": 25007,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/8"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 8,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_pending": {
+   "devices": {
+    "desktop": {
+     "bytes": 26935,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/6"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 6,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 28018,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/7"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 7,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_suspended": {
+   "devices": {
+    "desktop": {
+     "bytes": 25000,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/9"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 9,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_form_variant": {
+   "devices": {
+    "desktop": {
+     "bytes": 23212,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer/20"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 20,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_offer_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 83077,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1427
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_marketplace_offer"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_order_dialog_ship_wizard": {
+   "devices": {
+    "desktop": {
+     "bytes": 32637,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/6"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 6,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_cancelled": {
+   "devices": {
+    "desktop": {
+     "bytes": 74759,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1929
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/8"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 8,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_cancelled_customer": {
+   "devices": {
+    "desktop": {
+     "bytes": 74759,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1929
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/8"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 8,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_cancelled_platform": {
+   "devices": {
+    "desktop": {
+     "bytes": 68000,
+     "markers": 4,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='cancel_note']"
+     ],
+     "size": [
+      1440,
+      1833
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/13"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 13,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_cancelled_vendor": {
+   "devices": {
+    "desktop": {
+     "bytes": 78406,
+     "markers": 4,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='cancel_note']"
+     ],
+     "size": [
+      1440,
+      1931
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/12"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 12,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_cod_confirmed": {
+   "devices": {
+    "desktop": {
+     "bytes": 71137,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1767
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/4"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 4,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_cod_unconfirmed": {
+   "devices": {
+    "desktop": {
+     "bytes": 59868,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1560
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/32"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 32,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_completed": {
+   "devices": {
+    "desktop": {
+     "bytes": 61158,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1520
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_confirmed": {
+   "devices": {
+    "desktop": {
+     "bytes": 51570,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1359
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/36"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 36,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_fulfilled": {
+   "devices": {
+    "desktop": {
+     "bytes": 58112,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1537
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/21"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 21,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_late": {
+   "devices": {
+    "desktop": {
+     "bytes": 71863,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1756
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/28"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 28,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_partially_fulfilled": {
+   "devices": {
+    "desktop": {
+     "bytes": 55350,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1450
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/6"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 6,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_pending": {
+   "devices": {},
+   "kind": "backend",
+   "reason": "no record for leaders.vendor.order [[\"state\", \"=\", \"pending\"]] (requires part3)",
+   "role": "manager",
+   "status": "skipped"
+  },
+  "backend_order_form_processing": {
+   "devices": {
+    "desktop": {
+     "bytes": 71863,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1756
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/28"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 28,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_tab_accounting": {
+   "devices": {
+    "desktop": {
+     "bytes": 55793,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1494
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_tab_fulfillment": {
+   "devices": {
+    "desktop": {
+     "bytes": 56457,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1522
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_form_tab_lines": {
+   "devices": {
+    "desktop": {
+     "bytes": 61158,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1520
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 107563,
+     "markers": 7,
+     "missing_markers": [
+      "th[data-name='commission_amount']",
+      "th[data-name='vendor_net']"
+     ],
+     "size": [
+      1440,
+      1500
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_order_list_grouped": {
+   "devices": {
+    "desktop": {
+     "bytes": 107215,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1500
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_partner_form_cod_refusals": {
+   "devices": {
+    "desktop": {
+     "bytes": 34837,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1030
+     ],
+     "url": "/odoo/res.partner/24"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 24,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_partner_form_vendor_home": {
+   "devices": {
+    "desktop": {
+     "bytes": 59918,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1640
+     ],
+     "url": "/odoo/res.partner/12"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 12,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_partner_form_vendor_nour": {
+   "devices": {
+    "desktop": {
+     "bytes": 56009,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1533
+     ],
+     "url": "/odoo/res.partner/11"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 11,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_partner_form_vendor_oasis": {
+   "devices": {
+    "desktop": {
+     "bytes": 61490,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1637
+     ],
+     "url": "/odoo/res.partner/16"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 16,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_penalty_form_applied": {
+   "devices": {
+    "desktop": {
+     "bytes": 33447,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1036
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_penalty/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_penalty_form_draft": {
+   "devices": {
+    "desktop": {
+     "bytes": 19070,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_penalty/5"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 5,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_penalty_form_lifted": {
+   "devices": {
+    "desktop": {
+     "bytes": 44308,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1227
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_penalty/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_penalty_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 27623,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_penalty"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_product_form_pending": {
+   "devices": {
+    "desktop": {
+     "bytes": 32726,
+     "markers": 7,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='marketplace_reject_reason']",
+      ".o_form_view .o_field_widget[name='leaders_specs']"
+     ],
+     "size": [
+      1440,
+      1061
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_marketplace_review/12"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 12,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_product_form_published": {
+   "devices": {
+    "desktop": {
+     "bytes": 42353,
+     "markers": 9,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='marketplace_reject_reason']"
+     ],
+     "size": [
+      1440,
+      1247
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_marketplace_review/7"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 7,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_product_form_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 41169,
+     "markers": 8,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='leaders_specs']"
+     ],
+     "size": [
+      1440,
+      1286
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_marketplace_review/13"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 13,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_product_form_suspended": {
+   "devices": {
+    "desktop": {
+     "bytes": 41873,
+     "markers": 8,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='marketplace_reject_reason']",
+      ".o_form_view .o_field_widget[name='leaders_specs']"
+     ],
+     "size": [
+      1440,
+      1291
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_marketplace_review/15"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 15,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_product_review_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 21530,
+     "markers": 5,
+     "missing_markers": [
+      "th[data-name='marketplace_reject_reason']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_marketplace_review"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_question_form_answered": {
+   "devices": {
+    "desktop": {
+     "bytes": 23055,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_question/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_question_form_answered_approved": {
+   "devices": {
+    "desktop": {
+     "bytes": 22791,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_question/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_question_form_hidden": {
+   "devices": {
+    "desktop": {
+     "bytes": 24999,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_question/4"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 4,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_question_form_pending": {
+   "devices": {
+    "desktop": {
+     "bytes": 18424,
+     "markers": 7,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='answer']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_question/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_question_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 29542,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_product_question"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_return_form_approved": {
+   "devices": {
+    "desktop": {
+     "bytes": 54926,
+     "markers": 12,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='net_refund_amount']"
+     ],
+     "size": [
+      1440,
+      1760
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/6"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 6,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_cancelled": {
+   "devices": {
+    "desktop": {
+     "bytes": 49163,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1692
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/10"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 10,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_closed": {
+   "devices": {
+    "desktop": {
+     "bytes": 88365,
+     "markers": 10,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='net_refund_amount']"
+     ],
+     "size": [
+      1440,
+      2476
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/9"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 9,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_escalated": {
+   "devices": {
+    "desktop": {
+     "bytes": 69338,
+     "markers": 13,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='net_refund_amount']"
+     ],
+     "size": [
+      1440,
+      2092
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/4"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 4,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_exchanged": {
+   "devices": {
+    "desktop": {
+     "bytes": 61550,
+     "markers": 10,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='net_refund_amount']"
+     ],
+     "size": [
+      1440,
+      1887
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_received": {
+   "devices": {},
+   "kind": "backend",
+   "reason": "no record for leaders.vendor.return [[\"state\", \"=\", \"received\"]] (requires part4)",
+   "role": "manager",
+   "status": "skipped"
+  },
+  "backend_return_form_refunded": {
+   "devices": {
+    "desktop": {
+     "bytes": 70333,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2132
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 60571,
+     "markers": 14,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1886
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/8"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 8,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_requested": {
+   "devices": {
+    "desktop": {
+     "bytes": 45510,
+     "markers": 13,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='net_refund_amount']"
+     ],
+     "size": [
+      1440,
+      1585
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/11"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 11,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_tab_accounting": {
+   "devices": {
+    "desktop": {
+     "bytes": 59355,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1777
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_tab_lines": {
+   "devices": {
+    "desktop": {
+     "bytes": 61550,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1887
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_tab_photos": {
+   "devices": {
+    "desktop": {
+     "bytes": 58848,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1761
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_tab_pickings": {
+   "devices": {
+    "desktop": {
+     "bytes": 62375,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1887
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_form_tab_replacements": {
+   "devices": {
+    "desktop": {
+     "bytes": 61022,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1887
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 22356,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_return"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "reviewer",
+   "status": "captured"
+  },
+  "backend_return_reason_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 10494,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_return_reason/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_return_reason_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 15469,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_return_reason"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_sale_order_form_customer_cancel": {
+   "devices": {
+    "desktop": {
+     "bytes": 97898,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2448
+     ],
+     "url": "/odoo/action-sale.action_orders/8"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 8,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_sales_report_graph": {
+   "devices": {
+    "desktop": {
+     "bytes": 14346,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order_report?view_type=graph"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_sales_report_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 14544,
+     "markers": 5,
+     "missing_markers": [
+      "th[data-name='commission_amount']",
+      "th[data-name='vendor_net']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order_report?view_type=list"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_sales_report_pivot": {
+   "devices": {
+    "desktop": {
+     "bytes": 24822,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_order_report?view_type=pivot"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_settings_automation": {
+   "devices": {
+    "desktop": {
+     "bytes": 8977,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1306,
+      171
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_bulk_import": {
+   "devices": {
+    "desktop": {
+     "bytes": 15738,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1306,
+      287
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_cancellation": {
+   "devices": {
+    "desktop": {
+     "bytes": 8517,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1306,
+      202
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_catalog_offers": {
+   "devices": {
+    "desktop": {
+     "bytes": 6395,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1306,
+      181
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_cod": {
+   "devices": {
+    "desktop": {
+     "bytes": 14925,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1306,
+      307
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_commission_defaults": {
+   "devices": {
+    "desktop": {
+     "bytes": 10711,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1306,
+      202
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_commission_invoicing": {
+   "devices": {
+    "desktop": {
+     "bytes": 7120,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1306,
+      202
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_customer_orders": {
+   "devices": {
+    "desktop": {
+     "bytes": 15889,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1306,
+      297
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_delivery_split": {
+   "devices": {
+    "desktop": {
+     "bytes": 5994,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1306,
+      171
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_feature_switches": {
+   "devices": {
+    "desktop": {
+     "bytes": 52205,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1306,
+      772
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_fulfillment_modes": {
+   "devices": {
+    "desktop": {
+     "bytes": 20371,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1306,
+      349
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_kpi_warnings": {
+   "devices": {
+    "desktop": {
+     "bytes": 5799,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1306,
+      171
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_ledger_accounts": {
+   "devices": {
+    "desktop": {
+     "bytes": 10026,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1306,
+      328
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_marketplace_top": {
+   "devices": {
+    "desktop": {
+     "bytes": 56248,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_notifications": {
+   "devices": {
+    "desktop": {
+     "bytes": 8071,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1306,
+      804
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_payout_holds": {
+   "devices": {
+    "desktop": {
+     "bytes": 11328,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1306,
+      266
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_product_questions": {
+   "devices": {
+    "desktop": {
+     "bytes": 8836,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1306,
+      259
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_returns_center": {
+   "devices": {
+    "desktop": {
+     "bytes": 16524,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1306,
+      367
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_shipping_providers": {
+   "devices": {
+    "desktop": {
+     "bytes": 13525,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1306,
+      223
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_shipping_sla": {
+   "devices": {
+    "desktop": {
+     "bytes": 11345,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1306,
+      223
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_variants_images": {
+   "devices": {
+    "desktop": {
+     "bytes": 14635,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1306,
+      297
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_vendor_api": {
+   "devices": {
+    "desktop": {
+     "bytes": 10642,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1306,
+      192
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_vendor_application": {
+   "devices": {
+    "desktop": {
+     "bytes": 6895,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1306,
+      220
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settings_vendor_discounts": {
+   "devices": {
+    "desktop": {
+     "bytes": 8908,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1306,
+      181
+     ],
+     "url": "/odoo/action-base_setup.action_general_configuration"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_settlement_form_approved": {
+   "devices": {
+    "desktop": {
+     "bytes": 41783,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1312
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_settlement/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_settlement_form_approved_debt": {
+   "devices": {
+    "desktop": {
+     "bytes": 37083,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1196
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_settlement/5"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 5,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_settlement_form_cancelled": {
+   "devices": {
+    "desktop": {
+     "bytes": 31981,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1236
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_settlement/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_settlement_form_draft": {
+   "devices": {
+    "desktop": {
+     "bytes": 44807,
+     "markers": 12,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1391
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_settlement/6"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 6,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_settlement_form_paid": {
+   "devices": {
+    "desktop": {
+     "bytes": 52365,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1502
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_settlement/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_settlement_form_with_invoice": {
+   "devices": {
+    "desktop": {
+     "bytes": 37083,
+     "markers": 11,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1196
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_settlement/5"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 5,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_settlement_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 32061,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_settlement"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "finance",
+   "status": "captured"
+  },
+  "backend_settlement_wizard_statement": {
+   "devices": {
+    "desktop": {
+     "bytes": 31678,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/res.partner/11"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 11,
+   "role": "admin",
+   "status": "captured"
+  },
+  "backend_shipping_provider_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 12386,
+     "markers": 4,
+     "missing_markers": [
+      ".o_form_view .o_field_widget[name='webhook_url']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_shipping_provider/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_shipping_provider_form_events": {
+   "devices": {
+    "desktop": {
+     "bytes": 48684,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      910
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_shipping_provider/2"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 2,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_shipping_provider_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 11712,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_shipping_provider"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_terms_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 38187,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_terms/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_terms_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 9829,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_terms"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_tier_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 17788,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_tier/3"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 3,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_tier_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 13549,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_tier"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_zone_form_platform": {
+   "devices": {
+    "desktop": {
+     "bytes": 13012,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_delivery_zone/1"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_zone_form_vendor": {
+   "devices": {
+    "desktop": {
+     "bytes": 14368,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_delivery_zone/5"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": 5,
+   "role": "manager",
+   "status": "captured"
+  },
+  "backend_zone_list": {
+   "devices": {
+    "desktop": {
+     "bytes": 39753,
+     "markers": 9,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/odoo/action-leaders_marketplace.action_vendor_delivery_zone"
+    }
+   },
+   "kind": "backend",
+   "reason": null,
+   "record": null,
+   "role": "manager",
+   "status": "captured"
+  },
+  "portal_customer_checkout_cancel_form": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.order [[\"partner_id.email\", \"=\", \"customer1@customer.demo\"], [\"state\", \"in\", [\"pending\", \"confirmed\"]]] (requires part3)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "portal_customer_checkout_cancel_shipped": {
+   "devices": {
+    "desktop": {
+     "bytes": 52686,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1418
+     ],
+     "url": "/my/marketplace/checkouts/32"
+    },
+    "mobile": {
+     "bytes": 107060,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      780,
+      4184
+     ],
+     "url": "/my/marketplace/checkouts/32"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 32,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkout_cancelled": {
+   "devices": {
+    "desktop": {
+     "bytes": 52363,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1386
+     ],
+     "url": "/my/marketplace/checkouts/10"
+    },
+    "mobile": {
+     "bytes": 110644,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      4314
+     ],
+     "url": "/my/marketplace/checkouts/10"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 12,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkout_cod": {
+   "devices": {
+    "desktop": {
+     "bytes": 52686,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1418
+     ],
+     "url": "/my/marketplace/checkouts/32"
+    },
+    "mobile": {
+     "bytes": 107060,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      4184
+     ],
+     "url": "/my/marketplace/checkouts/32"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 32,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkout_confirmed": {
+   "devices": {
+    "desktop": {
+     "bytes": 53415,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1449
+     ],
+     "url": "/my/marketplace/checkouts/36"
+    },
+    "mobile": {
+     "bytes": 108564,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      4198
+     ],
+     "url": "/my/marketplace/checkouts/36"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 36,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkout_delivered": {
+   "devices": {
+    "desktop": {
+     "bytes": 53357,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1438
+     ],
+     "url": "/my/marketplace/checkouts/27"
+    },
+    "mobile": {
+     "bytes": 110458,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      4390
+     ],
+     "url": "/my/marketplace/checkouts/27"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 26,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkout_partial_shipped": {
+   "devices": {
+    "desktop": {
+     "bytes": 54351,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1418
+     ],
+     "url": "/my/marketplace/checkouts/6"
+    },
+    "mobile": {
+     "bytes": 110527,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      4136
+     ],
+     "url": "/my/marketplace/checkouts/6"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 6,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkout_placed": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.order [[\"partner_id.email\", \"=\", \"customer1@customer.demo\"], [\"state\", \"=\", \"pending\"]] (requires part3)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "portal_customer_checkout_shipped": {
+   "devices": {
+    "desktop": {
+     "bytes": 53448,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1418
+     ],
+     "url": "/my/marketplace/checkouts/31"
+    },
+    "mobile": {
+     "bytes": 109107,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      4136
+     ],
+     "url": "/my/marketplace/checkouts/31"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 31,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkouts": {
+   "devices": {
+    "desktop": {
+     "bytes": 72168,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1618
+     ],
+     "url": "/my/marketplace/checkouts"
+    },
+    "mobile": {
+     "bytes": 201604,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      8138
+     ],
+     "url": "/my/marketplace/checkouts"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkouts_c2": {
+   "devices": {
+    "desktop": {
+     "bytes": 64182,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1496
+     ],
+     "url": "/my/marketplace/checkouts"
+    },
+    "mobile": {
+     "bytes": 176208,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      7176
+     ],
+     "url": "/my/marketplace/checkouts"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkouts_empty": {
+   "devices": {
+    "desktop": {
+     "bytes": 38795,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1114
+     ],
+     "url": "/my/marketplace/checkouts?search=zzzz"
+    },
+    "mobile": {
+     "bytes": 79386,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      780,
+      3712
+     ],
+     "url": "/my/marketplace/checkouts?search=zzzz"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_checkouts_filtered": {
+   "devices": {
+    "desktop": {
+     "bytes": 55009,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1286
+     ],
+     "url": "/my/marketplace/checkouts?status=delivered"
+    },
+    "mobile": {
+     "bytes": 138272,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      5640
+     ],
+     "url": "/my/marketplace/checkouts?status=delivered"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_home": {
+   "devices": {
+    "desktop": {
+     "bytes": 48802,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1041
+     ],
+     "url": "/my"
+    },
+    "mobile": {
+     "bytes": 90979,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      3676
+     ],
+     "url": "/my"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_notifications": {
+   "devices": {
+    "desktop": {
+     "bytes": 44157,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1132
+     ],
+     "url": "/my/marketplace/notifications"
+    },
+    "mobile": {
+     "bytes": 90113,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      3348
+     ],
+     "url": "/my/marketplace/notifications"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_cancel_part": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.order [[\"partner_id.email\", \"=\", \"customer1@customer.demo\"], [\"state\", \"in\", [\"pending\", \"confirmed\"]]] (requires part3)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "portal_customer_order_cancelled": {
+   "devices": {
+    "desktop": {
+     "bytes": 59087,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1826
+     ],
+     "url": "/my/marketplace/orders/12"
+    },
+    "mobile": {
+     "bytes": 131372,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      5392
+     ],
+     "url": "/my/marketplace/orders/12"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 12,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_cancelled_by_customer": {
+   "devices": {
+    "desktop": {
+     "bytes": 57615,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1756
+     ],
+     "url": "/my/marketplace/orders/15"
+    },
+    "mobile": {
+     "bytes": 120382,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4776
+     ],
+     "url": "/my/marketplace/orders/15"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 15,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_cod": {
+   "devices": {
+    "desktop": {
+     "bytes": 79880,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2792
+     ],
+     "url": "/my/marketplace/orders/32"
+    },
+    "mobile": {
+     "bytes": 171622,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      7530
+     ],
+     "url": "/my/marketplace/orders/32"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 32,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_confirmed": {
+   "devices": {
+    "desktop": {
+     "bytes": 61970,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2001
+     ],
+     "url": "/my/marketplace/orders/36"
+    },
+    "mobile": {
+     "bytes": 133356,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      5870
+     ],
+     "url": "/my/marketplace/orders/36"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 36,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_delivered": {
+   "devices": {
+    "desktop": {
+     "bytes": 82934,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2895
+     ],
+     "url": "/my/marketplace/orders/26"
+    },
+    "mobile": {
+     "bytes": 183987,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      8098
+     ],
+     "url": "/my/marketplace/orders/26"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 26,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_delivery_reported": {
+   "devices": {
+    "desktop": {
+     "bytes": 78617,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2595
+     ],
+     "url": "/my/marketplace/orders/21"
+    },
+    "mobile": {
+     "bytes": 167956,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      6936
+     ],
+     "url": "/my/marketplace/orders/21"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 21,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_dispute_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 82934,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2895
+     ],
+     "url": "/my/marketplace/orders/26"
+    },
+    "mobile": {
+     "bytes": 183987,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      8098
+     ],
+     "url": "/my/marketplace/orders/26"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 26,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_dispute_thread": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.dispute [[\"partner_id.email\", \"=\", \"customer1@customer.demo\"], [\"state\", \"in\", [\"open\", \"vendor_reply\"]]] (requires part4)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "portal_customer_order_rating_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 82934,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2895
+     ],
+     "url": "/my/marketplace/orders/26"
+    },
+    "mobile": {
+     "bytes": 183987,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      780,
+      8098
+     ],
+     "url": "/my/marketplace/orders/26"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 26,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_return_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 82934,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2895
+     ],
+     "url": "/my/marketplace/orders/26"
+    },
+    "mobile": {
+     "bytes": 183987,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      8098
+     ],
+     "url": "/my/marketplace/orders/26"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 26,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_order_shipped": {
+   "devices": {
+    "desktop": {
+     "bytes": 75158,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2514
+     ],
+     "url": "/my/marketplace/orders/31"
+    },
+    "mobile": {
+     "bytes": 160087,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      6774
+     ],
+     "url": "/my/marketplace/orders/31"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 31,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_orders_legacy": {
+   "devices": {
+    "desktop": {
+     "bytes": 77399,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1409
+     ],
+     "url": "/my/marketplace/orders"
+    },
+    "mobile": {
+     "bytes": 230318,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      780,
+      8960
+     ],
+     "url": "/my/marketplace/orders"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_return_approved": {
+   "devices": {
+    "desktop": {
+     "bytes": 53239,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1255
+     ],
+     "url": "/my/marketplace/returns/7"
+    },
+    "mobile": {
+     "bytes": 110721,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4270
+     ],
+     "url": "/my/marketplace/returns/7"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 7,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_return_closed": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.return [[\"partner_id.email\", \"=\", \"customer1@customer.demo\"], [\"state\", \"=\", \"closed\"]] (requires part4)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "portal_customer_return_escalated": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.return [[\"partner_id.email\", \"=\", \"customer1@customer.demo\"], [\"state\", \"=\", \"escalated\"]] (requires part4)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "portal_customer_return_exchanged": {
+   "devices": {
+    "desktop": {
+     "bytes": 51077,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1205
+     ],
+     "url": "/my/marketplace/returns/1"
+    },
+    "mobile": {
+     "bytes": 106498,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      4476
+     ],
+     "url": "/my/marketplace/returns/1"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 1,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_return_received": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.return [[\"partner_id.email\", \"=\", \"customer1@customer.demo\"], [\"state\", \"=\", \"received\"]] (requires part4)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "portal_customer_return_refunded": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.return [[\"partner_id.email\", \"=\", \"customer1@customer.demo\"], [\"state\", \"=\", \"refunded\"]] (requires part4)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "portal_customer_return_rejected": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.return [[\"partner_id.email\", \"=\", \"customer1@customer.demo\"], [\"state\", \"=\", \"rejected\"]] (requires part4)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "portal_customer_return_requested": {
+   "devices": {
+    "desktop": {
+     "bytes": 48540,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1192
+     ],
+     "url": "/my/marketplace/returns/11"
+    },
+    "mobile": {
+     "bytes": 99448,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4088
+     ],
+     "url": "/my/marketplace/returns/11"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 11,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_returns_center": {
+   "devices": {
+    "desktop": {
+     "bytes": 56874,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1345
+     ],
+     "url": "/my/marketplace/returns"
+    },
+    "mobile": {
+     "bytes": 147594,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      6140
+     ],
+     "url": "/my/marketplace/returns"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_customer_returns_center_filtered": {
+   "devices": {
+    "desktop": {
+     "bytes": 56874,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1345
+     ],
+     "url": "/my/marketplace/returns?filter=open"
+    },
+    "mobile": {
+     "bytes": 147594,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      6140
+     ],
+     "url": "/my/marketplace/returns?filter=open"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "portal_vendor_api": {
+   "devices": {
+    "desktop": {
+     "bytes": 84855,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1570
+     ],
+     "url": "/my/vendor/api"
+    },
+    "mobile": {
+     "bytes": 194193,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      7172
+     ],
+     "url": "/my/vendor/api"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_api_key_created": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "mutates data: run with --allow-mutating on a throw-away DB (part4,mutating)",
+   "role": "vendor_owner",
+   "status": "skipped"
+  },
+  "portal_vendor_bankchange_form_filled": {
+   "devices": {
+    "desktop": {
+     "bytes": 55777,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1301
+     ],
+     "url": "/my/vendor/profile"
+    },
+    "mobile": {
+     "bytes": 107064,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      4510
+     ],
+     "url": "/my/vendor/profile"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_bulk_discount": {
+   "devices": {
+    "desktop": {
+     "bytes": 137789,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      3079
+     ],
+     "url": "/my/vendor/products"
+    },
+    "mobile": {
+     "bytes": 302931,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      19322
+     ],
+     "url": "/my/vendor/products"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_dashboard": {
+   "devices": {
+    "desktop": {
+     "bytes": 119760,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2315
+     ],
+     "url": "/my/vendor"
+    },
+    "mobile": {
+     "bytes": 294897,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      780,
+      13356
+     ],
+     "url": "/my/vendor"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_dashboard_home": {
+   "devices": {
+    "desktop": {
+     "bytes": 97677,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1887
+     ],
+     "url": "/my/vendor"
+    },
+    "mobile": {
+     "bytes": 227786,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      10334
+     ],
+     "url": "/my/vendor"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_dashboard_oasis": {
+   "devices": {
+    "desktop": {
+     "bytes": 118130,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2315
+     ],
+     "url": "/my/vendor"
+    },
+    "mobile": {
+     "bytes": 291708,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      13200
+     ],
+     "url": "/my/vendor"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_dashboard_staff": {
+   "devices": {
+    "desktop": {
+     "bytes": 115810,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2315
+     ],
+     "url": "/my/vendor"
+    },
+    "mobile": {
+     "bytes": 292308,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      13252
+     ],
+     "url": "/my/vendor"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_staff",
+   "status": "captured"
+  },
+  "portal_vendor_delivery_zones": {
+   "devices": {
+    "desktop": {
+     "bytes": 54960,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/delivery-zones"
+    },
+    "mobile": {
+     "bytes": 126638,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      780,
+      6100
+     ],
+     "url": "/my/vendor/delivery-zones"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_delivery_zones_oasis": {
+   "devices": {
+    "desktop": {
+     "bytes": 53246,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/delivery-zones"
+    },
+    "mobile": {
+     "bytes": 116375,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      5498
+     ],
+     "url": "/my/vendor/delivery-zones"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_dispute_escalated": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.dispute [[\"vendor_id.vendor_store_name\", \"=\", \"النور للإلكترونيات\"], [\"state\", \"=\", \"escalated\"]] (requires part4)",
+   "role": "vendor_owner",
+   "status": "skipped"
+  },
+  "portal_vendor_dispute_open": {
+   "devices": {
+    "desktop": {
+     "bytes": 53750,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1332
+     ],
+     "url": "/my/vendor/disputes/5"
+    },
+    "mobile": {
+     "bytes": 101445,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3986
+     ],
+     "url": "/my/vendor/disputes/5"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 5,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_dispute_resolved": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.dispute [[\"vendor_id.vendor_store_name\", \"=\", \"النور للإلكترونيات\"], [\"state\", \"=\", \"resolved\"]] (requires part4)",
+   "role": "vendor_owner",
+   "status": "skipped"
+  },
+  "portal_vendor_dispute_vendor_reply": {
+   "devices": {
+    "desktop": {
+     "bytes": 52315,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1258
+     ],
+     "url": "/my/vendor/disputes/2"
+    },
+    "mobile": {
+     "bytes": 98495,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3828
+     ],
+     "url": "/my/vendor/disputes/2"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 2,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_disputes": {
+   "devices": {
+    "desktop": {
+     "bytes": 49590,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/disputes"
+    },
+    "mobile": {
+     "bytes": 98725,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      4338
+     ],
+     "url": "/my/vendor/disputes"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_finance": {
+   "devices": {
+    "desktop": {
+     "bytes": 270890,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      5900
+     ],
+     "url": "/my/vendor/finance"
+    },
+    "mobile": {
+     "bytes": 644215,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      780,
+      40490
+     ],
+     "url": "/my/vendor/finance"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_finance_home": {
+   "devices": {
+    "desktop": {
+     "bytes": 136739,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      3219
+     ],
+     "url": "/my/vendor/finance"
+    },
+    "mobile": {
+     "bytes": 303349,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      780,
+      18968
+     ],
+     "url": "/my/vendor/finance"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_finance_oasis": {
+   "devices": {
+    "desktop": {
+     "bytes": 170088,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      3835
+     ],
+     "url": "/my/vendor/finance"
+    },
+    "mobile": {
+     "bytes": 388539,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      780,
+      23576
+     ],
+     "url": "/my/vendor/finance"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_finance_settlement_request": {
+   "devices": {
+    "desktop": {
+     "bytes": 270890,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      5900
+     ],
+     "url": "/my/vendor/finance"
+    },
+    "mobile": {
+     "bytes": 643625,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      40490
+     ],
+     "url": "/my/vendor/finance"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_import": {
+   "devices": {
+    "desktop": {
+     "bytes": 64968,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1424
+     ],
+     "url": "/my/vendor/import"
+    },
+    "mobile": {
+     "bytes": 149464,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      6628
+     ],
+     "url": "/my/vendor/import"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_import_job_done": {
+   "devices": {
+    "desktop": {
+     "bytes": 50930,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/import/5"
+    },
+    "mobile": {
+     "bytes": 96689,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3994
+     ],
+     "url": "/my/vendor/import/5"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 5,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_import_job_failed": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.import [[\"vendor_id.vendor_store_name\", \"=\", \"النور للإلكترونيات\"], [\"state\", \"=\", \"failed\"]] (requires part4)",
+   "role": "vendor_owner",
+   "status": "skipped"
+  },
+  "portal_vendor_import_job_validated": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.import [[\"vendor_id.vendor_store_name\", \"=\", \"النور للإلكترونيات\"], [\"state\", \"=\", \"validated\"]] (requires part4)",
+   "role": "vendor_owner",
+   "status": "skipped"
+  },
+  "portal_vendor_order_cancel_confirm": {
+   "devices": {
+    "desktop": {
+     "bytes": 77800,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2061
+     ],
+     "url": "/my/vendor/orders/36"
+    },
+    "mobile": {
+     "bytes": 158783,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      6868
+     ],
+     "url": "/my/vendor/orders/36"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 36,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_cancelled_platform": {
+   "devices": {
+    "desktop": {
+     "bytes": 68121,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1666
+     ],
+     "url": "/my/vendor/orders/13"
+    },
+    "mobile": {
+     "bytes": 139656,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      5792
+     ],
+     "url": "/my/vendor/orders/13"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 13,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_cancelled_vendor": {
+   "devices": {
+    "desktop": {
+     "bytes": 73364,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1789
+     ],
+     "url": "/my/vendor/orders/12"
+    },
+    "mobile": {
+     "bytes": 156268,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      6542
+     ],
+     "url": "/my/vendor/orders/12"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 12,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_cod": {
+   "devices": {
+    "desktop": {
+     "bytes": 70259,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1740
+     ],
+     "url": "/my/vendor/orders/32"
+    },
+    "mobile": {
+     "bytes": 143183,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      6038
+     ],
+     "url": "/my/vendor/orders/32"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 32,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_cod_refused": {
+   "devices": {
+    "desktop": {
+     "bytes": 70493,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1740
+     ],
+     "url": "/my/vendor/orders/33"
+    },
+    "mobile": {
+     "bytes": 145477,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      5988
+     ],
+     "url": "/my/vendor/orders/33"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 33,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_completed": {
+   "devices": {
+    "desktop": {
+     "bytes": 69723,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1715
+     ],
+     "url": "/my/vendor/orders/25"
+    },
+    "mobile": {
+     "bytes": 144386,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      6292
+     ],
+     "url": "/my/vendor/orders/25"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 25,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_confirmed": {
+   "devices": {
+    "desktop": {
+     "bytes": 77800,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2061
+     ],
+     "url": "/my/vendor/orders/36"
+    },
+    "mobile": {
+     "bytes": 158783,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      780,
+      6868
+     ],
+     "url": "/my/vendor/orders/36"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 36,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_delivery_reported": {
+   "devices": {
+    "desktop": {
+     "bytes": 72258,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1758
+     ],
+     "url": "/my/vendor/orders/21"
+    },
+    "mobile": {
+     "bytes": 145576,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      5922
+     ],
+     "url": "/my/vendor/orders/21"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 21,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_fbl": {
+   "devices": {
+    "desktop": {
+     "bytes": 69937,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1695
+     ],
+     "url": "/my/vendor/orders/35"
+    },
+    "mobile": {
+     "bytes": 135208,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      5340
+     ],
+     "url": "/my/vendor/orders/35"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 35,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_late": {
+   "devices": {
+    "desktop": {
+     "bytes": 78839,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2064
+     ],
+     "url": "/my/vendor/orders/28"
+    },
+    "mobile": {
+     "bytes": 159211,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      6872
+     ],
+     "url": "/my/vendor/orders/28"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 28,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_mixed_oasis": {
+   "devices": {
+    "desktop": {
+     "bytes": 70258,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1715
+     ],
+     "url": "/my/vendor/orders/26"
+    },
+    "mobile": {
+     "bytes": 148237,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      6292
+     ],
+     "url": "/my/vendor/orders/26"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 26,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_partial": {
+   "devices": {
+    "desktop": {
+     "bytes": 75308,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1864
+     ],
+     "url": "/my/vendor/orders/6"
+    },
+    "mobile": {
+     "bytes": 152133,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      6238
+     ],
+     "url": "/my/vendor/orders/6"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 6,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_pending": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.order [[\"vendor_id.vendor_store_name\", \"=\", \"النور للإلكترونيات\"], [\"state\", \"=\", \"pending\"]] (requires part3)",
+   "role": "vendor_owner",
+   "status": "skipped"
+  },
+  "portal_vendor_order_processing": {
+   "devices": {
+    "desktop": {
+     "bytes": 77961,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2061
+     ],
+     "url": "/my/vendor/orders/37"
+    },
+    "mobile": {
+     "bytes": 158485,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      6868
+     ],
+     "url": "/my/vendor/orders/37"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 37,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_refuse_confirm": {
+   "devices": {
+    "desktop": {
+     "bytes": 73983,
+     "markers": 2,
+     "missing_markers": [
+      ".modal.show .modal-content"
+     ],
+     "size": [
+      1440,
+      1953
+     ],
+     "url": "/my/vendor/orders/31"
+    },
+    "mobile": {
+     "bytes": 150248,
+     "markers": 2,
+     "missing_markers": [
+      ".modal.show .modal-content"
+     ],
+     "size": [
+      780,
+      6308
+     ],
+     "url": "/my/vendor/orders/31"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 31,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_ship_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 77961,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2061
+     ],
+     "url": "/my/vendor/orders/37"
+    },
+    "mobile": {
+     "bytes": 158485,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      6868
+     ],
+     "url": "/my/vendor/orders/37"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 37,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_shipped": {
+   "devices": {
+    "desktop": {
+     "bytes": 73983,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1953
+     ],
+     "url": "/my/vendor/orders/31"
+    },
+    "mobile": {
+     "bytes": 150248,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      6308
+     ],
+     "url": "/my/vendor/orders/31"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 31,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_order_staff": {
+   "devices": {
+    "desktop": {
+     "bytes": 72085,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1901
+     ],
+     "url": "/my/vendor/orders/36"
+    },
+    "mobile": {
+     "bytes": 151615,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      6412
+     ],
+     "url": "/my/vendor/orders/36"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 36,
+   "role": "vendor_staff",
+   "status": "captured"
+  },
+  "portal_vendor_orders": {
+   "devices": {
+    "desktop": {
+     "bytes": 178072,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2987
+     ],
+     "url": "/my/vendor/orders"
+    },
+    "mobile": {
+     "bytes": 432636,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      864,
+      20964
+     ],
+     "url": "/my/vendor/orders"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_orders_home": {
+   "devices": {
+    "desktop": {
+     "bytes": 79712,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1363
+     ],
+     "url": "/my/vendor/orders"
+    },
+    "mobile": {
+     "bytes": 204233,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      8032
+     ],
+     "url": "/my/vendor/orders"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_orders_oasis": {
+   "devices": {
+    "desktop": {
+     "bytes": 108217,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2003
+     ],
+     "url": "/my/vendor/orders"
+    },
+    "mobile": {
+     "bytes": 291790,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      822,
+      11266
+     ],
+     "url": "/my/vendor/orders"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_orders_staff": {
+   "devices": {
+    "desktop": {
+     "bytes": 174983,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2987
+     ],
+     "url": "/my/vendor/orders"
+    },
+    "mobile": {
+     "bytes": 432636,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      864,
+      20964
+     ],
+     "url": "/my/vendor/orders"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_staff",
+   "status": "captured"
+  },
+  "portal_vendor_performance": {
+   "devices": {
+    "desktop": {
+     "bytes": 51994,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/performance"
+    },
+    "mobile": {
+     "bytes": 101517,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      4504
+     ],
+     "url": "/my/vendor/performance"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_catalog_search": {
+   "devices": {
+    "desktop": {
+     "bytes": 80827,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2807
+     ],
+     "url": "/my/vendor/products/new"
+    },
+    "mobile": {
+     "bytes": 156246,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      7890
+     ],
+     "url": "/my/vendor/products/new"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_active": {
+   "devices": {
+    "desktop": {
+     "bytes": 91864,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2931
+     ],
+     "url": "/my/vendor/products/3/edit"
+    },
+    "mobile": {
+     "bytes": 181248,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      8288
+     ],
+     "url": "/my/vendor/products/3/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 3,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_discount_active": {
+   "devices": {
+    "desktop": {
+     "bytes": 97086,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2974
+     ],
+     "url": "/my/vendor/products/1/edit"
+    },
+    "mobile": {
+     "bytes": 193059,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      8492
+     ],
+     "url": "/my/vendor/products/1/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 1,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_discount_expired": {
+   "devices": {
+    "desktop": {
+     "bytes": 96107,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2999
+     ],
+     "url": "/my/vendor/products/14/edit"
+    },
+    "mobile": {
+     "bytes": 190682,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      8464
+     ],
+     "url": "/my/vendor/products/14/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 14,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_discount_pending": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.marketplace.offer [[\"vendor_id.vendor_store_name\", \"=\", \"بيت الأثاث الحديث\"], [\"discount_state\", \"=\", \"pending_approval\"]]",
+   "role": "vendor_owner",
+   "status": "skipped"
+  },
+  "portal_vendor_product_edit_discount_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 92979,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2974
+     ],
+     "url": "/my/vendor/products/4/edit"
+    },
+    "mobile": {
+     "bytes": 182937,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      8372
+     ],
+     "url": "/my/vendor/products/4/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 4,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_discount_scheduled": {
+   "devices": {
+    "desktop": {
+     "bytes": 94052,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2974
+     ],
+     "url": "/my/vendor/products/18/edit"
+    },
+    "mobile": {
+     "bytes": 184831,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      8372
+     ],
+     "url": "/my/vendor/products/18/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 18,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_draft": {
+   "devices": {
+    "desktop": {
+     "bytes": 91766,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2991
+     ],
+     "url": "/my/vendor/products/8/edit"
+    },
+    "mobile": {
+     "bytes": 180083,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      8408
+     ],
+     "url": "/my/vendor/products/8/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 8,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_fbl": {
+   "devices": {
+    "desktop": {
+     "bytes": 93808,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2956
+     ],
+     "url": "/my/vendor/products/12/edit"
+    },
+    "mobile": {
+     "bytes": 185309,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      8380
+     ],
+     "url": "/my/vendor/products/12/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 12,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_pending": {
+   "devices": {
+    "desktop": {
+     "bytes": 91721,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2931
+     ],
+     "url": "/my/vendor/products/6/edit"
+    },
+    "mobile": {
+     "bytes": 180402,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      8288
+     ],
+     "url": "/my/vendor/products/6/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 6,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 95492,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      3065
+     ],
+     "url": "/my/vendor/products/7/edit"
+    },
+    "mobile": {
+     "bytes": 187365,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      8652
+     ],
+     "url": "/my/vendor/products/7/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 7,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_suspended": {
+   "devices": {
+    "desktop": {
+     "bytes": 91394,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2931
+     ],
+     "url": "/my/vendor/products/9/edit"
+    },
+    "mobile": {
+     "bytes": 180294,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      8288
+     ],
+     "url": "/my/vendor/products/9/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 9,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_edit_variant": {
+   "devices": {
+    "desktop": {
+     "bytes": 98580,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      3129
+     ],
+     "url": "/my/vendor/products/20/edit"
+    },
+    "mobile": {
+     "bytes": 195728,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      8804
+     ],
+     "url": "/my/vendor/products/20/edit"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 20,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_product_new": {
+   "devices": {
+    "desktop": {
+     "bytes": 78214,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2714
+     ],
+     "url": "/my/vendor/products/new"
+    },
+    "mobile": {
+     "bytes": 150139,
+     "markers": 10,
+     "missing_markers": [],
+     "size": [
+      780,
+      7368
+     ],
+     "url": "/my/vendor/products/new"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_products": {
+   "devices": {
+    "desktop": {
+     "bytes": 138213,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      3079
+     ],
+     "url": "/my/vendor/products"
+    },
+    "mobile": {
+     "bytes": 302792,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      19322
+     ],
+     "url": "/my/vendor/products"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_products_home": {
+   "devices": {
+    "desktop": {
+     "bytes": 75237,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1396
+     ],
+     "url": "/my/vendor/products"
+    },
+    "mobile": {
+     "bytes": 179064,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      8440
+     ],
+     "url": "/my/vendor/products"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_products_oasis": {
+   "devices": {
+    "desktop": {
+     "bytes": 103937,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1895
+     ],
+     "url": "/my/vendor/products"
+    },
+    "mobile": {
+     "bytes": 276003,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      13792
+     ],
+     "url": "/my/vendor/products"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_products_staff": {
+   "devices": {
+    "desktop": {
+     "bytes": 135495,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      3079
+     ],
+     "url": "/my/vendor/products"
+    },
+    "mobile": {
+     "bytes": 302792,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      19322
+     ],
+     "url": "/my/vendor/products"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_staff",
+   "status": "captured"
+  },
+  "portal_vendor_profile": {
+   "devices": {
+    "desktop": {
+     "bytes": 53237,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1301
+     ],
+     "url": "/my/vendor/profile"
+    },
+    "mobile": {
+     "bytes": 101264,
+     "markers": 8,
+     "missing_markers": [],
+     "size": [
+      780,
+      4510
+     ],
+     "url": "/my/vendor/profile"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_profile_bankchange_pending": {
+   "devices": {
+    "desktop": {
+     "bytes": 51609,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/profile"
+    },
+    "mobile": {
+     "bytes": 94791,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3874
+     ],
+     "url": "/my/vendor/profile"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_questions": {
+   "devices": {
+    "desktop": {
+     "bytes": 46976,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/questions"
+    },
+    "mobile": {
+     "bytes": 85871,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3400
+     ],
+     "url": "/my/vendor/questions"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_questions_answered": {
+   "devices": {
+    "desktop": {
+     "bytes": 57000,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1287
+     ],
+     "url": "/my/vendor/questions?filter=answered"
+    },
+    "mobile": {
+     "bytes": 110511,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3902
+     ],
+     "url": "/my/vendor/questions?filter=answered"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_return_approved": {
+   "devices": {
+    "desktop": {
+     "bytes": 57215,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1228
+     ],
+     "url": "/my/vendor/returns/6"
+    },
+    "mobile": {
+     "bytes": 109142,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4482
+     ],
+     "url": "/my/vendor/returns/6"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 6,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_return_closed": {
+   "devices": {
+    "desktop": {
+     "bytes": 56135,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1271
+     ],
+     "url": "/my/vendor/returns/9"
+    },
+    "mobile": {
+     "bytes": 105078,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4234
+     ],
+     "url": "/my/vendor/returns/9"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 9,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_return_escalated": {
+   "devices": {
+    "desktop": {
+     "bytes": 52725,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/returns/5"
+    },
+    "mobile": {
+     "bytes": 96518,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4078
+     ],
+     "url": "/my/vendor/returns/5"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 5,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_return_exchanged": {
+   "devices": {
+    "desktop": {
+     "bytes": 58368,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1404
+     ],
+     "url": "/my/vendor/returns/1"
+    },
+    "mobile": {
+     "bytes": 108736,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      4500
+     ],
+     "url": "/my/vendor/returns/1"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 1,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_return_received": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.return [[\"vendor_id.vendor_store_name\", \"=\", \"النور للإلكترونيات\"], [\"state\", \"=\", \"received\"]] (requires part4)",
+   "role": "vendor_owner",
+   "status": "skipped"
+  },
+  "portal_vendor_return_refunded": {
+   "devices": {
+    "desktop": {
+     "bytes": 55554,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1228
+     ],
+     "url": "/my/vendor/returns/2"
+    },
+    "mobile": {
+     "bytes": 104519,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4220
+     ],
+     "url": "/my/vendor/returns/2"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 2,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_return_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 53982,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/returns/8"
+    },
+    "mobile": {
+     "bytes": 100233,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4206
+     ],
+     "url": "/my/vendor/returns/8"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 8,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_return_requested": {
+   "devices": {},
+   "kind": "portal",
+   "reason": "no record for leaders.vendor.return [[\"vendor_id.vendor_store_name\", \"=\", \"النور للإلكترونيات\"], [\"state\", \"=\", \"requested\"]] (requires part4)",
+   "role": "vendor_owner",
+   "status": "skipped"
+  },
+  "portal_vendor_returns": {
+   "devices": {
+    "desktop": {
+     "bytes": 58025,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/returns"
+    },
+    "mobile": {
+     "bytes": 136540,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      6244
+     ],
+     "url": "/my/vendor/returns"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_staff": {
+   "devices": {
+    "desktop": {
+     "bytes": 45668,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/staff"
+    },
+    "mobile": {
+     "bytes": 81297,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      3634
+     ],
+     "url": "/my/vendor/staff"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_staff_forbidden": {
+   "devices": {
+    "desktop": {
+     "bytes": 31569,
+     "markers": 0,
+     "missing_markers": [
+      ".lm-vendor-sidebar"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/my/vendor/staff"
+    },
+    "mobile": {
+     "bytes": 61704,
+     "markers": 0,
+     "missing_markers": [
+      ".lm-vendor-nav"
+     ],
+     "size": [
+      780,
+      2344
+     ],
+     "url": "/my/vendor/staff"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_staff",
+   "status": "captured"
+  },
+  "portal_vendor_statement": {
+   "devices": {
+    "desktop": {
+     "bytes": 52467,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1396
+     ],
+     "url": "/my/vendor/finance/statement"
+    },
+    "mobile": {
+     "bytes": 96666,
+     "markers": 7,
+     "missing_markers": [],
+     "size": [
+      780,
+      4518
+     ],
+     "url": "/my/vendor/finance/statement"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_terms": {
+   "devices": {
+    "desktop": {
+     "bytes": 71949,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/terms"
+    },
+    "mobile": {
+     "bytes": 113654,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      3724
+     ],
+     "url": "/my/vendor/terms"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "portal_vendor_terms_staff_notice": {
+   "devices": {
+    "desktop": {
+     "bytes": 68854,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1188
+     ],
+     "url": "/my/vendor/terms"
+    },
+    "mobile": {
+     "bytes": 113654,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      3724
+     ],
+     "url": "/my/vendor/terms"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": null,
+   "role": "vendor_staff",
+   "status": "captured"
+  },
+  "portal_vendor_variants": {
+   "devices": {
+    "desktop": {
+     "bytes": 61033,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1214
+     ],
+     "url": "/my/vendor/templates/24/variants"
+    },
+    "mobile": {
+     "bytes": 139077,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      5792
+     ],
+     "url": "/my/vendor/templates/24/variants"
+    }
+   },
+   "kind": "portal",
+   "reason": null,
+   "record": 20,
+   "role": "vendor_owner",
+   "status": "captured"
+  },
+  "public_api_openapi": {
+   "devices": {
+    "desktop": {
+     "bytes": 381728,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      1440,
+      2341
+     ],
+     "url": "/api/v1/openapi.json"
+    }
+   },
+   "kind": "public",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "report_vendor_contract_html": {
+   "devices": {
+    "desktop": {
+     "bytes": 44548,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/report/html/leaders_marketplace.report_vendor_contract/1"
+    }
+   },
+   "kind": "report",
+   "reason": null,
+   "record": 1,
+   "role": "manager",
+   "status": "captured"
+  },
+  "report_vendor_invoice_html": {
+   "devices": {},
+   "kind": "report",
+   "reason": "no record for leaders.vendor.invoice [[\"move_type\", \"=\", \"invoice\"]] (requires part3)",
+   "role": "manager",
+   "status": "skipped"
+  },
+  "report_vendor_statement_html": {
+   "devices": {
+    "desktop": {
+     "bytes": 19026,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/report/html/leaders_marketplace.report_vendor_statement/11"
+    }
+   },
+   "kind": "report",
+   "reason": null,
+   "record": 11,
+   "role": "manager",
+   "status": "captured"
+  },
+  "web_cart_c2_draft": {
+   "devices": {
+    "desktop": {
+     "bytes": 30803,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/shop/cart"
+    },
+    "mobile": {
+     "bytes": 61985,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      780,
+      2432
+     ],
+     "url": "/shop/cart"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "web_cart_c3_over_cod": {
+   "devices": {
+    "desktop": {
+     "bytes": 30819,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/shop/cart"
+    },
+    "mobile": {
+     "bytes": 61985,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      780,
+      2432
+     ],
+     "url": "/shop/cart"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "web_cart_empty": {
+   "devices": {
+    "desktop": {
+     "bytes": 31017,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/shop/cart"
+    },
+    "mobile": {
+     "bytes": 61985,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      780,
+      2432
+     ],
+     "url": "/shop/cart"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_checkout_address": {
+   "devices": {
+    "desktop": {
+     "bytes": 74142,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1892
+     ],
+     "url": "/shop/checkout"
+    },
+    "mobile": {
+     "bytes": 141038,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      780,
+      6624
+     ],
+     "url": "/shop/checkout"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "web_confirmation": {
+   "devices": {},
+   "kind": "website",
+   "reason": "mutates data: run with --allow-mutating on a throw-away DB (live_checkout)",
+   "role": "customer",
+   "status": "skipped"
+  },
+  "web_footer_sell_link": {
+   "devices": {
+    "desktop": {
+     "bytes": 26894,
+     "markers": 0,
+     "missing_markers": [
+      "#footer_sell_link, footer a[href='/vendor/apply']"
+     ],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/"
+    },
+    "mobile": {
+     "bytes": 52307,
+     "markers": 0,
+     "missing_markers": [
+      "#footer_sell_link, footer a[href='/vendor/apply']"
+     ],
+     "size": [
+      780,
+      1888
+     ],
+     "url": "/"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_home_visitor": {
+   "devices": {
+    "desktop": {
+     "bytes": 26894,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/"
+    },
+    "mobile": {
+     "bytes": 52307,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      1888
+     ],
+     "url": "/"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_login": {
+   "devices": {
+    "desktop": {
+     "bytes": 31360,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/web/login"
+    },
+    "mobile": {
+     "bytes": 62364,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      2612
+     ],
+     "url": "/web/login"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_payment_cod_blocked": {
+   "devices": {
+    "desktop": {
+     "bytes": 74213,
+     "markers": 0,
+     "missing_markers": [
+      "#payment_method, .o_payment_form"
+     ],
+     "size": [
+      1440,
+      1892
+     ],
+     "url": "/shop/payment"
+    },
+    "mobile": {
+     "bytes": 140302,
+     "markers": 0,
+     "missing_markers": [
+      "#payment_method, .o_payment_form"
+     ],
+     "size": [
+      780,
+      6624
+     ],
+     "url": "/shop/payment"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "web_payment_cod_otp_pending": {
+   "devices": {
+    "desktop": {
+     "bytes": 74142,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1892
+     ],
+     "url": "/shop/payment"
+    },
+    "mobile": {
+     "bytes": 141038,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      780,
+      6624
+     ],
+     "url": "/shop/payment"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "web_payment_cod_over_limit": {
+   "devices": {
+    "desktop": {
+     "bytes": 74126,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1892
+     ],
+     "url": "/shop/payment"
+    },
+    "mobile": {
+     "bytes": 141038,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      780,
+      6624
+     ],
+     "url": "/shop/payment"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "web_payment_step": {
+   "devices": {
+    "desktop": {
+     "bytes": 74142,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1892
+     ],
+     "url": "/shop/payment"
+    },
+    "mobile": {
+     "bytes": 141038,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      780,
+      6624
+     ],
+     "url": "/shop/payment"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "web_product_company": {
+   "devices": {
+    "desktop": {
+     "bytes": 45262,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1362
+     ],
+     "url": "/shop/hdmi-2m-hdmi-2-25"
+    },
+    "mobile": {
+     "bytes": 81921,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3964
+     ],
+     "url": "/shop/hdmi-2m-hdmi-2-25"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 25,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_product_discount": {
+   "devices": {
+    "desktop": {
+     "bytes": 47580,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1362
+     ],
+     "url": "/shop/8"
+    },
+    "mobile": {
+     "bytes": 88044,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      4374
+     ],
+     "url": "/shop/8"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 8,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_product_fbl_chair": {
+   "devices": {
+    "desktop": {
+     "bytes": 43808,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1362
+     ],
+     "url": "/shop/17"
+    },
+    "mobile": {
+     "bytes": 79873,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      4024
+     ],
+     "url": "/shop/17"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 17,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_product_headphones": {
+   "devices": {
+    "desktop": {
+     "bytes": 53422,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1452
+     ],
+     "url": "/shop/7"
+    },
+    "mobile": {
+     "bytes": 104614,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      4790
+     ],
+     "url": "/shop/7"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 7,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_product_lamp_sellers": {
+   "devices": {
+    "desktop": {
+     "bytes": 48419,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1452
+     ],
+     "url": "/shop/led-16"
+    },
+    "mobile": {
+     "bytes": 95070,
+     "markers": 5,
+     "missing_markers": [],
+     "size": [
+      780,
+      5052
+     ],
+     "url": "/shop/led-16"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 16,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_product_oos": {
+   "devices": {
+    "desktop": {
+     "bytes": 41476,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1362
+     ],
+     "url": "/shop/11"
+    },
+    "mobile": {
+     "bytes": 78232,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      4024
+     ],
+     "url": "/shop/11"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 11,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_product_questions_customer": {
+   "devices": {
+    "desktop": {
+     "bytes": 51355,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1580
+     ],
+     "url": "/shop/8"
+    },
+    "mobile": {
+     "bytes": 97075,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      4854
+     ],
+     "url": "/shop/8"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 8,
+   "role": "customer",
+   "status": "captured"
+  },
+  "web_product_questions_visitor": {
+   "devices": {
+    "desktop": {
+     "bytes": 47580,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1362
+     ],
+     "url": "/shop/8"
+    },
+    "mobile": {
+     "bytes": 87981,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4374
+     ],
+     "url": "/shop/8"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 8,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_product_suspended": {
+   "devices": {
+    "desktop": {
+     "bytes": 38040,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      1440,
+      962
+     ],
+     "url": "/shop/7-1-15"
+    },
+    "mobile": {
+     "bytes": 74454,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      780,
+      3268
+     ],
+     "url": "/shop/7-1-15"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 15,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_product_unpublished": {
+   "devices": {
+    "desktop": {
+     "bytes": 38040,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      1440,
+      962
+     ],
+     "url": "/shop/27"
+    },
+    "mobile": {
+     "bytes": 74454,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      780,
+      3268
+     ],
+     "url": "/shop/27"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 27,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_product_variants": {
+   "devices": {
+    "desktop": {
+     "bytes": 58482,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1801
+     ],
+     "url": "/shop/24"
+    },
+    "mobile": {
+     "bytes": 126534,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      6832
+     ],
+     "url": "/shop/24"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 24,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_seller_store_404": {
+   "devices": {
+    "desktop": {
+     "bytes": 38040,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      1440,
+      962
+     ],
+     "url": "/seller/no-such-store"
+    },
+    "mobile": {
+     "bytes": 74454,
+     "markers": 0,
+     "missing_markers": [],
+     "size": [
+      780,
+      3268
+     ],
+     "url": "/seller/no-such-store"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_seller_store_home": {
+   "devices": {
+    "desktop": {
+     "bytes": 52273,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1440
+     ],
+     "url": "/seller/seller-2"
+    },
+    "mobile": {
+     "bytes": 89960,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      3956
+     ],
+     "url": "/seller/seller-2"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_seller_store_nour": {
+   "devices": {
+    "desktop": {
+     "bytes": 58475,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1440
+     ],
+     "url": "/seller/seller"
+    },
+    "mobile": {
+     "bytes": 98163,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      3956
+     ],
+     "url": "/seller/seller"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_seller_store_oasis": {
+   "devices": {
+    "desktop": {
+     "bytes": 63978,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1851
+     ],
+     "url": "/seller/seller-3"
+    },
+    "mobile": {
+     "bytes": 111507,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      5140
+     ],
+     "url": "/seller/seller-3"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_shop_category": {
+   "devices": {
+    "desktop": {
+     "bytes": 40642,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1349
+     ],
+     "url": "/shop?category=2"
+    },
+    "mobile": {
+     "bytes": 72020,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      3368
+     ],
+     "url": "/shop?category=2"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 2,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_shop_customer": {
+   "devices": {
+    "desktop": {
+     "bytes": 74139,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1892
+     ],
+     "url": "/shop"
+    },
+    "mobile": {
+     "bytes": 140302,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      6624
+     ],
+     "url": "/shop"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "customer",
+   "status": "captured"
+  },
+  "web_shop_search": {
+   "devices": {
+    "desktop": {
+     "bytes": 31771,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1349
+     ],
+     "url": "/shop?search=مصباح"
+    },
+    "mobile": {
+     "bytes": 58901,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      2826
+     ],
+     "url": "/shop?search=مصباح"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_shop_visitor": {
+   "devices": {
+    "desktop": {
+     "bytes": 74208,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1892
+     ],
+     "url": "/shop"
+    },
+    "mobile": {
+     "bytes": 141038,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      6624
+     ],
+     "url": "/shop"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_form": {
+   "devices": {
+    "desktop": {
+     "bytes": 39884,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1072
+     ],
+     "url": "/vendor/apply"
+    },
+    "mobile": {
+     "bytes": 82590,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      3910
+     ],
+     "url": "/vendor/apply"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_form_step2": {
+   "devices": {
+    "desktop": {
+     "bytes": 38870,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      1440,
+      932
+     ],
+     "url": "/vendor/apply"
+    },
+    "mobile": {
+     "bytes": 80091,
+     "markers": 6,
+     "missing_markers": [],
+     "size": [
+      780,
+      3262
+     ],
+     "url": "/vendor/apply"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_form_step3": {
+   "devices": {
+    "desktop": {
+     "bytes": 37011,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/vendor/apply"
+    },
+    "mobile": {
+     "bytes": 75557,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3152
+     ],
+     "url": "/vendor/apply"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_form_step4": {
+   "devices": {
+    "desktop": {
+     "bytes": 35729,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/vendor/apply"
+    },
+    "mobile": {
+     "bytes": 72608,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3078
+     ],
+     "url": "/vendor/apply"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_form_step5": {
+   "devices": {
+    "desktop": {
+     "bytes": 36194,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/vendor/apply"
+    },
+    "mobile": {
+     "bytes": 73663,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3078
+     ],
+     "url": "/vendor/apply"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_form_step6": {
+   "devices": {
+    "desktop": {
+     "bytes": 36369,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      900
+     ],
+     "url": "/vendor/apply"
+    },
+    "mobile": {
+     "bytes": 73535,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      2818
+     ],
+     "url": "/vendor/apply"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_form_step7": {
+   "devices": {
+    "desktop": {
+     "bytes": 49481,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1153
+     ],
+     "url": "/vendor/apply"
+    },
+    "mobile": {
+     "bytes": 111941,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      4072
+     ],
+     "url": "/vendor/apply"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_form_step8": {
+   "devices": {
+    "desktop": {
+     "bytes": 59697,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1072
+     ],
+     "url": "/vendor/apply"
+    },
+    "mobile": {
+     "bytes": 93122,
+     "markers": 4,
+     "missing_markers": [],
+     "size": [
+      780,
+      3174
+     ],
+     "url": "/vendor/apply"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": null,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_status_approved": {
+   "devices": {
+    "desktop": {
+     "bytes": 43743,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1005
+     ],
+     "url": "/vendor/apply/status/955170a0c6cd45e1b962a9cf64060ded"
+    },
+    "mobile": {
+     "bytes": 100365,
+     "markers": 1,
+     "missing_markers": [],
+     "size": [
+      780,
+      4440
+     ],
+     "url": "/vendor/apply/status/955170a0c6cd45e1b962a9cf64060ded"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 1,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_status_draft": {
+   "devices": {
+    "desktop": {
+     "bytes": 45780,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1071
+     ],
+     "url": "/vendor/apply/status/24a4d5bfd4ff403199a6d74f4355785d"
+    },
+    "mobile": {
+     "bytes": 90652,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      3092
+     ],
+     "url": "/vendor/apply/status/24a4d5bfd4ff403199a6d74f4355785d"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 2,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_status_expired": {
+   "devices": {
+    "desktop": {
+     "bytes": 48078,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1143
+     ],
+     "url": "/vendor/apply/status/ef342aa734ff4a31b2c343699669a011"
+    },
+    "mobile": {
+     "bytes": 111065,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4716
+     ],
+     "url": "/vendor/apply/status/ef342aa734ff4a31b2c343699669a011"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 8,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_status_rejected": {
+   "devices": {
+    "desktop": {
+     "bytes": 57415,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1337
+     ],
+     "url": "/vendor/apply/status/200a895f62024064a664c9ff1ae0d37c"
+    },
+    "mobile": {
+     "bytes": 130624,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      5152
+     ],
+     "url": "/vendor/apply/status/200a895f62024064a664c9ff1ae0d37c"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 7,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_status_submitted": {
+   "devices": {
+    "desktop": {
+     "bytes": 53332,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1239
+     ],
+     "url": "/vendor/apply/status/b19344f3501e47a5ab362c5d53b2fd7e"
+    },
+    "mobile": {
+     "bytes": 122455,
+     "markers": 2,
+     "missing_markers": [],
+     "size": [
+      780,
+      4908
+     ],
+     "url": "/vendor/apply/status/b19344f3501e47a5ab362c5d53b2fd7e"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 4,
+   "role": "visitor",
+   "status": "captured"
+  },
+  "web_vendor_apply_status_under_review": {
+   "devices": {
+    "desktop": {
+     "bytes": 51480,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      1440,
+      1230
+     ],
+     "url": "/vendor/apply/status/a32e7d99075c4ba7863cf07131815c35"
+    },
+    "mobile": {
+     "bytes": 119961,
+     "markers": 3,
+     "missing_markers": [],
+     "size": [
+      780,
+      4966
+     ],
+     "url": "/vendor/apply/status/a32e7d99075c4ba7863cf07131815c35"
+    }
+   },
+   "kind": "website",
+   "reason": null,
+   "record": 6,
+   "role": "visitor",
+   "status": "captured"
+  }
+ },
+ "summary": {
+  "captured": 330,
+  "failed": 0,
+  "skipped": 23
+ }
+}

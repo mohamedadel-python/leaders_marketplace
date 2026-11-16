@@ -1,0 +1,24 @@
+{
+ "screen_id": "backend_menu_reviewer_role",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_menu_reviewer_role_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "أقسام قائمة السوق",
+   "selector": ".o_menu_sections",
+   "device": "desktop",
+   "bbox": {
+    "x": 191,
+    "y": 0,
+    "w": 1158,
+    "h": 45
+   }
+  }
+ ]
+}

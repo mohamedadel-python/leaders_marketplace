@@ -1,0 +1,113 @@
+{
+ "screen_id": "portal_vendor_import_job_done",
+ "images": {
+  "desktop": {
+   "file": "vendor_owner/portal_vendor_import_job_done_desktop.png",
+   "width": 1440,
+   "height": 1214
+  },
+  "mobile": {
+   "file": "vendor_owner/portal_vendor_import_job_done_mobile.png",
+   "width": 780,
+   "height": 3994
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قائمة البائع الجانبية",
+   "selector": ".lm-vendor-sidebar",
+   "device": "desktop",
+   "bbox": {
+    "x": 1135,
+    "y": 150,
+    "w": 230,
+    "h": 639
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 90,
+    "w": 1290,
+    "h": 48
+   }
+  },
+  {
+   "n": 3,
+   "label": "ملخص المهمة",
+   "selector": "#lm_vendor_import_job",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 150,
+    "w": 1036,
+    "h": 494
+   }
+  },
+  {
+   "n": 4,
+   "label": "ملف الأخطاء",
+   "selector": "a:has-text('ملف الأخطاء')",
+   "device": "desktop",
+   "bbox": {
+    "x": 143,
+    "y": 329,
+    "w": 103,
+    "h": 36
+   }
+  },
+  {
+   "n": 1,
+   "label": "قائمة البائع (شريط علوي في الجوال)",
+   "selector": ".lm-vendor-nav",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 296,
+    "w": 720,
+    "h": 108
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 176,
+    "w": 720,
+    "h": 96
+   }
+  },
+  {
+   "n": 3,
+   "label": "ملخص المهمة",
+   "selector": "#lm_vendor_import_job",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 436,
+    "w": 720,
+    "h": 1653
+   }
+  },
+  {
+   "n": 4,
+   "label": "ملف الأخطاء",
+   "selector": "a:has-text('ملف الأخطاء')",
+   "device": "mobile",
+   "bbox": {
+    "x": 165,
+    "y": 1203,
+    "w": 207,
+    "h": 72
+   }
+  }
+ ]
+}

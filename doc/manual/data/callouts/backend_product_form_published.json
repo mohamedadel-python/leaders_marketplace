@@ -1,0 +1,120 @@
+{
+ "screen_id": "backend_product_form_published",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_product_form_published_desktop.png",
+   "width": 1440,
+   "height": 1247
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 211,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "تحديث الكمية",
+   "selector": "button[name=\"action_update_quantity_on_hand\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1344,
+    "y": 113,
+    "w": 80,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "طباعة بطاقات العناوين",
+   "selector": "button[name=\"action_open_label_layout\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1218,
+    "y": 113,
+    "w": 122,
+    "h": 33
+   }
+  },
+  {
+   "n": 4,
+   "label": "رفض المنتج",
+   "selector": "button[name=\"action_marketplace_reject\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1137,
+    "y": 113,
+    "w": 77,
+    "h": 33
+   }
+  },
+  {
+   "n": 5,
+   "label": "إيقاف",
+   "selector": "button[name=\"action_marketplace_suspend\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1087,
+    "y": 113,
+    "w": 46,
+    "h": 33
+   }
+  },
+  {
+   "n": 6,
+   "label": "إعادة إلى مسودة",
+   "selector": "button[name=\"action_marketplace_reset\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 990,
+    "y": 113,
+    "w": 92,
+    "h": 33
+   }
+  },
+  {
+   "n": 7,
+   "label": "حالة السوق",
+   "selector": ".o_form_view .o_field_widget[name='marketplace_state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 211,
+    "h": 33
+   }
+  },
+  {
+   "n": 8,
+   "label": "مالك محتوى السوق",
+   "selector": ".o_form_view .o_field_widget[name='marketplace_owner_vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 382,
+    "w": 1240,
+    "h": 24
+   }
+  },
+  {
+   "n": 9,
+   "label": "المواصفات",
+   "selector": ".o_form_view .o_field_widget[name='leaders_specs']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 453,
+    "w": 1240,
+    "h": 63
+   }
+  }
+ ]
+}

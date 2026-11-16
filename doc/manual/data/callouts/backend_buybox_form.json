@@ -1,0 +1,120 @@
+{
+ "screen_id": "backend_buybox_form",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_buybox_form_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 138,
+    "w": 1308,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "وزن السعر",
+   "selector": ".o_form_view .o_field_widget[name='price_weight']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 319,
+    "w": 1248,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "وزن التقييم",
+   "selector": ".o_form_view .o_field_widget[name='rating_weight']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 358,
+    "w": 1248,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "وزن التوافر",
+   "selector": ".o_form_view .o_field_widget[name='availability_weight']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 397,
+    "w": 1248,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "وزن سرعة الشحن",
+   "selector": ".o_form_view .o_field_widget[name='shipping_speed_weight']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 436,
+    "w": 1248,
+    "h": 26
+   }
+  },
+  {
+   "n": 6,
+   "label": "وزن مستوى البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_tier_weight']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 475,
+    "w": 1248,
+    "h": 26
+   }
+  },
+  {
+   "n": 7,
+   "label": "مكافأة شحن FBL",
+   "selector": ".o_form_view .o_field_widget[name='fbl_shipping_bonus']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 582,
+    "w": 1247,
+    "h": 26
+   }
+  },
+  {
+   "n": 8,
+   "label": "مكافأة شحن FBM",
+   "selector": ".o_form_view .o_field_widget[name='fbm_shipping_bonus']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 621,
+    "w": 1247,
+    "h": 26
+   }
+  },
+  {
+   "n": 9,
+   "label": "يتطلب مخزونًا",
+   "selector": ".o_form_view .o_field_widget[name='require_stock']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1267,
+    "y": 660,
+    "w": 21,
+    "h": 23
+   }
+  }
+ ]
+}

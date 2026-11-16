@@ -1,0 +1,96 @@
+<odoo>
+    <record id="view_leaders_vendor_join_model_list" model="ir.ui.view">
+        <field name="name">leaders.vendor.join.model.list</field>
+        <field name="model">leaders.vendor.join.model</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="what_you_pay"/>
+                <field name="name_shown"/>
+                <field name="buyer_contact"/>
+                <field name="free_months"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_leaders_vendor_join_model_form" model="ir.ui.view">
+        <field name="name">leaders.vendor.join.model.form</field>
+        <field name="model">leaders.vendor.join.model</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" placeholder="Subscription"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="summary"/>
+                            <field name="what_you_pay"/>
+                        </group>
+                        <group>
+                            <field name="name_shown"/>
+                            <field name="buyer_contact"/>
+                            <field name="free_months"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_leaders_vendor_join_model" model="ir.actions.act_window">
+        <field name="name">Vendor Join Models</field>
+        <field name="res_model">leaders.vendor.join.model</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html"><p>The two ways to sell, compared on the "Join as a vendor" page (/vendor/join) and on the storefront.</p></field>
+    </record>
+    <menuitem id="menu_leaders_vendor_join_model" name="Vendor Join Models" parent="menu_configuration"
+              action="action_leaders_vendor_join_model" sequence="95" groups="leaders_marketplace.group_marketplace_manager"/>
+
+    <!-- the public page -->
+    <template id="vendor_join_page" name="Join as a Vendor">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <div class="container py-5 lm-join" id="lm_vendor_join">
+                    <h1 class="mb-2">Sell on our platform</h1>
+                    <p class="lead text-muted mb-4">Two ways to sell. Start free for the first months, then choose the one that fits you: by then you know your views and your orders.</p>
+                    <div class="table-responsive">
+                        <table class="table align-middle lm-join-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col"/>
+                                    <th t-foreach="join_models" t-as="m" scope="col">
+                                        <div class="h5 mb-1" t-esc="m.name"/>
+                                        <div class="small text-muted fw-normal" t-esc="m.summary"/>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">What you pay</th>
+                                    <td t-foreach="join_models" t-as="m" t-esc="m.what_you_pay"/>
+                                </tr>
+                                <tr>
+                                    <th scope="row">The buyer sees your name</th>
+                                    <td t-foreach="join_models" t-as="m">
+                                        <t t-if="m.name_shown"><i class="fa fa-check text-success" aria-hidden="true"/> Yes</t>
+                                        <t t-else=""><i class="fa fa-times text-muted" aria-hidden="true"/> No</t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Who talks to the buyer</th>
+                                    <td t-foreach="join_models" t-as="m" t-esc="m.buyer_contact"/>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Free period</th>
+                                    <td t-foreach="join_models" t-as="m"><t t-esc="m.free_months"/> months</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-muted small">You do not choose now: you sell for free first, and you pick your model near the end of the free period.</p>
+                    <a href="/vendor/apply" class="btn btn-primary btn-lg">Apply now</a>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Quote offer & payment: the offer of a quote / service request is an Odoo quotation -->
+    <record id="view_customer_request_form_offer" model="ir.ui.view">
+        <field name="name">leaders.customer.request.form.offer</field>
+        <field name="model">leaders.customer.request</field>
+        <field name="inherit_id" ref="leaders_marketplace.view_customer_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_create_offer" type="object" class="btn-primary" string="Prepare offer"
+                        invisible="kind not in ('quote', 'service') or quote_order_id or state in ('completed', 'cancelled')"/>
+                <button name="action_create_offer" type="object" string="Open offer"
+                        invisible="kind not in ('quote', 'service') or not quote_order_id"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <group string="Offer" invisible="kind not in ('quote', 'service')">
+                    <group>
+                        <field name="quote_order_id" readonly="1"/>
+                        <field name="needed_by"/>
+                    </group>
+                    <group>
+                        <field name="offer_accepted_at"/>
+                        <field name="offer_paid_at"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_form_quote_offer" model="ir.ui.view">
+        <field name="name">sale.order.form.quote.offer</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_leaders_send_offer" type="object" class="btn-primary" string="Send offer to the customer"
+                        invisible="not leaders_quote_request_id or state not in ('draft', 'sent')"
+                        confirm="The customer will see this offer on the storefront and can accept it. Send it?"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="leaders_quote_request_id" readonly="1" invisible="not leaders_quote_request_id"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="after">
+                <field name="marketplace_offer_id" string="Sold by vendor" optional="show"
+                       column_invisible="not parent.leaders_quote_request_id"
+                       domain="[('product_id', '=', product_id), ('state', '=', 'active')]"
+                       placeholder="The platform"/>
+                <field name="leaders_offer_note" optional="show" column_invisible="not parent.leaders_quote_request_id"/>
+                <field name="leaders_optional" optional="show" column_invisible="not parent.leaders_quote_request_id"/>
+                <field name="leaders_due_now" optional="show" column_invisible="not parent.leaders_quote_request_id"/>
+            </xpath>
+            <xpath expr="//field[@name='note']" position="before">
+                <field name="leaders_due_now_note" colspan="2" invisible="not leaders_quote_request_id"
+                       placeholder="Note under the amount due now (shown to the customer)"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

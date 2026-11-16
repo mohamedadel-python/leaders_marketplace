@@ -1,0 +1,31 @@
+<odoo noupdate="1">
+    <!-- the choices of "Business type" on the public vendor application; the admin edits them under Configuration -->
+    <record id="vendor_business_type_manufacturer" model="leaders.vendor.business.type">
+        <field name="name">Manufacturer</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="vendor_business_type_importer" model="leaders.vendor.business.type">
+        <field name="name">Importer / Distributor</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="vendor_business_type_dealer" model="leaders.vendor.business.type">
+        <field name="name">Authorized dealer</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="vendor_business_type_trader" model="leaders.vendor.business.type">
+        <field name="name">Trader / Retailer</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="vendor_business_type_workshop" model="leaders.vendor.business.type">
+        <field name="name">Maintenance workshop</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="vendor_business_type_rental" model="leaders.vendor.business.type">
+        <field name="name">Equipment rental</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="vendor_business_type_other" model="leaders.vendor.business.type">
+        <field name="name">Other</field>
+        <field name="sequence">90</field>
+    </record>
+</odoo>

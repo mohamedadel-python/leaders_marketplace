@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_fulfillment_fee_form",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_fulfillment_fee_form_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 138,
+    "w": 583,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "نوع الرسوم",
+   "selector": ".o_form_view .o_field_widget[name='fee_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 174,
+    "w": 596,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "طريقة الحساب",
+   "selector": ".o_form_view .o_field_widget[name='calc_method']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 216,
+    "w": 583,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "المبلغ",
+   "selector": ".o_form_view .o_field_widget[name='amount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 213,
+    "w": 596,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "نسبة مئوية",
+   "selector": ".o_form_view .o_field_widget[name='percent']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 255,
+    "w": 583,
+    "h": 26
+   }
+  }
+ ]
+}

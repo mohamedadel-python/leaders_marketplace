@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_settings_vendor_api",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_vendor_api_desktop.png",
+   "width": 1306,
+   "height": 192
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "واجهة API الكتابية للبائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_api_write_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 100
+   }
+  },
+  {
+   "n": 2,
+   "label": "عدد استدعاءات API في الدقيقة لكل مفتاح",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_api_rate_limit'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 100
+   }
+  }
+ ]
+}

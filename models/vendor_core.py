@@ -17,6 +17,8 @@ DOCUMENT_TYPES = [
     ("power_of_attorney", "Power of Attorney"),
     ("brand_authorization", "Brand / Distribution Authorization"),
 ]
+# an account can have only one application in these states at a time
+APPLICANT_OPEN_STATES = ("draft", "submitted", "under_review")
 
 class VendorTier(models.Model):
     _name = "leaders.vendor.tier"
@@ -155,6 +157,9 @@ class VendorApplication(models.Model):
     street = fields.Char()
     city = fields.Char()
     country_id = fields.Many2one("res.country")
+    state_id = fields.Many2one("res.country.state", string="Governorate", tracking=True)
+    business_type_id = fields.Many2one("leaders.vendor.business.type", string="Business Type", tracking=True)
+    delivery_method = fields.Char(help="How the vendor delivers its orders, in its own words.")
     # Owner (becomes the vendor portal user)
     owner_name = fields.Char(string="Vendor Owner Name", required=True)
     owner_email = fields.Char(string="Vendor Owner Email", required=True,
@@ -175,6 +180,8 @@ class VendorApplication(models.Model):
     reviewer_notes = fields.Text(string="Reviewer Notes")
     terms_accepted = fields.Boolean(string="Terms & Conditions Accepted", tracking=True)
     seller_agreement_accepted = fields.Boolean(string="Seller Agreement Accepted", tracking=True)
+    data_confirmed = fields.Boolean(string="Data Confirmed Correct", tracking=True,
+                                    help="The applicant confirmed on the public form that the data and documents are correct.")
     document_ids = fields.One2many("leaders.vendor.document","application_id")
     missing_requirements = fields.Text(compute="_compute_missing_requirements",
                                        help="What still blocks the approval of this application.")
@@ -183,6 +190,27 @@ class VendorApplication(models.Model):
     ], default="not_started", tracking=True)
     request_ip = fields.Char(string="Submitted From IP", readonly=True, copy=False,
                              help="Set on applications filed through the public form; used to rate-limit it.")
+    leaders_products_sheet = fields.Binary(
+        "Products sheet", attachment=True,
+        help="Optional Excel or CSV sheet of the products the applicant wants to list (the one sheet for every "
+             "product). On approval it becomes an import of the vendor, confirmed in the vendor portal.")
+    leaders_products_sheet_name = fields.Char("Products sheet name")
+    leaders_products_import_id = fields.Many2one("leaders.vendor.import", "Products import", readonly=True, copy=False)
+    applicant_user_id = fields.Many2one(
+        "res.users", string="Applicant Account", readonly=True, copy=False, index=True, ondelete="set null",
+        help="The customer account that filed this application on the website. On approval this same "
+             "account becomes the vendor owner: no new user is created.")
+    previous_application_id = fields.Many2one(
+        "leaders.vendor.application", string="Previous Application", readonly=True, copy=False,
+        help="The rejected application this one was filed again from.")
+
+    @api.constrains("applicant_user_id", "state")
+    def _check_one_open_application_per_account(self):
+        for rec in self.filtered(lambda r: r.applicant_user_id and r.state in APPLICANT_OPEN_STATES):
+            if self.sudo().search_count([
+                    ("applicant_user_id", "=", rec.applicant_user_id.id),
+                    ("state", "in", APPLICANT_OPEN_STATES), ("id", "!=", rec.id)]):
+                raise ValidationError(_("This account already has an open vendor application."))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -208,14 +236,7 @@ class VendorApplication(models.Model):
     def _required_document_types(self):
         """KYC documents that must be uploaded and verified before approval."""
         self.ensure_one()
-        required = ["id_passport", "bank_proof", "address_proof"]
-        if self.legal_type in ("sole_proprietorship", "company"):
-            required.append("commercial_register")
-        if self.legal_type == "company":
-            required.append("tax_certificate")
-        if self.tax_number:
-            required.append("vat_certificate")
-        return required
+        return ["id_passport"]
 
     def _get_missing_requirements(self, check_verification=True):
         """What still blocks the application.
@@ -227,30 +248,20 @@ class VendorApplication(models.Model):
         self.ensure_one()
         labels = dict(DOCUMENT_TYPES)
         missing = []
+        # what the public form asks for; the other fields are optional and filled by the reviewer if needed
         mandatory = [
-            ("legal_type", _("Legal Type")),
-            ("legal_name", _("Legal Business Name")),
-            ("business_activity", _("Business Activity")),
+            ("business_name", _("Company Name")),
             ("owner_name", _("Vendor Owner Name")),
             ("owner_email", _("Vendor Owner Email")),
-            ("representative_name", _("Representative Name")),
-            ("representative_position", _("Representative Position")),
-            ("representative_id_number", _("National ID / Passport Number")),
-            ("bank_name", _("Bank Name")),
-            ("bank_account_holder", _("Account Holder Name")),
-            ("bank_account_number", _("Account Number / IBAN")),
+            ("owner_phone", _("Vendor Owner Phone")),
+            ("business_type_id", _("Business Type")),
+            ("state_id", _("Governorate")),
         ]
-        if self.legal_type in ("sole_proprietorship", "company"):
-            mandatory.append(("commercial_registration_number", _("Commercial Registration Number")))
-        if self.legal_type == "company":
-            mandatory.append(("tax_number", _("Tax/VAT Registration Number")))
         missing += [_("Missing: %s", label) for field, label in mandatory if not self[field]]
         if not self.product_category_ids:
             missing.append(_("Missing: Product Categories"))
         if not self.terms_accepted:
             missing.append(_("Terms & Conditions not accepted"))
-        if not self.seller_agreement_accepted:
-            missing.append(_("Seller Agreement not accepted"))
         today = fields.Date.context_today(self)
         for doc_type in self._required_document_types():
             docs = self.document_ids.filtered(lambda d: d.document_type == doc_type)
@@ -264,10 +275,8 @@ class VendorApplication(models.Model):
             missing.append(_("Document expired: %s", doc.name or labels.get(doc.document_type)))
         return missing
 
-    @api.depends("legal_type", "legal_name", "commercial_registration_number", "tax_number", "business_activity",
-                 "product_category_ids", "owner_name", "owner_email", "representative_name",
-                 "representative_position", "representative_id_number", "bank_name", "bank_account_holder",
-                 "bank_account_number", "terms_accepted", "seller_agreement_accepted",
+    @api.depends("business_name", "owner_name", "owner_email", "owner_phone", "business_type_id", "state_id",
+                 "product_category_ids", "terms_accepted",
                  "document_ids.verification_status", "document_ids.expiry_date", "document_ids.document_type")
     def _compute_missing_requirements(self):
         for rec in self:
@@ -287,7 +296,7 @@ class VendorApplication(models.Model):
         Users = self.env["res.users"].sudo().with_context(active_test=False)
         for rec in self:
             user = Users.search([("login", "=", rec.owner_email)], limit=1)
-            if user and user != rec.portal_user_id:
+            if user and user not in rec.portal_user_id | rec.applicant_user_id:
                 raise UserError(_("The owner email %s is already used by another account.", rec.owner_email))
 
     def _ensure_vendor_partner(self):
@@ -304,7 +313,8 @@ class VendorApplication(models.Model):
                 "phone": rec.business_phone or rec.owner_phone or False,
                 "street": rec.street or False,
                 "city": rec.city or False,
-                "country_id": rec.country_id.id or False,
+                "state_id": rec.state_id.id or False,
+                "country_id": rec.country_id.id or rec.state_id.country_id.id or False,
             }
             if rec.partner_id:
                 rec.partner_id.sudo().write({k: v for k, v in vals.items() if v})
@@ -312,9 +322,62 @@ class VendorApplication(models.Model):
                 rec.partner_id = Partners.create(vals)
         return self.mapped("partner_id")
 
+    @api.model
+    def _applicant_problem(self, user, vendor=None):
+        """Why ``user`` cannot apply or become the owner of ``vendor``, or False.
+
+        The account becomes a contact of the vendor company, so it must be a customer account
+        of a person that does not belong to another company yet.
+        """
+        if not user.share:
+            return _("Staff accounts cannot apply to sell. Sign in with a customer account.")
+        person = user.partner_id
+        if person.is_company:
+            return _("This account is a company account. Sign in with a personal account to apply.")
+        if person.parent_id and person.parent_id != vendor:
+            return _("This account already belongs to %s. Sign in with another account to apply.",
+                     person.parent_id.display_name)
+        return False
+
+    @api.model
+    def _applicant_status(self, user):
+        """``(status, application)`` of an account: none, pending, rejected or approved."""
+        company = user.partner_id.commercial_partner_id
+        latest = self.sudo().search([("applicant_user_id", "=", user.id)], order="id desc", limit=1)
+        if company.is_marketplace_vendor and company.vendor_state in ("approved", "frozen"):
+            return "approved", latest
+        if not latest:
+            return "none", latest
+        if latest.state in APPLICANT_OPEN_STATES:
+            return "pending", latest
+        return ("rejected" if latest.state == "rejected" else "approved"), latest
+
+    def _make_applicant_the_owner(self, partner):
+        """Approval of a website application: the applicant's own account becomes the vendor owner."""
+        self.ensure_one()
+        user = self.applicant_user_id.sudo()
+        problem = self._applicant_problem(user, partner)
+        if problem:
+            raise UserError(_("%(name)s cannot be approved: %(problem)s", name=self.name, problem=problem))
+        person = user.partner_id
+        if person.parent_id != partner:
+            # Joining the company copies its address onto a plain contact: keep the person's own one.
+            own_address = {name: person[name] for name in person._address_fields()}
+            own_address = {k: (v.id if hasattr(v, "id") else v) for k, v in own_address.items()}
+            person.write({"parent_id": partner.id, "type": "contact"})
+            if any(own_address.values()):
+                person.write(own_address)
+        user.write({"groups_id": [(4, self.env.ref("leaders_marketplace.group_vendor_owner").id)]})
+        self.write({"owner_partner_id": person.id, "portal_user_id": user.id})
+        self.message_post(body=_("The applicant's account %s is now the vendor owner. No new user was created.",
+                                 user.login))
+        return user
+
     def _ensure_vendor_owner_user(self, partner):
         """Owner contact under the vendor company + portal user with the Vendor Owner group."""
         self.ensure_one()
+        if self.applicant_user_id:
+            return self._make_applicant_the_owner(partner)
         group_owner = self.env.ref("leaders_marketplace.group_vendor_owner")
         Users = self.env["res.users"].sudo().with_context(active_test=False)
         Partners = self.env["res.partner"].sudo()
@@ -365,6 +428,10 @@ class VendorApplication(models.Model):
         for rec in self:
             if not rec.document_ids:
                 raise UserError(_("At least one vendor document is required."))
+            if rec.applicant_user_id:
+                problem = rec._applicant_problem(rec.applicant_user_id, rec.partner_id)
+                if problem:
+                    raise UserError(problem)
             rec._check_owner_email_available()
             partner = rec._ensure_vendor_partner()
             partner.vendor_state = "submitted"
@@ -389,13 +456,38 @@ class VendorApplication(models.Model):
         self.write({"state":"under_review","reviewer_id":self.env.user.id})
         self.mapped("partner_id").write({"vendor_state":"under_review"})
 
+    def _leaders_queue_products_sheet(self, partner):
+        """The products sheet sent with the application becomes an import of the new vendor; it is validated by
+        the import cron and the vendor confirms it (rows, errors and preview) in the vendor portal."""
+        self.ensure_one()
+        if not self.leaders_products_sheet or self.leaders_products_import_id:
+            return
+        job = self.env["leaders.vendor.import"].sudo().create({
+            "vendor_id": partner.id, "kind": "products", "file": self.leaders_products_sheet,
+            "filename": self.leaders_products_sheet_name or "products.xlsx",
+            "user_id": self.applicant_user_id.id or False,
+        })
+        self.leaders_products_import_id = job
+        self.message_post(body=_("The products sheet of the application was queued as the import %s.", job.display_name))
+
+    def _leaders_activate_now(self):
+        """Project guide: the vendor is active as soon as the form is filed; the documents are reviewed after
+        (KYC stays pending) and every product still waits for the platform before it is published."""
+        self.with_context(leaders_instant_activation=True).action_approve()
+        for rec in self:
+            rec.message_post(body=_("Vendor activated at once (instant activation); the documents still need review."))
+
     def action_approve(self):
         bronze = self.env.ref("leaders_marketplace.vendor_tier_bronze", raise_if_not_found=False)
-        self._check_ready_for_approval()
+        instant = self.env.context.get("leaders_instant_activation")
+        if not instant:
+            self._check_ready_for_approval()
         for rec in self:
-            rec.kyc_state = "verified"
+            if not instant:
+                rec.kyc_state = "verified"
             partner = rec._ensure_vendor_partner()
-            rec._ensure_vendor_bank_account(partner)
+            if rec.bank_account_number:  # optional now: the vendor can add it later through a bank change
+                rec._ensure_vendor_bank_account(partner)
             partner.write({
                 "is_marketplace_vendor": True,
                 "vendor_state": "approved",
@@ -408,6 +500,10 @@ class VendorApplication(models.Model):
             # dedicated location for FBL) and is always owned by the vendor.
             partner._marketplace_ensure_vendor_stock()
             rec._ensure_vendor_owner_user(partner)
+            rec._leaders_queue_products_sheet(partner)
+            if not partner.leaders_free_until:  # the free period starts with the activation
+                months = max(self.env["leaders.vendor.join.model"].sudo().search([]).mapped("free_months") or [3])
+                partner.leaders_free_until = fields.Date.context_today(rec) + relativedelta(months=months)
             rec.state = "approved"
             self.env["leaders.notification"].notify("vendor_application_approved", rec, partners=rec.owner_partner_id)
         return True

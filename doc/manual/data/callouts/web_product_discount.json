@@ -1,0 +1,137 @@
+{
+ "screen_id": "web_product_discount",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_product_discount_desktop.png",
+   "width": 1440,
+   "height": 1362
+  },
+  "mobile": {
+   "file": "visitor/web_product_discount_mobile.png",
+   "width": 780,
+   "height": 4374
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "تفاصيل المنتج",
+   "selector": "#product_detail, #product_details",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 82,
+    "w": 1320,
+    "h": 715
+   }
+  },
+  {
+   "n": 2,
+   "label": "السعر",
+   "selector": "#product_detail .product_price, .product_price",
+   "device": "desktop",
+   "bbox": {
+    "x": 312,
+    "y": 228,
+    "w": 393,
+    "h": 51
+   }
+  },
+  {
+   "n": 3,
+   "label": "زر أضف إلى السلة",
+   "selector": "#add_to_cart, a#add_to_cart",
+   "device": "desktop",
+   "bbox": {
+    "x": 378,
+    "y": 294,
+    "w": 183,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "أسئلة وأجوبة المنتج",
+   "selector": "#lm_questions",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 821,
+    "w": 1320,
+    "h": 156
+   }
+  },
+  {
+   "n": 5,
+   "label": "المواصفات",
+   "selector": "#lm_product_specs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 360,
+    "w": 630,
+    "h": 155
+   }
+  },
+  {
+   "n": 1,
+   "label": "تفاصيل المنتج",
+   "selector": "#product_detail, #product_details",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 144,
+    "w": 780,
+    "h": 2045
+   }
+  },
+  {
+   "n": 2,
+   "label": "السعر",
+   "selector": "#product_detail .product_price, .product_price",
+   "device": "mobile",
+   "bbox": {
+    "x": 90,
+    "y": 1284,
+    "w": 660,
+    "h": 83
+   }
+  },
+  {
+   "n": 3,
+   "label": "زر أضف إلى السلة",
+   "selector": "#add_to_cart, a#add_to_cart",
+   "device": "mobile",
+   "bbox": {
+    "x": 97,
+    "y": 1399,
+    "w": 366,
+    "h": 76
+   }
+  },
+  {
+   "n": 4,
+   "label": "أسئلة وأجوبة المنتج",
+   "selector": "#lm_questions",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 2238,
+    "w": 780,
+    "h": 312
+   }
+  },
+  {
+   "n": 5,
+   "label": "المواصفات",
+   "selector": "#lm_product_specs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1531,
+    "w": 720,
+    "h": 310
+   }
+  }
+ ]
+}

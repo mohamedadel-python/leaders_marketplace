@@ -1,0 +1,120 @@
+{
+ "screen_id": "backend_zone_list",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_zone_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "زر إنشاء سجل جديد",
+   "selector": ".o_list_button_add",
+   "device": "desktop",
+   "bbox": {
+    "x": 1382,
+    "y": 55,
+    "w": 42,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "المنصة",
+   "selector": "th[data-name='is_platform']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1290,
+    "y": 106,
+    "w": 109,
+    "h": 40
+   }
+  },
+  {
+   "n": 4,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 887,
+    "y": 106,
+    "w": 404,
+    "h": 40
+   }
+  },
+  {
+   "n": 5,
+   "label": "الحالة",
+   "selector": "th[data-name='state_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 422,
+    "y": 106,
+    "w": 290,
+    "h": 40
+   }
+  },
+  {
+   "n": 6,
+   "label": "السعر",
+   "selector": "th[data-name='price']",
+   "device": "desktop",
+   "bbox": {
+    "x": 307,
+    "y": 106,
+    "w": 114,
+    "h": 40
+   }
+  },
+  {
+   "n": 7,
+   "label": "حد الشحن المجاني",
+   "selector": "th[data-name='free_shipping_threshold']",
+   "device": "desktop",
+   "bbox": {
+    "x": 193,
+    "y": 106,
+    "w": 114,
+    "h": 40
+   }
+  },
+  {
+   "n": 8,
+   "label": "أدنى عدد لأيام التوصيل",
+   "selector": "th[data-name='lead_days_min']",
+   "device": "desktop",
+   "bbox": {
+    "x": 113,
+    "y": 106,
+    "w": 80,
+    "h": 40
+   }
+  },
+  {
+   "n": 9,
+   "label": "أقصى عدد لأيام التوصيل",
+   "selector": "th[data-name='lead_days_max']",
+   "device": "desktop",
+   "bbox": {
+    "x": 32,
+    "y": 106,
+    "w": 80,
+    "h": 40
+   }
+  }
+ ]
+}

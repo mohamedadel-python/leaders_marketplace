@@ -2,11 +2,11 @@
     <record id="view_product_template_marketplace" model="ir.ui.view">
         <field name="name">product.template.form.marketplace</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="inherit_id" ref="leaders_marketplace.view_product_template_marketplace_base"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="action_marketplace_approve" type="object" string="Approve Product"
-                        class="btn-primary" invisible="marketplace_state in ('published', 'draft')"
+                        class="btn-primary" invisible="marketplace_state == 'published'"
                         groups="leaders_marketplace.group_marketplace_reviewer"/>
                 <button name="action_marketplace_reject" type="object" string="Reject Product"
                         invisible="marketplace_state in ('rejected', 'draft')"
@@ -22,24 +22,23 @@
                        groups="leaders_marketplace.group_marketplace_reviewer"/>
             </xpath>
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="Marketplace">
+                <page string="Review and offers" name="leaders_marketplace_review">
                     <div class="alert alert-warning" role="alert"
                          invisible="marketplace_state != 'pending'">
                         This product is waiting for a marketplace review; it is not on the website yet.
                     </div>
                     <div class="alert alert-danger" role="alert"
                          invisible="marketplace_state != 'rejected'">
-                        Rejected: <field name="marketplace_reject_reason" readonly="1" nolabel="1" class="d-inline"/>
+                        Rejected: see the reason below. The vendor sees it on their portal.
                     </div>
                     <group>
-                        <field name="marketplace_state"/>
-                        <field name="marketplace_owner_vendor_id"/>
-                        <field name="marketplace_publish_date"/>
-                        <field name="leaders_specs" placeholder="Material: Cotton&#10;Weight: 2 kg"/>
+                        <field name="marketplace_owner_vendor_id" help="The vendor who created this product from their portal and owns its content. Empty: the platform created it."/>
+                        <field name="marketplace_publish_date" help="When the product was approved and published on the website."/>
+                        <field name="leaders_specs" placeholder="Material: Cotton&#10;Weight: 2 kg" help="Extra specifications, one &#x27;name: value&#x27; per line. Shown as a table on the website product page."/>
                         <field name="marketplace_reject_reason"
-                               placeholder="Required to reject the product; the vendor sees this on their portal."/>
+                               placeholder="Required to reject the product; the vendor sees this on their portal." help="Why the product is rejected. Required to reject it; the vendor sees it in their portal and can fix the product and send it again."/>
                     </group>
-                    <field name="marketplace_offer_ids">
+                    <field name="marketplace_offer_ids" help="The vendors who sell this product, with their price, fulfillment and state. The Buy Box winner is the offer the website shows first.">
                         <list>
                             <field name="vendor_id"/>
                             <field name="seller_sku"/>
@@ -92,6 +91,9 @@
         <field name="domain">[('marketplace_state', '!=', 'draft')]</field>
         <field name="context">{'search_default_mp_pending': 1}</field>
         <field name="view_id" ref="view_product_template_marketplace_review_list"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_product_template_marketplace_review_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_product_template_marketplace_base')})]"/>
         <field name="search_view_id" ref="view_product_template_marketplace_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Nothing is waiting for review.</p>

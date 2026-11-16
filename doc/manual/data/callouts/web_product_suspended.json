@@ -1,0 +1,16 @@
+{
+ "screen_id": "web_product_suspended",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_product_suspended_desktop.png",
+   "width": 1440,
+   "height": 962
+  },
+  "mobile": {
+   "file": "visitor/web_product_suspended_mobile.png",
+   "width": 780,
+   "height": 3268
+  }
+ },
+ "markers": []
+}

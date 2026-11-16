@@ -1,0 +1,96 @@
+{
+ "screen_id": "backend_tier_list",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_tier_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "زر إنشاء سجل جديد",
+   "selector": ".o_list_button_add",
+   "device": "desktop",
+   "bbox": {
+    "x": 1382,
+    "y": 55,
+    "w": 42,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "الاسم",
+   "selector": "th[data-name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 913,
+    "y": 106,
+    "w": 407,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "معدل العمولة",
+   "selector": "th[data-name='commission_rate']",
+   "device": "desktop",
+   "bbox": {
+    "x": 811,
+    "y": 106,
+    "w": 102,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "حد المنتجات",
+   "selector": "th[data-name='product_limit']",
+   "device": "desktop",
+   "bbox": {
+    "x": 731,
+    "y": 106,
+    "w": 80,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "تكرار صرف المستحقات",
+   "selector": "th[data-name='payout_frequency']",
+   "device": "desktop",
+   "bbox": {
+    "x": 91,
+    "y": 106,
+    "w": 639,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "الشحن خلال (أيام)",
+   "selector": "th[data-name='ship_sla_days']",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 106,
+    "w": 91,
+    "h": 38
+   }
+  }
+ ]
+}

@@ -1,0 +1,113 @@
+{
+ "screen_id": "portal_vendor_product_catalog_search",
+ "images": {
+  "desktop": {
+   "file": "vendor_owner/portal_vendor_product_catalog_search_desktop.png",
+   "width": 1440,
+   "height": 2807
+  },
+  "mobile": {
+   "file": "vendor_owner/portal_vendor_product_catalog_search_mobile.png",
+   "width": 780,
+   "height": 7890
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قائمة البائع الجانبية",
+   "selector": ".lm-vendor-sidebar",
+   "device": "desktop",
+   "bbox": {
+    "x": 1135,
+    "y": 150,
+    "w": 230,
+    "h": 639
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 90,
+    "w": 1290,
+    "h": 48
+   }
+  },
+  {
+   "n": 3,
+   "label": "بطاقة البيع من الكتالوج",
+   "selector": "#lm_catalog_card",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 210,
+    "w": 1036,
+    "h": 261
+   }
+  },
+  {
+   "n": 4,
+   "label": "مربع البحث",
+   "selector": "#lm_catalog_card input[name='q']",
+   "device": "desktop",
+   "bbox": {
+    "x": 92,
+    "y": 265,
+    "w": 1002,
+    "h": 44
+   }
+  },
+  {
+   "n": 1,
+   "label": "قائمة البائع (شريط علوي في الجوال)",
+   "selector": ".lm-vendor-nav",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 296,
+    "w": 720,
+    "h": 108
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 176,
+    "w": 720,
+    "h": 96
+   }
+  },
+  {
+   "n": 3,
+   "label": "بطاقة البيع من الكتالوج",
+   "selector": "#lm_catalog_card",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 556,
+    "w": 720,
+    "h": 858
+   }
+  },
+  {
+   "n": 4,
+   "label": "مربع البحث",
+   "selector": "#lm_catalog_card input[name='q']",
+   "device": "mobile",
+   "bbox": {
+    "x": 64,
+    "y": 666,
+    "w": 652,
+    "h": 88
+   }
+  }
+ ]
+}

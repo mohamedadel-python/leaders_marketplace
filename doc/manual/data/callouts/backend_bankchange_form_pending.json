@@ -1,0 +1,144 @@
+{
+ "screen_id": "backend_bankchange_form_pending",
+ "images": {
+  "desktop": {
+   "file": "finance/backend_bankchange_form_pending_desktop.png",
+   "width": 1440,
+   "height": 977
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 143,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "اعتماد",
+   "selector": "button[name=\"action_approve\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1375,
+    "y": 113,
+    "w": 49,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "رفض",
+   "selector": "button[name=\"action_reject\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1323,
+    "y": 113,
+    "w": 48,
+    "h": 33
+   }
+  },
+  {
+   "n": 4,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 380,
+    "y": 179,
+    "w": 1018,
+    "h": 34
+   }
+  },
+  {
+   "n": 5,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 301,
+    "w": 550,
+    "h": 24
+   }
+  },
+  {
+   "n": 6,
+   "label": "طلب بواسطة",
+   "selector": ".o_form_view .o_field_widget[name='requested_by']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 338,
+    "w": 550,
+    "h": 24
+   }
+  },
+  {
+   "n": 7,
+   "label": "اسم البنك",
+   "selector": ".o_form_view .o_field_widget[name='bank_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 375,
+    "w": 550,
+    "h": 26
+   }
+  },
+  {
+   "n": 8,
+   "label": "صاحب الحساب",
+   "selector": ".o_form_view .o_field_widget[name='account_holder']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 414,
+    "w": 550,
+    "h": 26
+   }
+  },
+  {
+   "n": 9,
+   "label": "رقم الحساب / IBAN",
+   "selector": ".o_form_view .o_field_widget[name='account_number']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 453,
+    "w": 550,
+    "h": 26
+   }
+  },
+  {
+   "n": 10,
+   "label": "إثبات بنكي",
+   "selector": ".o_form_view .o_field_widget[name='proof']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 492,
+    "w": 550,
+    "h": 26
+   }
+  },
+  {
+   "n": 11,
+   "label": "سبب الرفض",
+   "selector": ".o_form_view .o_field_widget[name='reject_reason']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 301,
+    "w": 549,
+    "h": 50
+   }
+  }
+ ]
+}

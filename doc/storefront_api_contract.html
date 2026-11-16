@@ -1,0 +1,1980 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storefront API Contract</title>
+<style>
+:root {
+  --bg: #f7f5ef; --panel: #ffffff; --ink: #191917; --muted: #6a695f; --line: #e3e0d5; --soft: #f1eee4;
+  --accent: #c2410c; --accent-ink: #ffffff; --code-bg: #f3f0e6;
+  --ok: #15803d; --ok-bg: #e4f4e8; --warn: #92600a; --warn-bg: #fcf0d6; --err: #b91c1c; --err-bg: #fbe6e6; --info: #1d4ed8; --info-bg: #e5edfd;
+  --k: #9a3412; --s: #166534; --n: #1d4ed8; --b: #7c3aed;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131311; --panel: #1c1c19; --ink: #efeee7; --muted: #a2a196; --line: #33322c; --soft: #242421;
+    --accent: #fb923c; --accent-ink: #1a1208; --code-bg: #232320;
+    --ok: #6ee79a; --ok-bg: #153020; --warn: #f5c451; --warn-bg: #33290f; --err: #fca5a5; --err-bg: #3a1919; --info: #93b4ff; --info-bg: #182340;
+    --k: #fdba74; --s: #86efac; --n: #93c5fd; --b: #c4b5fd;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+a { color: var(--accent); }
+.layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 36px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+nav { position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 64px); overflow: auto; padding: 24px 0; }
+nav h2 { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+nav a { display: block; color: var(--muted); text-decoration: none; padding: 3px 0 3px 10px; border-left: 2px solid transparent; font-size: 14px; }
+nav a:hover, nav a.on { color: var(--ink); border-left-color: var(--accent); }
+nav a.sub { padding-left: 22px; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; }
+main { padding: 30px 0 90px; min-width: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 { font-size: 36px; line-height: 1.12; margin: 6px 0 12px; letter-spacing: -.01em; }
+h2.section { font-size: 24px; margin: 54px 0 10px; }
+h3 { font-size: 16px; margin: 24px 0 6px; }
+p { margin: 9px 0; }
+.lede { color: var(--muted); max-width: 70ch; font-size: 16px; }
+.pill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-weight: 600; font-size: 12.5px; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); } .pill.err { color: var(--err); background: var(--err-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); } .pill.info { color: var(--info); background: var(--info-bg); }
+.callout { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px; overflow-x: auto; font-size: 12.8px; line-height: 1.55; margin: 8px 0 14px; }
+.tw { overflow-x: auto; margin: 10px 0 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th { text-align: left; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.method { color: var(--accent); font-weight: 700; font-size: 12.5px; letter-spacing: .04em; }
+.tag { font-size: 10.5px; padding: 1px 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-weight: 600; white-space: nowrap; }
+
+/* sticky playground dock */
+.dock { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.dock-in { max-width: 1200px; margin: 0 auto; padding: 8px 20px; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--panel); }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 5px 13px; font: 600 12.5px inherit; font-family: inherit; cursor: pointer; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+.dock input.base { width: 250px; max-width: 100%; }
+input, select, textarea { font: 13px/1.4 "IBM Plex Mono", ui-monospace, monospace; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 100%; }
+input:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); white-space: nowrap; }
+.chip b { color: var(--ink); font-weight: 600; }
+.chip.live { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.live .dot { background: var(--ok); animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+.dock .sp { flex: 1; }
+.mini { font: 600 12px inherit; font-family: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.mini:hover { color: var(--ink); border-color: var(--accent); }
+.drawer { max-width: 1200px; margin: 0 auto; padding: 0 20px 10px; display: none; }
+.drawer.open { display: block; }
+.drawer .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 12.5px; }
+.box h4 { margin: 0 0 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.box pre { margin: 0; border: 0; padding: 0; background: transparent; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+
+/* endpoint cards */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; margin: 22px 0; overflow: hidden; scroll-margin-top: 70px; }
+.card-h { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px 22px 4px; }
+.mpill { background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 6px; letter-spacing: .05em; }
+.path { font-size: 19px; font-weight: 700; }
+.what { color: var(--muted); }
+.auth { margin-left: auto; font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.card-b { padding: 4px 22px 18px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 14px; background: var(--soft); }
+.tabs button { border: 0; background: transparent; color: var(--muted); padding: 10px 16px; font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+.pane { display: none; padding: 16px 22px 22px; }
+.pane.on { display: block; }
+.vars { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.vars button { font: 600 12.5px "IBM Plex Mono", ui-monospace, monospace; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 5px 11px; cursor: pointer; }
+.vars button.on { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+.vars .s2 { color: var(--ok); } .vars .s4 { color: var(--warn); } .vars .s5 { color: var(--err); }
+.http { background: #14130f; color: #ece9dc; border-radius: 12px; padding: 14px 16px; font-size: 12.8px; line-height: 1.6; overflow-x: auto; margin: 0; border: 0; position: relative; }
+@media (prefers-color-scheme: dark) { .http { background: #0e0e0c; } }
+.http .sl { font-weight: 700; } .http .sl.c2 { color: #86efac; } .http .sl.c4 { color: #fcd34d; } .http .sl.c5 { color: #fca5a5; }
+.http .hn { color: #93c5fd; } .http .ck { color: #fdba74; } .http .dim { color: #8d8a7c; }
+.http .jk { color: #fdba74; } .http .js { color: #86efac; } .http .jn { color: #93c5fd; } .http .jb { color: #c4b5fd; }
+.copyb { position: absolute; top: 8px; right: 8px; background: #2a2923; color: #cfcbb9; border: 1px solid #3b3a32; border-radius: 6px; font: 600 11px inherit; font-family: inherit; padding: 3px 9px; cursor: pointer; }
+.note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.jwt { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.jwt .box pre { font-size: 12px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 14px; }
+.form label { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.form .chk { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
+.form .chk input { width: auto; }
+.form .hint { font-size: 11.5px; color: var(--muted); margin-top: 3px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.btn { font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-radius: 9px; padding: 8px 18px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.res { margin-top: 14px; }
+.res .meta { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 12.5px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.ec { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.3px; padding: 3px 10px; border-radius: 6px; color: var(--warn); background: var(--warn-bg); }
+.ec.a { color: var(--err); background: var(--err-bg); }
+.flows { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px 30px; }
+ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 8px 0; }
+ol.steps li { counter-increment: s; position: relative; padding-left: 36px; margin: 8px 0; }
+ol.steps li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); color: var(--accent); font-size: 12px; display: grid; place-items: center; background: var(--panel); }
+.toast { position: fixed; right: 18px; bottom: 18px; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 12px 16px; box-shadow: 0 8px 28px rgba(0,0,0,.18); max-width: 320px; display: none; font-size: 13.5px; }
+.toast.show { display: block; }
+.toast .big { font: 700 26px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 6px; margin: 4px 0; }
+
+.step { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); margin-top: 8px; }
+.col { padding: 14px 20px 18px; min-width: 0; }
+.col + .col { border-top: 1px solid var(--line); background: color-mix(in srgb, var(--soft) 55%, transparent); }
+.col > h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.col .vars { margin-bottom: 10px; }
+.http { max-height: 520px; overflow: auto; }
+.tryd { border-top: 1px solid var(--line); padding: 4px 22px 18px; }
+.tryd > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 12px 0; }
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; gap: 0; }
+  nav { position: static; max-height: none; padding-bottom: 0; }
+  .auth { margin-left: 0; }
+}
+
+.pane .tw { margin-top: 4px; }
+textarea { resize: vertical; }
+</style>
+</head>
+<body>
+
+<div class="dock">
+  <div class="dock-in">
+    <input id="base" class="base" value="https://odooapp.mdarj.org" autocomplete="off" aria-label="API base URL">
+    <span class="chip" id="sessChip"><span class="dot"></span><span id="sessTxt">no session</span></span>
+    <button class="mini" id="demoBtn" type="button">Sign in as demo user</button>
+    <button class="mini" id="outBtn" type="button">Forget token</button>
+    <span class="sp"></span>
+    <span class="chip">Bearer token: <b id="tokTxt">none</b></span>
+  </div>
+</div>
+
+<div class="layout">
+<nav aria-label="Contents">
+  <h2>Contents</h2>
+  <a href="#summary">Summary</a>
+  <a href="#conventions">Conventions</a>
+  <a href="#shape">The catalogue's shape</a>
+  <a href="#product-object">Product object</a>
+  <a href="#catalog">Catalog endpoints</a>
+  <a href="#cart">Cart</a>
+  <a href="#account">Profile</a>
+  <a href="#checkout">Checkout and orders</a>
+  <a href="#quotes">Quotes and services</a>
+  <a href="#contact">Contact</a>
+  <a href="#errors">Error codes</a>
+  <a href="#flows">Flows</a>
+  <a href="#notes">Notes and open points</a>
+</nav>
+
+<main>
+<div class="eyebrow">Spark FU · Frontend ↔ Backend</div>
+<h1>Storefront API contract: catalog, cart, profile, checkout, quotes and contact</h1>
+<p class="lede">Everything the Next.js app calls from the landing page down to the basket and checkout, the signed-in customer's profile pages, quote and service requests and the contact form, as the backend implements it. Every response below was captured from the running backend. The <strong>Try it</strong> tabs call a live server: set the base URL in the bar above.</p>
+<span class="pill ok">Implemented by backend · checked end to end against a running server</span>
+<p class="note">Companion to <a href="auth_api_contract.html">the auth contract</a> (login, refresh, password reset). Sign-in returns the Bearer token used here.</p>
+
+<h2 class="section" id="summary">Summary</h2>
+<div class="tw"><table>
+<thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td class="method">GET</td><td class="mono"><a href="#categories">/categories</a></td><td>no auth</td><td>Landing explorer tiles with live counts</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#products">/products</a></td><td>no auth</td><td>Category page, sub-category page, landing rows</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#facets">/products/facets</a></td><td>no auth</td><td>What the sidebar is built from</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#product">/products/:slug</a></td><td>no auth</td><td>Product details page</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#related">/products/:slug/related</a></td><td>no auth</td><td>"Similar products" shelf</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#together">/products/:slug/bought-together</a></td><td>no auth</td><td>"Usually bought with it" shelf</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#cart_get">/cart</a></td><td>Bearer optional</td><td>The current cart</td></tr>
+<tr><td class="method">POST</td><td class="mono"><a href="#cart_add">/cart/items</a></td><td>Bearer optional</td><td>Add a product</td></tr>
+<tr><td class="method">PATCH</td><td class="mono"><a href="#cart_patch">/cart/items/:lineId</a></td><td>Bearer optional</td><td>Change a line</td></tr>
+<tr><td class="method">DELETE</td><td class="mono"><a href="#cart_del_item">/cart/items/:lineId</a></td><td>Bearer optional</td><td>Remove a line</td></tr>
+<tr><td class="method">DELETE</td><td class="mono"><a href="#cart_del">/cart</a></td><td>Bearer optional</td><td>Empty the cart</td></tr>
+<tr><td class="method">POST</td><td class="mono"><a href="#cart_merge">/cart/merge</a></td><td>Bearer</td><td>Fold the guest cart into the user's</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#profile_get">/account/profile</a></td><td>Bearer</td><td>The profile screen</td></tr>
+<tr><td class="method">PATCH</td><td class="mono"><a href="#profile_patch">/account/profile</a></td><td>Bearer</td><td>Save edited fields</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#orders">/account/orders</a></td><td>Bearer</td><td>The orders screen's three tabs</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#notif_get">/account/notifications</a></td><td>Bearer</td><td>Notification toggles</td></tr>
+<tr><td class="method">PUT</td><td class="mono"><a href="#notif_put">/account/notifications</a></td><td>Bearer</td><td>Save the toggles</td></tr>
+<tr><td class="method">POST</td><td class="mono"><a href="#password">/account/password</a></td><td>Bearer</td><td>Change password</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#checkout_get">/orders/:reference</a></td><td>Bearer</td><td>Order status and confirmation page</td></tr>
+<tr><td class="method">POST</td><td class="mono"><a href="#checkout_place">/orders</a></td><td>Bearer</td><td>Place an order</td></tr>
+<tr><td class="method">POST</td><td class="mono"><a href="#checkout_cancel">/orders/:reference/cancel</a></td><td>Bearer</td><td>Cancel while placed or preparing</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#promo_get">/promo-codes/:code</a></td><td>Bearer</td><td>Percentage a promo code takes off the goods</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#delivery_regions">/delivery/regions</a></td><td>no auth</td><td>Governorates, cities and delivery fee</td></tr>
+<tr><td class="method">POST</td><td class="mono"><a href="#quote_create">/quotes</a></td><td>no auth; Bearer optional</td><td>Quote or service request</td></tr>
+<tr><td class="method">GET</td><td class="mono"><a href="#quote_get">/quotes/:reference</a></td><td>Bearer</td><td>Quote status page</td></tr>
+<tr><td class="method">POST</td><td class="mono"><a href="#quote_cancel">/quotes/:reference/cancel</a></td><td>Bearer</td><td>Cancel a quote</td></tr>
+<tr><td class="method">POST</td><td class="mono"><a href="#contact_post">/contact</a></td><td>no auth</td><td>Contact form, up to three attachments</td></tr>
+</tbody></table></div>
+<p>Paths are relative to <code>NEXT_PUBLIC_API_URL</code>, served at the root of the Odoo host (<code>/products</code>, <code>/cart</code>, <code>/account/…</code>; no <code>/api/v1</code>), next to <code>/auth/…</code>.</p>
+<div class="callout"><strong>The landing page needs only two of these:</strong> <code>GET /categories</code> and <code>GET /products</code> (<code>featured</code>, or <code>kind</code> with <code>limit</code>, plus <code>power</code> and <code>location</code> for its search). The rest belong to the category, details, cart and account pages.</div>
+
+<h2 class="section" id="conventions">Conventions</h2>
+<ul>
+  <li>JSON in, JSON out. <strong>No envelope</strong>: a list body is <code>{ items, totalCount, page, pageSize }</code> (landing mode: a plain array), a single resource is the resource itself.</li>
+  <li><code>camelCase</code> names. Optional fields are <strong>omitted</strong> when unset, never <code>null</code> (the one exception: <code>avatar</code>).</li>
+  <li><strong>Money is an integer in minor units</strong> (piastres): <code>price: 185000000</code> is 1,850,000.00 EGP. The frontend formats it. <em>Filter bounds are whole units</em> (<code>priceMin=1000000</code>).</li>
+  <li>Dates are ISO 8601 in UTC (<code>2026-10-29T14:47:40Z</code>).</li>
+  <li>Array query params are comma-joined: <code>?condition=new,used&amp;brand=Perkins,Cummins</code>.</li>
+  <li>Paging is page-based: <code>page</code> (1-based) and <code>pageSize</code> (default 8, max 48). <code>totalCount</code> is the whole filtered set.</li>
+  <li>The catalog endpoints are public. Cart endpoints accept a Bearer when present. Profile endpoints require one.</li>
+  <li>Protected endpoints read <code>Authorization: Bearer &lt;accessToken&gt;</code>. Missing, expired, forged or malformed is <code>401 session_expired</code>: refresh once and retry.</li>
+  <li>Send every request with <code>credentials: "include"</code> (the guest cart and the refresh cookie). CORS answers with the exact configured origin, never <code>*</code>, and allows <code>GET, POST, PUT, PATCH, DELETE, OPTIONS</code> with <code>Authorization, Content-Type</code>. Allowed origins today: <code>http://localhost:3000</code> and <code>https://spark-fu.com</code>, on every route; the response carries <code>Vary: Origin</code> and <code>Access-Control-Allow-Credentials: true</code>. The <code>refresh_token</code> cookie is <code>Secure; HttpOnly; SameSite=None</code> (the API and the site are different sites), and so are the lines that clear it.</li>
+  <li>Language: send <code>Accept-Language: ar</code> (or <code>en</code>) on every call. With <code>ar</code>, names and titles (product, category, order, quote and line names, <code>specs.partType</code>) come in Arabic where Odoo has a translation, and fall back to the source text otherwise. The same header sets the locale of <code>paymentUrl</code> and its return page.</li>
+  <li>Services: <code>POST /quotes</code> takes <code>service</code> in <code>inspection | maintenance | solar | load-bank | temporary-power</code>. <code>/categories</code> lists tiles for <code>maintenance</code>, <code>inspection</code> and <code>solar</code> only; <code>load-bank</code> and <code>temporary-power</code> are services with no tile.</li>
+  <li>Rate limit: 120 requests per minute per IP on each group (catalog, cart, account). Over it is <code>429 rate_limited</code>. The frontend server's IP (it renders the landing and details pages for every visitor) is exempt: the admin lists it in the system parameter <code>leaders_marketplace.storefront_rate_limit_exempt_ips</code>.</li>
+</ul>
+<p><strong>Errors</strong> are a non-2xx status with <code>{ "code": "snake_case", "message": "…" }</code>; validation adds <code>fields</code> keyed by request field, exactly as in the auth contract.</p>
+
+<h2 class="section" id="shape">The catalogue's shape</h2>
+<p>Three shelves (<code>kind</code>) with three sub-categories each, plus the services group. The structure is compiled into the frontend; products carry exactly these slugs. Categories are managed in Odoo: each tile carries its <code>name</code> (in the language of <code>Accept-Language</code>), an optional <code>description</code>, a picture (<code>image</code>) and an <code>icon</code>. <code>/categories</code> is sent with <code>Cache-Control: public, max-age=300</code>.</p>
+<div class="tw"><table><thead><tr><th><code>kind</code></th><th>Category slug</th><th>Sub-category slugs</th></tr></thead><tbody>
+<tr><td class="mono">power</td><td class="mono">power-solutions</td><td class="mono">generators, lighting-tower, load-bank</td></tr>
+<tr><td class="mono">equipment</td><td class="mono">equipment</td><td class="mono">loader, forklift, welding-machine</td></tr>
+<tr><td class="mono">part</td><td class="mono">parts-and-oils</td><td class="mono">spare-parts, filters, oils</td></tr>
+<tr><td class="mono">(services)</td><td class="mono">services</td><td class="mono">maintenance, inspection, solar &nbsp;<span class="tag">no products; /categories only</span></td></tr>
+</tbody></table></div>
+
+<h2 class="section" id="product-object">Product object</h2>
+<p>One shape for every product endpoint, in lists and alone. The card and the details page read the same object.</p>
+<pre>type Money = number;                       // integer minor units (piastres): 185000000 = 1,850,000.00 EGP
+type ProductKind = "power" | "equipment" | "part";
+type ListingType = "buy" | "rent";
+type ProductCondition = "new" | "used" | "refurbished";
+type PartOrigin = "original" | "aftermarket";
+type PartSource = string;                  // the admin's list; today "turkish" | "chinese" | "egyptian"
+type PowerSource = string;                 // the admin's list; today "diesel" | "electric" | "petrol" | "gas" | "hybrid"
+
+interface Product {
+  id: string;
+  slug: string;                  // URL segment, unique, stable
+  brand: string;                 // "Perkins"
+  model: string;                 // equipment: "1506A-E88TAG5"; parts: the part number
+  kind: ProductKind;
+  subcategory: string;           // slug from the table above
+  listing: ListingType;          // the default way it is offered
+  availableFor?: ListingType[];  // present only when it differs from [listing]
+  inspected: boolean;            // the "inspected" badge
+  image?: string;                // absolute URL, main photo
+  gallery?: string[];            // absolute URLs, main photo first
+  rentPrice?: Money;             // per day, minor units; present when it can be rented and the admin set a rate; absent =&gt; "request a quote" for the rental
+  price?: Money;                 // present =&gt; "add to cart"; absent =&gt; "request a quote"
+  inStock?: false;               // sent only when the admin flagged it out of stock
+  sku?: string;                  // part number, else the internal reference; omitted when neither exists
+  sources?: PartSource[];        // parts: sources it can be ordered in
+  listedAt: string;              // ISO 8601 UTC; what "newest" sorts by
+  specs: ProductSpecs;
+}
+
+interface ProductSpecs {         // every key is omitted when unset
+  power?: string;                // "250 kVA" | "3 ton" | "500 A" ...: capacity with its unit
+  kva?: number;                  // rating for the kVA filter; set when the unit is kVA or kW
+  primePower?: string;           // "225 kVA"
+  engine?: string;               // "Perkins 1506A"
+  engineSize?: string;           // "8.8 L"
+  powerSource?: PowerSource;
+  runningHours?: string;         // "6,400"
+  condition?: ProductCondition;
+  location?: string;             // city key: "cairo" | "giza" | "alexandria" ...
+  partType?: string;             // parts: first tag
+  compatibility?: string;        // parts: "Perkins 1506A-E88TAG5, FG Wilson P100-5"
+  origin?: PartOrigin;           // parts: "original" when the source is the maker's own, else "aftermarket"
+  dimensions?: string;           // read from the product's specs text ("dimensions: 93 x 178 mm")
+  thread?: string;               // same ("thread: M20 x 1.5")
+  changeInterval?: string;       // same ("change interval: every 500 h")
+  warranty?: string;             // "12 months"
+}</pre>
+<p>Also used by the endpoints below:</p>
+<pre>interface ProductFacets {
+  brands:       { value: string; count: number }[];                 // sorted by value
+  conditions:   { value: ProductCondition; count: number }[];
+  sections:     { value: string; count: number }[];                 // sub-category slugs
+  powerSources: { value: PowerSource; count: number }[];
+  sources:      { value: PartSource; count: number }[];
+  hours:        { value: "under1000" | "from1000" | "over5000"; count: number }[];
+  ranges: { price?: {min: number; max: number}; kva?: {min: number; max: number}; engine?: {min: number; max: number} };
+}
+interface CategoryTile { parentSlug: string | null; /* "power-solutions" for "generators"; null for a top category */ id: string; slug: string; group: "parts" | "power" | "equipment" | "services"; href: string;
+                         labelKey: string; productCount: number; tone: "brand" | "primary" | "soft";
+                         name: string;         /* in the language of Accept-Language (ar | en), falling back to the source text */
+                         description?: string; /* same language rule; omitted when empty */
+                         image?: string;       /* absolute https URL, transparent PNG cut-out; omitted until uploaded */
+                         icon?: string }       /* absolute https URL, square single-colour SVG; omitted until uploaded */</pre>
+<pre>interface OrderOptions {
+  listing: ListingType;
+  rentPeriod?: "day" | "week" | "month" | "custom";   // rent only
+  source?: PartSource;                                // parts only
+  services?: ("inspection" | "operator" | "insurance")[];
+}
+interface CartLine { lineId: string; product: Product; quantity: number; options: OrderOptions; unitPrice?: Money }
+interface Cart { id: string; lines: CartLine[]; subtotal: Money; updatedAt: string }   // id is "" for an empty guest cart</pre>
+<pre>interface AccountProfile { id: string; name: string; email: string; phone: string; avatar: string | null; company?: string; city?: string }
+interface Order { id: string; reference: string; kind: "service" | "quote" | "purchase"; title: string;
+                  placedAt: string; quantity: number; status: "pending" | "inProgress" | "reviewing" | "contacting" | "offered" | "completed" | "cancelled" }
+interface NotificationPrefs { orderUpdates: boolean; quoteReplies: boolean; offers: boolean; newsletter: boolean }
+interface Page&lt;T&gt; { items: T[]; totalCount: number; page: number; pageSize: number }</pre>
+<div class="callout"><strong>Rules the UI depends on.</strong> <code>price</code> decides the card: priced products show "add to cart"; products without it show "request a quote". <code>condition</code>, <code>origin</code>, <code>powerSource</code>, <code>location</code> and the source codes are keys the UI translates; the other specs are display strings. For the numeric filters the backend uses <code>specs.kva</code>, <code>specs.engineSize</code> and <code>specs.runningHours</code>.</div>
+
+<h2 class="section" id="catalog">Catalog endpoints</h2>
+<p>Each card has three tabs: <strong>Request</strong> (parameters), <strong>Responses</strong> (real captured bodies), and <strong>Try it</strong> (run it against the base URL above).</p>
+<section class="card" id="categories" data-ep="categories">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/categories</span><span class="what">Landing explorer tiles with live counts</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>Top categories and sub-categories, in the admin's order, with how many published products each holds. Hidden categories are left out. Services have no products (<code>productCount: 0</code>); the admin defines them.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><p class="note" style="margin-top:0">No parameters.</p><div class="callout"><code>labelKey</code> is the category slug, unchanged (<code>lighting-tower</code>, not <code>lightingTower</code>). <code>image</code> is omitted until the admin uploads one for the category. <code>tone</code> follows the group: power = brand, equipment = primary, parts and services = soft.</div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> </h3><pre>[
+  {
+    "id": "1",
+    "slug": "parts-and-oils",
+    "group": "parts",
+    "href": "/parts-and-oils",
+    "labelKey": "parts-and-oils",
+    "productCount": 10,
+    "tone": "soft",
+    "parentSlug": null
+  },
+  {
+    "id": "2",
+    "slug": "spare-parts",
+    "group": "parts",
+    "href": "/parts-and-oils/spare-parts",
+    "labelKey": "spare-parts",
+    "productCount": 3,
+    "tone": "soft",
+    "parentSlug": "parts-and-oils"
+  },
+  {
+    "id": "3",
+    "slug": "oils",
+    "group": "parts",
+    "href": "/parts-and-oils/oils",
+    "labelKey": "oils",
+    "productCount": 3,
+    "tone": "soft",
+    "parentSlug": "parts-and-oils"
+  },
+  {
+    "id": "4",
+    "slug": "filters",
+    "group": "parts",
+    "href": "/parts-and-oils/filters",
+    "labelKey": "filters",
+    "productCount": 4,
+    "tone": "soft",
+    "parentSlug": "parts-and-oils"
+  },
+  {
+    "id": "5",
+    "slug": "power-solutions",
+    "group": "power",
+    "href": "/power-solutions",
+    "labelKey": "power-solutions",
+    "productCount": 9,
+    "tone": "brand",
+    "parentSlug": null
+  },
+  {
+    "id": "6",
+    "slug": "generators",
+    "group": "power",
+    "href": "/power-solutions/generators",
+    "labelKey": "generators",
+    "productCount": 3,
+    "tone": "brand",
+    "parentSlug": "power-solutions"
+  },
+  {
+    "id": "7",
+    "slug": "lighting-tower",
+    "group": "power",
+    "href": "/power-solutions/lighting-tower",
+    "labelKey": "lighting-tower",
+    "productCount": 3,
+    "tone": "brand",
+    "parentSlug": "power-solutions"
+  },
+  {
+    "id": "8",
+    "slug": "load-bank",
+    "group": "power",
+    "href": "/power-solutions/load-bank",
+    "labelKey": "load-bank",
+    "productCount": 3,
+    "tone": "brand",
+    "parentSlug": "power-solutions"
+  },
+  {
+    "id": "9",
+    "slug": "equipment",
+    "group": "equipment",
+    "href": "/equipment",
+    "labelKey": "equipment",
+    "productCount": 9,
+    "tone": "primary",
+    "parentSlug": null
+  },
+  {
+    "id": "10",
+    "slug": "loader",
+    "group": "equipment",
+    "href": "/equipment/loader",
+    "labelKey": "loader",
+    "productCount": 3,
+    "tone": "primary",
+    "parentSlug": "equipment"
+  },
+  {
+    "id": "11",
+    "slug": "forklift",
+    "group": "equipment",
+    "href": "/equipment/forklift",
+    "labelKey": "forklift",
+    "productCount": 3,
+    "tone": "primary",
+    "parentSlug": "equipment"
+  },
+  {
+    "id": "12",
+    "slug": "welding-machine",
+    "group": "equipment",
+    "href": "/equipment/welding-machine",
+    "labelKey": "welding-machine",
+    "productCount": 3,
+    "tone": "primary",
+    "parentSlug": "equipment"
+  },
+  {
+    "id": "13",
+    "slug": "services",
+    "group": "services",
+    "href": "/services",
+    "labelKey": "services",
+    "productCount": 0,
+    "tone": "soft",
+    "parentSlug": null
+  },
+  {
+    "id": "14",
+    "slug": "maintenance",
+    "group": "services",
+    "href": "/services/maintenance",
+    "labelKey": "maintenance",
+    "productCount": 0,
+    "tone": "soft",
+    "parentSlug": "services"
+  },
+  {
+    "id": "15",
+    "slug": "inspection",
+    "group": "services",
+    "href": "/services/inspection",
+    "labelKey": "inspection",
+    "productCount": 0,
+    "tone": "soft",
+    "parentSlug": "services"
+  },
+  {
+    "id": "16",
+    "slug": "solar",
+    "group": "services",
+    "href": "/services/solar",
+    "labelKey": "solar",
+    "productCount": 0,
+    "tone": "soft",
+    "parentSlug": "services"
+  }
+]</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/categories"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="products" data-ep="products">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/products</span><span class="what">Category page, sub-category page, landing rows</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>One endpoint, two modes. <strong>Listing mode</strong> (the category and sub-category pages) returns <code>Page&lt;Product&gt;</code>. <strong>Landing mode</strong> (<code>featured</code> or <code>limit</code> present) returns a plain <code>Product[]</code>. Only published products appear. Every list item is the full <code>Product</code>; no second call per card.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">kind</td><td>query</td><td class="mono">power | equipment | part</td><td><strong>Required in listing mode.</strong> Any other value is 422.</td></tr><tr><td class="mono">subcategory</td><td>query</td><td class="mono">slug</td><td>One sub-category (the sub-category page).</td></tr><tr><td class="mono">q</td><td>query</td><td class="mono">string</td><td>Free text over brand, model, part number, alternative numbers, engine, SKU and the specs text. Arabic spellings are folded (أ إ آ, ة ه, ى ي, diacritics).</td></tr><tr><td class="mono">listing</td><td>query</td><td class="mono">buy | rent</td><td><code>rent</code> keeps products that can be rented; <code>buy</code> skips products of rent-only categories (<code>availableFor: ["rent"]</code>).</td></tr><tr><td class="mono">priceMin, priceMax</td><td>query</td><td class="mono">number</td><td><strong>Whole currency units</strong>, inclusive. Unpriced products never match.</td></tr><tr><td class="mono">engineMin, engineMax</td><td>query</td><td class="mono">number</td><td>Litres, from <code>specs.engineSize</code>. Products without one never match.</td></tr><tr><td class="mono">kvaMin, kvaMax</td><td>query</td><td class="mono">number</td><td>From <code>specs.kva</code>. Products without a rating never match.</td></tr><tr><td class="mono">power</td><td>query</td><td class="mono">upTo100 | from100 | from250 | above500</td><td>≤100, 100–250, 250–500, ≥500 kVA. Ignored when <code>kvaMin</code> or <code>kvaMax</code> is sent.</td></tr><tr><td class="mono">condition</td><td>query</td><td class="mono">comma list</td><td><code>new,used,refurbished</code>.</td></tr><tr><td class="mono">brand</td><td>query</td><td class="mono">comma list</td><td>Exact, case-insensitive (<code>Perkins,Cummins</code>). An unknown brand matches nothing.</td></tr><tr><td class="mono">section</td><td>query</td><td class="mono">comma list</td><td>Sub-category slugs (multi-select), unlike <code>subcategory</code>.</td></tr><tr><td class="mono">powerSource</td><td>query</td><td class="mono">comma list</td><td>Any code in the admin's energy-source list (<code>diesel,electric,petrol,gas,hybrid</code> today). Unknown code is 422.</td></tr><tr><td class="mono">source</td><td>query</td><td class="mono">comma list</td><td>Any <code>api_code</code> of the admin's source list (<code>turkish,chinese,egyptian</code> today). A part matches if any of its <code>sources</code> is listed. Unknown code is 422.</td></tr><tr><td class="mono">hours</td><td>query</td><td class="mono">comma list</td><td><code>under1000</code> (≤1000), <code>from1000</code> (1000–5000), <code>over5000</code> (≥5000). Products without hours never match.</td></tr><tr><td class="mono">location</td><td>query</td><td class="mono">city key</td><td>Exact match on <code>specs.location</code>.</td></tr><tr><td class="mono">sort</td><td>query</td><td class="mono">newest | brandAsc | brandDesc | priceAsc | priceDesc</td><td>Default <code>newest</code>. Unpriced products sort last on price. Anything else is 422.</td></tr><tr><td class="mono">page, pageSize</td><td>query</td><td class="mono">int</td><td>Defaults 1 and 8; <code>pageSize</code> max 48 (above is 422).</td></tr><tr><td class="mono">featured, limit</td><td>query</td><td class="mono">true, int</td><td><strong>Landing mode</strong>: sending either returns a plain <code>Product[]</code>, no paging. <code>limit</code> default 8, max 100. <code>featured=true</code> returns the products the admin flagged, newest first, or the newest products when none is flagged.</td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Listing mode</h3><pre>{
+  "items": [
+    {
+      "id": "35",
+      "slug": "fg-wilson-p100-5",
+      "brand": "FG Wilson",
+      "model": "P100-5",
+      "kind": "power",
+      "subcategory": "generators",
+      "listing": "buy",
+      "inspected": true,
+      "listedAt": "2026-10-29T14:47:40Z",
+      "availableFor": [
+        "buy",
+        "rent"
+      ],
+      "image": "https://odooapp.mdarj.org/web/image/product.template/35/image_1024",
+      "gallery": [
+        "https://odooapp.mdarj.org/web/image/product.template/35/image_1024",
+        "https://odooapp.mdarj.org/web/image/product.image/5/image_1024",
+        "https://odooapp.mdarj.org/web/image/product.image/6/image_1024"
+      ],
+      "price": 42000000,
+      "rentPrice": 220000,
+      "specs": {
+        "power": "100 kVA",
+        "kva": 100.0,
+        "engine": "Perkins 1104",
+        "engineSize": "4.4 L",
+        "powerSource": "diesel",
+        "runningHours": "6,400",
+        "condition": "used",
+        "location": "giza",
+        "warranty": "6 months"
+      }
+    },
+    {
+      "id": "33",
+      "slug": "perkins-1506a-e88tag5",
+      "brand": "Perkins",
+      "model": "1506A-E88TAG5",
+      "kind": "power",
+      "subcategory": "generators",
+      "listing": "buy",
+      "inspected": false,
+      "listedAt": "2026-10-29T14:47:40Z",
+      "availableFor": [
+        "buy",
+        "rent"
+      ],
+      "image": "https://odooapp.mdarj.org/web/image/product.template/33/image_1024",
+      "gallery": [
+        "https://odooapp.mdarj.org/web/image/product.template/33/image_1024",
+        "https://odooapp.mdarj.org/web/image/product.image/1/image_1024",
+        "https://odooapp.mdarj.org/web/image/product.image/2/image_1024"
+      ],
+      "price": 185000000,
+      "rentPrice": 450000,
+      "specs": {
+        "power": "250 kVA",
+        "kva": 250.0,
+        "primePower": "225 kVA",
+        "engine": "Perkins 1506A",
+        "engineSize": "8.8 L",
+        "powerSource": "diesel",
+        "condition": "new",
+        "location": "cairo",
+        "warranty": "24 months"
+      }
+    }
+  ],
+  "totalCount": 3,
+  "page": 1,
+  "pageSize": 2
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> Landing mode (plain array)</h3><pre>[
+  {
+    "id": "42",
+    "slug": "komatsu-wa320-8",
+    "brand": "Komatsu",
+    "model": "WA320-8",
+    "kind": "equipment",
+    "subcategory": "loader",
+    "listing": "buy",
+    "inspected": true,
+    "listedAt": "2026-10-29T14:47:40Z",
+    "availableFor": [
+      "buy",
+      "rent"
+    ],
+    "image": "https://odooapp.mdarj.org/web/image/product.template/42/image_1024",
+    "gallery": [
+      "https://odooapp.mdarj.org/web/image/product.template/42/image_1024",
+      "https://odooapp.mdarj.org/web/image/product.image/19/image_1024",
+      "https://odooapp.mdarj.org/web/image/product.image/20/image_1024"
+    ],
+    "specs": {
+      "power": "3.2 m³",
+      "engine": "Komatsu SAA6D107",
+      "engineSize": "6.7 L",
+      "powerSource": "diesel",
+      "runningHours": "8,200",
+      "condition": "used",
+      "location": "cairo",
+      "warranty": "6 months"
+    }
+  },
+  {
+    "id": "36",
+    "slug": "atlas-copco-hilight-v5",
+    "brand": "Atlas Copco",
+    "model": "HiLight V5",
+    "kind": "power",
+    "subcategory": "lighting-tower",
+    "listing": "buy",
+    "inspected": false,
+    "listedAt": "2026-10-29T14:47:40Z",
+    "availableFor": [
+      "buy",
+      "rent"
+    ],
+    "image": "https://odooapp.mdarj.org/web/image/product.template/36/image_1024",
+    "gallery": [
+      "https://odooapp.mdarj.org/web/image/product.template/36/image_1024",
+      "https://odooapp.mdarj.org/web/image/product.image/7/image_1024",
+      "https://odooapp.mdarj.org/web/image/product.image/8/image_1024"
+    ],
+    "specs": {
+      "power": "5 kW",
+      "kva": 5.0,
+      "engine": "Kubota",
+      "engineSize": "1 L",
+      "powerSource": "diesel",
+      "condition": "new",
+      "location": "cairo",
+      "warranty": "24 months"
+    },
+    "rentPrice": 150000
+  }
+]</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> kind is not power, equipment or part</h3><pre>{
+  "code": "validation_error",
+  "message": "Validation failed.",
+  "fields": {
+    "kind": "Unknown kind."
+  }
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/products?kind=power&amp;subcategory=generators&amp;kvaMin=100&amp;kvaMax=600&amp;powerSource=diesel&amp;page=1&amp;pageSize=6"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="facets" data-ep="facets">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/products/facets</span><span class="what">What the sidebar is built from</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>Takes only <code>kind</code>, <code>subcategory</code>, <code>q</code> and <code>listing</code>. Everything is computed over that narrowed set and <strong>ignores the sidebar's own picks</strong>, so ticking one brand does not hide the others. A group with an empty list or no range is simply empty/absent: hide it (no kVA on the parts shelf, no sources on a generator shelf).</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">kind, subcategory, q, listing</td><td>query</td><td class="mono">as in /products</td><td>Same meaning and same 422 rules.</td></tr></tbody></table></div><div class="callout"><code>ranges.price</code> is in whole units (min rounded down, max rounded up). <code>ranges.kva</code> and <code>ranges.engine</code> are the raw numbers. <code>sources</code> counts a part once in each source it can be ordered in.</div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> kind=power&amp;subcategory=generators</h3><pre>{
+  "brands": [
+    {
+      "value": "Cummins",
+      "count": 1
+    },
+    {
+      "value": "FG Wilson",
+      "count": 1
+    },
+    {
+      "value": "Perkins",
+      "count": 1
+    }
+  ],
+  "conditions": [
+    {
+      "value": "new",
+      "count": 2
+    },
+    {
+      "value": "used",
+      "count": 1
+    }
+  ],
+  "sections": [
+    {
+      "value": "generators",
+      "count": 3
+    }
+  ],
+  "powerSources": [
+    {
+      "value": "diesel",
+      "count": 3
+    }
+  ],
+  "sources": [],
+  "hours": [
+    {
+      "value": "over5000",
+      "count": 1
+    }
+  ],
+  "ranges": {
+    "price": {
+      "min": 420000,
+      "max": 1850000
+    },
+    "kva": {
+      "min": 100.0,
+      "max": 500.0
+    },
+    "engine": {
+      "min": 4.4,
+      "max": 15.0
+    }
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> kind=part</h3><pre>{
+  "brands": [
+    {
+      "value": "Cummins",
+      "count": 1
+    },
+    {
+      "value": "Donaldson",
+      "count": 2
+    },
+    {
+      "value": "Fleetguard",
+      "count": 2
+    },
+    {
+      "value": "Mobil",
+      "count": 1
+    },
+    {
+      "value": "Perkins",
+      "count": 2
+    },
+    {
+      "value": "Shell",
+      "count": 1
+    },
+    {
+      "value": "Total",
+      "count": 1
+    }
+  ],
+  "conditions": [
+    {
+      "value": "new",
+      "count": 10
+    }
+  ],
+  "sections": [
+    {
+      "value": "filters",
+      "count": 4
+    },
+    {
+      "value": "spare-parts",
+      "count": 3
+    },
+    {
+      "value": "oils",
+      "count": 3
+    }
+  ],
+  "powerSources": [],
+  "sources": [
+    {
+      "value": "chinese",
+      "count": 2
+    },
+    {
+      "value": "turkish",
+      "count": 2
+    },
+    {
+      "value": "egyptian",
+      "count": 2
+    }
+  ],
+  "hours": [],
+  "ranges": {
+    "price": {
+      "min": 260,
+      "max": 24500
+    }
+  }
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/products/facets?kind=power"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="product" data-ep="product">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/products/:slug</span><span class="what">Product details page</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>The full product object, the same shape as a list item. <code>gallery</code> holds the main photo first, then the extra photos. Nothing else is fetched for the product itself.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">slug</td><td>path</td><td class="mono">string</td><td><code>Product.slug</code>. Stable and unique.</td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Equipment</h3><pre>{
+  "id": "33",
+  "slug": "perkins-1506a-e88tag5",
+  "brand": "Perkins",
+  "model": "1506A-E88TAG5",
+  "kind": "power",
+  "subcategory": "generators",
+  "listing": "buy",
+  "inspected": false,
+  "listedAt": "2026-10-29T14:47:40Z",
+  "availableFor": [
+    "buy",
+    "rent"
+  ],
+  "image": "https://odooapp.mdarj.org/web/image/product.template/33/image_1024",
+  "gallery": [
+    "https://odooapp.mdarj.org/web/image/product.template/33/image_1024",
+    "https://odooapp.mdarj.org/web/image/product.image/1/image_1024",
+    "https://odooapp.mdarj.org/web/image/product.image/2/image_1024"
+  ],
+  "price": 185000000,
+  "rentPrice": 450000,
+  "specs": {
+    "power": "250 kVA",
+    "kva": 250.0,
+    "primePower": "225 kVA",
+    "engine": "Perkins 1506A",
+    "engineSize": "8.8 L",
+    "powerSource": "diesel",
+    "condition": "new",
+    "location": "cairo",
+    "warranty": "24 months"
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> Spare part</h3><pre>{
+  "id": "51",
+  "slug": "fleetguard-lf9009",
+  "brand": "Fleetguard",
+  "model": "LF9009",
+  "kind": "part",
+  "subcategory": "filters",
+  "listing": "buy",
+  "inspected": false,
+  "listedAt": "2026-10-29T14:47:40Z",
+  "image": "https://odooapp.mdarj.org/web/image/product.template/51/image_1024",
+  "gallery": [
+    "https://odooapp.mdarj.org/web/image/product.template/51/image_1024"
+  ],
+  "price": 32000,
+  "sku": "LF9009",
+  "specs": {
+    "condition": "new",
+    "partType": "Oil filter",
+    "compatibility": "Perkins 1506A-E88TAG5, FG Wilson P100-5",
+    "origin": "original",
+    "dimensions": "93 x 178 mm",
+    "thread": "M20 x 1.5",
+    "changeInterval": "every 500 h",
+    "warranty": "6 months"
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill warn">404</span> Unknown or unpublished slug</h3><pre>{
+  "code": "not_found",
+  "message": "Product not found."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/products/perkins-1506a-e88tag5"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="related" data-ep="related">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/products/:slug/related</span><span class="what">"Similar products" shelf</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>Same sub-category first, then the rest of the shelf (same <code>kind</code>), newest first, never the product itself.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">slug</td><td>path</td><td class="mono">string</td><td></td></tr><tr><td class="mono">limit</td><td>query</td><td class="mono">int</td><td>Default 4, max 12.</td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> limit=2</h3><pre>[
+  {
+    "id": "35",
+    "slug": "fg-wilson-p100-5",
+    "brand": "FG Wilson",
+    "model": "P100-5",
+    "kind": "power",
+    "subcategory": "generators",
+    "listing": "buy",
+    "inspected": true,
+    "listedAt": "2026-10-29T14:47:40Z",
+    "availableFor": [
+      "buy",
+      "rent"
+    ],
+    "image": "https://odooapp.mdarj.org/web/image/product.template/35/image_1024",
+    "gallery": [
+      "https://odooapp.mdarj.org/web/image/product.template/35/image_1024",
+      "https://odooapp.mdarj.org/web/image/product.image/5/image_1024",
+      "https://odooapp.mdarj.org/web/image/product.image/6/image_1024"
+    ],
+    "price": 42000000,
+    "rentPrice": 220000,
+    "specs": {
+      "power": "100 kVA",
+      "kva": 100.0,
+      "engine": "Perkins 1104",
+      "engineSize": "4.4 L",
+      "powerSource": "diesel",
+      "runningHours": "6,400",
+      "condition": "used",
+      "location": "giza",
+      "warranty": "6 months"
+    }
+  },
+  {
+    "id": "34",
+    "slug": "cummins-c500d5",
+    "brand": "Cummins",
+    "model": "C500D5",
+    "kind": "power",
+    "subcategory": "generators",
+    "listing": "buy",
+    "inspected": false,
+    "listedAt": "2026-10-29T14:47:40Z",
+    "availableFor": [
+      "buy",
+      "rent"
+    ],
+    "image": "https://odooapp.mdarj.org/web/image/product.template/34/image_1024",
+    "gallery": [
+      "https://odooapp.mdarj.org/web/image/product.template/34/image_1024",
+      "https://odooapp.mdarj.org/web/image/product.image/3/image_1024",
+      "https://odooapp.mdarj.org/web/image/product.image/4/image_1024"
+    ],
+    "specs": {
+      "power": "500 kVA",
+      "kva": 500.0,
+      "engine": "Cummins QSK",
+      "engineSize": "15 L",
+      "powerSource": "diesel",
+      "condition": "new",
+      "location": "cairo",
+      "warranty": "24 months"
+    },
+    "rentPrice": 900000
+  }
+]</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/products/perkins-1506a-e88tag5/related?limit=4"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="together" data-ep="together">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/products/:slug/bought-together</span><span class="what">"Usually bought with it" shelf</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>Priced parts that fit this product: parts of the same brand first, then parts whose compatibility names the product's brand or model. Unpriced parts are left out.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">slug</td><td>path</td><td class="mono">string</td><td></td></tr><tr><td class="mono">limit</td><td>query</td><td class="mono">int</td><td>Default 4, max 12.</td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> limit=2</h3><pre>[
+  {
+    "id": "60",
+    "slug": "perkins-pk-wp-1104",
+    "brand": "Perkins",
+    "model": "PK-WP-1104",
+    "kind": "part",
+    "subcategory": "spare-parts",
+    "listing": "buy",
+    "inspected": false,
+    "listedAt": "2026-10-29T14:47:40Z",
+    "image": "https://odooapp.mdarj.org/web/image/product.template/60/image_1024",
+    "gallery": [
+      "https://odooapp.mdarj.org/web/image/product.template/60/image_1024"
+    ],
+    "price": 310000,
+    "sku": "PK-WP-1104",
+    "specs": {
+      "condition": "new",
+      "partType": "Spare part",
+      "compatibility": "Perkins 1506A-E88TAG5, FG Wilson P100-5",
+      "origin": "original",
+      "dimensions": "93 x 178 mm",
+      "thread": "M20 x 1.5",
+      "changeInterval": "every 500 h",
+      "warranty": "6 months"
+    }
+  },
+  {
+    "id": "58",
+    "slug": "perkins-pk-6pk1700",
+    "brand": "Perkins",
+    "model": "PK-6PK1700",
+    "kind": "part",
+    "subcategory": "spare-parts",
+    "listing": "buy",
+    "inspected": false,
+    "listedAt": "2026-10-29T14:47:40Z",
+    "image": "https://odooapp.mdarj.org/web/image/product.template/58/image_1024",
+    "gallery": [
+      "https://odooapp.mdarj.org/web/image/product.template/58/image_1024"
+    ],
+    "price": 65000,
+    "sku": "PK-6PK1700",
+    "sources": [
+      "turkish"
+    ],
+    "specs": {
+      "condition": "new",
+      "partType": "Spare part",
+      "compatibility": "Perkins 1506A-E88TAG5",
+      "origin": "aftermarket",
+      "dimensions": "93 x 178 mm",
+      "thread": "M20 x 1.5",
+      "changeInterval": "every 500 h",
+      "warranty": "6 months"
+    }
+  }
+]</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/products/perkins-1506a-e88tag5/bought-together?limit=4"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+
+
+<h2 class="section" id="cart">Cart</h2>
+<p>A signed-in customer's cart is keyed by their user. A guest's cart is keyed by the <code>spark_cart</code> cookie (<code>HttpOnly; Secure; SameSite=None; Path=/</code>, 30 days), set on the first write. The server computes <code>lineId</code> from the product and the options that change the ask, so the same generator <em>bought</em> and <em>hired</em> are two lines. A cart's lines show the full <code>Product</code>, so the cart page makes no extra call.</p>
+<p>Prices: a <code>buy</code> line's <code>unitPrice</code> is the product's price; a <code>rent</code> line's is the daily rent × 1 (day), 7 (week), 30 (month). A <code>custom</code> rent line (a term agreed with us) has no <code>unitPrice</code>: it goes to the quote tab, and <code>POST /orders</code> refuses it with the quote-only 422. A line without a price has no <code>unitPrice</code> and adds nothing to <code>subtotal</code>.</p>
+<section class="card" id="cart_get" data-ep="cart_get">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/cart</span><span class="what">The current cart</span><span class="auth">Bearer optional</span></div>
+<div class="card-b"><p>Signed in: the user's cart. Guest: the cart named by the <code>spark_cart</code> cookie. An empty or missing cart is <code>200</code> with <code>lines: []</code>, never 404. A Bearer that is present but stale is <code>401 session_expired</code>, not a guest cart.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><p class="note" style="margin-top:0">No parameters.</p></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Empty cart</h3><pre>{
+  "id": "",
+  "lines": [],
+  "subtotal": 0,
+  "updatedAt": "2026-10-29T15:36:56Z"
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/cart"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="cart_add" data-ep="cart_add">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/cart/items</span><span class="what">Add a product</span><span class="auth">Bearer optional</span></div>
+<div class="card-b"><p>Adds a line, or adds to the quantity of an identical one (same product and same options). The first write by a guest sets the <code>spark_cart</code> cookie. A product with no <code>price</code> (or a <code>rent</code> line with no <code>rentPrice</code>) is accepted too: the line has no <code>unitPrice</code> and adds nothing to <code>subtotal</code>. The basket's quote tab is made of those lines.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3>Body</h3><pre>{
+  "productId": "51",         // Product.id
+  "quantity": 2,             // optional, 1..999, default 1
+  "options": {               // all optional
+    "listing": "buy",        // buy | rent (rent only if the product is rentable)
+    "rentPeriod": "week",    // day | week | month | custom  (rent only, default day)
+    "source": "turkish",     // parts only; one of the product's sources
+    "services": ["operator"] // inspection | operator | insurance
+  }
+}</pre><div class="callout"><code>409 out_of_stock</code> is returned when the admin has flagged the product out of stock. The platform does not track quantities, so this is a manual flag.</div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Buy a part</h3><pre>{
+  "id": "1",
+  "lines": [
+    {
+      "lineId": "a855726ce18c",
+      "product": {
+        "id": "51",
+        "slug": "fleetguard-lf9009",
+        "brand": "Fleetguard",
+        "model": "LF9009",
+        "kind": "part",
+        "subcategory": "filters",
+        "listing": "buy",
+        "inspected": false,
+        "listedAt": "2026-10-29T14:47:40Z",
+        "image": "https://odooapp.mdarj.org/web/image/product.template/51/image_1024",
+        "gallery": [
+          "https://odooapp.mdarj.org/web/image/product.template/51/image_1024"
+        ],
+        "price": 32000,
+        "sku": "LF9009",
+        "specs": {
+          "condition": "new",
+          "partType": "Oil filter",
+          "compatibility": "Perkins 1506A-E88TAG5, FG Wilson P100-5",
+          "origin": "original",
+          "dimensions": "93 x 178 mm",
+          "thread": "M20 x 1.5",
+          "changeInterval": "every 500 h",
+          "warranty": "6 months"
+        }
+      },
+      "quantity": 2,
+      "options": {
+        "listing": "buy",
+        "source": "turkish"
+      },
+      "unitPrice": 32000
+    }
+  ],
+  "subtotal": 64000,
+  "updatedAt": "2026-10-29T15:36:57Z"
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> Hire a generator for a week (second line)</h3><pre>{
+  "id": "1",
+  "lines": [
+    {
+      "lineId": "a855726ce18c",
+      "product": {
+        "id": "51",
+        "slug": "fleetguard-lf9009",
+        "brand": "Fleetguard",
+        "model": "LF9009",
+        "kind": "part",
+        "subcategory": "filters",
+        "listing": "buy",
+        "inspected": false,
+        "listedAt": "2026-10-29T14:47:40Z",
+        "image": "https://odooapp.mdarj.org/web/image/product.template/51/image_1024",
+        "gallery": [
+          "https://odooapp.mdarj.org/web/image/product.template/51/image_1024"
+        ],
+        "price": 32000,
+        "sku": "LF9009",
+        "specs": {
+          "condition": "new",
+          "partType": "Oil filter",
+          "compatibility": "Perkins 1506A-E88TAG5, FG Wilson P100-5",
+          "origin": "original",
+          "dimensions": "93 x 178 mm",
+          "thread": "M20 x 1.5",
+          "changeInterval": "every 500 h",
+          "warranty": "6 months"
+        }
+      },
+      "quantity": 2,
+      "options": {
+        "listing": "buy",
+        "source": "turkish"
+      },
+      "unitPrice": 32000
+    },
+    {
+      "lineId": "cf8e440ebb72",
+      "product": {
+        "id": "33",
+        "slug": "perkins-1506a-e88tag5",
+        "brand": "Perkins",
+        "model": "1506A-E88TAG5",
+        "kind": "power",
+        "subcategory": "generators",
+        "listing": "buy",
+        "inspected": false,
+        "listedAt": "2026-10-29T14:47:40Z",
+        "availableFor": [
+          "buy",
+          "rent"
+        ],
+        "image": "https://odooapp.mdarj.org/web/image/product.template/33/image_1024",
+        "gallery": [
+          "https://odooapp.mdarj.org/web/image/product.template/33/image_1024",
+          "https://odooapp.mdarj.org/web/image/product.image/1/image_1024",
+          "https://odooapp.mdarj.org/web/image/product.image/2/image_1024"
+        ],
+        "price": 185000000,
+        "rentPrice": 450000,
+        "specs": {
+          "power": "250 kVA",
+          "kva": 250.0,
+          "primePower": "225 kVA",
+          "engine": "Perkins 1506A",
+          "engineSize": "8.8 L",
+          "powerSource": "diesel",
+          "condition": "new",
+          "location": "cairo",
+          "warranty": "24 months"
+        }
+      },
+      "quantity": 1,
+      "options": {
+        "listing": "rent",
+        "rentPeriod": "week",
+        "services": [
+          "operator"
+        ]
+      },
+      "unitPrice": 3150000
+    }
+  ],
+  "subtotal": 3214000,
+  "updatedAt": "2026-10-29T15:36:57Z"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Invalid quantity or option</h3><pre>{
+  "code": "validation_error",
+  "message": "Validation failed.",
+  "fields": {
+    "quantity": "Quantity must be a whole number between 1 and 999.",
+    "options.listing": "Must be buy or rent."
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill warn">404</span> Unknown product</h3><pre>{
+  "code": "not_found",
+  "message": "Product not found."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/cart/items"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="5">{ "productId": "51", "quantity": 2, "options": { "listing": "buy" } }</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="cart_patch" data-ep="cart_patch">
+<div class="card-h"><span class="mpill mono">PATCH</span><span class="path mono">/cart/items/:lineId</span><span class="what">Change a line</span><span class="auth">Bearer optional</span></div>
+<div class="card-b"><p>Send <code>quantity</code>, <code>options</code> or both. Changing the options can make the line identical to another one: the two lines then merge and their quantities add up. <code>lineId</code> may change when options change, so use the id in the response.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">lineId</td><td>path</td><td class="mono">string</td><td><code>CartLine.lineId</code> from the last response.</td></tr></tbody></table></div><h3>Body</h3><pre>{
+  "quantity": 3
+}</pre><div class="callout">404 <code>not_found</code> if the line is not in this caller's cart.</div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> quantity: 3</h3><pre>{
+  "id": "1",
+  "lines": [
+    {
+      "lineId": "a855726ce18c",
+      "product": {
+        "id": "51",
+        "slug": "fleetguard-lf9009",
+        "brand": "Fleetguard",
+        "model": "LF9009",
+        "kind": "part",
+        "subcategory": "filters",
+        "listing": "buy",
+        "inspected": false,
+        "listedAt": "2026-10-29T14:47:40Z",
+        "image": "https://odooapp.mdarj.org/web/image/product.template/51/image_1024",
+        "gallery": [
+          "https://odooapp.mdarj.org/web/image/product.template/51/image_1024"
+        ],
+        "price": 32000,
+        "sku": "LF9009",
+        "specs": {
+          "condition": "new",
+          "partType": "Oil filter",
+          "compatibility": "Perkins 1506A-E88TAG5, FG Wilson P100-5",
+          "origin": "original",
+          "dimensions": "93 x 178 mm",
+          "thread": "M20 x 1.5",
+          "changeInterval": "every 500 h",
+          "warranty": "6 months"
+        }
+      },
+      "quantity": 3,
+      "options": {
+        "listing": "buy",
+        "source": "turkish"
+      },
+      "unitPrice": 32000
+    },
+    {
+      "lineId": "cf8e440ebb72",
+      "product": {
+        "id": "33",
+        "slug": "perkins-1506a-e88tag5",
+        "brand": "Perkins",
+        "model": "1506A-E88TAG5",
+        "kind": "power",
+        "subcategory": "generators",
+        "listing": "buy",
+        "inspected": false,
+        "listedAt": "2026-10-29T14:47:40Z",
+        "availableFor": [
+          "buy",
+          "rent"
+        ],
+        "image": "https://odooapp.mdarj.org/web/image/product.template/33/image_1024",
+        "gallery": [
+          "https://odooapp.mdarj.org/web/image/product.template/33/image_1024",
+          "https://odooapp.mdarj.org/web/image/product.image/1/image_1024",
+          "https://odooapp.mdarj.org/web/image/product.image/2/image_1024"
+        ],
+        "price": 185000000,
+        "rentPrice": 450000,
+        "specs": {
+          "power": "250 kVA",
+          "kva": 250.0,
+          "primePower": "225 kVA",
+          "engine": "Perkins 1506A",
+          "engineSize": "8.8 L",
+          "powerSource": "diesel",
+          "condition": "new",
+          "location": "cairo",
+          "warranty": "24 months"
+        }
+      },
+      "quantity": 1,
+      "options": {
+        "listing": "rent",
+        "rentPeriod": "week",
+        "services": [
+          "operator"
+        ]
+      },
+      "unitPrice": 3150000
+    }
+  ],
+  "subtotal": 3246000,
+  "updatedAt": "2026-10-29T15:36:57Z"
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>PATCH path</label><input class="tp" value="/cart/items/LINE_ID"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="5">{ "quantity": 3 }</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="PATCH">Send PATCH</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="cart_del_item" data-ep="cart_del_item">
+<div class="card-h"><span class="mpill mono">DELETE</span><span class="path mono">/cart/items/:lineId</span><span class="what">Remove a line</span><span class="auth">Bearer optional</span></div>
+<div class="card-b"><p>Returns the cart without the line (200 <code>Cart</code>). Deleting a line that is already gone is not an error: still 200 with the cart.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">lineId</td><td>path</td><td class="mono">string</td><td></td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><p class="note">Success: see the description above.</p></div>
+<div class="pane" data-p="try"><div class="form"><div><label>DELETE path</label><input class="tp" value="/cart/items/LINE_ID"></div></div><div class="row"><button type="button" class="btn go" data-m="DELETE">Send DELETE</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="cart_del" data-ep="cart_del">
+<div class="card-h"><span class="mpill mono">DELETE</span><span class="path mono">/cart</span><span class="what">Empty the cart</span><span class="auth">Bearer optional</span></div>
+<div class="card-b"><p>Removes every line. <strong>204</strong>, no body.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"></div>
+<div class="pane" data-p="res"><p class="note">Success: see the description above.</p></div>
+<div class="pane" data-p="try"><div class="form"><div><label>DELETE path</label><input class="tp" value="/cart"></div></div><div class="row"><button type="button" class="btn go" data-m="DELETE">Send DELETE</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="cart_merge" data-ep="cart_merge">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/cart/merge</span><span class="what">Fold the guest cart into the user's</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Call it right after login. Reads the guest cart from the <code>spark_cart</code> cookie, adds its lines to the user's cart (identical lines add up), deletes the guest cart and clears the cookie. Returns the merged <code>Cart</code>. Without a Bearer it is <code>401</code>; with no guest cart it just returns the user's cart.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><p class="note" style="margin-top:0">No parameters.</p></div>
+<div class="pane" data-p="res"><p class="note">Success: see the description above.</p></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/cart/merge"></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+
+
+<h2 class="section" id="account">Profile (signed-in account)</h2>
+<p>All endpoints require <code>Authorization: Bearer &lt;accessToken&gt;</code>. A missing or expired token is <code>401 session_expired</code>; the client refreshes and retries once.</p>
+<section class="card" id="profile_get" data-ep="profile_get">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/account/profile</span><span class="what">The profile screen</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Returns the signed-in customer's profile. <code>company</code> and <code>city</code> are omitted when unset; <code>avatar</code> is <code>null</code> when there is no picture.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><p class="note" style="margin-top:0">No parameters.</p></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> </h3><pre>{
+  "id": "6",
+  "name": "Spark Demo",
+  "email": "demo@spark-fu.example",
+  "phone": "+201001234567",
+  "avatar": null,
+  "company": "Spark Demo Contracting",
+  "city": "cairo"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">401</span> No or stale token</h3><pre>{
+  "code": "session_expired",
+  "message": "Your session has expired. Sign in again."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/account/profile"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="profile_patch" data-ep="profile_patch">
+<div class="card-h"><span class="mpill mono">PATCH</span><span class="path mono">/account/profile</span><span class="what">Save edited fields</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Saves the whole form and returns the whole updated profile (the header's name updates from it). <code>email</code> is lower-cased. <code>company</code> and <code>city</code> are cleared by sending <code>""</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3>Body</h3><pre>{
+  "name": "Spark Demo",                  // 2–80 characters
+  "email": "demo@spark-fu.example",      // unique
+  "phone": "+201001234567",              // E.164, unique
+  "company": "Spark Demo Contracting",   // optional, ≤ 120; "" clears
+  "city": "cairo"                        // optional, ≤ 80; "" clears
+}</pre><div class="callout"><code>409 email_taken</code> / <code>409 phone_taken</code> when another account already uses the value.</div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> </h3><pre>{
+  "id": "6",
+  "name": "Spark Demo",
+  "email": "demo@spark-fu.example",
+  "phone": "+201001234567",
+  "avatar": null,
+  "company": "Spark Demo Contracting",
+  "city": "cairo"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Validation failed</h3><pre>{
+  "code": "validation_error",
+  "message": "Validation failed.",
+  "fields": {
+    "name": "Name must be 2 to 80 characters.",
+    "email": "Invalid email",
+    "phone": "Phone must be in E.164 format, e.g. +966501234567."
+  }
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>PATCH path</label><input class="tp" value="/account/profile"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="5">{ "name": "Spark Demo", "email": "demo@spark-fu.example", "phone": "+201001234567", "company": "Spark Demo Contracting", "city": "cairo" }</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="PATCH">Send PATCH</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="orders" data-ep="orders">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/account/orders</span><span class="what">The orders screen's three tabs</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>One tab per <code>kind</code>, newest first, scoped to the signed-in customer's company. <code>purchase</code> rows are the customer's orders (<code>reference</code> like <code>SF-1043</code>); <code>quote</code> and <code>service</code> rows are requests (<code>SQ-…</code>, <code>SV-…</code>) the admin handles in Odoo.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">kind</td><td>query</td><td class="mono">service | quote | purchase</td><td><strong>Required.</strong> Anything else is 422.</td></tr><tr><td class="mono">q</td><td>query</td><td class="mono">string</td><td>Matches <code>reference</code> or <code>title</code>, case-insensitive.</td></tr><tr><td class="mono">page, pageSize</td><td>query</td><td class="mono">int</td><td>Defaults 1 and 5 (max 48).</td></tr></tbody></table></div><div class="callout"><code>status</code> of a purchase: draft or sent order = <code>pending</code>, confirmed = <code>inProgress</code>, done = <code>completed</code>, cancelled = <code>cancelled</code>. Open a row with <a href="#checkout_get"><code>GET /orders/:reference</code></a> (purchases) or <a href="#quote_get"><code>GET /quotes/:reference</code></a> (quotes and services; <code>SV-…</code> references resolve there too).</div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> kind=purchase</h3><pre>{
+  "items": [
+    {
+      "id": "2",
+      "reference": "SF-1043",
+      "kind": "purchase",
+      "title": "Engine Oil Filter LF9009",
+      "placedAt": "2026-10-29T14:48:01Z",
+      "quantity": 4,
+      "status": "inProgress"
+    }
+  ],
+  "totalCount": 1,
+  "page": 1,
+  "pageSize": 5
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> kind=quote</h3><pre>{
+  "items": [
+    {
+      "id": "2",
+      "reference": "SQ-2211",
+      "kind": "quote",
+      "title": "Komatsu WA320 loader",
+      "placedAt": "2026-10-29T13:45:51Z",
+      "quantity": 1,
+      "status": "inProgress"
+    },
+    {
+      "id": "1",
+      "reference": "SQ-2210",
+      "kind": "quote",
+      "title": "Perkins 250 kVA generator",
+      "placedAt": "2026-10-29T13:45:51Z",
+      "quantity": 1,
+      "status": "pending"
+    }
+  ],
+  "totalCount": 2,
+  "page": 1,
+  "pageSize": 2
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/account/orders?kind=purchase"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="notif_get" data-ep="notif_get">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/account/notifications</span><span class="what">Notification toggles</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>New-account default: <code>orderUpdates</code> and <code>quoteReplies</code> on, the other two off.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><p class="note" style="margin-top:0">No parameters.</p></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> </h3><pre>{
+  "orderUpdates": true,
+  "quoteReplies": true,
+  "offers": false,
+  "newsletter": false
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/account/notifications"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="notif_put" data-ep="notif_put">
+<div class="card-h"><span class="mpill mono">PUT</span><span class="path mono">/account/notifications</span><span class="what">Save the toggles</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Takes the whole object (all four booleans) and returns it. A missing or non-boolean key is 422 with that key in <code>fields</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3>Body</h3><pre>{
+  "orderUpdates": true,
+  "quoteReplies": true,
+  "offers": false,
+  "newsletter": false
+}</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> </h3><pre>{
+  "orderUpdates": true,
+  "quoteReplies": true,
+  "offers": false,
+  "newsletter": false
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>PUT path</label><input class="tp" value="/account/notifications"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="5">{ "orderUpdates": true, "quoteReplies": true, "offers": false, "newsletter": false }</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="PUT">Send PUT</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="password" data-ep="password">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/account/password</span><span class="what">Change password</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Changes the password and answers <strong>204</strong>. Every refresh token of the user is revoked and this device gets a fresh refresh cookie in the same response, so the current device stays signed in and the others must sign in again. Other devices' access tokens stay valid until they expire (≤ 15 minutes).</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3>Body</h3><pre>{ "currentPassword": "Secret123", "newPassword": "Newpass123" }  // new: ≥ 8 chars, 1 capital, 1 digit, ≠ current</pre><div class="callout"><code>422 validation_error</code> for a weak or unchanged new password, with <code>fields.newPassword</code>.</div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">204</span> Changed</h3><p class="note">Empty body.</p><h3 style="margin-top:14px"><span class="pill warn">400</span> Current password is wrong</h3><pre>{
+  "code": "invalid_password",
+  "message": "The current password is wrong."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/account/password"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="5">{ "currentPassword": "", "newPassword": "" }</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+
+<h2 class="section" id="checkout">Checkout and orders</h2>
+<p>The basket page's <strong>purchase</strong> tab goes to checkout. <strong>The server prices the order</strong>: the <code>unitPrice</code> the shopper saw is only compared with the current price. A rent line costs the daily rate × the period (day ×1, week ×7, month ×30; a custom period is quote-only): the same number the cart charges, built from <code>Product.rentPrice</code>.</p>
+<section class="card" id="checkout_place" data-ep="checkout_place">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/orders</span><span class="what">Place an order</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Creates the order, removes from the caller's cart only the lines that were ordered (same product and options; lines waiting for a quote stay) and returns the public reference. For <code>card</code>, <code>paypal</code> and <code>applePay</code> the reply carries <code>paymentUrl</code>: send the shopper to it. It leads to the payment step and returns to <code>https://spark-fu.com/&lt;locale&gt;/orders/&lt;reference&gt;/confirmed</code> on success and to <code>https://spark-fu.com/&lt;locale&gt;/checkout/payment</code> on failure. For <code>cod</code> there is no <code>paymentUrl</code>. <code>&lt;locale&gt;</code> follows <code>Accept-Language</code> (<code>ar</code>, else <code>en</code>).</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3>Body</h3><pre>{
+  "items": [
+    {
+      "productId": "34",
+      "quantity": 2,
+      "options": {
+        "listing": "buy"
+      },
+      "unitPrice": 310000
+    }
+  ],
+  "shipping": {
+    "name": "Demo Buyer",
+    "phone": "+201001234567",
+    "email": "demo@spark-fu.example",
+    "governorate": "cairo",
+    "city": "nasrCity",
+    "address": "12 Tahrir Street",
+    "notes": "Call before delivery"
+  },
+  "payment": "cod",
+  "promoCode": "SAVE10"
+}</pre><div class="callout"><strong>Rules.</strong> <code>quantity</code> is 1..999. A wrong <code>unitPrice</code> is <code>409 price_changed</code> with <code>fields</code> keyed <code>items.&lt;index&gt;</code>, so the shopper sees the new price before paying. A product the admin flagged out of stock is <code>409 out_of_stock</code>. A line with no price (or a rent line with no <code>rentPrice</code>) cannot be bought: <code>422</code> with <code>fields["items.&lt;index&gt;"] = "This product is sold on quote only."</code>. <code>shipping.governorate</code> must be a key from <code>GET /delivery/regions</code>. <code>promoCode</code> takes its percentage off the goods only, never off delivery; unknown is <code>404 not_found</code>, expired <code>410 promo_expired</code>.</div><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">items[].productId</td><td>body</td><td class="mono">string</td><td></td></tr><tr><td class="mono">items[].quantity</td><td>body</td><td class="mono">number</td><td>1..999</td></tr><tr><td class="mono">items[].options</td><td>body</td><td class="mono">OrderOptions</td><td>as in the cart; may be empty</td></tr><tr><td class="mono">items[].unitPrice</td><td>body</td><td class="mono">Money</td><td>the price the shopper saw</td></tr><tr><td class="mono">shipping</td><td>body</td><td class="mono">ShippingDetails</td><td>name, phone (E.164), governorate, city and address required; email and notes optional</td></tr><tr><td class="mono">payment</td><td>body</td><td class="mono">PaymentMethod</td><td>cod | card | paypal | applePay</td></tr><tr><td class="mono">promoCode</td><td>body</td><td class="mono">string</td><td>optional</td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">201</span> Cash on delivery</h3><pre>{
+  "reference": "SF-1056"
+}</pre><h3 style="margin-top:14px"><span class="pill ok">201</span> Card: send the shopper to <code>paymentUrl</code></h3><pre>{
+  "reference": "SF-1057",
+  "paymentUrl": "https://odooapp.mdarj.org/orders/SF-1057/payment?locale=en"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">409</span> A price changed</h3><pre>{
+  "code": "price_changed",
+  "message": "The product price changed.",
+  "fields": {
+    "items.0": "Price changed."
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Shipping field missing</h3><pre>{
+  "code": "validation_error",
+  "message": "Validation failed.",
+  "fields": {
+    "shipping.name": "Required."
+  }
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/orders"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="14">{
+  "items": [
+    {
+      "productId": "34",
+      "quantity": 2,
+      "options": {
+        "listing": "buy"
+      },
+      "unitPrice": 310000
+    }
+  ],
+  "shipping": {
+    "name": "Demo Buyer",
+    "phone": "+201001234567",
+    "email": "demo@spark-fu.example",
+    "governorate": "cairo",
+    "city": "nasrCity",
+    "address": "12 Tahrir Street",
+    "notes": "Call before delivery"
+  },
+  "payment": "cod"
+}</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="checkout_get" data-ep="checkout_get">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/orders/:reference</span><span class="what">One order</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>The order status page and the confirmation page. <code>stage</code> is the furthest stage reached and <code>history</code> holds when each stage was reached. <code>totals.discount</code> is the promo percentage off the goods; <code>totals.shipping</code> is the delivery fee of the governorate. <code>eta</code> is the delivery window (dates). <code>courier</code> appears once the order has shipped. Another customer's order is <code>404 not_found</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">reference</td><td>path</td><td class="mono">string</td><td></td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> A placed order</h3><pre>{
+  "reference": "SF-1056",
+  "placedAt": "2026-10-31T17:09:47Z",
+  "stage": "placed",
+  "history": {
+    "placed": "2026-10-31T17:09:47Z"
+  },
+  "cancelled": false,
+  "lines": [
+    {
+      "productId": "34",
+      "slug": "perkins-pk-wp-1104",
+      "name": "Water Pump Kit",
+      "quantity": 2,
+      "unitPrice": 310000,
+      "options": {
+        "listing": "buy"
+      },
+      "image": "https://odooapp.mdarj.org/web/image/product.template/34/image_1024"
+    }
+  ],
+  "shipping": {
+    "name": "Demo Buyer",
+    "phone": "+201001234567",
+    "governorate": "cairo",
+    "city": "nasrCity",
+    "address": "12 Tahrir Street",
+    "email": "demo@spark-fu.example",
+    "notes": "Call before delivery"
+  },
+  "payment": "cod",
+  "totals": {
+    "subtotal": 620000,
+    "shipping": 500000,
+    "discount": 62000,
+    "total": 1058000
+  },
+  "eta": {
+    "from": "2026-11-02",
+    "to": "2026-11-04"
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill warn">404</span> Unknown reference</h3><pre>{
+  "code": "not_found",
+  "message": "Order not found."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/orders/SF-1056"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="checkout_cancel" data-ep="checkout_cancel">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/orders/:reference/cancel</span><span class="what">Cancel an order</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Allowed while <code>stage</code> is <code>placed</code> or <code>preparing</code>. Returns the order with <code>cancelled: true</code>. Any other stage, or cancelling twice, is <code>409 not_cancellable</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">reference</td><td>path</td><td class="mono">string</td><td></td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Cancelled</h3><pre>{
+  "reference": "SF-1056",
+  "placedAt": "2026-10-31T17:09:47Z",
+  "stage": "placed",
+  "history": {
+    "placed": "2026-10-31T17:09:47Z"
+  },
+  "cancelled": true,
+  "lines": [
+    {
+      "productId": "34",
+      "slug": "perkins-pk-wp-1104",
+      "name": "Water Pump Kit",
+      "quantity": 2,
+      "unitPrice": 310000,
+      "options": {
+        "listing": "buy"
+      },
+      "image": "https://odooapp.mdarj.org/web/image/product.template/34/image_1024"
+    }
+  ],
+  "shipping": {
+    "name": "Demo Buyer",
+    "phone": "+201001234567",
+    "governorate": "cairo",
+    "city": "nasrCity",
+    "address": "12 Tahrir Street",
+    "email": "demo@spark-fu.example",
+    "notes": "Call before delivery"
+  },
+  "payment": "cod",
+  "totals": {
+    "subtotal": 620000,
+    "shipping": 500000,
+    "discount": 62000,
+    "total": 1058000
+  },
+  "eta": {
+    "from": "2026-11-02",
+    "to": "2026-11-04"
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill warn">409</span> Already cancelled or past preparing</h3><pre>{
+  "code": "not_cancellable",
+  "message": "This order can no longer be cancelled."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/orders/SF-0000/cancel"></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="promo_get" data-ep="promo_get">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/promo-codes/:code</span><span class="what">Check a promo code</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Returns the whole-number percentage the code takes off the goods (never delivery). The same code is then sent as <code>promoCode</code> in <code>POST /orders</code>. Unknown is <code>404 not_found</code>, expired <code>410 promo_expired</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">code</td><td>path</td><td class="mono">string</td><td>case-insensitive</td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Valid</h3><pre>{
+  "code": "SAVE10",
+  "percentOff": 10
+}</pre><h3 style="margin-top:14px"><span class="pill warn">410</span> Expired</h3><pre>{
+  "code": "promo_expired",
+  "message": "This promo code has expired."
+}</pre><h3 style="margin-top:14px"><span class="pill warn">404</span> Unknown</h3><pre>{
+  "code": "not_found",
+  "message": "Promo code not found."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/promo-codes/SAVE10"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="delivery_regions" data-ep="delivery_regions">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/delivery/regions</span><span class="what">Governorates, cities and delivery fee</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>The admin owns the delivery fee and the list; the frontend translates the keys it knows and prints the raw key for a new one. <code>fee</code> is the flat delivery fee of the governorate in minor units. <code>cities</code> may be empty until the admin lists them.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><p class="note" style="margin-top:0">No parameters.</p></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> </h3><pre>[
+  {
+    "governorate": "cairo",
+    "cities": [
+      "nasrCity",
+      "maadi"
+    ],
+    "fee": 500000
+  },
+  {
+    "governorate": "giza",
+    "cities": [
+      "dokki"
+    ],
+    "fee": 700000
+  }
+]</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/delivery/regions"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<div class="callout"><strong>Types.</strong></div>
+<pre>type PaymentMethod = "cod" | "card" | "paypal" | "applePay";
+interface ShippingDetails { name: string; phone: string; email?: string; governorate: string; city: string; address: string; notes?: string }
+interface PlaceOrderRequest { items: { productId: string; quantity: number; options: OrderOptions; unitPrice: Money }[];
+                              shipping: ShippingDetails; payment: PaymentMethod; promoCode?: string }
+interface PlacedOrder { reference: string; paymentUrl?: string }          // "SF-1043"; paymentUrl absent for cod
+interface OrderDetails {
+  reference: string; placedAt: string;
+  stage: "placed" | "preparing" | "shipped" | "outForDelivery" | "delivered";
+  history: Partial&lt;Record&lt;OrderDetails["stage"], string&gt;&gt;;   // ISO time each reached stage was reached
+  cancelled: boolean;
+  lines: { productId: string; slug: string; name: string; image?: string; quantity: number; unitPrice: Money; options: OrderOptions }[];
+  shipping: ShippingDetails; payment: PaymentMethod;
+  totals: { subtotal: Money; shipping: Money; discount: Money; total: Money };
+  eta: { from: string; to: string };                                 // delivery window, ISO dates
+  courier?: { name: string; phone: string };                         // once shipped
+}
+interface PromoCode { code: string; percentOff: number }             // whole percent, goods only
+interface Region { governorate: string; cities: string[]; fee: Money }</pre>
+<h2 class="section" id="quotes">Quote requests and service requests</h2>
+<p>The basket page's <strong>quote</strong> tab (every line that has no price, or any <code>rent</code> line without a rate), a single product's "request a quote" and a service page's form all send <code>POST /quotes</code>. A guest may send one. With a valid Bearer the request is linked to the user and appears under <code>GET /account/orders?kind=quote</code> (<code>kind=service</code> when <code>service</code> is set). <strong>An invalid Bearer is ignored here, never <code>401</code>.</strong></p>
+<section class="card" id="quote_create" data-ep="quote_create">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/quotes</span><span class="what">Send a quote or service request</span><span class="auth">no auth; Bearer optional</span></div>
+<div class="card-b"><p>At least one of <code>items</code> or <code>service</code> is required (<code>422</code> otherwise). <code>service</code> is one of <code>inspection</code>, <code>maintenance</code>, <code>solar</code>, <code>load-bank</code>, <code>temporary-power</code>; anything else is <code>422</code>. These five are services: only <code>maintenance</code>, <code>inspection</code> and <code>solar</code> have a tile in <code>/categories</code>; <code>load-bank</code> and <code>temporary-power</code> are request-form services with no tile (<code>load-bank</code> is also a product sub-category under power, which is a different thing). Every item is kept with its options. A service request also needs <code>serviceDetails.neededBy</code> and <code>serviceDetails.equipmentType</code>. After a quote made from the cart's quote tab, those lines are removed from the caller's cart.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3>Body</h3><pre>{
+  "name": "Demo Buyer",
+  "phone": "+201001234567",
+  "city": "Cairo",
+  "notes": "Need it next week",
+  "items": [
+    {
+      "productId": "13",
+      "slug": "crestchic-lb1000",
+      "quantity": 1,
+      "options": {
+        "listing": "buy"
+      }
+    },
+    {
+      "productId": "15",
+      "slug": "crestchic-lb200",
+      "quantity": 1,
+      "options": {
+        "listing": "rent",
+        "rentPeriod": "week"
+      }
+    }
+  ]
+}</pre><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">name</td><td>body</td><td class="mono">string</td><td>required</td></tr><tr><td class="mono">phone</td><td>body</td><td class="mono">string</td><td>required, E.164</td></tr><tr><td class="mono">city</td><td>body</td><td class="mono">string</td><td>where the machine is needed</td></tr><tr><td class="mono">notes</td><td>body</td><td class="mono">string</td><td></td></tr><tr><td class="mono">items[]</td><td>body</td><td class="mono">{productId, slug, quantity, options}</td><td>may be empty for a service request</td></tr><tr><td class="mono">service</td><td>body</td><td class="mono">string</td><td>inspection | maintenance | solar | load-bank | temporary-power</td></tr><tr><td class="mono">serviceDetails</td><td>body</td><td class="mono">object</td><td>required with service</td></tr></tbody></table></div><h3>Service request example</h3><pre>{
+  "name": "Demo Buyer",
+  "phone": "+201001234567",
+  "items": [],
+  "service": "inspection",
+  "serviceDetails": {
+    "email": "demo@spark-fu.example",
+    "company": "Spark Demo Contracting",
+    "neededBy": "2026-12-01",
+    "governorate": "cairo",
+    "equipmentType": "generator",
+    "brandModel": "Perkins 1506A",
+    "address": "Plot 4, 10th of Ramadan"
+  }
+}</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">201</span> Quote from the cart</h3><pre>{
+  "reference": "SQ-2225"
+}</pre><h3 style="margin-top:14px"><span class="pill ok">201</span> Service request</h3><pre>{
+  "reference": "SV-3112"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Neither items nor service</h3><pre>{
+  "code": "validation_error",
+  "message": "Validation failed.",
+  "fields": {
+    "items": "At least one item or service is required."
+  }
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/quotes"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="14">{
+  "name": "Demo Buyer",
+  "phone": "+201001234567",
+  "city": "Cairo",
+  "notes": "Need it next week",
+  "items": [
+    {
+      "productId": "13",
+      "slug": "crestchic-lb1000",
+      "quantity": 1,
+      "options": {
+        "listing": "buy"
+      }
+    },
+    {
+      "productId": "15",
+      "slug": "crestchic-lb200",
+      "quantity": 1,
+      "options": {
+        "listing": "rent",
+        "rentPeriod": "week"
+      }
+    }
+  ]
+}</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="quote_get" data-ep="quote_get">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/quotes/:reference</span><span class="what">One quote or service request</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Status page of a request. <code>stage</code> moves <code>sent</code> → <code>reviewing</code> → <code>contacting</code> → <code>offered</code> → <code>completed</code>; <code>history</code> has the time each stage was reached. Someone else's request is <code>404 not_found</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">reference</td><td>path</td><td class="mono">string</td><td></td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Quote</h3><pre>{
+  "reference": "SQ-2225",
+  "placedAt": "2026-10-31T17:09:48Z",
+  "stage": "sent",
+  "history": {
+    "sent": "2026-10-31T17:09:48Z"
+  },
+  "cancelled": false,
+  "phone": "+201001234567",
+  "items": [
+    {
+      "productId": "13",
+      "slug": "crestchic-lb1000",
+      "quantity": 1,
+      "options": {
+        "listing": "buy"
+      },
+      "name": "Crestchic 1000 kW Load Bank",
+      "image": "https://odooapp.mdarj.org/web/image/product.template/13/image_1024"
+    },
+    {
+      "productId": "15",
+      "slug": "crestchic-lb200",
+      "quantity": 1,
+      "options": {
+        "listing": "rent",
+        "rentPeriod": "week"
+      },
+      "name": "Crestchic 200 kW Load Bank",
+      "image": "https://odooapp.mdarj.org/web/image/product.template/15/image_1024"
+    }
+  ]
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/quotes/SQ-2225"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="quote_cancel" data-ep="quote_cancel">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/quotes/:reference/cancel</span><span class="what">Cancel a request</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Returns the request with <code>cancelled: true</code>. A completed or already cancelled request is <code>409 not_cancellable</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">reference</td><td>path</td><td class="mono">string</td><td></td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Cancelled</h3><pre>{
+  "reference": "SQ-2225",
+  "placedAt": "2026-10-31T17:09:48Z",
+  "stage": "sent",
+  "history": {
+    "sent": "2026-10-31T17:09:48Z"
+  },
+  "cancelled": true,
+  "phone": "+201001234567",
+  "items": [
+    {
+      "productId": "13",
+      "slug": "crestchic-lb1000",
+      "quantity": 1,
+      "options": {
+        "listing": "buy"
+      },
+      "name": "Crestchic 1000 kW Load Bank",
+      "image": "https://odooapp.mdarj.org/web/image/product.template/13/image_1024"
+    },
+    {
+      "productId": "15",
+      "slug": "crestchic-lb200",
+      "quantity": 1,
+      "options": {
+        "listing": "rent",
+        "rentPeriod": "week"
+      },
+      "name": "Crestchic 200 kW Load Bank",
+      "image": "https://odooapp.mdarj.org/web/image/product.template/15/image_1024"
+    }
+  ]
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/quotes/SQ-0000/cancel"></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+<pre>interface QuoteRequest {
+  name: string; phone: string; city?: string; notes?: string;
+  items: { productId: string; slug: string; quantity: number; options: OrderOptions }[];   // may be empty for a service request
+  service?: "inspection" | "maintenance" | "solar" | "load-bank" | "temporary-power";
+  serviceDetails?: { email?: string; company?: string; neededBy: string /* yyyy-mm-dd */; governorate?: string;
+                     equipmentType: string; brandModel?: string; address?: string };
+}
+interface QuoteDetails {
+  reference: string;                                   // "SQ-2210"; services are "SV-..."
+  placedAt: string; stage: "sent" | "reviewing" | "contacting" | "offered" | "completed";
+  history: Partial&lt;Record&lt;QuoteDetails["stage"], string&gt;&gt;; cancelled: boolean; phone: string;
+  items: { productId: string; slug: string; quantity: number; options: OrderOptions; name: string; image?: string }[];
+  service?: string; serviceDetails?: QuoteRequest["serviceDetails"];
+}</pre>
+<h2 class="section" id="contact">Contact form</h2>
+<section class="card" id="contact_post" data-ep="contact_post">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/contact</span><span class="what">Send a message</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>Guests allowed. Send JSON, or <code>multipart/form-data</code> with up to three attachments (each at most 5 MB). <code>name</code>, <code>subject</code> and <code>message</code> are required, and so is one of <code>email</code> or <code>phone</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">name</td><td>body</td><td class="mono">string</td><td>required</td></tr><tr><td class="mono">email</td><td>body</td><td class="mono">string</td><td>email or phone required</td></tr><tr><td class="mono">phone</td><td>body</td><td class="mono">string</td><td></td></tr><tr><td class="mono">subject</td><td>body</td><td class="mono">string</td><td>required</td></tr><tr><td class="mono">message</td><td>body</td><td class="mono">string</td><td>required</td></tr><tr><td class="mono">attachments</td><td>body</td><td class="mono">file[]</td><td>multipart only; up to 3</td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">201</span> Sent</h3><pre>{
+  "reference": "CT-000004"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Validation failed</h3><pre>{
+  "code": "validation_error",
+  "message": "Validation failed.",
+  "fields": {
+    "name": "Required.",
+    "subject": "Required.",
+    "message": "Required.",
+    "email": "Email or phone is required."
+  }
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/contact"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body</label><textarea class="tb" rows="7">{
+  "name": "Demo Buyer",
+  "email": "demo@spark-fu.example",
+  "subject": "Delivery question",
+  "message": "Do you deliver to Alexandria?"
+}</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+
+<h2 class="section" id="errors">Error codes</h2>
+<p>Adding a code is non-breaking: the UI falls back to a generic message. Renaming or removing one, or changing its status, is breaking.</p>
+<div class="tw"><table>
+<thead><tr><th>Code</th><th>Status</th><th>Where</th><th>What the user sees</th></tr></thead>
+<tbody><tr><td class="mono">validation_error</td><td>422</td><td>any</td><td>Generic message, plus <code>fields</code> inline</td></tr><tr><td class="mono">not_found</td><td>404</td><td>product slug, cart product or line</td><td>Show the 404 page</td></tr><tr><td class="mono">out_of_stock</td><td>409</td><td>POST /cart/items</td><td>This product is out of stock.</td></tr><tr><td class="mono">price_changed</td><td>409</td><td>POST /orders</td><td>The price changed; shows the new price (fields keyed items.&lt;index&gt;)</td></tr><tr><td class="mono">promo_expired</td><td>410</td><td>GET /promo-codes/:code, POST /orders</td><td>This promo code has expired.</td></tr><tr><td class="mono">not_cancellable</td><td>409</td><td>POST /orders/:reference/cancel, POST /quotes/:reference/cancel</td><td>It can no longer be cancelled.</td></tr><tr><td class="mono">email_taken</td><td>409</td><td>PATCH /account/profile</td><td>An account with this email already exists.</td></tr><tr><td class="mono">phone_taken</td><td>409</td><td>PATCH /account/profile</td><td>An account with this phone number already exists.</td></tr><tr><td class="mono">invalid_password</td><td>400</td><td>POST /account/password</td><td>The current password is wrong.</td></tr><tr><td class="mono">session_expired</td><td>401</td><td>cart (stale Bearer), /cart/merge, /account/*</td><td>Refresh once and retry; otherwise sign in again.</td></tr><tr><td class="mono">rate_limited</td><td>429</td><td>any</td><td>Too many requests. Wait a moment.</td></tr><tr><td class="mono">invalid_request</td><td>400</td><td>any</td><td>Body is not a JSON object. A developer error.</td></tr><tr><td class="mono">server_error</td><td>500</td><td>any</td><td>Generic message.</td></tr></tbody></table></div>
+
+<h2 class="section" id="flows">Flows end to end</h2>
+<div class="flows">
+<div><h3>Landing</h3><ol class="steps">
+<li><code>GET /categories</code> for the explorer tiles.</li>
+<li><code>GET /products?featured=true&amp;limit=8</code> for the featured row.</li>
+<li>One <code>GET /products?kind=…&amp;limit=50</code> per shelf.</li></ol></div>
+<div><h3>Category page (<code>/power-solutions</code>)</h3><ol class="steps">
+<li><code>GET /products?kind=power&amp;page=1&amp;pageSize=9</code>.</li>
+<li><code>GET /products/facets?kind=power</code> for the sidebar.</li>
+<li>Every sidebar change re-queries the list with the filter params.</li></ol></div>
+<div><h3>Sub-category page</h3><ol class="steps">
+<li>Same two calls with <code>subcategory=generators</code>, page size 6.</li></ol></div>
+<div><h3>Product details</h3><ol class="steps">
+<li><code>GET /products/:slug</code>.</li>
+<li><code>…/related</code> and <code>…/bought-together</code> for the shelves.</li></ol></div>
+<div><h3>Add to cart, then sign in</h3><ol class="steps">
+<li><code>POST /cart/items</code> with the order panel's options (a guest gets the cookie).</li>
+<li>After login, <code>POST /cart/merge</code> with the Bearer.</li>
+<li>Lines with a price go to checkout (a sale with <code>price</code>, or a hire with <code>rentPrice</code>); the rest go to <code>POST /quotes</code>.</li></ol></div>
+<div><h3>Checkout</h3><ol class="steps">
+<li><code>GET /delivery/regions</code> for the governorate and city lists and the delivery fee; optionally <code>GET /promo-codes/:code</code>.</li>
+<li><code>POST /orders</code> with the lines, shipping and payment method. <code>409 price_changed</code>: show the new price and ask again.</li>
+<li>Card or wallet: follow <code>paymentUrl</code>; it returns to <code>/&lt;locale&gt;/orders/&lt;reference&gt;/confirmed</code>. Cash on delivery: go straight to the confirmation page.</li>
+<li><code>GET /orders/:reference</code> for the status page; <code>POST …/cancel</code> while placed or preparing.</li></ol></div>
+<div><h3>Quote or service request</h3><ol class="steps">
+<li><code>POST /quotes</code> (a guest may send one; a signed-in user finds it in <code>GET /account/orders?kind=quote</code> or <code>kind=service</code>).</li>
+<li><code>GET /quotes/:reference</code> for its status; <code>POST …/cancel</code> to withdraw it.</li></ol></div>
+<div><h3>Account</h3><ol class="steps">
+<li>After login, <code>GET /account/profile</code> for the header and the profile page.</li>
+<li>Orders page: <code>GET /account/orders?kind=purchase</code>, switching <code>kind</code> per tab.</li></ol></div>
+</div>
+
+<h2 class="section" id="notes">Notes and open points</h2>
+<ul>
+  <li><strong>Lists the admin manages.</strong> Brands, spare-part tags, equipment models, sources and energy sources are managed in Odoo (Marketplace, Configuration). A new source or energy source appears in <code>sources</code>, <code>powerSource</code> and the filters without a deployment, so the UI should not hard-code those lists; it should translate the codes it knows and show the raw code for a new one.</li>
+  <li><strong><code>powerSource</code> is not limited to <code>diesel | electric</code>.</strong> Petrol, gas and hybrid products send their own code. Tell backend if the UI should only ever receive two values.</li>
+  <li><strong><code>model</code> of a part</strong> is its part number, since parts have no model.</li>
+  <li><strong><code>sku</code></strong> is the part number, else the internal reference. It is omitted when neither exists: the serial number is never used.</li>
+  <li><strong><code>kva</code></strong> is set for products rated in kVA or kW (a kW rating is counted as the same number, which understates generators and load banks: 100 kW is about 125 kVA at 0.8 power factor. Where the admin can enter kVA, kVA is preferred). Welders (amps), forklifts (tons) and loaders (m³) have no <code>kva</code>; their rating is in <code>specs.power</code>.</li>
+  <li><strong>Stock.</strong> The platform does not track quantities. <code>inStock: false</code> appears only when the admin flags a product, and then adding it to a cart is <code>409 out_of_stock</code>.</li>
+  <li><strong>Order references.</strong> Purchases are numbered <code>SF-1043</code>…; quote requests <code>SQ-…</code>; service requests <code>SV-…</code>.</li>
+  <li><strong>Password change.</strong> The refresh cookie is scoped to <code>/auth</code>, so <code>/account/password</code> cannot tell which device is current; it revokes all refresh tokens and sets a fresh one for the calling device.</li>
+  <li><strong>Listings.</strong> <code>listing=buy</code> never returns a product from a rent-only category (<code>availableFor: ["rent"]</code>); <code>listing=rent</code> returns only rentable products.</li>
+  <li><strong>Admin-managed data for checkout.</strong> Promo codes (Marketplace, Promo Codes), the delivery fee, lead days and city keys of each governorate (the platform delivery prices). A governorate without a platform delivery price cannot be ordered to.</li>
+  <li><strong>Payment.</strong> <code>paymentUrl</code> is the platform's payment step; the gateway behind it is the backend's choice, and the frontend only follows the URL.</li>
+  <li><strong>Staging fixtures.</strong> The demo server holds 28 products across the nine sub-categories and the user <code>demo@spark-fu.example</code> / <code>Secret123</code> (phone <code>+201001234567</code>, company "Spark Demo Contracting", city <code>cairo</code>), with one purchase and four quote/service requests.</li>
+</ul>
+</main>
+</div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var base = $('#base'), token = '';
+  try { token = sessionStorage.getItem('sf_token') || ''; base.value = sessionStorage.getItem('sf_base') || base.value; } catch (e) {}
+  function chip() {
+    $('#tokTxt').textContent = token ? token.slice(0, 14) + '…' : 'none';
+    $('#sessTxt').textContent = token ? 'token set' : 'no session';
+    $('#sessChip').classList.toggle('live', !!token);
+  }
+  function save() { try { sessionStorage.setItem('sf_token', token); sessionStorage.setItem('sf_base', base.value); } catch (e) {} }
+  base.addEventListener('change', save);
+  $('#demoBtn').onclick = function () {
+    fetch(base.value + '/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'demo@spark-fu.example', password: 'Secret123', remember: true }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j.accessToken) { token = j.accessToken; save(); chip(); } else alert(JSON.stringify(j)); })
+      .catch(function (e) { alert('Could not reach ' + base.value + ': ' + e.message); });
+  };
+  $('#outBtn').onclick = function () { token = ''; save(); chip(); };
+  chip();
+  document.querySelectorAll('.card').forEach(function (card) {
+    card.querySelectorAll('.tabs button').forEach(function (b) {
+      b.onclick = function () {
+        card.querySelectorAll('.tabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
+        card.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.dataset.p === b.dataset.t); });
+      };
+    });
+    var go = card.querySelector('.go');
+    go.onclick = function () {
+      var out = card.querySelector('.res'), body = card.querySelector('.tb');
+      var opts = { method: go.dataset.m, credentials: 'include', headers: {} };
+      if (token) opts.headers.Authorization = 'Bearer ' + token;
+      if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = body.value; }
+      go.disabled = true; out.innerHTML = '';
+      var t0 = performance.now();
+      fetch(base.value + card.querySelector('.tp').value, opts).then(function (r) {
+        return r.text().then(function (t) {
+          var pretty = t; try { pretty = JSON.stringify(JSON.parse(t), null, 2); } catch (e) {}
+          var cls = r.status < 300 ? 'ok' : (r.status < 500 ? 'warn' : 'err');
+          out.innerHTML = '<div class="meta"><span class="pill ' + cls + '">' + r.status + '</span><span>' + Math.round(performance.now() - t0) + ' ms</span></div><pre></pre>';
+          out.querySelector('pre').textContent = pretty || '(empty body)';
+        });
+      }).catch(function (e) { out.innerHTML = '<p class="note">Request failed: ' + e.message + ' (is the base URL reachable, and its origin allowed by CORS?)</p>'; })
+        .then(function () { go.disabled = false; });
+    };
+  });
+})();
+</script>
+</body>
+</html>

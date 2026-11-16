@@ -17,6 +17,10 @@ _SHIPPED_GROUP_STATES = frozenset({"partially_shipped", "shipped", "delivery_rep
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
+    leaders_platform_sold = fields.Boolean(
+        "Sold by the platform", copy=False,
+        help="The customer bought the platform's own stock: the line is never handed to a vendor's Buy Box offer.")
+
     marketplace_offer_id = fields.Many2one("leaders.marketplace.offer", index=True, copy=False)
     vendor_id = fields.Many2one("res.partner", related="marketplace_offer_id.vendor_id", store=True, index=True)
     fulfillment_type = fields.Selection(related="marketplace_offer_id.fulfillment_type", store=True)
@@ -242,7 +246,7 @@ class SaleOrder(models.Model):
         Offer = self.env["leaders.marketplace.offer"]
         lines = self.env["sale.order.line"]
         for line in self.order_line.filtered(lambda l: not l.display_type and l.product_id and not l.is_delivery):
-            if not line.marketplace_offer_id:
+            if not line.marketplace_offer_id and not line.leaders_platform_sold:
                 offer = Offer._get_marketplace_winner(line.product_id)
                 if offer:
                     line.marketplace_offer_id = offer

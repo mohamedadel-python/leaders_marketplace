@@ -1,0 +1,89 @@
+{
+ "screen_id": "web_login",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_login_desktop.png",
+   "width": 1440,
+   "height": 900
+  },
+  "mobile": {
+   "file": "visitor/web_login_mobile.png",
+   "width": 780,
+   "height": 2612
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البريد أو الدخول",
+   "selector": "input[name='login']",
+   "device": "desktop",
+   "bbox": {
+    "x": 570,
+    "y": 140,
+    "w": 300,
+    "h": 38
+   }
+  },
+  {
+   "n": 2,
+   "label": "كلمة المرور",
+   "selector": "input[name='password']",
+   "device": "desktop",
+   "bbox": {
+    "x": 570,
+    "y": 226,
+    "w": 300,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "دخول",
+   "selector": "form.oe_login_form button[type='submit']",
+   "device": "desktop",
+   "bbox": {
+    "x": 570,
+    "y": 296,
+    "w": 300,
+    "h": 38
+   }
+  },
+  {
+   "n": 1,
+   "label": "البريد أو الدخول",
+   "selector": "input[name='login']",
+   "device": "mobile",
+   "bbox": {
+    "x": 90,
+    "y": 276,
+    "w": 600,
+    "h": 76
+   }
+  },
+  {
+   "n": 2,
+   "label": "كلمة المرور",
+   "selector": "input[name='password']",
+   "device": "mobile",
+   "bbox": {
+    "x": 90,
+    "y": 448,
+    "w": 600,
+    "h": 76
+   }
+  },
+  {
+   "n": 3,
+   "label": "دخول",
+   "selector": "form.oe_login_form button[type='submit']",
+   "device": "mobile",
+   "bbox": {
+    "x": 90,
+    "y": 588,
+    "w": 600,
+    "h": 76
+   }
+  }
+ ]
+}

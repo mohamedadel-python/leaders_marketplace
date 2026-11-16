@@ -228,7 +228,7 @@ for role, label in (("reviewer", "المراجع"), ("finance", "المالية"
     act = {"reviewer": "action_vendor_application", "finance": "action_settlement", "warehouse": "action_fulfillment_inbound"}[role]
     add("backend_menu_%s_role" % role, role, "backend", "قائمة السوق كما تظهر لدور %s" % label,
         {"type": "backend", "action": MOD + act}, note="عناصر القائمة تختلف حسب صلاحيات المستخدم",
-        setup=[{"op": "click", "selector": ".o_menu_sections .dropdown-toggle >> nth=0", "safe": True, "wait": 700}],
+        setup=[{"op": "click", "selector": ".o_menu_sections .dropdown-toggle >> nth=0", "safe": True, "wait": 700, "optional": True}],
         markers=[M(".o_menu_sections", "أقسام قائمة السوق")], capture={"mode": "viewport"}, refs={})
 
 # ---- vendor applications ---------------------------------------------------------------------------
@@ -368,8 +368,7 @@ add("backend_order_dialog_ship_wizard", "manager", "backend", "نافذة كمي
     "record": rec(VO, [["state", "in", ["confirmed", "processing", "partially_fulfilled"]], ["fulfillment_group_ids.fulfillment_type", "=", "fbm"]])},
     note="افتح مجموعة التنفيذ ثم زر «كميات الشحن»: نافذة تسمح بتحديد الكمية المشحونة لكل بند", requires=["part3"],
     setup=[{"op": "click", "selector": ".o_notebook .nav-link[name='fulfillment']", "safe": True},
-           {"op": "click", "selector": ".o_notebook .tab-pane.active .o_data_row >> nth=0", "safe": True},
-           {"op": "click", "selector": ".modal button[name='action_open_ship_wizard']", "dialog": True, "wait": 1200}],
+           {"op": "click", "selector": ".o_notebook .tab-pane.active button[name='action_open_ship_wizard'] >> nth=0", "dialog": True, "wait": 1200}],
     markers=[M(".modal .modal-content", "نافذة كميات الشحن"), M(".modal [name='tracking_ref']", "رقم التتبع", optional=True),
              M(".modal [name='line_ids']", "الكميات المطلوبة والمتاحة والمشحونة", optional=True)],
     capture={"mode": "viewport"}, refs=refs_backend(None, "leaders.ship.wizard", "form", extra_views=["view_leaders_ship_wizard_form"]))
@@ -404,7 +403,7 @@ for st, note in [("requested", "طلب مرتجع جديد ينتظر قرار �
                  ("rejected", "مرتجع مرفوض من البائع: يمكن للعميل التصعيد"), ("escalated", "مرتجع مُصعَّد لقرار السوق"),
                  ("received", "بضاعة مستلمة"), ("refunded", "مرتجع تم استرداد قيمته (إشعار دائن وقيد استرداد)"),
                  ("exchanged", "مرتجع تم استبداله بشحنة بديلة"), ("closed", "مرتجع مغلق (مرفوض نهائياً)"), ("cancelled", "مرتجع ملغى")]:
-    bform("backend_return_form_%s" % st, "reviewer", "نموذج المرتجع (%s)" % st, "action_vendor_return", RT, [["state", "=", st]], RT_F,
+    bform("backend_return_form_%s" % st, "manager", "نموذج المرتجع (%s)" % st, "action_vendor_return", RT, [["state", "=", st]], RT_F,
           note=note, requires=["part4"], state=st, tabs=True)
 for tabn, lab_ in (("lines", "البنود"), ("photos", "الصور"), ("replacements", "الشحنات البديلة"), ("pickings", "الاستلام"), ("accounting", "المحاسبة")):
     dom = [["state", "in", ["refunded", "exchanged", "received", "approved"]]]
@@ -412,7 +411,7 @@ for tabn, lab_ in (("lines", "البنود"), ("photos", "الصور"), ("replac
         dom.append(["photo_ids", "!=", False])
     if tabn == "replacements":
         dom = [["resolution", "=", "exchange"]]
-    bform("backend_return_form_tab_%s" % tabn, "reviewer", "تبويب %s في المرتجع" % lab_, "action_vendor_return", RT, dom, ["state"],
+    bform("backend_return_form_tab_%s" % tabn, "manager", "تبويب %s في المرتجع" % lab_, "action_vendor_return", RT, dom, ["state"],
           note="تبويب %s" % lab_, requires=["part4"], state="refunded", statusbar=False, btns=False,
           setup=[{"op": "click", "selector": ".o_notebook .nav-link[name='%s']" % tabn, "safe": True}],
           extra=[M(".o_notebook .tab-pane.active", lab_)])
@@ -905,7 +904,7 @@ vshot("portal_vendor_api_key_created", "مفتاح API جديد يظهر مرة 
 vshot("portal_vendor_import", "الاستيراد الجماعي: رفع ملف", "/my/vendor/import", ["portal_vendor_import"],
       [M("#lm_import_kind", "نوع الاستيراد"), M("#lm_import_file", "ملف xlsx أو csv"), M("#lm_import_submit", "زر الرفع والتحقق"), M("a:has-text('Excel')", "قالب Excel", optional=True)],
       note="ثلاثة أنواع: منتجات جديدة، عروض من الكتالوج، تحديث سعر ومخزون", requires=["part4"],
-      paths=["/my/vendor/import", "/my/vendor/import/upload", "/my/vendor/import/template/<any(new_products,catalog_offers,update):kind>.<any(xlsx,csv):fmt>"])
+      paths=["/my/vendor/import", "/my/vendor/import/upload", "/my/vendor/import/template/<any(new_products,catalog_offers,update,equipment,spare_parts):kind>.<any(xlsx,csv):fmt>"])
 IJ_M = [M("#lm_vendor_import_job", "ملخص المهمة"), M("button:has-text('تأكيد الاستيراد')", "تأكيد استيراد الصفوف الصالحة", optional=True),
         M("a:has-text('ملف الأخطاء')", "ملف الأخطاء", optional=True)]
 for st, note in [("validated", "بعد التحقق: صفوف صالحة وأخرى بأخطاء وزر التأكيد"), ("done", "استيراد مكتمل"), ("failed", "استيراد فشل أو فيه أخطاء")]:
@@ -974,9 +973,9 @@ for key, who, dom, note in [
           paths=["/my/marketplace/checkouts/<int:sale_order_id>"], extra_routes=["/my/marketplace/checkouts/<int:sale_order_id>/buy-again"])
 cshot("portal_customer_checkout_cancel_form", "نموذج إلغاء الطلب الموحد", "/my/marketplace/checkouts/{sale_order_id[0]}", ["portal_customer_checkout_detail"],
       [M("#lm_checkout_cancel_form", "نموذج الإلغاء"), M("#lm_checkout_cancel_reason", "سبب الإلغاء"), M("#lm_checkout_cancel_note", "ملاحظة", optional=True),
-       M("#lm_checkout_cancel_window", "مهلة الإلغاء", optional=True)], who=2, requires=["part3"],
-      record=co_rec(2, [["state", "in", ["pending", "confirmed"]]], fields=["sale_order_id"]),
-      setup=[{"op": "scroll_to", "selector": "#lm_checkout_cancel_form"}], note="الإلغاء متاح ما لم يُشحن شيء",
+       M("#lm_checkout_cancel_window", "مهلة الإلغاء", optional=True)], who=1, requires=["part3"],
+      record=co_rec(1, [["state", "in", ["pending", "confirmed"]]], fields=["sale_order_id"]),
+      setup=[{"op": "scroll_to", "selector": "#lm_checkout_cancel_form", "optional": True}], note="الإلغاء متاح ما لم يُشحن شيء",
       extra_routes=["/my/marketplace/checkouts/<int:sale_order_id>/cancel"])
 cshot("portal_customer_checkout_cancel_shipped", "الإلغاء غير متاح بعد الشحن", "/my/marketplace/checkouts/{sale_order_id[0]}", ["portal_customer_checkout_detail"],
       [M("#lm_checkout_cancel_shipped", "رسالة عدم إمكانية الإلغاء", optional=True), M("#lm_checkout_contact_support", "التواصل مع الدعم", optional=True)], who=3, requires=["part3"],
@@ -1079,8 +1078,8 @@ cshot("web_payment_step", "الدفع: خطوة الدفع وطرقه", "/shop/p
       [M("#checkout_layout_marketplace_total, #amount_total_summary", "إجمالي الطلب", optional=True), M("#payment_method, .o_payment_form", "طرق الدفع", optional=True), M("#checkout_cash_on_delivery, #lm_cod_box", "الدفع عند الاستلام", optional=True)],
       who=2, kind="website", requires=["part3"], note="COD مع التحقق من الهاتف")
 cshot("web_payment_cod_otp_pending", "الدفع عند الاستلام: بانتظار إدخال رمز التحقق", "/shop/payment", ["checkout_cash_on_delivery"],
-      [M("#lm_cod_box", "صندوق الدفع عند الاستلام"), M("#lm_cod_phone", "رقم الهاتف"), M("#lm_cod_code", "رمز التحقق", optional=True)], who=2, kind="website", requires=["part3"],
-      setup=[{"op": "scroll_to", "selector": "#lm_cod_box", "optional": True}], paths=["/shop/payment/cod/otp/send", "/shop/payment/cod/otp/verify", "/shop/payment/cod"])
+      [M("#lm_cod_box", "صندوق الدفع عند الاستلام", optional=True), M("#lm_cod_phone", "رقم الهاتف", optional=True), M("#lm_cod_code", "رمز التحقق", optional=True)], who=2, kind="website", requires=["part3"],
+      paths=["/shop/payment/cod/otp/send", "/shop/payment/cod/otp/verify", "/shop/payment/cod"])
 cshot("web_payment_cod_over_limit", "الدفع: الدفع عند الاستلام غير متاح (فوق الحد)", "/shop/payment", ["checkout_cash_on_delivery"],
       [M("#checkout_cash_on_delivery, #lm_cod_box", "رسالة حد الدفع عند الاستلام", optional=True), M("#payment_method, .o_payment_form", "طرق الدفع المتاحة", optional=True)], who=3, kind="website", requires=["part3"])
 cshot("web_payment_cod_blocked", "الدفع: العميل محظور من الدفع عند الاستلام بعد رفضه", "/shop/payment", ["checkout_cash_on_delivery"],

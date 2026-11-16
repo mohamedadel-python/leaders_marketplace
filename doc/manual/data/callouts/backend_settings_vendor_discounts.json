@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_settings_vendor_discounts",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_vendor_discounts_desktop.png",
+   "width": 1306,
+   "height": 181
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "خصومات منتجات البائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_discounts_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 89
+   }
+  },
+  {
+   "n": 2,
+   "label": "الخصم بدون اعتماد (%)",
+   "selector": ".o_setting_box:has([name='marketplace_max_vendor_discount_without_approval'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 89
+   }
+  }
+ ]
+}

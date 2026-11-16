@@ -1,0 +1,96 @@
+{
+ "screen_id": "backend_apikey_form_active",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_apikey_form_active_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "إلغاء المفتاح",
+   "selector": "button[name=\"action_revoke\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1349,
+    "y": 113,
+    "w": 75,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 179,
+    "w": 589,
+    "h": 21
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 213,
+    "w": 589,
+    "h": 24
+   }
+  },
+  {
+   "n": 4,
+   "label": "أنشئ بواسطة",
+   "selector": ".o_form_view .o_field_widget[name='user_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 250,
+    "w": 589,
+    "h": 24
+   }
+  },
+  {
+   "n": 5,
+   "label": "النطاق",
+   "selector": ".o_form_view .o_field_widget[name='scope']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 287,
+    "w": 589,
+    "h": 21
+   }
+  },
+  {
+   "n": 6,
+   "label": "بادئة المفتاح",
+   "selector": ".o_form_view .o_field_widget[name='key_prefix']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 179,
+    "w": 589,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "آخر استخدام",
+   "selector": ".o_form_view .o_field_widget[name='last_used']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 247,
+    "w": 589,
+    "h": 21
+   }
+  }
+ ]
+}

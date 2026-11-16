@@ -1,0 +1,84 @@
+{
+ "screen_id": "backend_apikey_list",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_apikey_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "الاسم",
+   "selector": "th[data-name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1128,
+    "y": 106,
+    "w": 272,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 863,
+    "y": 106,
+    "w": 266,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "النطاق",
+   "selector": "th[data-name='scope']",
+   "device": "desktop",
+   "bbox": {
+    "x": 719,
+    "y": 106,
+    "w": 144,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "بادئة المفتاح",
+   "selector": "th[data-name='key_prefix']",
+   "device": "desktop",
+   "bbox": {
+    "x": 558,
+    "y": 106,
+    "w": 160,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "آخر استخدام",
+   "selector": "th[data-name='last_used']",
+   "device": "desktop",
+   "bbox": {
+    "x": 193,
+    "y": 106,
+    "w": 182,
+    "h": 38
+   }
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "screen_id": "backend_menu_performance",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_menu_performance_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "عناصر القائمة",
+   "selector": ".o-dropdown--menu",
+   "device": "desktop",
+   "bbox": {
+    "x": 1043,
+    "y": 50,
+    "w": 160,
+    "h": 72
+   }
+  }
+ ]
+}

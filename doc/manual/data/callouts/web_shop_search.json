@@ -1,0 +1,65 @@
+{
+ "screen_id": "web_shop_search",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_shop_search_desktop.png",
+   "width": 1440,
+   "height": 1349
+  },
+  "mobile": {
+   "file": "visitor/web_shop_search_mobile.png",
+   "width": 780,
+   "height": 2826
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شبكة المنتجات",
+   "selector": "#products_grid, .o_wsale_products_grid_table_wrapper",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 81,
+    "w": 990,
+    "h": 471
+   }
+  },
+  {
+   "n": 2,
+   "label": "البحث",
+   "selector": ".o_wsale_products_searchbar_form, form[action='/shop']",
+   "device": "desktop",
+   "bbox": {
+    "x": 340,
+    "y": 139,
+    "w": 695,
+    "h": 38
+   }
+  },
+  {
+   "n": 1,
+   "label": "شبكة المنتجات",
+   "selector": "#products_grid, .o_wsale_products_grid_table_wrapper",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 158,
+    "w": 780,
+    "h": 862
+   }
+  },
+  {
+   "n": 2,
+   "label": "البحث",
+   "selector": ".o_wsale_products_searchbar_form, form[action='/shop']",
+   "device": "mobile",
+   "bbox": {
+    "x": 385,
+    "y": 274,
+    "w": 365,
+    "h": 76
+   }
+  }
+ ]
+}

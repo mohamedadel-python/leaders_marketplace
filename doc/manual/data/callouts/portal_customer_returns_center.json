@@ -1,0 +1,89 @@
+{
+ "screen_id": "portal_customer_returns_center",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_returns_center_desktop.png",
+   "width": 1440,
+   "height": 1345
+  },
+  "mobile": {
+   "file": "customer/portal_customer_returns_center_mobile.png",
+   "width": 780,
+   "height": 6140
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "مرشحات المركز",
+   "selector": "#lm_returns_filters",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 361,
+    "w": 1290,
+    "h": 36
+   }
+  },
+  {
+   "n": 2,
+   "label": "مرتجعاتي",
+   "selector": "#lm_center_returns",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 413,
+    "w": 1290,
+    "h": 22
+   }
+  },
+  {
+   "n": 3,
+   "label": "نزاعاتي",
+   "selector": "#lm_center_disputes",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 727,
+    "w": 1290,
+    "h": 22
+   }
+  },
+  {
+   "n": 1,
+   "label": "مرشحات المركز",
+   "selector": "#lm_returns_filters",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 824,
+    "w": 720,
+    "h": 72
+   }
+  },
+  {
+   "n": 2,
+   "label": "مرتجعاتي",
+   "selector": "#lm_center_returns",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 928,
+    "w": 720,
+    "h": 44
+   }
+  },
+  {
+   "n": 3,
+   "label": "نزاعاتي",
+   "selector": "#lm_center_disputes",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 3087,
+    "w": 720,
+    "h": 44
+   }
+  }
+ ]
+}

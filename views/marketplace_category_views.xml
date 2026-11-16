@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Marketplace > Configuration > Categories > the four sections. The category screen holds what the project guide
+         asks (name, parent, image, description, type, rent, used, inspection) and what the storefront API reads (icon,
+         delivery surcharge, storefront group, hidden, order, slug). Odoo's own category form stays as Odoo ships it.
+         The website and the Odoo eCommerce description are left out: the storefront never reads them. -->
+    <record id="view_public_category_marketplace_form" model="ir.ui.view">
+        <field name="name">product.public.category.form.marketplace</field>
+        <field name="model">product.public.category</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form string="Category">
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"
+                           help="The category picture: the photo on the category card of the website. One image is enough; the small icon below is optional."/>
+                    <div class="oe_title">
+                        <label for="name" string="Category name"/>
+                        <h1><field name="name" placeholder="Write the Arabic name, then the English one with the language button" required="1"
+                                   help="The name on the website menu, the category card and the filters. Write the Arabic name, then the English one with the language button next to the field."/></h1>
+                    </div>
+                    <group>
+                        <group string="Category">
+                            <field name="parent_id" string="Under" options="{'no_create': True}"
+                                   domain="[('id', 'child_of', context.get('lm_cat_root', 0))]"
+                                   help="The main category this one belongs to. Leave empty only for the four main categories."/>
+                            <field name="leaders_field_set" string="Type" invisible="context.get('lm_cat_section') == 'services'"
+                                   help="Equipment or spare part: decides the fields a product carries and how it is ordered (spare parts go to the cart, equipment is ordered with a request). Empty on a subcategory: it follows its main category."/>
+                            <field name="leaders_is_service" invisible="1"/>
+                        </group>
+                        <group string="Settings" invisible="context.get('lm_cat_section') == 'services'">
+                            <field name="leaders_can_rent" string="Can be rented"
+                                   help="On: the products of this category can be offered for rent. Off: sale only."/>
+                            <field name="leaders_accepts_used" string="Accepts used products"
+                                   help="On: vendors may list used or refurbished products in this category."/>
+                            <field name="leaders_inspection_required" string="Inspection before publishing" invisible="not leaders_accepts_used"
+                                   help="On: a used product of this category is published only after the platform inspects it; the vendor pays the inspection."/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="leaders_description" nolabel="1" colspan="2"
+                               placeholder="Write the Arabic text, then the English one with the language button."
+                               help="The short text under the category name on the website card. Write the Arabic text, then the English one with the language button."/>
+                    </group>
+                    <notebook>
+                        <page string="Advanced settings" name="leaders_category_advanced"
+                              groups="leaders_marketplace.group_marketplace_manager">
+                            <group>
+                                <group string="Selling">
+                                    <field name="leaders_can_buy" string="Can be bought" invisible="context.get('lm_cat_section') == 'services'"
+                                           help="Off: the products of this category are offered for rent only, never for sale."/>
+                                    <field name="leaders_delivery_surcharge" string="Delivery surcharge"
+                                           invisible="context.get('lm_cat_section') != 'parts' and leaders_field_set != 'part'"
+                                           help="Added once to the delivery fee of an order that holds a spare part of this category (bulky items, oils)."/>
+                                    <field name="leaders_rent_margin_percent" string="Rent margin (%)" invisible="not leaders_can_rent"
+                                           help="Margin added to the vendor's daily rent price for this category. 0: the platform margin."/>
+                                </group>
+                                <group string="Website">
+                                    <field name="leaders_icon" string="Small icon" widget="image" options="{'size': [64, 64]}"
+                                           help="Optional small icon shown in the website menus next to the name. The big picture is the category image at the top."/>
+                                    <field name="leaders_group" string="Website section" invisible="parent_id"
+                                           help="Main categories only: the section of the website they open (power, equipment, parts, services)."/>
+                                    <field name="sequence" string="Order"
+                                           help="The order of the category in the website menus and cards: smaller first."/>
+                                    <field name="leaders_hidden" string="Hidden from the website"
+                                           help="Hides the category and its products from the website without deleting anything; untick to show them again."/>
+                                    <field name="leaders_slug" string="Link (automatic)" readonly="1"
+                                           help="The category address on the website, made from its name (English or Arabic). It cannot be typed."/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_public_category_marketplace_list" model="ir.ui.view">
+        <field name="name">product.public.category.list.marketplace</field>
+        <field name="model">product.public.category</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="leaders_hidden">
+                <field name="sequence" widget="handle"/>
+                <field name="display_name" string="Category"/>
+                <field name="leaders_can_rent" string="Can be rented" optional="show"/>
+                <field name="leaders_accepts_used" string="Accepts used" optional="show"/>
+                <field name="leaders_inspection_required" string="Inspection" optional="show"/>
+                <field name="leaders_hidden" string="Hidden" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_marketplace_categories_power" model="ir.actions.act_window">
+        <field name="name">Power Solutions</field>
+        <field name="res_model">product.public.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="[('id', 'child_of', ref('leaders_categ_power'))]"/>
+        <field name="context" eval="{'lm_cat_root': ref('leaders_categ_power'), 'lm_cat_section': 'power', 'default_parent_id': ref('leaders_categ_power')}"/>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_public_category_marketplace_list')}), (0, 0, {'view_mode': 'form', 'view_id': ref('view_public_category_marketplace_form')})]"/>
+    </record>
+    <record id="action_marketplace_categories_equipment" model="ir.actions.act_window">
+        <field name="name">Equipment</field>
+        <field name="res_model">product.public.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="[('id', 'child_of', ref('leaders_categ_equipment'))]"/>
+        <field name="context" eval="{'lm_cat_root': ref('leaders_categ_equipment'), 'lm_cat_section': 'equipment', 'default_parent_id': ref('leaders_categ_equipment')}"/>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_public_category_marketplace_list')}), (0, 0, {'view_mode': 'form', 'view_id': ref('view_public_category_marketplace_form')})]"/>
+    </record>
+    <record id="action_marketplace_categories_parts" model="ir.actions.act_window">
+        <field name="name">Spare Parts &amp; Oils</field>
+        <field name="res_model">product.public.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="[('id', 'child_of', ref('leaders_categ_parts'))]"/>
+        <field name="context" eval="{'lm_cat_root': ref('leaders_categ_parts'), 'lm_cat_section': 'parts', 'default_parent_id': ref('leaders_categ_parts')}"/>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_public_category_marketplace_list')}), (0, 0, {'view_mode': 'form', 'view_id': ref('view_public_category_marketplace_form')})]"/>
+    </record>
+    <record id="action_marketplace_categories_services" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">product.public.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="[('id', 'child_of', ref('leaders_categ_services'))]"/>
+        <field name="context" eval="{'lm_cat_root': ref('leaders_categ_services'), 'lm_cat_section': 'services', 'default_parent_id': ref('leaders_categ_services'), 'default_leaders_is_service': True}"/>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_public_category_marketplace_list')}), (0, 0, {'view_mode': 'form', 'view_id': ref('view_public_category_marketplace_form')})]"/>
+    </record>
+
+    <!-- Categories becomes a menu of the four sections (it opened every category in one list before) -->
+    <record id="menu_leaders_category" model="ir.ui.menu">
+        <field name="action" eval="False"/>
+    </record>
+    <menuitem id="menu_marketplace_categories_power" name="Power Solutions" parent="menu_leaders_category"
+              action="action_marketplace_categories_power" sequence="10"/>
+    <menuitem id="menu_marketplace_categories_equipment" name="Equipment" parent="menu_leaders_category"
+              action="action_marketplace_categories_equipment" sequence="20"/>
+    <menuitem id="menu_marketplace_categories_parts" name="Spare Parts &amp; Oils" parent="menu_leaders_category"
+              action="action_marketplace_categories_parts" sequence="30"/>
+    <menuitem id="menu_marketplace_categories_services" name="Services" parent="menu_leaders_category"
+              action="action_marketplace_categories_services" sequence="40"/>
+</odoo>

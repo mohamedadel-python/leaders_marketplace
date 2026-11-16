@@ -1,0 +1,48 @@
+{
+ "screen_id": "backend_settings_vendor_application",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_vendor_application_desktop.png",
+   "width": 1306,
+   "height": 220
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "طلب انضمام بائع عام",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_apply_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 128
+   }
+  },
+  {
+   "n": 2,
+   "label": "الطلبات في اليوم (IP / البريد الإلكتروني)",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_apply_daily_limit'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 128
+   }
+  },
+  {
+   "n": 3,
+   "label": "حجم مستند الطلب (ميجابايت)",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_document_max_mb'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 128
+   }
+  }
+ ]
+}

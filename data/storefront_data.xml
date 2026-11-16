@@ -1,0 +1,45 @@
+<odoo noupdate="1">
+    <!-- the database administrator manages the marketplace from the first login -->
+    <record id="group_marketplace_manager" model="res.groups">
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+    <record id="seq_customer_request_quote" model="ir.sequence">
+        <field name="name">Customer quote request</field>
+        <field name="code">leaders.customer.request.quote</field>
+        <field name="prefix">SQ-</field>
+        <field name="padding">4</field>
+        <field name="number_next">2210</field>
+    </record>
+    <record id="seq_customer_request_item" model="ir.sequence">
+        <field name="name">Customer product request</field>
+        <field name="code">leaders.customer.request.item</field>
+        <field name="prefix">IR-</field>
+        <field name="padding">4</field>
+    </record>
+    <record id="seq_customer_request_purchase" model="ir.sequence">
+        <field name="name">Equipment purchase request</field>
+        <field name="code">leaders.customer.request.purchase</field>
+        <field name="prefix">EP-</field>
+        <field name="padding">4</field>
+    </record>
+    <record id="seq_customer_request_rent" model="ir.sequence">
+        <field name="name">Equipment rent request</field>
+        <field name="code">leaders.customer.request.rent</field>
+        <field name="prefix">ER-</field>
+        <field name="padding">4</field>
+    </record>
+    <record id="seq_customer_request_service" model="ir.sequence">
+        <field name="name">Customer service request</field>
+        <field name="code">leaders.customer.request.service</field>
+        <field name="prefix">SV-</field>
+        <field name="padding">4</field>
+        <field name="number_next">3104</field>
+    </record>
+    <record id="seq_sale_order_public_ref" model="ir.sequence">
+        <field name="name">Customer order reference</field>
+        <field name="code">leaders.sale.order.ref</field>
+        <field name="prefix">SF-</field>
+        <field name="padding">4</field>
+        <field name="number_next">1042</field>
+    </record>
+</odoo>

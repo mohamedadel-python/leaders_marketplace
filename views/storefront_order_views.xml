@@ -1,0 +1,63 @@
+<odoo>
+    <!-- the customer's SF- number of website orders, shown and searchable next to the Odoo number -->
+    <record id="view_sale_order_search_storefront_ref" model="ir.ui.view">
+        <field name="name">sale.order.search.storefront.ref</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="attributes">
+                <attribute name="filter_domain">['|', '|', '|', ('name', 'ilike', self), ('client_order_ref', 'ilike', self), ('leaders_public_ref', 'ilike', self), ('partner_id', 'child_of', self)]</attribute>
+            </field>
+            <field name="partner_id" position="before">
+                <field name="leaders_public_ref" string="Website reference"/>
+            </field>
+            <xpath expr="//search" position="inside">
+                <filter name="website_orders" string="Website orders" domain="[('leaders_public_ref', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sale_order_list_storefront_ref" model="ir.ui.view">
+        <field name="name">sale.order.list.storefront.ref</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="leaders_public_ref" string="Website ref." optional="show"/>
+                <field name="leaders_sf_payment" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_sale_order_form_storefront_ref" model="ir.ui.view">
+        <field name="name">sale.order.form.storefront.ref</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='sale_header']" position="before">
+                <div class="mb-2" invisible="not leaders_public_ref">
+                    <span class="text-muted">Website reference </span>
+                    <field name="leaders_public_ref" class="fw-bold"/>
+                    <span class="text-muted ms-3">Payment </span>
+                    <field name="leaders_sf_payment"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- every website order in one place, quotations included: cash on delivery stays a quotation until confirmed -->
+    <record id="action_storefront_orders" model="ir.actions.act_window">
+        <field name="name">Website Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="domain">[("leaders_public_ref", "!=", False)]</field>
+        <field name="context">{"create": False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No website orders yet</p>
+            <p>Orders placed on the storefront appear here with their SF- number, also before they are confirmed.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_storefront_orders" name="Website Orders" parent="menu_marketplace_operations"
+              action="action_storefront_orders" sequence="25"/>
+</odoo>

@@ -22,11 +22,11 @@
 ```bash
 cd /projects/odoo18/odoo-18.0
 ODOO=/odoo18/env-odoo18/bin/python
-$ODOO odoo-bin db -c /etc/odoo/odoo18.conf.save --data-dir=/tmp/claude-1000/lmmanual duplicate lm_manual_base lm_manual_e2e
+$ODOO odoo-bin db -c /etc/odoo/odoo18.conf.save --data-dir=/tmp/lmmanual duplicate lm_manual_base lm_manual_e2e
 $ODOO odoo-bin shell -c /etc/odoo/odoo18.conf.save -d lm_manual_e2e --addons-path=addons,custom \
-    --data-dir=/tmp/claude-1000/lmmanual --no-http \
+    --data-dir=/tmp/lmmanual --no-http \
     < custom/leaders_marketplace/scripts/manual_demo/scenario_e2e.py
-$ODOO odoo-bin db -c /etc/odoo/odoo18.conf.save --data-dir=/tmp/claude-1000/lmmanual drop lm_manual_e2e
+$ODOO odoo-bin db -c /etc/odoo/odoo18.conf.save --data-dir=/tmp/lmmanual drop lm_manual_e2e
 ```
 
 الناتج: جداول مطبوعة لكل خطوة وملف `doc/manual/data/scenario_e2e.json`. الإجراءات تُستدعى بالدوال الحقيقية للوحدة (`action_ship`, `action_cancel_remaining`, `action_customer_cancel_checkout`, `action_receive`, `action_collect_transactions`, `action_approve`, `action_mark_paid`, `action_register_vendor_payment` وغيرها) بهوية المستخدم صاحب الدور.

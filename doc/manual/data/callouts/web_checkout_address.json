@@ -1,0 +1,41 @@
+{
+ "screen_id": "web_checkout_address",
+ "images": {
+  "desktop": {
+   "file": "customer/web_checkout_address_desktop.png",
+   "width": 1440,
+   "height": 1892
+  },
+  "mobile": {
+   "file": "customer/web_checkout_address_mobile.png",
+   "width": 780,
+   "height": 6624
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "خطوة العنوان",
+   "selector": "#wrap",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 58,
+    "w": 1440,
+    "h": 1474
+   }
+  },
+  {
+   "n": 1,
+   "label": "خطوة العنوان",
+   "selector": "#wrap",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 112,
+    "w": 780,
+    "h": 4737
+   }
+  }
+ ]
+}

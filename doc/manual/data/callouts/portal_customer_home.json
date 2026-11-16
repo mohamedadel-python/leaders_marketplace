@@ -1,0 +1,89 @@
+{
+ "screen_id": "portal_customer_home",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_home_desktop.png",
+   "width": 1440,
+   "height": 1041
+  },
+  "mobile": {
+   "file": "customer/portal_customer_home_mobile.png",
+   "width": 780,
+   "height": 3676
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "بطاقات حسابي",
+   "selector": ".o_portal_docs, .o_portal_index_card",
+   "device": "desktop",
+   "bbox": {
+    "x": 511,
+    "y": 136,
+    "w": 858,
+    "h": 448
+   }
+  },
+  {
+   "n": 2,
+   "label": "طلباتي",
+   "selector": "a[href='/my/marketplace/checkouts']",
+   "device": "desktop",
+   "bbox": {
+    "x": 944,
+    "y": 416,
+    "w": 421,
+    "h": 80
+   }
+  },
+  {
+   "n": 3,
+   "label": "المرتجعات والنزاعات",
+   "selector": "a[href='/my/marketplace/returns']",
+   "device": "desktop",
+   "bbox": {
+    "x": 515,
+    "y": 416,
+    "w": 421,
+    "h": 80
+   }
+  },
+  {
+   "n": 1,
+   "label": "بطاقات حسابي",
+   "selector": ".o_portal_docs, .o_portal_index_card",
+   "device": "mobile",
+   "bbox": {
+    "x": 22,
+    "y": 252,
+    "w": 736,
+    "h": 1456
+   }
+  },
+  {
+   "n": 2,
+   "label": "طلباتي",
+   "selector": "a[href='/my/marketplace/checkouts']",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1020,
+    "w": 720,
+    "h": 160
+   }
+  },
+  {
+   "n": 3,
+   "label": "المرتجعات والنزاعات",
+   "selector": "a[href='/my/marketplace/returns']",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1196,
+    "w": 720,
+    "h": 160
+   }
+  }
+ ]
+}

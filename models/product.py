@@ -77,6 +77,19 @@ class ProductTemplate(models.Model):
         })
         for rec in self.filtered("marketplace_owner_vendor_id"):
             self.env["leaders.notification"].notify_vendor("vendor_product_approved", rec, rec.marketplace_owner_vendor_id)
+        self._leaders_activate_owner_offers()
+
+    def _leaders_activate_owner_offers(self):
+        """Approving a vendor's own product also approves the offer it was submitted with (its price and stock):
+        without an active offer the product is published but nothing sells it, so it stays off the website and
+        the vendor keeps seeing "Pending Review". Offers of other sellers on the same product keep their own review.
+        """
+        Offer = self.env["leaders.marketplace.offer"].sudo()
+        for rec in self.filtered("marketplace_owner_vendor_id"):
+            offers = Offer.search([("product_tmpl_id", "=", rec.id), ("state", "=", "pending"),
+                                   ("vendor_id", "=", rec.marketplace_owner_vendor_id.id)])
+            if offers:
+                offers.write({"state": "active", "reject_reason": False})
 
     def action_marketplace_reject(self):
         self._leaders_check_backoffice("reviewer")

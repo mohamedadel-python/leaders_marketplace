@@ -1,0 +1,84 @@
+{
+ "screen_id": "backend_settlement_wizard_statement",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settlement_wizard_statement_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "معالج كشف الحساب",
+   "selector": ".modal .modal-content",
+   "device": "desktop",
+   "bbox": {
+    "x": 230,
+    "y": 305,
+    "w": 980,
+    "h": 290
+   }
+  },
+  {
+   "n": 2,
+   "label": "البائع",
+   "selector": ".modal [name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 247,
+    "y": 388,
+    "w": 888,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "من تاريخ",
+   "selector": ".modal [name='date_from']",
+   "device": "desktop",
+   "bbox": {
+    "x": 247,
+    "y": 427,
+    "w": 888,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "إلى تاريخ",
+   "selector": ".modal [name='date_to']",
+   "device": "desktop",
+   "bbox": {
+    "x": 247,
+    "y": 466,
+    "w": 888,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "طباعة PDF",
+   "selector": ".modal button[name='action_print']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1115,
+    "y": 546,
+    "w": 79,
+    "h": 33
+   }
+  },
+  {
+   "n": 6,
+   "label": "تحميل XLSX",
+   "selector": ".modal button[name='action_xlsx']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1026,
+    "y": 546,
+    "w": 85,
+    "h": 33
+   }
+  }
+ ]
+}

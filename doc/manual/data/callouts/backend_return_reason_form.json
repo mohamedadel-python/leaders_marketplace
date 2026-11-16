@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_return_reason_form",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_return_reason_form_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 138,
+    "w": 1241,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "الصورة مطلوبة",
+   "selector": ".o_form_view .o_field_widget[name='requires_photo']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1261,
+    "y": 177,
+    "w": 21,
+    "h": 23
+   }
+  },
+  {
+   "n": 3,
+   "label": "العميل يتحمل الشحن",
+   "selector": ".o_form_view .o_field_widget[name='customer_pays_shipping']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1261,
+    "y": 213,
+    "w": 21,
+    "h": 23
+   }
+  },
+  {
+   "n": 4,
+   "label": "التسلسل",
+   "selector": ".o_form_view .o_field_widget[name='sequence']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 249,
+    "w": 1241,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "نشط",
+   "selector": ".o_form_view .o_field_widget[name='active']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1261,
+    "y": 288,
+    "w": 21,
+    "h": 23
+   }
+  }
+ ]
+}

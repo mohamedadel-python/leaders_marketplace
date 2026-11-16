@@ -26,6 +26,10 @@ class VendorDeliveryZone(models.Model):
         currency_field="currency_id",
         help="Optional. When the untaxed amount of the goods this zone ships reaches this "
              "value, the delivery price is waived. Empty or 0 = no free shipping.")
+    minimum_order = fields.Monetary(
+        string="Minimum Order", currency_field="currency_id",
+        help="Optional. Storefront orders to this governorate below this amount of goods are refused "
+             "(far governorates). Empty or 0 = no minimum.")
     lead_days_min = fields.Integer(
         string="Minimum Delivery Days",
         help="Optional delivery estimate shown to the customer. 0 = not set.")
@@ -33,6 +37,9 @@ class VendorDeliveryZone(models.Model):
         string="Maximum Delivery Days",
         help="Optional delivery estimate shown to the customer. 0 = not set. "
              "With both empty nothing is shown.")
+    storefront_cities = fields.Char(
+        string="Storefront Cities",
+        help="Comma separated city keys the storefront offers in this governorate, e.g. nasrCity,maadi.")
     currency_id = fields.Many2one(
         "res.currency", default=lambda self: self.env.company.currency_id)
     active = fields.Boolean(default=True)
@@ -56,10 +63,10 @@ class VendorDeliveryZone(models.Model):
                 if clash:
                     raise ValidationError(_("Only one platform delivery price per governorate."))
 
-    @api.constrains("price", "free_shipping_threshold")
+    @api.constrains("price", "free_shipping_threshold", "minimum_order")
     def _check_amounts(self):
         for zone in self:
-            if zone.price < 0 or zone.free_shipping_threshold < 0:
+            if zone.price < 0 or zone.free_shipping_threshold < 0 or zone.minimum_order < 0:
                 raise ValidationError(_("Delivery prices and thresholds cannot be negative."))
 
     @api.constrains("lead_days_min", "lead_days_max")

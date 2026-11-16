@@ -290,10 +290,14 @@ class TestVendorPortalPages(HttpCase, MarketplacePortalUserCommon):
             self.assertTrue(dom.xpath("//*[@id='lm_vendor_terms_notice']//div[contains(@class, 'alert-warning')]"))
 
     def test_public_application_pages(self):
-        self.authenticate(None, None)
+        customer = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "Shopper", "login": "lm.shopper@example.com", "password": PORTAL_PASSWORD,
+            "groups_id": [Command.set([self.env.ref("base.group_portal").id])]})
+        self.authenticate(customer.login, PORTAL_PASSWORD)  # the form needs a signed-in customer
         for lang in ("en", "ar"):
             dom = self._page("/vendor/apply", lang)
-            self.assertTrue(dom.xpath("//*[@id='lm_apply_page']//h1[contains(@class, 'lm-page-title')]"))
+            self.assertTrue(dom.xpath("//*[@id='lm_apply_page']//h1[contains(@class, 'lm-af-title')]"))
+            self.assertEqual(len(dom.xpath("//form[@id='lm_apply_form']//section[contains(@class, 'lm-af-step')]")), 3)
             self.assertTrue(dom.xpath("//form[@id='lm_apply_form']//button[@data-lm-loading]"))
             dom = self._page("/vendor/apply/status/%s" % self.application.access_token, lang)
             self.assertTrue(dom.xpath("//*[@id='lm_apply_status_page']//span[contains(@class, 'lm-badge')]"))

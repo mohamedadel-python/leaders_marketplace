@@ -1,0 +1,120 @@
+{
+ "screen_id": "backend_invoice_list",
+ "images": {
+  "desktop": {
+   "file": "finance/backend_invoice_list_desktop.png",
+   "width": 1440,
+   "height": 1500
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "الاسم",
+   "selector": "th[data-name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1196,
+    "y": 106,
+    "w": 204,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "نوع الحركة",
+   "selector": "th[data-name='move_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1107,
+    "y": 106,
+    "w": 89,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "تاريخ الفاتورة",
+   "selector": "th[data-name='invoice_date']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1001,
+    "y": 106,
+    "w": 105,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 767,
+    "y": 106,
+    "w": 234,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "العميل",
+   "selector": "th[data-name='partner_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 668,
+    "y": 106,
+    "w": 99,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "إجمالي المبلغ",
+   "selector": "th[data-name='amount_total']",
+   "device": "desktop",
+   "bbox": {
+    "x": 207,
+    "y": 106,
+    "w": 114,
+    "h": 38
+   }
+  },
+  {
+   "n": 8,
+   "label": "حالة الدفع",
+   "selector": "th[data-name='payment_state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 105,
+    "y": 106,
+    "w": 102,
+    "h": 38
+   }
+  },
+  {
+   "n": 9,
+   "label": "الحالة",
+   "selector": "th[data-name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 106,
+    "w": 105,
+    "h": 38
+   }
+  }
+ ]
+}

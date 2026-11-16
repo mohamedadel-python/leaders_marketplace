@@ -1,0 +1,120 @@
+{
+ "screen_id": "backend_bankchange_form_rejected",
+ "images": {
+  "desktop": {
+   "file": "finance/backend_bankchange_form_rejected_desktop.png",
+   "width": 1440,
+   "height": 1176
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 213,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 380,
+    "y": 179,
+    "w": 1018,
+    "h": 34
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 301,
+    "w": 550,
+    "h": 24
+   }
+  },
+  {
+   "n": 4,
+   "label": "طلب بواسطة",
+   "selector": ".o_form_view .o_field_widget[name='requested_by']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 338,
+    "w": 550,
+    "h": 24
+   }
+  },
+  {
+   "n": 5,
+   "label": "اسم البنك",
+   "selector": ".o_form_view .o_field_widget[name='bank_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 375,
+    "w": 550,
+    "h": 21
+   }
+  },
+  {
+   "n": 6,
+   "label": "صاحب الحساب",
+   "selector": ".o_form_view .o_field_widget[name='account_holder']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 409,
+    "w": 550,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "رقم الحساب / IBAN",
+   "selector": ".o_form_view .o_field_widget[name='account_number']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 443,
+    "w": 550,
+    "h": 21
+   }
+  },
+  {
+   "n": 8,
+   "label": "إثبات بنكي",
+   "selector": ".o_form_view .o_field_widget[name='proof']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 477,
+    "w": 550,
+    "h": 21
+   }
+  },
+  {
+   "n": 9,
+   "label": "سبب الرفض",
+   "selector": ".o_form_view .o_field_widget[name='reject_reason']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 301,
+    "w": 549,
+    "h": 21
+   }
+  }
+ ]
+}

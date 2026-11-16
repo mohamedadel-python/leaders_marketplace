@@ -1,0 +1,24 @@
+{
+ "screen_id": "backend_menu_operations",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_menu_operations_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "عناصر القائمة",
+   "selector": ".o-dropdown--menu",
+   "device": "desktop",
+   "bbox": {
+    "x": 1158,
+    "y": 50,
+    "w": 191,
+    "h": 369
+   }
+  }
+ ]
+}

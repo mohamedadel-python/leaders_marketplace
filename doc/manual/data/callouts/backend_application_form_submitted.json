@@ -1,0 +1,144 @@
+{
+ "screen_id": "backend_application_form_submitted",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_application_form_submitted_desktop.png",
+   "width": 1440,
+   "height": 2057
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 258,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "بدء المراجعة",
+   "selector": "button[name=\"action_start_review\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1346,
+    "y": 113,
+    "w": 78,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "التحقق من KYC",
+   "selector": "button[name=\"verify_kyc\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1246,
+    "y": 113,
+    "w": 96,
+    "h": 33
+   }
+  },
+  {
+   "n": 4,
+   "label": "اسم النشاط التجاري",
+   "selector": ".o_form_view .o_field_widget[name='business_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 380,
+    "y": 379,
+    "w": 1018,
+    "h": 39
+   }
+  },
+  {
+   "n": 5,
+   "label": "اسم المتجر",
+   "selector": ".o_form_view .o_field_widget[name='store_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 527,
+    "w": 514,
+    "h": 26
+   }
+  },
+  {
+   "n": 6,
+   "label": "النوع القانوني",
+   "selector": ".o_form_view .o_field_widget[name='legal_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 566,
+    "w": 514,
+    "h": 26
+   }
+  },
+  {
+   "n": 7,
+   "label": "رقم التسجيل الضريبي / VAT",
+   "selector": ".o_form_view .o_field_widget[name='tax_number']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 683,
+    "w": 514,
+    "h": 26
+   }
+  },
+  {
+   "n": 8,
+   "label": "البريد الإلكتروني لمالك البائع",
+   "selector": ".o_form_view .o_field_widget[name='owner_email']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 566,
+    "w": 509,
+    "h": 26
+   }
+  },
+  {
+   "n": 9,
+   "label": "حالة KYC",
+   "selector": ".o_form_view .o_field_widget[name='kyc_state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 1336,
+    "w": 599,
+    "h": 26
+   }
+  },
+  {
+   "n": 10,
+   "label": "المراجع",
+   "selector": ".o_form_view .o_field_widget[name='reviewer_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 1375,
+    "w": 599,
+    "h": 26
+   }
+  },
+  {
+   "n": 11,
+   "label": "تبويبات النموذج",
+   "selector": ".o_notebook_headers",
+   "device": "desktop",
+   "bbox": {
+    "x": 17,
+    "y": 1424,
+    "w": 1406,
+    "h": 39
+   }
+  }
+ ]
+}

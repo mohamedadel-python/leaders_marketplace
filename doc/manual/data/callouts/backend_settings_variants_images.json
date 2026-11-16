@@ -1,0 +1,60 @@
+{
+ "screen_id": "backend_settings_variants_images",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_variants_images_desktop.png",
+   "width": 1306,
+   "height": 297
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "متغيرات وصور ومواصفات البائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_variants_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 100
+   }
+  },
+  {
+   "n": 2,
+   "label": "يمكن للبائعين إنشاء الخصائص",
+   "selector": ".o_setting_box:has([name='marketplace_allow_vendor_attributes'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 100
+   }
+  },
+  {
+   "n": 3,
+   "label": "صور إضافية للبائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_max_extra_images'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 190,
+    "w": 472,
+    "h": 89
+   }
+  },
+  {
+   "n": 4,
+   "label": "الحد الأقصى لحجم صورة البائع (ميجابايت)",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_image_max_mb'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 190,
+    "w": 472,
+    "h": 89
+   }
+  }
+ ]
+}

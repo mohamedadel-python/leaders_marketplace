@@ -1,0 +1,96 @@
+{
+ "screen_id": "backend_penalty_form_lifted",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_penalty_form_lifted_desktop.png",
+   "width": 1440,
+   "height": 1227
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 182,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 179,
+    "w": 575,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "المستوى",
+   "selector": ".o_form_view .o_field_widget[name='level']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 218,
+    "w": 575,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "تاريخ البدء",
+   "selector": ".o_form_view .o_field_widget[name='date_start']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 257,
+    "w": 575,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "تاريخ الانتهاء",
+   "selector": ".o_form_view .o_field_widget[name='date_end']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 296,
+    "w": 575,
+    "h": 26
+   }
+  },
+  {
+   "n": 6,
+   "label": "غرامة",
+   "selector": ".o_form_view .o_field_widget[name='amount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 179,
+    "w": 576,
+    "h": 26
+   }
+  },
+  {
+   "n": 7,
+   "label": "السبب",
+   "selector": ".o_form_view .o_field_widget[name='reason']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 392,
+    "w": 1358,
+    "h": 50
+   }
+  }
+ ]
+}

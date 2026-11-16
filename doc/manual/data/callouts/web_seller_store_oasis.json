@@ -1,0 +1,65 @@
+{
+ "screen_id": "web_seller_store_oasis",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_seller_store_oasis_desktop.png",
+   "width": 1440,
+   "height": 1851
+  },
+  "mobile": {
+   "file": "visitor/web_seller_store_oasis_mobile.png",
+   "width": 780,
+   "height": 5140
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "صفحة المتجر",
+   "selector": "#lm_seller_store, #seller_store_page",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 106,
+    "w": 1320,
+    "h": 1336
+   }
+  },
+  {
+   "n": 2,
+   "label": "اسم المتجر وتقييمه",
+   "selector": ".lm-seller-header, #lm_seller_store h1",
+   "device": "desktop",
+   "bbox": {
+    "x": 1186,
+    "y": 122,
+    "w": 179,
+    "h": 37
+   }
+  },
+  {
+   "n": 1,
+   "label": "صفحة المتجر",
+   "selector": "#lm_seller_store, #seller_store_page",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 160,
+    "w": 780,
+    "h": 3156
+   }
+  },
+  {
+   "n": 2,
+   "label": "اسم المتجر وتقييمه",
+   "selector": ".lm-seller-header, #lm_seller_store h1",
+   "device": "mobile",
+   "bbox": {
+    "x": 459,
+    "y": 192,
+    "w": 291,
+    "h": 60
+   }
+  }
+ ]
+}

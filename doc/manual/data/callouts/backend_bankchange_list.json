@@ -1,0 +1,108 @@
+{
+ "screen_id": "backend_bankchange_list",
+ "images": {
+  "desktop": {
+   "file": "finance/backend_bankchange_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "زر إنشاء سجل جديد",
+   "selector": ".o_list_button_add",
+   "device": "desktop",
+   "bbox": {
+    "x": 1382,
+    "y": 55,
+    "w": 42,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "الاسم",
+   "selector": "th[data-name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1178,
+    "y": 106,
+    "w": 221,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 846,
+    "y": 106,
+    "w": 333,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "اسم البنك",
+   "selector": "th[data-name='bank_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 676,
+    "y": 106,
+    "w": 169,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "رقم الحساب المخفي",
+   "selector": "th[data-name='masked_account_number']",
+   "device": "desktop",
+   "bbox": {
+    "x": 421,
+    "y": 106,
+    "w": 256,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "create_date",
+   "selector": "th[data-name='create_date']",
+   "device": "desktop",
+   "bbox": {
+    "x": 239,
+    "y": 106,
+    "w": 182,
+    "h": 38
+   }
+  },
+  {
+   "n": 8,
+   "label": "الحالة",
+   "selector": "th[data-name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 106,
+    "w": 239,
+    "h": 38
+   }
+  }
+ ]
+}

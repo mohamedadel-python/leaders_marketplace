@@ -1,0 +1,137 @@
+{
+ "screen_id": "portal_vendor_order_staff",
+ "images": {
+  "desktop": {
+   "file": "vendor_staff/portal_vendor_order_staff_desktop.png",
+   "width": 1440,
+   "height": 1901
+  },
+  "mobile": {
+   "file": "vendor_staff/portal_vendor_order_staff_mobile.png",
+   "width": 780,
+   "height": 6412
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قائمة البائع الجانبية",
+   "selector": ".lm-vendor-sidebar",
+   "device": "desktop",
+   "bbox": {
+    "x": 1135,
+    "y": 150,
+    "w": 230,
+    "h": 419
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 90,
+    "w": 1290,
+    "h": 48
+   }
+  },
+  {
+   "n": 3,
+   "label": "مسار الطلب",
+   "selector": "#lm_order_timeline",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 259,
+    "w": 1036,
+    "h": 101
+   }
+  },
+  {
+   "n": 4,
+   "label": "بنود الطلب",
+   "selector": "#lm_order_items",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 486,
+    "w": 1036,
+    "h": 372
+   }
+  },
+  {
+   "n": 5,
+   "label": "المجاميع والعمولة وصافي البائع",
+   "selector": "#lm_order_totals",
+   "device": "desktop",
+   "bbox": {
+    "x": 76,
+    "y": 681,
+    "w": 1034,
+    "h": 175
+   }
+  },
+  {
+   "n": 1,
+   "label": "قائمة البائع (شريط علوي في الجوال)",
+   "selector": ".lm-vendor-nav",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 296,
+    "w": 720,
+    "h": 108
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 176,
+    "w": 720,
+    "h": 96
+   }
+  },
+  {
+   "n": 3,
+   "label": "مسار الطلب",
+   "selector": "#lm_order_timeline",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 760,
+    "w": 720,
+    "h": 197
+   }
+  },
+  {
+   "n": 4,
+   "label": "بنود الطلب",
+   "selector": "#lm_order_items",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1502,
+    "w": 720,
+    "h": 1569
+   }
+  },
+  {
+   "n": 5,
+   "label": "المجاميع والعمولة وصافي البائع",
+   "selector": "#lm_order_totals",
+   "device": "mobile",
+   "bbox": {
+    "x": 32,
+    "y": 2718,
+    "w": 716,
+    "h": 351
+   }
+  }
+ ]
+}

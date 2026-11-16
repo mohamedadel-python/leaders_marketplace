@@ -1,0 +1,96 @@
+{
+ "screen_id": "backend_application_list",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_application_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "زر إنشاء سجل جديد",
+   "selector": ".o_list_button_add",
+   "device": "desktop",
+   "bbox": {
+    "x": 1382,
+    "y": 55,
+    "w": 42,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "الاسم",
+   "selector": "th[data-name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1261,
+    "y": 106,
+    "w": 139,
+    "h": 40
+   }
+  },
+  {
+   "n": 4,
+   "label": "اسم النشاط التجاري",
+   "selector": "th[data-name='business_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 997,
+    "y": 106,
+    "w": 264,
+    "h": 40
+   }
+  },
+  {
+   "n": 5,
+   "label": "اسم مالك البائع",
+   "selector": "th[data-name='owner_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 865,
+    "y": 106,
+    "w": 131,
+    "h": 40
+   }
+  },
+  {
+   "n": 6,
+   "label": "حالة KYC",
+   "selector": "th[data-name='kyc_state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 152,
+    "y": 106,
+    "w": 92,
+    "h": 40
+   }
+  },
+  {
+   "n": 7,
+   "label": "الحالة",
+   "selector": "th[data-name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 32,
+    "y": 106,
+    "w": 120,
+    "h": 40
+   }
+  }
+ ]
+}

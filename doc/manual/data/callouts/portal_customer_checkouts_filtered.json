@@ -1,0 +1,89 @@
+{
+ "screen_id": "portal_customer_checkouts_filtered",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_checkouts_filtered_desktop.png",
+   "width": 1440,
+   "height": 1286
+  },
+  "mobile": {
+   "file": "customer/portal_customer_checkouts_filtered_mobile.png",
+   "width": 780,
+   "height": 5640
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "بحث وتصفية الطلبات",
+   "selector": "#lm_checkout_filters",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 259,
+    "w": 1290,
+    "h": 169
+   }
+  },
+  {
+   "n": 2,
+   "label": "مرشح الحالة",
+   "selector": "#lm_checkout_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 724,
+    "y": 307,
+    "w": 203,
+    "h": 44
+   }
+  },
+  {
+   "n": 3,
+   "label": "قائمة الطلبات الموحدة",
+   "selector": "#lm_checkout_list",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 444,
+    "w": 1290,
+    "h": 394
+   }
+  },
+  {
+   "n": 1,
+   "label": "بحث وتصفية الطلبات",
+   "selector": "#lm_checkout_filters",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 621,
+    "w": 720,
+    "h": 664
+   }
+  },
+  {
+   "n": 2,
+   "label": "مرشح الحالة",
+   "selector": "#lm_checkout_status",
+   "device": "mobile",
+   "bbox": {
+    "x": 398,
+    "y": 879,
+    "w": 318,
+    "h": 88
+   }
+  },
+  {
+   "n": 3,
+   "label": "قائمة الطلبات الموحدة",
+   "selector": "#lm_checkout_list",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1317,
+    "w": 720,
+    "h": 2371
+   }
+  }
+ ]
+}

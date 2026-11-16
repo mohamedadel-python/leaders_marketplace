@@ -1,0 +1,84 @@
+{
+ "screen_id": "backend_fulfillment_group_form_provider",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_fulfillment_group_form_provider_desktop.png",
+   "width": 1440,
+   "height": 1599
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "تحميل الملصق",
+   "selector": "button[name=\"action_download_label\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1338,
+    "y": 112,
+    "w": 86,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "طلب البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_order_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 212,
+    "w": 601,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "نوع التنفيذ",
+   "selector": ".o_form_view .o_field_widget[name='fulfillment_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 251,
+    "w": 601,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "رقم التتبع",
+   "selector": ".o_form_view .o_field_widget[name='tracking_ref']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 329,
+    "w": 601,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "حالة الشحن",
+   "selector": ".o_form_view .o_field_widget[name='shipping_status']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 360,
+    "w": 593,
+    "h": 26
+   }
+  },
+  {
+   "n": 6,
+   "label": "AWB",
+   "selector": ".o_form_view .o_field_widget[name='awb']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 282,
+    "w": 593,
+    "h": 26
+   }
+  }
+ ]
+}

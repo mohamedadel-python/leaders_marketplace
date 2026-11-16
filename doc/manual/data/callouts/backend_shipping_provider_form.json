@@ -1,0 +1,60 @@
+{
+ "screen_id": "backend_shipping_provider_form",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_shipping_provider_form_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 146,
+    "w": 585,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "الرمز",
+   "selector": ".o_form_view .o_field_widget[name='code']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 185,
+    "w": 585,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "نوع المزوّد",
+   "selector": ".o_form_view .o_field_widget[name='provider_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 224,
+    "w": 585,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "نشط",
+   "selector": ".o_form_view .o_field_widget[name='active']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1300,
+    "y": 263,
+    "w": 21,
+    "h": 23
+   }
+  }
+ ]
+}

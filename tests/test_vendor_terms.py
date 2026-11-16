@@ -1,6 +1,7 @@
 """Vendor terms acceptance (TASK 29 / A5)."""
 import importlib.util
 
+from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.modules.module import get_module_path
 from odoo.tests import tagged
@@ -175,8 +176,14 @@ class TestVendorTermsPortal(HttpCase, TermsCommon):
         self.env["ir.config_parameter"].sudo().set_param("leaders_marketplace.vendor_apply_enabled", "True")
         self._terms(1)
         self._terms(2, name="Newest Agreement")
+        customer = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "Shopper", "login": "lm.shopper@example.com", "password": PORTAL_PASSWORD,
+            "groups_id": [Command.set([self.env.ref("base.group_portal").id])]})
+        self.authenticate(customer.login, PORTAL_PASSWORD)  # the form needs a signed-in customer
         page = self.url_open("/vendor/apply")
         self.assertEqual(page.status_code, 200)
+        self.assertIn('href="/vendor/apply/terms"', page.text)  # the form links to the terms page
+        page = self.url_open("/vendor/apply/terms")
         self.assertIn("Newest Agreement", page.text)
         self.assertNotIn("Body v1", page.text)
 

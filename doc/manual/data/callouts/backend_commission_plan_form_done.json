@@ -1,0 +1,96 @@
+{
+ "screen_id": "backend_commission_plan_form_done",
+ "images": {
+  "desktop": {
+   "file": "finance/backend_commission_plan_form_done_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 160,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "إعادة إلى مسودة",
+   "selector": "button[name=\"action_reset_to_draft\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1332,
+    "y": 113,
+    "w": 92,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 380,
+    "y": 200,
+    "w": 1018,
+    "h": 34
+   }
+  },
+  {
+   "n": 4,
+   "label": "النوع",
+   "selector": ".o_form_view .o_field_widget[name='type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1295,
+    "y": 255,
+    "w": 44,
+    "h": 21
+   }
+  },
+  {
+   "n": 5,
+   "label": "من تاريخ",
+   "selector": ".o_form_view .o_field_widget[name='date_from']",
+   "device": "desktop",
+   "bbox": {
+    "x": 558,
+    "y": 255,
+    "w": 74,
+    "h": 21
+   }
+  },
+  {
+   "n": 6,
+   "label": "إلى تاريخ",
+   "selector": ".o_form_view .o_field_widget[name='date_to']",
+   "device": "desktop",
+   "bbox": {
+    "x": 457,
+    "y": 255,
+    "w": 81,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "تبويبات النموذج",
+   "selector": ".o_notebook_headers",
+   "device": "desktop",
+   "bbox": {
+    "x": 17,
+    "y": 403,
+    "w": 1406,
+    "h": 39
+   }
+  }
+ ]
+}

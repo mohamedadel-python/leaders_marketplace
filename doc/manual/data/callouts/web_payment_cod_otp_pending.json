@@ -1,0 +1,16 @@
+{
+ "screen_id": "web_payment_cod_otp_pending",
+ "images": {
+  "desktop": {
+   "file": "customer/web_payment_cod_otp_pending_desktop.png",
+   "width": 1440,
+   "height": 1892
+  },
+  "mobile": {
+   "file": "customer/web_payment_cod_otp_pending_mobile.png",
+   "width": 780,
+   "height": 6624
+  }
+ },
+ "markers": []
+}

@@ -1,0 +1,89 @@
+{
+ "screen_id": "web_product_questions_customer",
+ "images": {
+  "desktop": {
+   "file": "customer/web_product_questions_customer_desktop.png",
+   "width": 1440,
+   "height": 1580
+  },
+  "mobile": {
+   "file": "customer/web_product_questions_customer_mobile.png",
+   "width": 780,
+   "height": 4854
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قسم الأسئلة والأجوبة",
+   "selector": "#lm_questions",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 821,
+    "w": 1320,
+    "h": 374
+   }
+  },
+  {
+   "n": 2,
+   "label": "نموذج طرح سؤال",
+   "selector": "#lm_question_form",
+   "device": "desktop",
+   "bbox": {
+    "x": 92,
+    "y": 996,
+    "w": 1256,
+    "h": 182
+   }
+  },
+  {
+   "n": 3,
+   "label": "نص السؤال",
+   "selector": "#lm_question_text",
+   "device": "desktop",
+   "bbox": {
+    "x": 92,
+    "y": 1024,
+    "w": 1256,
+    "h": 86
+   }
+  },
+  {
+   "n": 1,
+   "label": "قسم الأسئلة والأجوبة",
+   "selector": "#lm_questions",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 2238,
+    "w": 780,
+    "h": 792
+   }
+  },
+  {
+   "n": 2,
+   "label": "نموذج طرح سؤال",
+   "selector": "#lm_question_form",
+   "device": "mobile",
+   "bbox": {
+    "x": 64,
+    "y": 2633,
+    "w": 652,
+    "h": 364
+   }
+  },
+  {
+   "n": 3,
+   "label": "نص السؤال",
+   "selector": "#lm_question_text",
+   "device": "mobile",
+   "bbox": {
+    "x": 64,
+    "y": 2689,
+    "w": 652,
+    "h": 172
+   }
+  }
+ ]
+}

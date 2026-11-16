@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Marketplace > Products: one list per storefront section, each opening the marketplace product screen.
+         "New" inside a section starts the product in that section. Review status is a filter of each list. -->
+    <record id="view_product_template_marketplace_section_search" model="ir.ui.view">
+        <field name="name">product.template.search.marketplace.section</field>
+        <field name="model">product.template</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="leaders_brand_id"/>
+                <field name="leaders_part_number"/>
+                <field name="marketplace_owner_vendor_id"/>
+                <filter name="mp_draft" string="Draft" domain="[('marketplace_state', '=', 'draft')]"/>
+                <filter name="mp_pending" string="Pending Review" domain="[('marketplace_state', '=', 'pending')]"/>
+                <filter name="mp_published" string="Published" domain="[('marketplace_state', '=', 'published')]"/>
+                <filter name="mp_rejected" string="Rejected" domain="[('marketplace_state', '=', 'rejected')]"/>
+                <filter name="mp_suspended" string="Suspended" domain="[('marketplace_state', '=', 'suspended')]"/>
+                <separator/>
+                <filter name="mp_used" string="Used or refurbished" domain="[('leaders_condition', 'in', ('used', 'refurbished'))]"/>
+                <filter name="mp_rentable" string="For rent" domain="[('leaders_rentable', '=', True)]"/>
+                <separator/>
+                <filter name="mp_archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="mp_group_categ" string="Subcategory" context="{'group_by': 'public_categ_ids'}"/>
+                    <filter name="mp_group_state" string="Status" context="{'group_by': 'marketplace_state'}"/>
+                    <filter name="mp_group_brand" string="Brand" context="{'group_by': 'leaders_brand_id'}"/>
+                    <filter name="mp_group_vendor" string="Vendor" context="{'group_by': 'marketplace_owner_vendor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_marketplace_products_power" model="ir.actions.act_window">
+        <field name="name">Power Solutions</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="[('public_categ_ids', 'child_of', ref('leaders_categ_power'))]"/>
+        <field name="context" eval="{'lm_section_root': ref('leaders_categ_power'), 'default_public_categ_ids': [(6, 0, [ref('leaders_categ_power')])], 'default_sale_ok': True}"/>
+        <field name="search_view_id" ref="view_product_template_marketplace_section_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_product_template_marketplace_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_product_template_marketplace_base')})]"/>
+    </record>
+    <record id="action_marketplace_products_equipment" model="ir.actions.act_window">
+        <field name="name">Equipment</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="[('public_categ_ids', 'child_of', ref('leaders_categ_equipment'))]"/>
+        <field name="context" eval="{'lm_section_root': ref('leaders_categ_equipment'), 'default_public_categ_ids': [(6, 0, [ref('leaders_categ_equipment')])], 'default_sale_ok': True}"/>
+        <field name="search_view_id" ref="view_product_template_marketplace_section_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_product_template_marketplace_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_product_template_marketplace_base')})]"/>
+    </record>
+    <record id="action_marketplace_products_parts" model="ir.actions.act_window">
+        <field name="name">Spare Parts &amp; Oils</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="[('public_categ_ids', 'child_of', ref('leaders_categ_parts'))]"/>
+        <field name="context" eval="{'lm_section_root': ref('leaders_categ_parts'), 'default_public_categ_ids': [(6, 0, [ref('leaders_categ_parts')])], 'default_sale_ok': True}"/>
+        <field name="search_view_id" ref="view_product_template_marketplace_section_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_product_template_marketplace_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_product_template_marketplace_base')})]"/>
+    </record>
+    <record id="action_marketplace_products_services" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="[('public_categ_ids', 'child_of', ref('leaders_categ_services'))]"/>
+        <field name="context" eval="{'lm_section_root': ref('leaders_categ_services'), 'default_public_categ_ids': [(6, 0, [ref('leaders_categ_services')])]}"/>
+        <field name="search_view_id" ref="view_product_template_marketplace_section_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_product_template_marketplace_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_product_template_marketplace_base')})]"/>
+    </record>
+
+    <menuitem id="menu_marketplace_products" name="Products" parent="menu_marketplace_root" sequence="5"
+              groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_manager"/>
+    <menuitem id="menu_marketplace_products_power" name="Power Solutions" parent="menu_marketplace_products"
+              action="action_marketplace_products_power" sequence="10"/>
+    <menuitem id="menu_marketplace_products_equipment" name="Equipment" parent="menu_marketplace_products"
+              action="action_marketplace_products_equipment" sequence="20"/>
+    <menuitem id="menu_marketplace_products_parts" name="Spare Parts &amp; Oils" parent="menu_marketplace_products"
+              action="action_marketplace_products_parts" sequence="30"/>
+    <menuitem id="menu_marketplace_products_services" name="Services" parent="menu_marketplace_products"
+              action="action_marketplace_products_services" sequence="40"/>
+</odoo>

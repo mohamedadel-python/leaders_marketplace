@@ -1,0 +1,65 @@
+{
+ "screen_id": "web_home_visitor",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_home_visitor_desktop.png",
+   "width": 1440,
+   "height": 900
+  },
+  "mobile": {
+   "file": "visitor/web_home_visitor_mobile.png",
+   "width": 780,
+   "height": 1888
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "رأس الموقع",
+   "selector": "header",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 58
+   }
+  },
+  {
+   "n": 2,
+   "label": "تذييل الموقع",
+   "selector": "footer",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 540,
+    "w": 1440,
+    "h": 360
+   }
+  },
+  {
+   "n": 1,
+   "label": "رأس الموقع",
+   "selector": "header",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 0,
+    "w": 780,
+    "h": 112
+   }
+  },
+  {
+   "n": 2,
+   "label": "تذييل الموقع",
+   "selector": "footer",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 112,
+    "w": 780,
+    "h": 1775
+   }
+  }
+ ]
+}

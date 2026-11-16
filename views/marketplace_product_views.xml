@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The marketplace's own product screen (Marketplace > Products > the four sections). It holds only what the
+         project document asks for: the catalog data, inspection, rental, the service page and the marketplace
+         review. Odoo's standard product form stays as Odoo ships it. The pages are added by the views that inherit
+         this one (catalog_spec, inspection, rental, service_page, product_template). -->
+    <record id="view_product_template_marketplace_base" model="ir.ui.view">
+        <field name="name">product.template.form.marketplace.base</field>
+        <field name="model">product.template</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form string="Product">
+                <header/>
+                <sheet>
+                    <field name="active" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="type" invisible="1"/>
+                    <field name="sale_ok" invisible="1"/>
+                    <field name="product_variant_count" invisible="1"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name" string="Product name"/>
+                        <h1><field name="name" placeholder="Write the Arabic name, then the English one with the language button" required="1"
+                                   help="The product name shown on the website, in search and in orders. Write the Arabic name, then the English one with the language button next to the field."/></h1>
+                    </div>
+                    <!-- who sells it and since when, at a glance (also in "Review and offers") -->
+                    <group name="leaders_seller_info" col="4">
+                        <field name="marketplace_vendor_id" string="Vendor" invisible="not marketplace_vendor_id" readonly="1"
+                               help="The vendor who listed this product on the portal, or the seller of its first offer. Open it to see the vendor's file."/>
+                        <div colspan="2" class="text-muted" invisible="marketplace_vendor_id">
+                            <i class="fa fa-building-o" aria-hidden="true"/> A platform product: sold by the platform itself, not by a vendor.
+                        </div>
+                        <field name="marketplace_publish_date" string="Published on" invisible="not marketplace_publish_date" readonly="1"
+                               help="When the product was approved and published on the website."/>
+                    </group>
+                    <notebook>
+                        <!-- anchor of the pages added before Odoo's General Information page; never shown -->
+                        <page name="general_information" string="General" invisible="1"/>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_product_template_marketplace_list" model="ir.ui.view">
+        <field name="name">product.template.list.marketplace</field>
+        <field name="model">product.template</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="marketplace_state == 'pending'" decoration-danger="marketplace_state == 'rejected'"
+                  decoration-muted="marketplace_state in ('draft', 'suspended')">
+                <field name="name"/>
+                <field name="public_categ_ids" string="Subcategory" widget="many2many_tags" optional="show"/>
+                <field name="leaders_brand_id" string="Brand" optional="show"/>
+                <field name="leaders_condition" string="Condition" optional="show"/>
+                <field name="list_price" string="Price" optional="show"/>
+                <field name="marketplace_vendor_id" optional="show"/>
+                <field name="marketplace_state" widget="badge"
+                       decoration-success="marketplace_state == 'published'" decoration-warning="marketplace_state == 'pending'"
+                       decoration-danger="marketplace_state == 'rejected'"/>
+                <field name="is_published" string="On the website" optional="hide"/>
+            </list>
+        </field>
+    </record>
+</odoo>

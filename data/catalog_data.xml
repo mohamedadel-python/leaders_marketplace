@@ -1,0 +1,243 @@
+<odoo noupdate="1">
+    <record id="leaders_categ_parts" model="product.public.category">
+        <field name="leaders_slug">parts-and-oils</field>
+        <field name="leaders_group">parts</field>
+        <field name="name">Spare Parts &amp; Consumables</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="leaders_categ_spare" model="product.public.category">
+        <field name="leaders_slug">spare-parts</field>
+        <field name="name">Spare Parts</field>
+        <field name="sequence">11</field>
+        <field name="parent_id" ref="leaders_categ_parts"/>
+        <field name="leaders_field_set">part</field>
+        <field name="leaders_can_buy">True</field>
+        <field name="leaders_can_rent">False</field>
+        <field name="leaders_is_service">False</field>
+        <field name="leaders_accepts_used">True</field>
+    </record>
+    <record id="leaders_categ_oils" model="product.public.category">
+        <field name="leaders_slug">oils</field>
+        <field name="name">Oils</field>
+        <field name="sequence">12</field>
+        <field name="parent_id" ref="leaders_categ_parts"/>
+        <field name="leaders_field_set">part</field>
+        <field name="leaders_can_buy">True</field>
+        <field name="leaders_can_rent">False</field>
+        <field name="leaders_is_service">False</field>
+        <field name="leaders_accepts_used">False</field>
+    </record>
+    <record id="leaders_categ_filters" model="product.public.category">
+        <field name="leaders_slug">filters</field>
+        <field name="name">Filters</field>
+        <field name="sequence">13</field>
+        <field name="parent_id" ref="leaders_categ_parts"/>
+        <field name="leaders_field_set">part</field>
+        <field name="leaders_can_buy">True</field>
+        <field name="leaders_can_rent">False</field>
+        <field name="leaders_is_service">False</field>
+        <field name="leaders_accepts_used">False</field>
+    </record>
+    <record id="leaders_categ_power" model="product.public.category">
+        <field name="leaders_slug">power-solutions</field>
+        <field name="leaders_group">power</field>
+        <field name="name">Power Solutions</field>
+        <field name="sequence">23</field>
+    </record>
+    <record id="leaders_categ_generators" model="product.public.category">
+        <field name="leaders_inspection_required" eval="True"/>
+        <field name="leaders_slug">generators</field>
+        <field name="name">Electric Generators</field>
+        <field name="sequence">24</field>
+        <field name="parent_id" ref="leaders_categ_power"/>
+        <field name="leaders_field_set">equipment</field>
+        <field name="leaders_can_buy">True</field>
+        <field name="leaders_can_rent">True</field>
+        <field name="leaders_is_service">False</field>
+        <field name="leaders_accepts_used">True</field>
+    </record>
+    <record id="leaders_categ_light_towers" model="product.public.category">
+        <field name="leaders_inspection_required" eval="True"/>
+        <field name="leaders_slug">lighting-tower</field>
+        <field name="name">Lighting Towers</field>
+        <field name="sequence">25</field>
+        <field name="parent_id" ref="leaders_categ_power"/>
+        <field name="leaders_field_set">equipment</field>
+        <field name="leaders_can_buy">True</field>
+        <field name="leaders_can_rent">True</field>
+        <field name="leaders_is_service">False</field>
+        <field name="leaders_accepts_used">True</field>
+    </record>
+    <record id="leaders_categ_load_banks" model="product.public.category">
+        <field name="leaders_inspection_required" eval="True"/>
+        <field name="leaders_slug">load-bank</field>
+        <field name="name">Load Banks</field>
+        <field name="sequence">26</field>
+        <field name="parent_id" ref="leaders_categ_power"/>
+        <field name="leaders_field_set">equipment</field>
+        <field name="leaders_can_buy">True</field>
+        <field name="leaders_can_rent">True</field>
+        <field name="leaders_is_service">False</field>
+        <field name="leaders_accepts_used">True</field>
+    </record>
+    <record id="leaders_categ_equipment" model="product.public.category">
+        <field name="leaders_slug">equipment</field>
+        <field name="leaders_group">equipment</field>
+        <field name="name">Equipment</field>
+        <field name="sequence">36</field>
+    </record>
+    <record id="leaders_categ_loaders" model="product.public.category">
+        <field name="leaders_inspection_required" eval="True"/>
+        <field name="leaders_slug">loader</field>
+        <field name="name">Loaders</field>
+        <field name="sequence">37</field>
+        <field name="parent_id" ref="leaders_categ_equipment"/>
+        <field name="leaders_field_set">equipment</field>
+        <field name="leaders_can_buy">True</field>
+        <field name="leaders_can_rent">True</field>
+        <field name="leaders_is_service">False</field>
+        <field name="leaders_accepts_used">True</field>
+    </record>
+    <record id="leaders_categ_forklifts" model="product.public.category">
+        <field name="leaders_inspection_required" eval="True"/>
+        <field name="leaders_slug">forklift</field>
+        <field name="name">Forklifts</field>
+        <field name="sequence">38</field>
+        <field name="parent_id" ref="leaders_categ_equipment"/>
+        <field name="leaders_field_set">equipment</field>
+        <field name="leaders_can_buy">True</field>
+        <field name="leaders_can_rent">True</field>
+        <field name="leaders_is_service">False</field>
+        <field name="leaders_accepts_used">True</field>
+    </record>
+    <record id="leaders_categ_welders" model="product.public.category">
+        <field name="leaders_inspection_required" eval="True"/>
+        <field name="leaders_slug">welding-machine</field>
+        <field name="name">Welding Machines</field>
+        <field name="sequence">39</field>
+        <field name="parent_id" ref="leaders_categ_equipment"/>
+        <field name="leaders_field_set">equipment</field>
+        <field name="leaders_can_buy">True</field>
+        <field name="leaders_can_rent">True</field>
+        <field name="leaders_is_service">False</field>
+        <field name="leaders_accepts_used">True</field>
+    </record>
+    <record id="leaders_categ_services" model="product.public.category">
+        <field name="leaders_slug">services</field>
+        <field name="leaders_group">services</field>
+        <field name="name">Services</field>
+        <field name="sequence">49</field>
+    </record>
+    <record id="leaders_categ_maintenance" model="product.public.category">
+        <field name="leaders_slug">maintenance</field>
+        <field name="name">Maintenance</field>
+        <field name="sequence">50</field>
+        <field name="parent_id" ref="leaders_categ_services"/>
+        <field name="leaders_can_buy">False</field>
+        <field name="leaders_can_rent">False</field>
+        <field name="leaders_is_service">True</field>
+        <field name="leaders_accepts_used">False</field>
+    </record>
+    <record id="leaders_categ_inspection" model="product.public.category">
+        <field name="leaders_slug">inspection</field>
+        <field name="name">Inspection</field>
+        <field name="sequence">51</field>
+        <field name="parent_id" ref="leaders_categ_services"/>
+        <field name="leaders_can_buy">False</field>
+        <field name="leaders_can_rent">False</field>
+        <field name="leaders_is_service">True</field>
+        <field name="leaders_accepts_used">False</field>
+    </record>
+    <record id="leaders_categ_solar" model="product.public.category">
+        <field name="leaders_slug">solar</field>
+        <field name="name">Solar Energy</field>
+        <field name="sequence">52</field>
+        <field name="parent_id" ref="leaders_categ_services"/>
+        <field name="leaders_can_buy">False</field>
+        <field name="leaders_can_rent">False</field>
+        <field name="leaders_is_service">True</field>
+        <field name="leaders_accepts_used">False</field>
+    </record>
+    <record id="leaders_categ_installation" model="product.public.category">
+        <field name="leaders_slug">installation</field>
+        <field name="name">Installation</field>
+        <field name="sequence">53</field>
+        <field name="parent_id" ref="leaders_categ_services"/>
+        <field name="leaders_can_buy">False</field>
+        <field name="leaders_can_rent">False</field>
+        <field name="leaders_is_service">True</field>
+        <field name="leaders_accepts_used">False</field>
+    </record>
+    <record id="leaders_categ_delivery" model="product.public.category">
+        <field name="leaders_slug">delivery</field>
+        <field name="name">Delivery</field>
+        <field name="sequence">54</field>
+        <field name="parent_id" ref="leaders_categ_services"/>
+        <field name="leaders_can_buy">False</field>
+        <field name="leaders_can_rent">False</field>
+        <field name="leaders_is_service">True</field>
+        <field name="leaders_accepts_used">False</field>
+    </record>
+    <record id="leaders_source_original" model="leaders.source">
+        <field name="name">Original</field>
+        <field name="code">original</field>
+        <field name="api_code"></field>
+        <field name="is_original" eval="True"/>
+        <field name="aliases">original,اوريجنال,أوريجنال,اصلي,أصلي,اصلى</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="leaders_source_china" model="leaders.source">
+        <field name="name">China</field>
+        <field name="code">china</field>
+        <field name="api_code">chinese</field>
+        <field name="is_original" eval="False"/>
+        <field name="aliases">china,chinese,الصين,صيني,صينى</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="leaders_source_egypt" model="leaders.source">
+        <field name="name">Egypt</field>
+        <field name="code">egypt</field>
+        <field name="api_code">egyptian</field>
+        <field name="is_original" eval="False"/>
+        <field name="aliases">egypt,egyptian,مصر,مصري,مصرى</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="leaders_source_turkey" model="leaders.source">
+        <field name="name">Turkey</field>
+        <field name="code">turkey</field>
+        <field name="api_code">turkish</field>
+        <field name="is_original" eval="False"/>
+        <field name="aliases">turkey,turkish,تركيا,تركي,تركى</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="leaders_energy_diesel" model="leaders.energy.source">
+        <field name="name">Diesel</field>
+        <field name="code">diesel</field>
+        <field name="aliases">diesel,ديزل</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="leaders_energy_petrol" model="leaders.energy.source">
+        <field name="name">Petrol</field>
+        <field name="code">petrol</field>
+        <field name="aliases">petrol,بنزين</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="leaders_energy_gas" model="leaders.energy.source">
+        <field name="name">Gas</field>
+        <field name="code">gas</field>
+        <field name="aliases">gas,غاز</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="leaders_energy_electric" model="leaders.energy.source">
+        <field name="name">Electric</field>
+        <field name="code">electric</field>
+        <field name="aliases">electric,كهرباء,كهربائي</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="leaders_energy_hybrid" model="leaders.energy.source">
+        <field name="name">Hybrid</field>
+        <field name="code">hybrid</field>
+        <field name="aliases">hybrid,هجين</field>
+        <field name="sequence">50</field>
+    </record>
+</odoo>

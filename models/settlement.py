@@ -144,6 +144,7 @@ class WalletTransaction(models.Model):
         ("bonus","Target Bonus"),
         ("return","Return"),("penalty","Penalty"),("fulfillment_fee","Fulfillment Fee"),
         ("storage_fee","Storage Fee"),("adjustment","Adjustment"),
+        ("inspection_fee","Inspection Fee"),
         ("fee_tax","Tax on Marketplace Fees"),
         ("cod_collected","COD Collected (Vendor Held)"),
         ("reserve","Returns Reserve"),

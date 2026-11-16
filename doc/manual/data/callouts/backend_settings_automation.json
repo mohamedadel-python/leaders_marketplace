@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_settings_automation",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_automation_desktop.png",
+   "width": 1306,
+   "height": 171
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "إنشاء التسويات تلقائيًا",
+   "selector": ".o_setting_box:has([name='marketplace_auto_settlements'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 79
+   }
+  },
+  {
+   "n": 2,
+   "label": "ترقية مستويات البائعين تلقائيًا",
+   "selector": ".o_setting_box:has([name='marketplace_auto_tier_upgrade'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 79
+   }
+  }
+ ]
+}

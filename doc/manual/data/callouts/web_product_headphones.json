@@ -1,0 +1,137 @@
+{
+ "screen_id": "web_product_headphones",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_product_headphones_desktop.png",
+   "width": 1440,
+   "height": 1452
+  },
+  "mobile": {
+   "file": "visitor/web_product_headphones_mobile.png",
+   "width": 780,
+   "height": 4790
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "تفاصيل المنتج",
+   "selector": "#product_detail, #product_details",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 82,
+    "w": 1320,
+    "h": 715
+   }
+  },
+  {
+   "n": 2,
+   "label": "السعر",
+   "selector": "#product_detail .product_price, .product_price",
+   "device": "desktop",
+   "bbox": {
+    "x": 355,
+    "y": 268,
+    "w": 350,
+    "h": 51
+   }
+  },
+  {
+   "n": 3,
+   "label": "زر أضف إلى السلة",
+   "selector": "#add_to_cart, a#add_to_cart",
+   "device": "desktop",
+   "bbox": {
+    "x": 378,
+    "y": 334,
+    "w": 183,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "أسئلة وأجوبة المنتج",
+   "selector": "#lm_questions",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 821,
+    "w": 1320,
+    "h": 246
+   }
+  },
+  {
+   "n": 5,
+   "label": "المواصفات",
+   "selector": "#lm_product_specs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 400,
+    "w": 630,
+    "h": 155
+   }
+  },
+  {
+   "n": 1,
+   "label": "تفاصيل المنتج",
+   "selector": "#product_detail, #product_details",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 145,
+    "w": 780,
+    "h": 2185
+   }
+  },
+  {
+   "n": 2,
+   "label": "السعر",
+   "selector": "#product_detail .product_price, .product_price",
+   "device": "mobile",
+   "bbox": {
+    "x": 164,
+    "y": 1424,
+    "w": 586,
+    "h": 83
+   }
+  },
+  {
+   "n": 3,
+   "label": "زر أضف إلى السلة",
+   "selector": "#add_to_cart, a#add_to_cart",
+   "device": "mobile",
+   "bbox": {
+    "x": 97,
+    "y": 1539,
+    "w": 366,
+    "h": 76
+   }
+  },
+  {
+   "n": 4,
+   "label": "أسئلة وأجوبة المنتج",
+   "selector": "#lm_questions",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 2378,
+    "w": 780,
+    "h": 588
+   }
+  },
+  {
+   "n": 5,
+   "label": "المواصفات",
+   "selector": "#lm_product_specs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1671,
+    "w": 720,
+    "h": 310
+   }
+  }
+ ]
+}

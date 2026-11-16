@@ -57,6 +57,7 @@
                     </group>
                     <group string="Request" name="center">
                         <field name="reason_id" readonly="state != 'requested'"/>
+                        <field name="leaders_not_installed"/>
                         <field name="resolution" readonly="state != 'requested'"/>
                         <field name="customer_pays_shipping"/>
                         <field name="pickup_date" readonly="state not in ('requested', 'approved')"/>

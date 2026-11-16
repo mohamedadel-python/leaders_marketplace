@@ -1,0 +1,132 @@
+{
+ "screen_id": "backend_settings_feature_switches",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_feature_switches_desktop.png",
+   "width": 1306,
+   "height": 772
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاستيراد الجماعي للبائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_bulk_import_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 538,
+    "w": 472,
+    "h": 100
+   }
+  },
+  {
+   "n": 2,
+   "label": "واجهة API الكتابية للبائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_api_write_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 538,
+    "w": 472,
+    "h": 100
+   }
+  },
+  {
+   "n": 3,
+   "label": "إطار عمل شركات الشحن",
+   "selector": ".o_setting_box:has([name='marketplace_shipping_providers_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 654,
+    "w": 472,
+    "h": 100
+   }
+  },
+  {
+   "n": 4,
+   "label": "السماح بالدفع عند الاستلام",
+   "selector": ".o_setting_box:has([name='marketplace_cod_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 443,
+    "w": 472,
+    "h": 79
+   }
+  },
+  {
+   "n": 5,
+   "label": "أسئلة وأجوبة المنتجات",
+   "selector": ".o_setting_box:has([name='marketplace_product_questions_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 260,
+    "w": 472,
+    "h": 167
+   }
+  },
+  {
+   "n": 6,
+   "label": "خصومات منتجات البائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_discounts_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 443,
+    "w": 472,
+    "h": 79
+   }
+  },
+  {
+   "n": 7,
+   "label": "عروض الكتالوج والمتاجر والتقييمات",
+   "selector": ".o_setting_box:has([name='marketplace_catalog_offers_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 260,
+    "w": 472,
+    "h": 167
+   }
+  },
+  {
+   "n": 8,
+   "label": "متغيرات وصور ومواصفات البائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_variants_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 654,
+    "w": 472,
+    "h": 100
+   }
+  },
+  {
+   "n": 9,
+   "label": "مركز المرتجعات والنزاعات",
+   "selector": ".o_setting_box:has([name='marketplace_returns_center_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 170
+   }
+  },
+  {
+   "n": 10,
+   "label": "طلباتي الموحدة",
+   "selector": ".o_setting_box:has([name='marketplace_unified_customer_orders'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 170
+   }
+  }
+ ]
+}

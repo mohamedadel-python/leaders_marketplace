@@ -14,6 +14,20 @@
                 </group>
             </xpath>
             <xpath expr="//notebook" position="inside">
+                <page string="Storefront account" name="lm_storefront_account">
+                    <group>
+                        <group string="Business">
+                            <field name="leaders_activity_type"/>
+                            <field name="leaders_commercial_register"/>
+                        </group>
+                        <group string="Notification channels">
+                            <field name="leaders_notify_email"/>
+                            <field name="leaders_notify_sms"/>
+                            <field name="leaders_notify_whatsapp"/>
+                            <field name="leaders_notify_promotions" string="Offers"/>
+                        </group>
+                    </group>
+                </page>
                 <page string="Marketplace Vendor">
                     <div invisible="not is_marketplace_vendor" groups="leaders_marketplace.group_marketplace_manager,leaders_marketplace.group_marketplace_finance">
                         <button name="%(leaders_marketplace.action_vendor_statement_wizard)d" type="action" string="Vendor Statement" class="btn btn-secondary" icon="fa-file-text-o" context="{'default_vendor_id': id}"/>
@@ -24,6 +38,9 @@
                             <field name="vendor_state"/>
                             <field name="vendor_tier_id"/>
                             <field name="vendor_kyc_state"/>
+                            <field name="leaders_free_until" invisible="not is_marketplace_vendor"/>
+                            <field name="leaders_contract_model" invisible="not is_marketplace_vendor"/>
+                            <field name="leaders_contract_chosen_on" invisible="not leaders_contract_chosen_on"/>
                         </group>
                         <group>
                             <field name="vendor_store_name"/>

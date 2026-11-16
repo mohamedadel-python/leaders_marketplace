@@ -1,0 +1,89 @@
+{
+ "screen_id": "portal_customer_checkout_delivered",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_checkout_delivered_desktop.png",
+   "width": 1440,
+   "height": 1438
+  },
+  "mobile": {
+   "file": "customer/portal_customer_checkout_delivered_mobile.png",
+   "width": 780,
+   "height": 4390
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "مسار الطلب",
+   "selector": "#lm_checkout_timeline",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 259,
+    "w": 1290,
+    "h": 101
+   }
+  },
+  {
+   "n": 2,
+   "label": "المجموع",
+   "selector": "#lm_checkout_totals",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 924,
+    "w": 1290,
+    "h": 81
+   }
+  },
+  {
+   "n": 3,
+   "label": "إعادة الشراء",
+   "selector": "#lm_buy_again_form",
+   "device": "desktop",
+   "bbox": {
+    "x": 160,
+    "y": 178,
+    "w": 133,
+    "h": 44
+   }
+  },
+  {
+   "n": 1,
+   "label": "مسار الطلب",
+   "selector": "#lm_checkout_timeline",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 620,
+    "w": 720,
+    "h": 197
+   }
+  },
+  {
+   "n": 2,
+   "label": "المجموع",
+   "selector": "#lm_checkout_totals",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 2308,
+    "w": 720,
+    "h": 163
+   }
+  },
+  {
+   "n": 3,
+   "label": "إعادة الشراء",
+   "selector": "#lm_buy_again_form",
+   "device": "mobile",
+   "bbox": {
+    "x": 485,
+    "y": 500,
+    "w": 265,
+    "h": 88
+   }
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+<odoo noupdate="1">
+    <!-- the two ways to sell (project guide): prices and percentages are written by the admin once decided -->
+    <record id="vendor_join_subscription" model="leaders.vendor.join.model">
+        <field name="sequence">10</field>
+        <field name="code">subscription</field>
+        <field name="name">Subscription</field>
+        <field name="summary">You pay a listing fee and sell to the buyer directly.</field>
+        <field name="what_you_pay">A display fee (subscription), by period and number of products</field>
+        <field name="name_shown" eval="True"/>
+        <field name="buyer_contact">You, directly</field>
+        <field name="free_months">3</field>
+    </record>
+    <record id="vendor_join_commission" model="leaders.vendor.join.model">
+        <field name="sequence">20</field>
+        <field name="code">commission</field>
+        <field name="name">Commission</field>
+        <field name="summary">You list for free and the platform sells for you.</field>
+        <field name="what_you_pay">Nothing upfront: a percentage of each sale</field>
+        <field name="name_shown" eval="False"/>
+        <field name="buyer_contact">The platform, in between</field>
+        <field name="free_months">3</field>
+    </record>
+</odoo>

@@ -1,0 +1,96 @@
+{
+ "screen_id": "backend_shipping_provider_list",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_shipping_provider_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "زر إنشاء سجل جديد",
+   "selector": ".o_list_button_add",
+   "device": "desktop",
+   "bbox": {
+    "x": 1382,
+    "y": 55,
+    "w": 42,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "التسلسل",
+   "selector": "th[data-name='sequence']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1371,
+    "y": 106,
+    "w": 29,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "الاسم",
+   "selector": "th[data-name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1030,
+    "y": 106,
+    "w": 341,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "الرمز",
+   "selector": "th[data-name='code']",
+   "device": "desktop",
+   "bbox": {
+    "x": 800,
+    "y": 106,
+    "w": 230,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "نوع المزوّد",
+   "selector": "th[data-name='provider_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 238,
+    "y": 106,
+    "w": 562,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "نشط",
+   "selector": "th[data-name='active']",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 106,
+    "w": 238,
+    "h": 38
+   }
+  }
+ ]
+}

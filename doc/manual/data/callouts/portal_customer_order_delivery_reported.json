@@ -1,0 +1,137 @@
+{
+ "screen_id": "portal_customer_order_delivery_reported",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_order_delivery_reported_desktop.png",
+   "width": 1440,
+   "height": 2595
+  },
+  "mobile": {
+   "file": "customer/portal_customer_order_delivery_reported_mobile.png",
+   "width": 780,
+   "height": 6936
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "مسار الطلب",
+   "selector": "#lm_order_timeline",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 259,
+    "w": 1290,
+    "h": 101
+   }
+  },
+  {
+   "n": 2,
+   "label": "موعد التوصيل المتوقع",
+   "selector": "#lm_order_delivery_estimate",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 376,
+    "w": 1290,
+    "h": 58
+   }
+  },
+  {
+   "n": 3,
+   "label": "بنود الطلب",
+   "selector": "#lm_order_items",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 496,
+    "w": 1290,
+    "h": 142
+   }
+  },
+  {
+   "n": 4,
+   "label": "المجاميع",
+   "selector": "#lm_order_totals",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 654,
+    "w": 1290,
+    "h": 81
+   }
+  },
+  {
+   "n": 5,
+   "label": "لم أستلم",
+   "selector": "button:has-text('لم أستلم')",
+   "device": "desktop",
+   "bbox": {
+    "x": 1103,
+    "y": 997,
+    "w": 95,
+    "h": 44
+   }
+  },
+  {
+   "n": 1,
+   "label": "مسار الطلب",
+   "selector": "#lm_order_timeline",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 620,
+    "w": 720,
+    "h": 197
+   }
+  },
+  {
+   "n": 2,
+   "label": "موعد التوصيل المتوقع",
+   "selector": "#lm_order_delivery_estimate",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 849,
+    "w": 720,
+    "h": 116
+   }
+  },
+  {
+   "n": 3,
+   "label": "بنود الطلب",
+   "selector": "#lm_order_items",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1089,
+    "w": 720,
+    "h": 640
+   }
+  },
+  {
+   "n": 4,
+   "label": "المجاميع",
+   "selector": "#lm_order_totals",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1761,
+    "w": 720,
+    "h": 163
+   }
+  },
+  {
+   "n": 5,
+   "label": "لم أستلم",
+   "selector": "button:has-text('لم أستلم')",
+   "device": "mobile",
+   "bbox": {
+    "x": 226,
+    "y": 2444,
+    "w": 190,
+    "h": 88
+   }
+  }
+ ]
+}

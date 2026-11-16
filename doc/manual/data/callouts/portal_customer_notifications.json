@@ -1,0 +1,161 @@
+{
+ "screen_id": "portal_customer_notifications",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_notifications_desktop.png",
+   "width": 1440,
+   "height": 1132
+  },
+  "mobile": {
+   "file": "customer/portal_customer_notifications_mobile.png",
+   "width": 780,
+   "height": 3348
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "نموذج التفضيلات",
+   "selector": "#lm_notifications_form",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 259,
+    "w": 1290,
+    "h": 334
+   }
+  },
+  {
+   "n": 2,
+   "label": "إشعارات الشحن",
+   "selector": "#lm_pref_shipping",
+   "device": "desktop",
+   "bbox": {
+    "x": 1316,
+    "y": 280,
+    "w": 32,
+    "h": 16
+   }
+  },
+  {
+   "n": 3,
+   "label": "إشعارات المرتجعات",
+   "selector": "#lm_pref_returns",
+   "device": "desktop",
+   "bbox": {
+    "x": 1316,
+    "y": 344,
+    "w": 32,
+    "h": 16
+   }
+  },
+  {
+   "n": 4,
+   "label": "إشعارات الأسئلة",
+   "selector": "#lm_pref_questions",
+   "device": "desktop",
+   "bbox": {
+    "x": 1316,
+    "y": 408,
+    "w": 32,
+    "h": 16
+   }
+  },
+  {
+   "n": 5,
+   "label": "العروض الترويجية",
+   "selector": "#lm_pref_promotions",
+   "device": "desktop",
+   "bbox": {
+    "x": 1316,
+    "y": 472,
+    "w": 32,
+    "h": 16
+   }
+  },
+  {
+   "n": 6,
+   "label": "حفظ",
+   "selector": "#lm_notifications_save",
+   "device": "desktop",
+   "bbox": {
+    "x": 1234,
+    "y": 532,
+    "w": 114,
+    "h": 44
+   }
+  },
+  {
+   "n": 1,
+   "label": "نموذج التفضيلات",
+   "selector": "#lm_notifications_form",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 500,
+    "w": 720,
+    "h": 668
+   }
+  },
+  {
+   "n": 2,
+   "label": "إشعارات الشحن",
+   "selector": "#lm_pref_shipping",
+   "device": "mobile",
+   "bbox": {
+    "x": 652,
+    "y": 542,
+    "w": 64,
+    "h": 32
+   }
+  },
+  {
+   "n": 3,
+   "label": "إشعارات المرتجعات",
+   "selector": "#lm_pref_returns",
+   "device": "mobile",
+   "bbox": {
+    "x": 652,
+    "y": 670,
+    "w": 64,
+    "h": 32
+   }
+  },
+  {
+   "n": 4,
+   "label": "إشعارات الأسئلة",
+   "selector": "#lm_pref_questions",
+   "device": "mobile",
+   "bbox": {
+    "x": 652,
+    "y": 798,
+    "w": 64,
+    "h": 32
+   }
+  },
+  {
+   "n": 5,
+   "label": "العروض الترويجية",
+   "selector": "#lm_pref_promotions",
+   "device": "mobile",
+   "bbox": {
+    "x": 652,
+    "y": 926,
+    "w": 64,
+    "h": 32
+   }
+  },
+  {
+   "n": 6,
+   "label": "حفظ",
+   "selector": "#lm_notifications_save",
+   "device": "mobile",
+   "bbox": {
+    "x": 489,
+    "y": 1046,
+    "w": 227,
+    "h": 88
+   }
+  }
+ ]
+}

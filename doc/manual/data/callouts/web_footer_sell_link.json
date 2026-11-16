@@ -1,0 +1,16 @@
+{
+ "screen_id": "web_footer_sell_link",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_footer_sell_link_desktop.png",
+   "width": 1440,
+   "height": 900
+  },
+  "mobile": {
+   "file": "visitor/web_footer_sell_link_mobile.png",
+   "width": 780,
+   "height": 1888
+  }
+ },
+ "markers": []
+}

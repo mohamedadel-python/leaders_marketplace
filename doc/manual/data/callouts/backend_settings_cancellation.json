@@ -1,0 +1,48 @@
+{
+ "screen_id": "backend_settings_cancellation",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_cancellation_desktop.png",
+   "width": 1306,
+   "height": 202
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "يمكن للبائعين إلغاء الطلبات",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_can_cancel_orders'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 110
+   }
+  },
+  {
+   "n": 2,
+   "label": "يمكن للعملاء إلغاء الطلبات",
+   "selector": ".o_setting_box:has([name='marketplace_customer_can_cancel_orders'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 110
+   }
+  },
+  {
+   "n": 3,
+   "label": "مهلة إلغاء العميل (بالساعات)",
+   "selector": ".o_setting_box:has([name='marketplace_cancel_window_hours'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 110
+   }
+  }
+ ]
+}

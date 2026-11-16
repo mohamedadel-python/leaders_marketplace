@@ -266,9 +266,9 @@
   },
   "api": {
     "key_prefixes": {
-      "write": "18a9bc1a",
-      "read": "191f41a2",
-      "revoked": "3287a997"
+      "write": "d60c9082",
+      "read": "b5288285",
+      "revoked": "a979b4d3"
     },
     "burst": {
       "200": 60,

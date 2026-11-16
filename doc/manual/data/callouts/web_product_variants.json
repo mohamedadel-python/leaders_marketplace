@@ -1,0 +1,161 @@
+{
+ "screen_id": "web_product_variants",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_product_variants_desktop.png",
+   "width": 1440,
+   "height": 1801
+  },
+  "mobile": {
+   "file": "visitor/web_product_variants_mobile.png",
+   "width": 780,
+   "height": 6832
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "تفاصيل المنتج",
+   "selector": "#product_detail, #product_details",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 82,
+    "w": 1320,
+    "h": 1154
+   }
+  },
+  {
+   "n": 2,
+   "label": "السعر",
+   "selector": "#product_detail .product_price, .product_price",
+   "device": "desktop",
+   "bbox": {
+    "x": 561,
+    "y": 268,
+    "w": 144,
+    "h": 46
+   }
+  },
+  {
+   "n": 3,
+   "label": "زر أضف إلى السلة",
+   "selector": "#add_to_cart, a#add_to_cart",
+   "device": "desktop",
+   "bbox": {
+    "x": 378,
+    "y": 534,
+    "w": 183,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "بائعون آخرون لنفس المنتج",
+   "selector": "#lm_other_sellers",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 900,
+    "w": 630,
+    "h": 320
+   }
+  },
+  {
+   "n": 5,
+   "label": "أسئلة وأجوبة المنتج",
+   "selector": "#lm_questions",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 1260,
+    "w": 1320,
+    "h": 156
+   }
+  },
+  {
+   "n": 6,
+   "label": "المواصفات",
+   "selector": "#lm_product_specs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 600,
+    "w": 630,
+    "h": 196
+   }
+  },
+  {
+   "n": 1,
+   "label": "تفاصيل المنتج",
+   "selector": "#product_detail, #product_details",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 145,
+    "w": 780,
+    "h": 4503
+   }
+  },
+  {
+   "n": 2,
+   "label": "السعر",
+   "selector": "#product_detail .product_price, .product_price",
+   "device": "mobile",
+   "bbox": {
+    "x": 527,
+    "y": 1405,
+    "w": 223,
+    "h": 75
+   }
+  },
+  {
+   "n": 3,
+   "label": "زر أضف إلى السلة",
+   "selector": "#add_to_cart, a#add_to_cart",
+   "device": "mobile",
+   "bbox": {
+    "x": 97,
+    "y": 1919,
+    "w": 366,
+    "h": 76
+   }
+  },
+  {
+   "n": 4,
+   "label": "بائعون آخرون لنفس المنتج",
+   "selector": "#lm_other_sellers",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 2792,
+    "w": 720,
+    "h": 1824
+   }
+  },
+  {
+   "n": 5,
+   "label": "أسئلة وأجوبة المنتج",
+   "selector": "#lm_questions",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 4696,
+    "w": 780,
+    "h": 312
+   }
+  },
+  {
+   "n": 6,
+   "label": "المواصفات",
+   "selector": "#lm_product_specs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 2051,
+    "w": 720,
+    "h": 392
+   }
+  }
+ ]
+}

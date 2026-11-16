@@ -1,0 +1,41 @@
+{
+ "screen_id": "portal_customer_order_rating_form",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_order_rating_form_desktop.png",
+   "width": 1440,
+   "height": 2895
+  },
+  "mobile": {
+   "file": "customer/portal_customer_order_rating_form_mobile.png",
+   "width": 780,
+   "height": 8098
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "نموذج التقييم",
+   "selector": "#lm_rate_form",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 1124,
+    "w": 1290,
+    "h": 254
+   }
+  },
+  {
+   "n": 1,
+   "label": "نموذج التقييم",
+   "selector": "#lm_rate_form",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 2960,
+    "w": 720,
+    "h": 612
+   }
+  }
+ ]
+}

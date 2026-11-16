@@ -67,6 +67,17 @@ def _norm_header(value):
     return _cell_text(value).lower().replace(" ", "_").replace("-", "_")
 
 
+# Arabic column titles of the equipment / spare-parts sheets -> column keys. Filled by
+# ``vendor_import_catalog``; keys are stored through ``_norm_header``.
+HEADER_ALIASES = {}
+
+
+def _canon_header(value):
+    text = _cell_text(value).replace("*", "").strip()
+    key = _norm_header(text)
+    return HEADER_ALIASES.get(key, key)
+
+
 class VendorImport(models.Model):
     _name = "leaders.vendor.import"
     _description = "Vendor Bulk Import"
@@ -224,7 +235,7 @@ class VendorImport(models.Model):
                 wb = openpyxl.load_workbook(io.BytesIO(data), read_only=True, data_only=True)
             except Exception:
                 raise UserError(_("The file is not a valid .xlsx workbook."))
-            ws = wb["Data"] if "Data" in wb.sheetnames else wb.worksheets[0]
+            ws = next((wb[n] for n in ("Data", "البيانات") if n in wb.sheetnames), wb.worksheets[0])
             for index, row in enumerate(ws.iter_rows(values_only=True), start=1):
                 raw_rows.append((index, list(row)))
                 if index > MAX_ROWS + 1:
@@ -246,7 +257,7 @@ class VendorImport(models.Model):
         if not raw_rows:
             raise UserError(_("The file has no header row."))
         header_row, header = raw_rows[0]
-        headers = [_norm_header(h) for h in header]
+        headers = [_canon_header(h) for h in header]
         rows = []
         for number, values in raw_rows[1:]:
             record = {}
@@ -551,6 +562,10 @@ class VendorImport(models.Model):
                 job._leaders_fail_file(_("Unexpected error while reading the file: %s", exc))
         return True
 
+    def _leaders_is_example_row(self, raw):
+        """Hook: rows copied from a sheet's yellow example lines are skipped."""
+        return False
+
     def _leaders_fail_file(self, message):
         self.ensure_one()
         self.line_ids.unlink()
@@ -575,7 +590,8 @@ class VendorImport(models.Model):
                               ", ".join(missing)))
         known = {c for c, _r in columns}
         unknown = [h for h in headers if h and h not in known]
-        rows = [(n, r) for n, r in rows if not (r.get("sku") or "").upper().startswith("EXAMPLE-")]
+        rows = [(n, r) for n, r in rows
+                if not (r.get("sku") or "").upper().startswith("EXAMPLE-") and not self._leaders_is_example_row(r)]
         Line = self.env["leaders.vendor.import.line"]
         ctx, vals_list, valid, invalid = {}, [], 0, 0
         for number, raw in rows:
@@ -834,7 +850,12 @@ class VendorImportApply(models.Model):
         if self.kind == "update":
             offer = resolved["offer"]
             if payload.get("price") is not None:
-                offer.price = payload["price"]
+                if offer.state == "active" and offer.product_tmpl_id.marketplace_state == "published":
+                    # a live price changes only once the platform approves it
+                    if self.env["leaders.change.request"].leaders_propose(offer, {"price": payload["price"]}, {}):
+                        warnings.append(_("The new price waits for the platform's approval."))
+                else:
+                    offer.price = payload["price"]
             if payload.get("stock") is not None:
                 offer._leaders_set_fbm_stock(payload["stock"])
             if payload.get("clear_discount"):

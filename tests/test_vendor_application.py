@@ -35,6 +35,10 @@ class TestVendorApplication(TransactionCase):
             "product_category_ids": [(6, 0, self.category.ids)],
             "owner_name": "Owner Person",
             "owner_email": " Owner.App@Test.Example ",
+            "owner_phone": "+201001234567",
+            # other test classes call this helper too, so nothing comes from this class's setup
+            "business_type_id": self.env.ref("leaders_marketplace.vendor_business_type_importer").id,
+            "state_id": self.env["res.country.state"].search([("country_id.code", "=", "EG"), ("code", "=", "C")]).id,
             "representative_name": "Owner Person",
             "representative_position": "General Manager",
             "representative_id_number": "A1234567",
@@ -84,16 +88,45 @@ class TestVendorApplication(TransactionCase):
 
     def test_approval_blocked_by_missing_data_and_documents(self):
         app = self._to_review(self._application(
-            docs=["id_passport"], bank_account_number=False, seller_agreement_accepted=False))
+            docs=["commercial_register"], owner_phone=False, business_type_id=False, state_id=False,
+            terms_accepted=False))
         app.document_ids.action_verify()
         missing = app.missing_requirements
-        self.assertIn("Account Number / IBAN", missing)
-        self.assertIn("Seller Agreement not accepted", missing)
-        self.assertIn("Document not uploaded: Bank Proof", missing)
-        self.assertIn("Document not uploaded: Commercial Register", missing)
+        self.assertIn("Vendor Owner Phone", missing)
+        self.assertIn("Business Type", missing)
+        self.assertIn("Governorate", missing)
+        self.assertIn("Terms & Conditions not accepted", missing)
+        self.assertIn("Document not uploaded: ID / Passport", missing)
         with self.assertRaises(UserError):
             app.action_approve()
         self.assertEqual(app.state, "under_review")
+
+    def test_the_fields_of_the_public_form_are_enough_to_approve(self):
+        """Legal type, representative, bank and the other documents are optional now."""
+        app = self._to_review(self._application(
+            docs=["id_passport"], legal_type=False, legal_name=False, business_activity=False,
+            commercial_registration_number=False, tax_number=False, representative_name=False,
+            representative_position=False, representative_id_number=False, bank_name=False,
+            bank_account_holder=False, bank_account_number=False, seller_agreement_accepted=False))
+        self.assertEqual(app.missing_requirements, "Document not verified: ID / Passport")
+        app.document_ids.action_verify()
+        app.action_approve()
+        self.assertEqual(app.state, "approved")
+        self.assertEqual(app.partner_id.state_id.code, "C")
+        self.assertEqual(app.partner_id.country_id.code, "EG")
+        self.assertFalse(app.partner_id.vendor_payout_bank_id)
+        self.assertFalse(self.env["res.partner.bank"].search([("partner_id", "=", app.partner_id.id)]))
+
+    def test_products_sheet_of_the_application_becomes_an_import_on_approval(self):
+        import base64
+        sheet = base64.b64encode("name,category\nGenerator,Electric Generators\n".encode())
+        app = self._to_review(self._application(
+            docs=["id_passport"], leaders_products_sheet=sheet, leaders_products_sheet_name="my_products.csv"))
+        app.document_ids.action_verify()
+        app.action_approve()
+        job = app.leaders_products_import_id
+        self.assertEqual((job.kind, job.vendor_id, job.filename, job.state), ("products", app.partner_id, "my_products.csv", "uploaded"))
+        self.assertEqual(self.env["leaders.vendor.import"].search_count([("vendor_id", "=", app.partner_id.id)]), 1)
 
     def test_individual_needs_fewer_documents(self):
         app = self._to_review(self._application(
@@ -123,7 +156,7 @@ class TestVendorApplication(TransactionCase):
         app = self._to_review(self._application())
         with self.assertRaises(UserError):
             app.verify_kyc()
-        doc = app.document_ids[:1]
+        doc = app.document_ids.filtered(lambda d: d.document_type == "id_passport")  # the one required document
         with self.assertRaises(UserError):
             doc.action_reject()  # a note is required
         doc.notes = "Unreadable scan"
@@ -142,3 +175,26 @@ class TestVendorApplication(TransactionCase):
         app = self._application()
         with self.assertRaises(UserError):
             app.action_submit()
+
+    def test_instant_activation_and_the_contract_model_choice(self):
+        from datetime import timedelta
+        from odoo import fields
+        app = self._to_review(self._application(docs=["id_passport"]))
+        app._leaders_activate_now()  # the public form does this when instant activation is on (the default)
+        vendor = app.partner_id
+        self.assertEqual((app.state, vendor.vendor_state, app.kyc_state != "verified"), ("approved", "approved", True))
+        self.assertEqual(vendor.leaders_free_until, fields.Date.today() + __import__("dateutil.relativedelta").relativedelta.relativedelta(months=3))
+        with self.assertRaises(UserError):
+            vendor.leaders_choose_contract("commission")  # too early: near the end of the free period
+        vendor.leaders_free_until = fields.Date.today() + timedelta(days=5)
+        self.assertEqual(self.env["res.partner"].cron_remind_contract_choice(), 1)
+        vendor.leaders_choose_contract("commission")
+        self.assertTrue(vendor._leaders_name_hidden())
+        with self.assertRaises(UserError):
+            vendor.leaders_choose_contract("subscription")  # a later change is a switch request
+        switch = self.env["leaders.contract.switch"].create({"vendor_id": vendor.id, "from_model": "commission",
+                                                             "to_model": "subscription"})
+        switch.action_approve()
+        self.assertEqual(vendor.leaders_contract_model, "subscription")
+        self.assertFalse(vendor._leaders_name_hidden())
+

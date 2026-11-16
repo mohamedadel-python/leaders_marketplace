@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_settings_commission_defaults",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_commission_defaults_desktop.png",
+   "width": 1306,
+   "height": 202
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البائعون بدون خطة عمولة",
+   "selector": ".o_setting_box:has([name='marketplace_no_plan_commission_mode'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 110
+   }
+  },
+  {
+   "n": 2,
+   "label": "معدل العمولة الافتراضي (%)",
+   "selector": ".o_setting_box:has([name='marketplace_default_commission_rate'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 110
+   }
+  }
+ ]
+}

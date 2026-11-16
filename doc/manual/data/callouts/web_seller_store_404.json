@@ -1,0 +1,16 @@
+{
+ "screen_id": "web_seller_store_404",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_seller_store_404_desktop.png",
+   "width": 1440,
+   "height": 962
+  },
+  "mobile": {
+   "file": "visitor/web_seller_store_404_mobile.png",
+   "width": 780,
+   "height": 3268
+  }
+ },
+ "markers": []
+}

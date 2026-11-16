@@ -1,0 +1,403 @@
+// ---------------------------------------------------------------------------
+// Spark Fu look for the portal pages only (/my/...): the colours, font and radius of
+// the storefront (spark-fu.com). Everything is scoped to #wrapwrap.o_portal, the
+// wrapper Odoo marks on portal pages, so the website pages and the backend keep
+// their look. Values are the storefront's design tokens (light theme).
+// ---------------------------------------------------------------------------
+$sf-primary: #3e539a;
+$sf-primary-hover: #34468a;
+$sf-brand: #6399d0;
+$sf-navy: #031c6e;
+$sf-ink: #1f2326;
+$sf-surface: #e9f4ff;
+$sf-muted-bg: #f1f5f9;
+$sf-muted-text: #6b7280;
+$sf-border: #e5e7eb;
+$sf-input: #d1d5db;
+$sf-success: #378450;
+$sf-warning: #a36e09;
+$sf-info: #3977a8;
+$sf-danger: #e40014;
+$sf-font: "Cairo", ui-sans-serif, system-ui, sans-serif;
+
+#wrapwrap.o_portal {
+    // Bootstrap variables: links, borders, body text, radius
+    --bs-primary: #{$sf-primary};
+    --bs-primary-rgb: 62, 83, 154;
+    --bs-primary-text-emphasis: #{$sf-navy};
+    --bs-link-color: #{$sf-primary};
+    --bs-link-color-rgb: 62, 83, 154;
+    --bs-link-hover-color: #{$sf-navy};
+    --bs-link-hover-color-rgb: 3, 28, 110;
+    --bs-body-color: #{$sf-ink};
+    --bs-secondary-color: #{$sf-muted-text};
+    --bs-tertiary-bg: #{$sf-muted-bg};
+    --bs-border-color: #{$sf-border};
+    --bs-success: #{$sf-success};
+    --bs-success-rgb: 55, 132, 80;
+    --bs-warning: #{$sf-warning};
+    --bs-warning-rgb: 163, 110, 9;
+    --bs-info: #{$sf-info};
+    --bs-info-rgb: 57, 119, 168;
+    --bs-danger: #{$sf-danger};
+    --bs-danger-rgb: 228, 0, 20;
+    --bs-border-radius: .625rem;
+    --bs-border-radius-sm: .5rem;
+    --bs-border-radius-lg: .625rem;
+    --bs-border-radius-xl: .875rem;
+    // the portal tokens (_tokens.scss) read the variables above; the tones follow the storefront
+    --lm-primary: #{$sf-primary};
+    --lm-primary-rgb: 62, 83, 154;
+    --lm-text: #{$sf-ink};
+    --lm-text-muted: #{$sf-muted-text};
+    --lm-border: #{$sf-border};
+    --lm-surface-muted: #{$sf-muted-bg};
+    --lm-radius-sm: .5rem;
+    --lm-radius: .625rem;
+    --lm-radius-lg: .875rem;
+    --lm-tone-primary: #{$sf-primary};
+    --lm-tone-primary-rgb: 62, 83, 154;
+    --lm-tone-primary-text: #{$sf-navy};
+    --lm-tone-success: #{$sf-success};
+    --lm-tone-success-rgb: 55, 132, 80;
+    --lm-tone-warning: #{$sf-warning};
+    --lm-tone-warning-rgb: 163, 110, 9;
+    --lm-tone-info: #{$sf-info};
+    --lm-tone-info-rgb: 57, 119, 168;
+    --lm-tone-danger: #{$sf-danger};
+    --lm-tone-danger-rgb: 228, 0, 20;
+
+    font-family: $sf-font;
+    color: $sf-ink;
+
+    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, .btn, .form-control, .form-select, .badge, .nav-link,
+    .dropdown-item, .table, input, select, textarea, button {
+        font-family: $sf-font;
+    }
+
+    a:not(.btn):not(.nav-link):not(.dropdown-item):not(.lm-vendor-nav-link):not(.lm-chip) { color: $sf-primary; }
+    a:not(.btn):not(.nav-link):not(.dropdown-item):not(.lm-vendor-nav-link):not(.lm-chip):hover { color: $sf-navy; }
+
+    // vendor side menu: dark text, the active page in the storefront blue
+    .lm-vendor-nav-link { color: $sf-ink; }
+    .lm-vendor-nav-link:hover { background: $sf-surface; color: $sf-navy; }
+    .lm-vendor-nav-link.active { background: $sf-primary; color: #fff; }
+
+    // buttons
+    .btn-primary {
+        --bs-btn-bg: #{$sf-primary};
+        --bs-btn-border-color: #{$sf-primary};
+        --bs-btn-color: #fff;
+        --bs-btn-hover-bg: #{$sf-primary-hover};
+        --bs-btn-hover-border-color: #{$sf-primary-hover};
+        --bs-btn-hover-color: #fff;
+        --bs-btn-active-bg: #{$sf-navy};
+        --bs-btn-active-border-color: #{$sf-navy};
+        --bs-btn-disabled-bg: #{$sf-primary};
+        --bs-btn-disabled-border-color: #{$sf-primary};
+        --bs-btn-focus-shadow-rgb: 62, 83, 154;
+    }
+    .btn-outline-primary {
+        --bs-btn-color: #{$sf-primary};
+        --bs-btn-border-color: #{$sf-primary};
+        --bs-btn-hover-bg: #{$sf-primary};
+        --bs-btn-hover-border-color: #{$sf-primary};
+        --bs-btn-hover-color: #fff;
+        --bs-btn-active-bg: #{$sf-navy};
+        --bs-btn-active-border-color: #{$sf-navy};
+    }
+    .btn-secondary, .btn-light {
+        --bs-btn-bg: #{$sf-surface};
+        --bs-btn-border-color: #{$sf-surface};
+        --bs-btn-color: #{$sf-navy};
+        --bs-btn-hover-bg: #d6e8fb;
+        --bs-btn-hover-border-color: #d6e8fb;
+        --bs-btn-hover-color: #{$sf-navy};
+    }
+    .btn { border-radius: .625rem; font-weight: 600; }
+    // the website theme paints buttons with its own palette: the storefront colours win on the portal
+    .btn-primary { background-color: $sf-primary !important; border-color: $sf-primary !important; color: #fff !important; }
+    .btn-primary:hover, .btn-primary:focus { background-color: $sf-primary-hover !important; border-color: $sf-primary-hover !important; }
+    .btn-outline-primary { color: $sf-primary !important; border-color: $sf-primary !important; background-color: transparent !important; }
+    .btn-outline-primary:hover { color: #fff !important; background-color: $sf-primary !important; }
+    .text-primary { color: $sf-primary !important; }
+    .bg-primary { background-color: $sf-primary !important; }
+    .border-primary { border-color: $sf-primary !important; }
+
+    // side menu (nav pills) and pagination
+    .nav-pills {
+        --bs-nav-pills-link-active-bg: #{$sf-primary};
+        --bs-nav-pills-link-active-color: #fff;
+        --bs-nav-link-color: #{$sf-ink};
+        --bs-nav-link-hover-color: #{$sf-primary};
+    }
+    .pagination {
+        --bs-pagination-color: #{$sf-primary};
+        --bs-pagination-active-bg: #{$sf-primary};
+        --bs-pagination-active-border-color: #{$sf-primary};
+        --bs-pagination-hover-color: #{$sf-navy};
+    }
+
+    // forms
+    .form-control, .form-select { border-color: $sf-input; border-radius: .625rem; }
+    .form-control:focus, .form-select:focus, .form-check-input:focus {
+        border-color: $sf-brand;
+        box-shadow: 0 0 0 .2rem rgba(96, 165, 250, .25);
+    }
+    .form-check-input:checked { background-color: $sf-primary; border-color: $sf-primary; }
+
+    // cards and tables
+    .card { border-color: $sf-border; border-radius: .625rem; }
+    .table > thead th { color: $sf-muted-text; }
+
+    // header: the storefront's dark bar with light links
+    > header, > header .navbar, > header nav {
+        background-color: $sf-ink !important;
+    }
+    > header {
+        border-block-end: 0;
+        .nav-link, .navbar-nav .nav-link, .o_header_phone, a:not(.btn):not(.dropdown-item), .dropdown-toggle:not(.btn) {
+            color: #fff !important;
+        }
+        .nav-link:hover, a:not(.btn):not(.dropdown-item):hover { color: $sf-brand !important; }
+        .btn-primary {
+            background-color: transparent !important;
+            border-color: #fff !important;
+            color: #fff !important;
+        }
+        .btn-primary:hover { background-color: #fff !important; color: $sf-ink !important; }
+        .o_navlink_background, .o_navlink_background_hover, .btn-light {
+            --bs-btn-bg: rgba(255, 255, 255, .08);
+            --bs-btn-border-color: transparent;
+            --bs-btn-color: #fff;
+            --bs-btn-hover-bg: rgba(255, 255, 255, .16);
+            --bs-btn-hover-color: #fff;
+            background-color: rgba(255, 255, 255, .08);
+            color: #fff;
+        }
+        .dropdown-menu a, .dropdown-menu .dropdown-item { color: $sf-ink !important; }
+    }
+
+    // footer: dark like the storefront, headings in the brand blue
+    > footer, > footer #footer, > footer .o_footer_copyright {
+        background-color: $sf-ink !important;
+        color: #e9f4ff;
+    }
+    > footer {
+        h1, h2, h3, h4, h5, h6 { color: $sf-brand; }
+        a:not(.btn) { color: #e9f4ff !important; }
+        a:not(.btn):hover { color: $sf-brand !important; }
+        .s_social_media a, .s_social_media a:hover { color: $sf-ink !important; }
+    }
+}
+
+#wrapwrap.o_portal {
+    // page title and the side column of /my
+    .o_portal_my_home > h3, .o_portal_wrap h3.mt-4, .o_page_header {
+        font-size: 1.9rem;
+        color: $sf-navy;
+        font-weight: 800;
+    }
+    .o_portal_my_details, .o_portal_sidebar .card {
+        border: 1px solid $sf-border;
+        border-radius: 16px;
+        box-shadow: 0 6px 24px rgba(3, 28, 110, .06);
+    }
+
+    .o_portal_wrap h3.my-3 { display: none; }  // the hero carries the page title
+
+    // ---------------- /my home: the storefront's profile strip and account menu rows ----------------
+    .lm-vendor-home {
+        .lm-vh-hero {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 18px;
+            padding: 14px;
+            margin-bottom: 28px;
+            border-radius: 14px;
+            color: $sf-ink;
+            background: #eef5fd;
+            box-shadow: none;
+            h4 { margin: 0; color: $sf-navy; font-size: 1.35rem; font-weight: 800; }
+        }
+        .lm-vh-avatar {
+            width: 92px;
+            height: 92px;
+            border-radius: 10px;
+            border: 0;
+            background: $sf-ink;
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+        .lm-vh-welcome { color: $sf-muted-text; font-size: .9rem; opacity: 1; }
+        .lm-vh-tier { background: #fff; color: $sf-navy; border: 1px solid #d6e4f5; }
+        .lm-vh-cta {
+            margin-inline-end: 10px;
+            padding: 10px 20px;
+            border: 0;
+            border-radius: 8px;
+            background-color: $sf-brand !important;
+            color: #fff !important;
+            font-weight: 700;
+            &:hover { background-color: $sf-primary !important; }
+        }
+        .lm-vh-section {
+            margin: 6px 0 12px;
+            color: $sf-ink;
+            font-size: 1.25rem;
+            font-weight: 800;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        // rows like the storefront's account menu: light grey, a bar on the inner side, blue when hovered
+        .lm-hc {
+            --lm-hc-color: #{$sf-muted-text};
+            --lm-hc-bg: transparent;
+            gap: 12px;
+            padding: 16px 18px;
+            border: 0;
+            border-inline-end: 3px solid #cfd8e3;
+            border-radius: 8px;
+            background: #f6f8fb;
+            box-shadow: none;
+            &:hover {
+                transform: none;
+                background: $sf-brand;
+                border-inline-end-color: $sf-primary;
+                box-shadow: none;
+                .lm-hc-title, .lm-hc-text, .lm-hc-icon, .lm-hc-arrow { color: #fff; }
+                .lm-hc-icon { background: transparent; }
+            }
+        }
+        .lm-hc-icon { width: 34px; height: 34px; border-radius: 0; font-size: 1.2rem; background: transparent; }
+        .lm-hc-title { color: $sf-ink; font-weight: 800; }
+        .lm-hc-text { color: $sf-muted-text; }
+        .lm-hc-badge { background: $sf-primary; }
+        .lm-hc-blue, .lm-hc-purple, .lm-hc-teal, .lm-hc-indigo, .lm-hc-orange, .lm-hc-red, .lm-hc-green, .lm-hc-slate {
+            --lm-hc-color: #{$sf-muted-text};
+            --lm-hc-bg: transparent;
+        }
+    }
+
+    // ---------------- every portal page: the storefront's account hero ----------------
+    .lm-acc-hero {
+        padding: 0 0 26px;
+        background: linear-gradient(180deg, #ddeafa 0%, #f3f8fe 60%, #ffffff 100%);
+    }
+    .lm-acc-hero-inner { display: flex; align-items: stretch; min-height: 300px; }
+    .lm-acc-hero-panel {
+        position: relative;
+        z-index: 2;
+        flex: 0 0 44%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px 34px;
+        border: 1px solid #d9e6f6;
+        border-top: 0;
+        border-radius: 0 0 32px 32px;
+        background: linear-gradient(160deg, rgba(255, 255, 255, .92), rgba(236, 244, 253, .92));
+        box-shadow: 0 18px 40px rgba(3, 28, 110, .08);
+    }
+    .lm-acc-hero-crumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 26px;
+        font-size: .92rem;
+        font-weight: 600;
+        a, span { color: $sf-brand !important; text-decoration: none; }
+        .fa { color: $sf-brand; font-size: .8rem; }
+    }
+    .lm-acc-hero-title { margin: 0 0 10px; color: $sf-navy; font-size: 3rem; font-weight: 800; line-height: 1.2; }
+    .lm-acc-hero-sub { margin: 0; color: #4b5563; font-size: 1rem; }
+    .lm-acc-hero-media {
+        position: relative;
+        z-index: 1;
+        flex: 1 1 auto;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        margin-inline-start: -70px;
+        padding-top: 12px;
+        img { display: block; width: 100%; max-width: 640px; height: auto; }
+    }
+    @media (max-width: 991.98px) {
+        .lm-acc-hero-media { display: none; }
+        .lm-acc-hero-panel { flex-basis: 100%; padding: 28px 22px; }
+        .lm-acc-hero-title { font-size: 2.1rem; }
+        .lm-acc-hero-inner { min-height: 0; }
+    }
+
+    // ---------------- vendor pages: the storefront's settings menu and content card ----------------
+    .lm-vendor-crumbs { display: none; }  // the hero shows where you are
+    .lm-vendor-sidebar {
+        padding: 22px 0 14px;
+        border: 1px solid #e7edf5;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 4px 22px rgba(3, 28, 110, .05);
+    }
+    .lm-vendor-nav-title {
+        margin: 0 18px 14px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e5e9f0;
+        color: $sf-ink;
+        font-size: 1.2rem;
+        font-weight: 800;
+    }
+    .lm-vendor-nav { gap: 8px; padding: 0; }
+    .lm-vendor-nav-link {
+        margin-inline-start: 0;
+        margin-inline-end: 14px;
+        padding: 13px 18px;
+        border-inline-end: 3px solid #cfd8e3;
+        border-radius: 0;
+        border-start-end-radius: 8px;
+        border-end-end-radius: 8px;
+        background: #f6f8fb;
+        color: $sf-muted-text !important;
+        font-weight: 700;
+        .fa { color: $sf-muted-text; }
+        &:hover { background: #eaf2fc; color: $sf-navy !important; }
+        &.active {
+            background: $sf-brand;
+            border-inline-end-color: $sf-primary;
+            color: #fff !important;
+            .fa { color: #fff; }
+        }
+    }
+    .lm-vendor-nav-sep { margin: 8px 0 !important; background: #e5e9f0 !important; }
+    .lm-vendor-main {
+        padding: 24px;
+        border: 1px solid #e7edf5;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 4px 22px rgba(3, 28, 110, .05);
+    }
+    .lm-table > thead th, .table > thead th {
+        background: #eaf3fd;
+        color: $sf-ink;
+        font-weight: 700;
+        border-bottom: 0;
+    }
+    .lm-table > thead th:first-child { border-start-start-radius: 10px; border-end-start-radius: 10px; }
+    .lm-table > thead th:last-child { border-start-end-radius: 10px; border-end-end-radius: 10px; }
+    .lm-page-title { color: $sf-ink; font-weight: 800; }
+}
+
+// vendor product form: what is still missing before submitting
+#wrapwrap.o_portal {
+    .lm-submit-missing {
+        list-style: none;
+        margin: 0 0 18px;
+        padding: 0;
+        li { padding: 6px 0; border-bottom: 1px dashed $sf-border; color: $sf-ink; font-weight: 600; }
+        .fa { color: $sf-warning; margin-inline-end: 6px; }
+    }
+    .lm-submit-ready { color: $sf-success; font-weight: 700; .fa { margin-inline-end: 6px; } }
+    .lm-submit-check .btn[disabled] { opacity: .55; cursor: not-allowed; }
+    .lm-complete-btn { white-space: nowrap; font-weight: 700; }
+}

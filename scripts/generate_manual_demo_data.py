@@ -5,7 +5,7 @@ leaders_marketplace + payment_demo, language ar_001, company USD, no demo data):
 
     cd /projects/odoo18/odoo-18.0
     /odoo18/env-odoo18/bin/python odoo-bin shell -c /etc/odoo/odoo18.conf.save -d <db> \
-        --addons-path=addons,custom --data-dir=/tmp/claude-1000/lmmanual --no-http \
+        --addons-path=addons,custom --data-dir=/tmp/lmmanual --no-http \
         < custom/leaders_marketplace/scripts/generate_manual_demo_data.py
 
 The driver defines the shared helpers below, then ``exec``s every part file

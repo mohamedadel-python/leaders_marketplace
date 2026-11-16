@@ -1,0 +1,161 @@
+{
+ "screen_id": "portal_vendor_import",
+ "images": {
+  "desktop": {
+   "file": "vendor_owner/portal_vendor_import_desktop.png",
+   "width": 1440,
+   "height": 1424
+  },
+  "mobile": {
+   "file": "vendor_owner/portal_vendor_import_mobile.png",
+   "width": 780,
+   "height": 6628
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قائمة البائع الجانبية",
+   "selector": ".lm-vendor-sidebar",
+   "device": "desktop",
+   "bbox": {
+    "x": 1135,
+    "y": 150,
+    "w": 230,
+    "h": 639
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 90,
+    "w": 1290,
+    "h": 48
+   }
+  },
+  {
+   "n": 3,
+   "label": "نوع الاستيراد",
+   "selector": "#lm_import_kind",
+   "device": "desktop",
+   "bbox": {
+    "x": 771,
+    "y": 512,
+    "w": 323,
+    "h": 44
+   }
+  },
+  {
+   "n": 4,
+   "label": "ملف xlsx أو csv",
+   "selector": "#lm_import_file",
+   "device": "desktop",
+   "bbox": {
+    "x": 347,
+    "y": 512,
+    "w": 408,
+    "h": 44
+   }
+  },
+  {
+   "n": 5,
+   "label": "زر الرفع والتحقق",
+   "selector": "#lm_import_submit",
+   "device": "desktop",
+   "bbox": {
+    "x": 315,
+    "y": 534,
+    "w": 16,
+    "h": 16
+   }
+  },
+  {
+   "n": 6,
+   "label": "قالب Excel",
+   "selector": "a:has-text('Excel')",
+   "device": "desktop",
+   "bbox": {
+    "x": 994,
+    "y": 335,
+    "w": 83,
+    "h": 36
+   }
+  },
+  {
+   "n": 1,
+   "label": "قائمة البائع (شريط علوي في الجوال)",
+   "selector": ".lm-vendor-nav",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 296,
+    "w": 720,
+    "h": 108
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 176,
+    "w": 720,
+    "h": 96
+   }
+  },
+  {
+   "n": 3,
+   "label": "نوع الاستيراد",
+   "selector": "#lm_import_kind",
+   "device": "mobile",
+   "bbox": {
+    "x": 64,
+    "y": 1587,
+    "w": 652,
+    "h": 88
+   }
+  },
+  {
+   "n": 4,
+   "label": "ملف xlsx أو csv",
+   "selector": "#lm_import_file",
+   "device": "mobile",
+   "bbox": {
+    "x": 64,
+    "y": 1795,
+    "w": 652,
+    "h": 88
+   }
+  },
+  {
+   "n": 5,
+   "label": "زر الرفع والتحقق",
+   "selector": "#lm_import_submit",
+   "device": "mobile",
+   "bbox": {
+    "x": 684,
+    "y": 1955,
+    "w": 32,
+    "h": 32
+   }
+  },
+  {
+   "n": 6,
+   "label": "قالب Excel",
+   "selector": "a:has-text('Excel')",
+   "device": "mobile",
+   "bbox": {
+    "x": 517,
+    "y": 792,
+    "w": 165,
+    "h": 72
+   }
+  }
+ ]
+}

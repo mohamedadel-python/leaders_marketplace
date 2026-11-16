@@ -1,0 +1,4 @@
+<odoo>
+    <!-- runs on every install and upgrade; fills only the names a language is still missing -->
+    <function model="leaders.catalog.seed" name="load_arabic_names"/>
+</odoo>

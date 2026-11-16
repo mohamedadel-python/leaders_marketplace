@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_return_form_tab_photos",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_return_form_tab_photos_desktop.png",
+   "width": 1440,
+   "height": 1761
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الحالة",
+   "selector": ".o_form_view .o_field_widget[name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 371,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "الصور",
+   "selector": ".o_notebook .tab-pane.active",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 825,
+    "w": 1358,
+    "h": 96
+   }
+  }
+ ]
+}

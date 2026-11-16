@@ -1,0 +1,48 @@
+{
+ "screen_id": "backend_shipping_provider_form_events",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_shipping_provider_form_events_desktop.png",
+   "width": 1440,
+   "height": 910
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 179,
+    "w": 585,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "الرمز",
+   "selector": ".o_form_view .o_field_widget[name='code']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 218,
+    "w": 585,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "سجل الأحداث",
+   "selector": ".o_notebook .tab-pane.active",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 504,
+    "w": 1358,
+    "h": 374
+   }
+  }
+ ]
+}

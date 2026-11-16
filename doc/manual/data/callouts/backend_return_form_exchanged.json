@@ -1,0 +1,132 @@
+{
+ "screen_id": "backend_return_form_exchanged",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_return_form_exchanged_desktop.png",
+   "width": 1440,
+   "height": 1887
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 371,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "طلب البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_order_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 234,
+    "w": 547,
+    "h": 24
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 271,
+    "w": 547,
+    "h": 24
+   }
+  },
+  {
+   "n": 4,
+   "label": "العميل",
+   "selector": ".o_form_view .o_field_widget[name='partner_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 308,
+    "w": 547,
+    "h": 24
+   }
+  },
+  {
+   "n": 5,
+   "label": "تاريخ الطلب",
+   "selector": ".o_form_view .o_field_widget[name='request_date']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 345,
+    "w": 547,
+    "h": 21
+   }
+  },
+  {
+   "n": 6,
+   "label": "الموعد النهائي للبائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_deadline']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 379,
+    "w": 547,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "رمز السبب",
+   "selector": ".o_form_view .o_field_widget[name='reason_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 551,
+    "w": 1222,
+    "h": 24
+   }
+  },
+  {
+   "n": 8,
+   "label": "الحل",
+   "selector": ".o_form_view .o_field_widget[name='resolution']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 588,
+    "w": 1222,
+    "h": 21
+   }
+  },
+  {
+   "n": 9,
+   "label": "مبلغ الاسترداد",
+   "selector": ".o_form_view .o_field_widget[name='refund_amount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 301,
+    "w": 561,
+    "h": 21
+   }
+  },
+  {
+   "n": 10,
+   "label": "تبويبات النموذج",
+   "selector": ".o_notebook_headers",
+   "device": "desktop",
+   "bbox": {
+    "x": 17,
+    "y": 786,
+    "w": 1406,
+    "h": 39
+   }
+  }
+ ]
+}

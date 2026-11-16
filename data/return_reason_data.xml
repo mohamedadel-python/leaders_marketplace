@@ -2,16 +2,19 @@
 <odoo noupdate="1">
     <!-- Default return reasons; edit them under Marketplace > Configuration > Return Reasons. -->
     <record id="return_reason_damaged" model="leaders.return.reason">
+        <field name="leaders_parts_allowed" eval="True"/>
         <field name="name">The product arrived damaged</field>
         <field name="sequence">10</field>
         <field name="requires_photo" eval="True"/>
     </record>
     <record id="return_reason_wrong_item" model="leaders.return.reason">
+        <field name="leaders_parts_allowed" eval="True"/>
         <field name="name">I received the wrong item</field>
         <field name="sequence">20</field>
         <field name="requires_photo" eval="True"/>
     </record>
     <record id="return_reason_not_as_described" model="leaders.return.reason">
+        <field name="leaders_parts_allowed" eval="True"/>
         <field name="name">Not as described</field>
         <field name="sequence">30</field>
     </record>

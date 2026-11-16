@@ -1,0 +1,108 @@
+{
+ "screen_id": "backend_commission_achievements",
+ "images": {
+  "desktop": {
+   "file": "finance/backend_commission_achievements_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "القاعدة",
+   "selector": "th[data-name='rule_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1222,
+    "y": 106,
+    "w": 178,
+    "h": 40
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1073,
+    "y": 106,
+    "w": 149,
+    "h": 40
+   }
+  },
+  {
+   "n": 4,
+   "label": "الفترة من",
+   "selector": "th[data-name='period_from']",
+   "device": "desktop",
+   "bbox": {
+    "x": 878,
+    "y": 106,
+    "w": 106,
+    "h": 40
+   }
+  },
+  {
+   "n": 5,
+   "label": "الفترة إلى",
+   "selector": "th[data-name='period_to']",
+   "device": "desktop",
+   "bbox": {
+    "x": 772,
+    "y": 106,
+    "w": 106,
+    "h": 40
+   }
+  },
+  {
+   "n": 6,
+   "label": "مبلغ المبيعات",
+   "selector": "th[data-name='sales_amount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 658,
+    "y": 106,
+    "w": 115,
+    "h": 40
+   }
+  },
+  {
+   "n": 7,
+   "label": "الإنجاز (%)",
+   "selector": "th[data-name='achievement_percent']",
+   "device": "desktop",
+   "bbox": {
+    "x": 326,
+    "y": 106,
+    "w": 103,
+    "h": 40
+   }
+  },
+  {
+   "n": 8,
+   "label": "مبلغ العمولة",
+   "selector": "th[data-name='commission_amount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 32,
+    "y": 106,
+    "w": 115,
+    "h": 40
+   }
+  }
+ ]
+}

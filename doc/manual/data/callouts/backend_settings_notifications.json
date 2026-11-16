@@ -1,0 +1,24 @@
+{
+ "screen_id": "backend_settings_notifications",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_notifications_desktop.png",
+   "width": 1306,
+   "height": 804
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قائمة مفاتيح إشعارات البريد (بائع وعميل)",
+   "selector": ".o_setting_box:has([name='marketplace_notify_vendor_order_confirmed'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 730
+   }
+  }
+ ]
+}

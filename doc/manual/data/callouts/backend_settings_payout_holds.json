@@ -1,0 +1,48 @@
+{
+ "screen_id": "backend_settings_payout_holds",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_payout_holds_desktop.png",
+   "width": 1306,
+   "height": 266
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "أيام احتجاز البائع الافتراضية",
+   "selector": ".o_setting_box:has([name='marketplace_default_hold_days'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 79
+   }
+  },
+  {
+   "n": 2,
+   "label": "احتجاز احتياطي مرتجعات",
+   "selector": ".o_setting_box:has([name='marketplace_enforce_returns_reserve'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 169,
+    "w": 472,
+    "h": 79
+   }
+  },
+  {
+   "n": 3,
+   "label": "حظر صرف المستحقات أثناء وجود تغيير بنكي قيد الانتظار",
+   "selector": ".o_setting_box:has([name='marketplace_block_payout_on_pending_bank_change'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 79
+   }
+  }
+ ]
+}

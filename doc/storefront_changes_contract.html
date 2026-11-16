@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storefront API changes</title>
+<style>
+:root {
+  --bg: #f7f5ef; --panel: #ffffff; --ink: #191917; --muted: #6a695f; --line: #e3e0d5; --soft: #f1eee4;
+  --accent: #c2410c; --accent-ink: #ffffff; --code-bg: #f3f0e6;
+  --ok: #15803d; --ok-bg: #e4f4e8; --warn: #92600a; --warn-bg: #fcf0d6; --err: #b91c1c; --err-bg: #fbe6e6; --info: #1d4ed8; --info-bg: #e5edfd;
+  --k: #9a3412; --s: #166534; --n: #1d4ed8; --b: #7c3aed;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131311; --panel: #1c1c19; --ink: #efeee7; --muted: #a2a196; --line: #33322c; --soft: #242421;
+    --accent: #fb923c; --accent-ink: #1a1208; --code-bg: #232320;
+    --ok: #6ee79a; --ok-bg: #153020; --warn: #f5c451; --warn-bg: #33290f; --err: #fca5a5; --err-bg: #3a1919; --info: #93b4ff; --info-bg: #182340;
+    --k: #fdba74; --s: #86efac; --n: #93c5fd; --b: #c4b5fd;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+a { color: var(--accent); }
+.layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 36px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+nav { position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 64px); overflow: auto; padding: 24px 0; }
+nav h2 { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+nav a { display: block; color: var(--muted); text-decoration: none; padding: 3px 0 3px 10px; border-left: 2px solid transparent; font-size: 14px; }
+nav a:hover, nav a.on { color: var(--ink); border-left-color: var(--accent); }
+nav a.sub { padding-left: 22px; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; }
+main { padding: 30px 0 90px; min-width: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 { font-size: 36px; line-height: 1.12; margin: 6px 0 12px; letter-spacing: -.01em; }
+h2.section { font-size: 24px; margin: 54px 0 10px; }
+h3 { font-size: 16px; margin: 24px 0 6px; }
+p { margin: 9px 0; }
+.lede { color: var(--muted); max-width: 70ch; font-size: 16px; }
+.pill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-weight: 600; font-size: 12.5px; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); } .pill.err { color: var(--err); background: var(--err-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); } .pill.info { color: var(--info); background: var(--info-bg); }
+.callout { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px; overflow-x: auto; font-size: 12.8px; line-height: 1.55; margin: 8px 0 14px; }
+.tw { overflow-x: auto; margin: 10px 0 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th { text-align: left; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.method { color: var(--accent); font-weight: 700; font-size: 12.5px; letter-spacing: .04em; }
+.tag { font-size: 10.5px; padding: 1px 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-weight: 600; white-space: nowrap; }
+
+/* sticky playground dock */
+.dock { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.dock-in { max-width: 1200px; margin: 0 auto; padding: 8px 20px; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--panel); }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 5px 13px; font: 600 12.5px inherit; font-family: inherit; cursor: pointer; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+.dock input.base { width: 250px; max-width: 100%; }
+input, select, textarea { font: 13px/1.4 "IBM Plex Mono", ui-monospace, monospace; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 100%; }
+input:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); white-space: nowrap; }
+.chip b { color: var(--ink); font-weight: 600; }
+.chip.live { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.live .dot { background: var(--ok); animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+.dock .sp { flex: 1; }
+.mini { font: 600 12px inherit; font-family: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.mini:hover { color: var(--ink); border-color: var(--accent); }
+.drawer { max-width: 1200px; margin: 0 auto; padding: 0 20px 10px; display: none; }
+.drawer.open { display: block; }
+.drawer .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 12.5px; }
+.box h4 { margin: 0 0 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.box pre { margin: 0; border: 0; padding: 0; background: transparent; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+
+/* endpoint cards */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; margin: 22px 0; overflow: hidden; scroll-margin-top: 70px; }
+.card-h { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px 22px 4px; }
+.mpill { background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 6px; letter-spacing: .05em; }
+.path { font-size: 19px; font-weight: 700; }
+.what { color: var(--muted); }
+.auth { margin-left: auto; font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.card-b { padding: 4px 22px 18px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 14px; background: var(--soft); }
+.tabs button { border: 0; background: transparent; color: var(--muted); padding: 10px 16px; font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+.pane { display: none; padding: 16px 22px 22px; }
+.pane.on { display: block; }
+.vars { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.vars button { font: 600 12.5px "IBM Plex Mono", ui-monospace, monospace; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 5px 11px; cursor: pointer; }
+.vars button.on { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+.vars .s2 { color: var(--ok); } .vars .s4 { color: var(--warn); } .vars .s5 { color: var(--err); }
+.http { background: #14130f; color: #ece9dc; border-radius: 12px; padding: 14px 16px; font-size: 12.8px; line-height: 1.6; overflow-x: auto; margin: 0; border: 0; position: relative; }
+@media (prefers-color-scheme: dark) { .http { background: #0e0e0c; } }
+.http .sl { font-weight: 700; } .http .sl.c2 { color: #86efac; } .http .sl.c4 { color: #fcd34d; } .http .sl.c5 { color: #fca5a5; }
+.http .hn { color: #93c5fd; } .http .ck { color: #fdba74; } .http .dim { color: #8d8a7c; }
+.http .jk { color: #fdba74; } .http .js { color: #86efac; } .http .jn { color: #93c5fd; } .http .jb { color: #c4b5fd; }
+.copyb { position: absolute; top: 8px; right: 8px; background: #2a2923; color: #cfcbb9; border: 1px solid #3b3a32; border-radius: 6px; font: 600 11px inherit; font-family: inherit; padding: 3px 9px; cursor: pointer; }
+.note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.jwt { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.jwt .box pre { font-size: 12px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 14px; }
+.form label { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.form .chk { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
+.form .chk input { width: auto; }
+.form .hint { font-size: 11.5px; color: var(--muted); margin-top: 3px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.btn { font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-radius: 9px; padding: 8px 18px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.res { margin-top: 14px; }
+.res .meta { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 12.5px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.ec { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.3px; padding: 3px 10px; border-radius: 6px; color: var(--warn); background: var(--warn-bg); }
+.ec.a { color: var(--err); background: var(--err-bg); }
+.flows { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px 30px; }
+ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 8px 0; }
+ol.steps li { counter-increment: s; position: relative; padding-left: 36px; margin: 8px 0; }
+ol.steps li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); color: var(--accent); font-size: 12px; display: grid; place-items: center; background: var(--panel); }
+.toast { position: fixed; right: 18px; bottom: 18px; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 12px 16px; box-shadow: 0 8px 28px rgba(0,0,0,.18); max-width: 320px; display: none; font-size: 13.5px; }
+.toast.show { display: block; }
+.toast .big { font: 700 26px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 6px; margin: 4px 0; }
+
+.step { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); margin-top: 8px; }
+.col { padding: 14px 20px 18px; min-width: 0; }
+.col + .col { border-top: 1px solid var(--line); background: color-mix(in srgb, var(--soft) 55%, transparent); }
+.col > h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.col .vars { margin-bottom: 10px; }
+.http { max-height: 520px; overflow: auto; }
+.tryd { border-top: 1px solid var(--line); padding: 4px 22px 18px; }
+.tryd > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 12px 0; }
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; gap: 0; }
+  nav { position: static; max-height: none; padding-bottom: 0; }
+  .auth { margin-left: 0; }
+}
+
+.pane .tw { margin-top: 4px; }
+textarea { resize: vertical; }
+</style>
+</head><body><div class="layout"><nav aria-label="Contents"><h2>Contents</h2>
+<a href="#summary">Summary</a><a href="#breaking">Breaking changes</a><a href="#f1">Feature 1</a><a href="#f2">Feature 2</a>
+<a href="#f3">Feature 3</a><a href="#f4">Feature 4</a><a href="#f5">Feature 5</a><a href="#fc">Your contracts</a></nav><main>
+<div class="eyebrow">Spark FU · Frontend ↔ Backend</div>
+<h1>Storefront API changes for the project guide (features 1 to 5)</h1>
+<p class="lede">Every storefront endpoint that was added or changed while implementing the project guide (<em>spark fu guid.md</em>), with the guide feature and item each change is based on. Conventions are unchanged: JSON, no envelope, camelCase, money in minor units (piastres), optional keys left out when unset, errors as <code>{code, message, fields?}</code> in the Accept-Language language.</p>
+<span class="pill ok">Implemented by backend · covered by automated tests (version 18.0.4.0.89)</span>
+<h2 class="section" id="summary">Summary</h2><div class="tw"><table style="table-layout:auto;width:100%"><thead><tr><th>Kind</th><th>Method</th><th>Path</th><th>Guide</th></tr></thead><tbody><tr><td><span class="pill err">Breaking</span></td><td class="method">POST</td><td class="mono"><a href="#register">/auth/register</a></td><td>F1 · Sign-up</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">POST</td><td class="mono"><a href="#register-verify">/auth/register/verify</a></td><td>F1 · Sign-up</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">POST</td><td class="mono"><a href="#register-resend">/auth/register/resend</a></td><td>F1 · Sign-up</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">POST</td><td class="mono"><a href="#login">/auth/login</a></td><td>F1 · Sign-up</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">POST</td><td class="mono"><a href="#google">/auth/google</a></td><td>F1 · Sign-up</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">POST</td><td class="mono"><a href="#logout-all">/auth/logout-all</a></td><td>F1 · Sign-up</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#products-search">/products</a></td><td>F2 · Catalog</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">POST</td><td class="mono"><a href="#search-click">/products/search-click</a></td><td>F2 · Catalog</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#products-hidden">/products, /products/filters, /products/&lt;slug&gt;, /cart</a></td><td>F2 · Catalog</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#similar-names">/products?q=</a></td><td>F2 · Catalog</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#services-new">/services, /categories</a></td><td>F2 · Catalog</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#service-scope">/services/&lt;slug&gt;</a></td><td>F2 · Catalog</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">GET</td><td class="mono"><a href="#vendor-join">/vendor-join</a></td><td>F3 · Pages</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#rent-contract">/pages/rent-contract</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill err">Breaking</span></td><td class="method">POST</td><td class="mono"><a href="#cart-equipment">/cart/items, PATCH /cart/items/&lt;id&gt;, POST /orders</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">POST</td><td class="mono"><a href="#equipment-requests">/equipment-requests</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">GET</td><td class="mono"><a href="#equipment-request-detail">/equipment-requests/&lt;reference&gt;</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#product-rent">/products, /products/&lt;slug&gt;</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">GET</td><td class="mono"><a href="#rent-months">/products?listing=rent&amp;rentMonths=30</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#rented-hidden">/products…</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#product-services">/products/&lt;slug&gt;</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#inspection-price">/products…</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#maintenance-included">/quotes/&lt;reference&gt;</a></td><td>F4 · Equipment</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#offers">/products, /products/&lt;slug&gt;</a></td><td>F5 · Spare parts</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">POST</td><td class="mono"><a href="#cart-offer">/cart/items, PATCH /cart/items/&lt;id&gt;, POST /orders</a></td><td>F5 · Spare parts</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#regions">/delivery/regions</a></td><td>F5 · Spare parts</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#categories-surcharge">/categories</a></td><td>F5 · Spare parts</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">POST</td><td class="mono"><a href="#orders-minimum">/orders</a></td><td>F5 · Spare parts</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">GET</td><td class="mono"><a href="#return-reasons">/returns/reasons</a></td><td>F5 · Spare parts</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">GET / POST</td><td class="mono"><a href="#order-returns">/orders/&lt;reference&gt;/returns</a></td><td>F5 · Spare parts</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">GET</td><td class="mono"><a href="#filters">/products/filters</a></td><td>Your contract</td></tr><tr><td><span class="pill ok">New</span></td><td class="method">GET</td><td class="mono"><a href="#filter-ids">/products?categoryId=&amp;brandId=&amp;powerSourceId=&amp;sourceId=</a></td><td>Your contract</td></tr><tr><td><span class="pill info">Changed</span></td><td class="method">GET</td><td class="mono"><a href="#global-search">/products?q=</a></td><td>Your contract</td></tr></tbody></table></div>
+<h2 class="section" id="breaking">Breaking changes (act before this version goes live)</h2>
+<ol><li><b>Equipment leaves the cart.</b> <code>/cart/items</code> and <code>/orders</code> refuse power and equipment products; use <code>POST /equipment-requests</code>.</li>
+<li><b>Registration sends an email code.</b> <code>/auth/register</code> answers 202 and the session opens at <code>/auth/register/verify</code>; <code>/auth/login</code> can answer <code>403 email_not_verified</code>.</li>
+<li><b>Google sign-up needs the phone</b> for a new account (<code>422 phone_required</code>).</li></ol>
+<p class="note">Everything else is additive (new endpoints, optional keys, optional parameters) or changes only which products are returned.</p>
+<h2 class="section" id="f1">Feature 1 — Registration and authentication</h2>
+<h3 id="register"><span class="pill err">Breaking</span> <span class="mono">POST /auth/register</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 1: Registration, authentication and account — <em>Two ways to sign in: Google, or email + password with an OTP code that proves the email before the account opens</em></p>
+<p>With the email code on (the default), registering no longer opens a session: it sends a 6-digit code to the email and answers <code>202</code>. The session opens at <code>/auth/register/verify</code>. Registering again with the same email before confirming sends a new code (not <code>email_taken</code>). Setting <code>leaders_marketplace.auth_register_otp = 0</code> in Odoo restores the old behaviour.</p>
+<p><strong>Request</strong></p>
+<pre><code>{&quot;name&quot;: &quot;Mona Adel&quot;, &quot;email&quot;: &quot;mona@example.com&quot;, &quot;phone&quot;: &quot;+201001234567&quot;, &quot;password&quot;: &quot;Secret123&quot;}</code></pre>
+<p><strong>Response</strong></p>
+<pre><code>202
+{&quot;verification&quot;: &quot;email&quot;, &quot;email&quot;: &quot;mona@example.com&quot;, &quot;expiresIn&quot;: 600}</code></pre>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>422</td><td class="mono">validation_error</td><td>name / email / phone / password invalid</td></tr><tr><td>409</td><td class="mono">email_taken</td><td>a confirmed account has this email</td></tr><tr><td>409</td><td class="mono">phone_taken</td><td>the phone belongs to another account</td></tr></tbody></table></div>
+<h3 id="register-verify"><span class="pill ok">New</span> <span class="mono">POST /auth/register/verify</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 1: Registration, authentication and account — <em>OTP at sign-up</em></p>
+<p>Enter the emailed code: confirms the email and opens the session (the usual SessionResponse + refresh cookie).</p>
+<p><strong>Request</strong></p>
+<pre><code>{&quot;email&quot;: &quot;mona@example.com&quot;, &quot;code&quot;: &quot;482913&quot;, &quot;remember&quot;: false}</code></pre>
+<p><strong>Response</strong></p>
+<pre><code>201
+{&quot;accessToken&quot;: &quot;...&quot;, &quot;tokenType&quot;: &quot;Bearer&quot;, &quot;expiresIn&quot;: 900, &quot;user&quot;: {&quot;id&quot;: &quot;57&quot;, &quot;name&quot;: &quot;Mona Adel&quot;, &quot;email&quot;: &quot;mona@example.com&quot;, &quot;avatar&quot;: null}}</code></pre>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>400</td><td class="mono">invalid_code</td><td>wrong code</td></tr><tr><td>400</td><td class="mono">code_expired</td><td>older than 10 minutes</td></tr><tr><td>429</td><td class="mono">too_many_attempts</td><td>5 wrong tries: ask a new code</td></tr></tbody></table></div>
+<h3 id="register-resend"><span class="pill ok">New</span> <span class="mono">POST /auth/register/resend</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 1: Registration, authentication and account — <em>OTP at sign-up — limit on resends</em></p>
+<p>Sends the sign-up code again. Always <code>202</code>, whether the account exists or not. Limited to 3 per email every 10 minutes.</p>
+<p><strong>Request</strong></p>
+<pre><code>{&quot;email&quot;: &quot;mona@example.com&quot;}</code></pre>
+<p><strong>Response</strong></p>
+<pre><code>202 (no body)</code></pre>
+<h3 id="login"><span class="pill info">Changed</span> <span class="mono">POST /auth/login</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 1: Registration, authentication and account — <em>OTP at sign-up</em></p>
+<p>An account that never entered its sign-up code cannot sign in: a fresh code is emailed and the answer is <code>403 email_not_verified</code>. Show the code screen.</p>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>403</td><td class="mono">email_not_verified</td><td>the email is not confirmed yet; a new code was sent</td></tr></tbody></table></div>
+<h3 id="google"><span class="pill info">Changed</span> <span class="mono">POST /auth/google</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 1: Registration, authentication and account — <em>The mobile number is required with both ways of signing in</em></p>
+<p>The <b>first</b> Google sign-in (account creation) now needs the phone. Without it the answer is <code>422 phone_required</code>; ask the phone and call again with it. Existing accounts sign in without it.</p>
+<p><strong>Request</strong></p>
+<pre><code>{&quot;idToken&quot;: &quot;&lt;google id token&gt;&quot;, &quot;phone&quot;: &quot;+201009998877&quot;, &quot;remember&quot;: true}</code></pre>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>422</td><td class="mono">phone_required</td><td>new account without a phone (fields.phone)</td></tr><tr><td>409</td><td class="mono">phone_taken</td><td>the phone belongs to another account</td></tr></tbody></table></div>
+<h3 id="logout-all"><span class="pill ok">New</span> <span class="mono">POST /auth/logout-all</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 1: Registration, authentication and account — <em>Session management: sign out of all devices</em></p>
+<p>Bearer required. Ends every session of the account (all refresh tokens are revoked) and clears the cookies.</p>
+<p><strong>Response</strong></p>
+<pre><code>204 (no body)</code></pre>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>401</td><td class="mono">session_expired</td><td>no or invalid Bearer token</td></tr></tbody></table></div>
+<h2 class="section" id="f2">Feature 2 — Catalog of products and services</h2>
+<h3 id="products-search"><span class="pill info">Changed</span> <span class="mono">GET /products</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 2: Catalog of products and services — <em>Search and filter behaviour report for the admin (searches, filters, results, clicks)</em></p>
+<p>A page-1 request with a search word or a filter answers an extra optional key <code>searchId</code>. Keep it for the results of that search and send it back when the customer opens a product.</p>
+<p><strong>Response</strong></p>
+<pre><code>{&quot;items&quot;: [...], &quot;totalCount&quot;: 13, &quot;page&quot;: 1, &quot;pageSize&quot;: 8, &quot;searchId&quot;: &quot;478&quot;}</code></pre>
+<h3 id="search-click"><span class="pill ok">New</span> <span class="mono">POST /products/search-click</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 2: Catalog of products and services — <em>The report records whether the user clicked a result</em></p>
+<p>Call it when the customer opens a product from search results. Unknown or older-than-a-day searches are ignored (still 204).</p>
+<p><strong>Request</strong></p>
+<pre><code>{&quot;searchId&quot;: &quot;478&quot;, &quot;productId&quot;: &quot;625&quot;}</code></pre>
+<p><strong>Response</strong></p>
+<pre><code>204 (no body)</code></pre>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>422</td><td class="mono">validation_error</td><td>searchId / productId missing or not digits</td></tr></tbody></table></div>
+<h3 id="products-hidden"><span class="pill info">Changed</span> <span class="mono">GET /products, /products/filters, /products/&lt;slug&gt;, /cart</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 2: Catalog of products and services — <em>Inspection before publishing follows the subcategory; archiving a category hides its products</em></p>
+<p>No shape change. A used product of a subcategory that requires an inspection is not returned until inspected, and the products of a hidden category are not returned (unless they are also in a visible one). Their detail page answers 404.</p>
+<h3 id="similar-names"><span class="pill info">Changed</span> <span class="mono">GET /products?q=</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 2: Catalog of products and services — <em>The similar names field widens the search</em></p>
+<p>No shape change: <code>q</code> now also matches the product's similar names (never returned in the response).</p>
+<h3 id="services-new"><span class="pill info">Changed</span> <span class="mono">GET /services, /categories</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 2: Catalog of products and services — <em>Category tree: services — inspection, maintenance, installation, delivery</em></p>
+<p>Two more services in the same shape: <code>installation</code> and <code>delivery</code> (with their category tiles).</p>
+<h3 id="service-scope"><span class="pill info">Changed</span> <span class="mono">GET /services/&lt;slug&gt;</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 2: Catalog of products and services — <em>Services: what it includes / excludes, warranty after the service</em></p>
+<p>Three optional keys, sent only when the admin filled them:</p>
+<p><strong>Response</strong></p>
+<pre><code>{..., &quot;includes&quot;: [&quot;Oil and filter change&quot;, &quot;Belt check&quot;], &quot;excludes&quot;: [&quot;Spare parts price&quot;], &quot;warrantyMonths&quot;: 3}</code></pre>
+<h2 class="section" id="f3">Feature 3 — Introductory pages</h2>
+<h3 id="vendor-join"><span class="pill ok">New</span> <span class="mono">GET /vendor-join</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 3: Introductory pages — <em>A &quot;Join as a vendor&quot; page comparing the two models</em></p>
+<p>The two ways to sell, for the comparison table (in the Accept-Language language). No auth.</p>
+<p><strong>Response</strong></p>
+<pre><code>{&quot;freePeriodMonths&quot;: 3, &quot;models&quot;: [
+  {&quot;code&quot;: &quot;subscription&quot;, &quot;name&quot;: &quot;الاشتراك&quot;, &quot;summary&quot;: &quot;...&quot;, &quot;whatYouPay&quot;: &quot;...&quot;, &quot;nameShown&quot;: true, &quot;buyerContact&quot;: &quot;أنت، مباشرةً&quot;, &quot;freeMonths&quot;: 3},
+  {&quot;code&quot;: &quot;commission&quot;, &quot;name&quot;: &quot;العمولة&quot;, &quot;summary&quot;: &quot;...&quot;, &quot;whatYouPay&quot;: &quot;...&quot;, &quot;nameShown&quot;: false, &quot;buyerContact&quot;: &quot;المنصة، كوسيط&quot;, &quot;freeMonths&quot;: 3}]}</code></pre>
+<p class="note">The apply button keeps calling <code>POST /vendor-apply/link</code>.</p>
+<h3 id="rent-contract"><span class="pill info">Changed</span> <span class="mono">GET /pages/rent-contract</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>Insurance and rental terms in an electronic contract the renter accepts</em></p>
+<p>An existing endpoint with a new page: the rental contract text to show before booking.</p>
+<h2 class="section" id="f4">Feature 4 — Equipment (buy and rent)</h2>
+<h3 id="cart-equipment"><span class="pill err">Breaking</span> <span class="mono">POST /cart/items, PATCH /cart/items/&lt;id&gt;, POST /orders</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>Equipment is not added to the cart: three request paths</em></p>
+<p>Equipment (power and equipment shelves), bought or rented, priced or not, is refused by the cart and the checkout. Spare parts keep the cart.</p>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>409</td><td class="mono">equipment_request_only</td><td>cart: an equipment product</td></tr><tr><td>422</td><td class="mono">validation_error</td><td>/orders: items.N is an equipment product</td></tr></tbody></table></div>
+<h3 id="equipment-requests"><span class="pill ok">New</span> <span class="mono">POST /equipment-requests</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>Three request paths + rent in the platform&#x27;s name</em></p>
+<p>Bearer required. One endpoint for equipment:<br>• <b>priced, no services</b> → <code>kind: purchase</code>, <code>status: requested</code>, nothing to pay;<br>• <b>priced, with services</b> → <code>requested</code>; the admin prices the services, the request becomes <code>awaitingPayment</code> with <code>paymentUrl</code>; paying confirms it;<br>• <b>no price</b> → <code>kind: quote</code>;<br>• <b>rent</b> → a booking (<code>kind: rent</code>); only the delivery is paid at booking when asked.<br><code>services</code> must be among the product's <code>services</code> (see the product object).</p>
+<p><strong>Request</strong></p>
+<pre><code>// buy
+{&quot;productId&quot;: &quot;625&quot;, &quot;listing&quot;: &quot;buy&quot;, &quot;quantity&quot;: 1, &quot;offerId&quot;: &quot;1050&quot;, &quot;services&quot;: [&quot;installation&quot;, &quot;delivery&quot;],
+ &quot;shipping&quot;: {&quot;name&quot;: &quot;Mona&quot;, &quot;phone&quot;: &quot;+201001234567&quot;, &quot;governorate&quot;: &quot;giza&quot;, &quot;address&quot;: &quot;6th of October&quot;}, &quot;note&quot;: &quot;&quot;}
+// rent
+{&quot;productId&quot;: &quot;625&quot;, &quot;listing&quot;: &quot;rent&quot;, &quot;rentPeriod&quot;: &quot;week&quot;, &quot;rentUnits&quot;: 2, &quot;startDate&quot;: &quot;2026-12-01&quot;,
+ &quot;services&quot;: [&quot;delivery&quot;], &quot;contractAccepted&quot;: true, &quot;shipping&quot;: {...}}</code></pre>
+<p><strong>Response</strong></p>
+<pre><code>201
+{&quot;reference&quot;: &quot;ER-0004&quot;, &quot;kind&quot;: &quot;rent&quot;, &quot;status&quot;: &quot;awaitingPayment&quot;, &quot;productId&quot;: &quot;625&quot;, &quot;quantity&quot;: 1,
+ &quot;services&quot;: [&quot;delivery&quot;], &quot;placedAt&quot;: &quot;...&quot;, &quot;unitPrice&quot;: 255000, &quot;amountDue&quot;: 15000,
+ &quot;paymentUrl&quot;: &quot;https://.../orders/SO-.../payment&quot;, &quot;rental&quot;: {&quot;from&quot;: &quot;2026-12-01&quot;, &quot;to&quot;: &quot;2026-12-15&quot;, &quot;pricePerDay&quot;: 255000}}</code></pre>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>422</td><td class="mono">validation_error</td><td>listing / services / quantity / shipping / rentPeriod / startDate invalid; spare parts (use the cart)</td></tr><tr><td>422</td><td class="mono">validation_error</td><td>contractAccepted missing while the rent contract is published</td></tr><tr><td>422</td><td class="mono">validation_error</td><td>rentUnits: over two years on a used machine, or already rented on these dates</td></tr><tr><td>409</td><td class="mono">insufficient_stock</td><td>the seller holds less than quantity (with available + alternatives)</td></tr><tr><td>404</td><td class="mono">not_found</td><td>unknown product</td></tr></tbody></table></div>
+<h3 id="equipment-request-detail"><span class="pill ok">New</span> <span class="mono">GET /equipment-requests/&lt;reference&gt;</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>Follow the request (status, what to pay)</em></p>
+<p>Bearer required. Same body as the creation answer. <code>status</code>: requested / awaitingPayment / confirmed / completed / cancelled.</p>
+<h3 id="product-rent"><span class="pill info">Changed</span> <span class="mono">GET /products, /products/&lt;slug&gt;</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>Rent in the platform&#x27;s name with a margin over the vendor&#x27;s price</em></p>
+<p><code>rentPrice</code> is now the vendor's daily price + the platform margin (0 until the admin sets one). New optional <code>rentSeller</code>: the platform's name for rentable products.</p>
+<p><strong>Response</strong></p>
+<pre><code>{..., &quot;rentPrice&quot;: 255000, &quot;rentSeller&quot;: &quot;Spark Fu&quot;}</code></pre>
+<h3 id="rent-months"><span class="pill ok">New</span> <span class="mono">GET /products?listing=rent&amp;rentMonths=30</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>Rentals over two years: new equipment only</em></p>
+<p>Optional parameter: over 24 months, used machines leave the results. Not digits → 422 on <code>rentMonths</code>.</p>
+<h3 id="rented-hidden"><span class="pill info">Changed</span> <span class="mono">GET /products…</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>A rented machine disappears from the site until returned</em></p>
+<p>No shape change: a machine with a customer (or out of service) is not returned; its page answers 404 until it is back.</p>
+<h3 id="product-services"><span class="pill info">Changed</span> <span class="mono">GET /products/&lt;slug&gt;</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>Services chosen per product</em></p>
+<p>Optional <code>services</code>: the services that can be asked with the product (chosen in Odoo on each product).</p>
+<p><strong>Response</strong></p>
+<pre><code>{..., &quot;services&quot;: [{&quot;slug&quot;: &quot;installation&quot;, &quot;name&quot;: &quot;التركيب والتشغيل&quot;}, {&quot;slug&quot;: &quot;delivery&quot;, &quot;name&quot;: &quot;التوصيل والنقل&quot;}]}</code></pre>
+<h3 id="inspection-price"><span class="pill info">Changed</span> <span class="mono">GET /products…</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>Inspection cost recovered inside the price</em></p>
+<p>No shape change: <code>price</code> and the offers' <code>unitPrice</code> include the pre-listing inspection the vendor paid (never shown as a fee).</p>
+<h3 id="maintenance-included"><span class="pill info">Changed</span> <span class="mono">GET /quotes/&lt;reference&gt;</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 4: Equipment (buy and rent) — <em>Maintenance included in the rental contract is free</em></p>
+<p>Optional <code>includedInRental</code> (the rental reference) on a maintenance request of a renter whose contract includes maintenance.</p>
+<h2 class="section" id="f5">Feature 5 — Spare parts and consumables</h2>
+<h3 id="offers"><span class="pill info">Changed</span> <span class="mono">GET /products, /products/&lt;slug&gt;</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 5: Spare parts and consumables — <em>One card per vendor, with its own quantity and price</em></p>
+<p>Optional <code>offers</code>: one entry per seller (Buy Box winner first). A commission vendor's <code>seller</code> is the platform's name (feature 1: the name is hidden in the commission model).</p>
+<p><strong>Response</strong></p>
+<pre><code>{..., &quot;offers&quot;: [{&quot;id&quot;: &quot;1050&quot;, &quot;seller&quot;: &quot;Spark Demo Parts&quot;, &quot;unitPrice&quot;: 29000, &quot;available&quot;: 3},
+               {&quot;id&quot;: &quot;1051&quot;, &quot;seller&quot;: &quot;Delta Parts&quot;, &quot;unitPrice&quot;: 30450, &quot;available&quot;: 7}]}</code></pre>
+<h3 id="cart-offer"><span class="pill info">Changed</span> <span class="mono">POST /cart/items, PATCH /cart/items/&lt;id&gt;, POST /orders</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 5: Spare parts and consumables — <em>More than the seller has: say what is available and suggest other sellers</em></p>
+<p><code>options.offerId</code> picks the seller (the cart line keeps it and the vendor order goes to that seller). Asking more than the seller holds answers:</p>
+<p><strong>Response</strong></p>
+<pre><code>409
+{&quot;code&quot;: &quot;insufficient_stock&quot;, &quot;message&quot;: &quot;Only 3 available from this seller.&quot;, &quot;fields&quot;: {&quot;quantity&quot;: &quot;...&quot;},
+ &quot;available&quot;: 3, &quot;offerId&quot;: &quot;1050&quot;, &quot;alternatives&quot;: [{&quot;id&quot;: &quot;1051&quot;, &quot;seller&quot;: &quot;Delta Parts&quot;, &quot;unitPrice&quot;: 30450, &quot;available&quot;: 7}]}</code></pre>
+<p class="note">On <code>/orders</code> the field is <code>items.N.quantity</code> and the body also has <code>index</code>.</p>
+<h3 id="regions"><span class="pill info">Changed</span> <span class="mono">GET /delivery/regions</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 5: Spare parts and consumables — <em>Delivery pricing: free-delivery message in the cart, minimum order in far governorates</em></p>
+<p>Two optional keys per governorate:</p>
+<p><strong>Response</strong></p>
+<pre><code>[{&quot;governorate&quot;: &quot;aswan&quot;, &quot;cities&quot;: [...], &quot;fee&quot;: 15000, &quot;freeShippingThreshold&quot;: 400000, &quot;minimumOrder&quot;: 80000}]</code></pre>
+<h3 id="categories-surcharge"><span class="pill info">Changed</span> <span class="mono">GET /categories</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 5: Spare parts and consumables — <em>An optional surcharge per spare-parts subcategory</em></p>
+<p>Optional <code>deliverySurcharge</code> (minor units) on a tile: added once to the delivery of an order holding that subcategory (the highest one of the order).</p>
+<h3 id="orders-minimum"><span class="pill info">Changed</span> <span class="mono">POST /orders</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 5: Spare parts and consumables — <em>Minimum order in far governorates</em></p>
+<p>An order below the governorate's minimum is refused.</p>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>422</td><td class="mono">validation_error</td><td>fields.items: the minimum order for delivery to this governorate is …</td></tr></tbody></table></div>
+<h3 id="return-reasons"><span class="pill ok">New</span> <span class="mono">GET /returns/reasons</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 5: Spare parts and consumables — <em>A spare part is returned when it does not match the order</em></p>
+<p>The return reasons allowed for spare parts.</p>
+<p><strong>Response</strong></p>
+<pre><code>[{&quot;id&quot;: &quot;1&quot;, &quot;label&quot;: &quot;The product arrived damaged&quot;, &quot;requiresPhoto&quot;: true}, ...]</code></pre>
+<h3 id="order-returns"><span class="pill ok">New</span> <span class="mono">GET / POST /orders/&lt;reference&gt;/returns</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Feature 5: Spare parts and consumables — <em>Return before installation, tied to the order, with an explicit declaration and photos</em></p>
+<p>Bearer required. POST asks a return of spare parts (one request per seller); GET lists the order's returns.</p>
+<p><strong>Request</strong></p>
+<pre><code>{&quot;items&quot;: [{&quot;productId&quot;: &quot;689&quot;, &quot;quantity&quot;: 1}], &quot;reasonId&quot;: &quot;1&quot;, &quot;notInstalled&quot;: true, &quot;comment&quot;: &quot;Cracked housing&quot;,
+ &quot;photos&quot;: [{&quot;name&quot;: &quot;p.png&quot;, &quot;data&quot;: &quot;&lt;base64&gt;&quot;}]}</code></pre>
+<p><strong>Response</strong></p>
+<pre><code>201
+{&quot;returns&quot;: [{&quot;reference&quot;: &quot;RET/000173&quot;, &quot;status&quot;: &quot;requested&quot;, &quot;createdAt&quot;: &quot;...&quot;, &quot;items&quot;: [{&quot;productId&quot;: &quot;689&quot;, &quot;quantity&quot;: 1}],
+              &quot;reason&quot;: {&quot;id&quot;: &quot;1&quot;, &quot;label&quot;: &quot;...&quot;, &quot;requiresPhoto&quot;: true}}]}</code></pre>
+<div class="tw"><table><thead><tr><th>Status</th><th>code</th><th>When</th></tr></thead><tbody><tr><td>422</td><td class="mono">validation_error</td><td>notInstalled not true; reason not allowed for parts; photo missing when required; equipment items; window passed / not shipped</td></tr></tbody></table></div>
+<h2 class="section" id="fc">Your contracts (before the guide work)</h2>
+<h3 id="filters"><span class="pill ok">New</span> <span class="mono">GET /products/filters</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Frontend contract (product filters / global search) — <em>Product filter options (your product-filters contract)</em></p>
+<p>Every filter option with id, label and count; counts ignore their own group. See your <code>product-filters-contract.md</code>.</p>
+<h3 id="filter-ids"><span class="pill ok">New</span> <span class="mono">GET /products?categoryId=&amp;brandId=&amp;powerSourceId=&amp;sourceId=</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Frontend contract (product filters / global search) — <em>Filter by id (your product-filters contract)</em></p>
+<p>Comma lists of ids; <code>kind</code> optional with <code>categoryId</code>; unknown id → empty page; not digits → 422.</p>
+<h3 id="global-search"><span class="pill info">Changed</span> <span class="mono">GET /products?q=</span></h3>
+<p class="note"><strong>Based on:</strong> project guide (spark fu guid.md), Frontend contract (product filters / global search) — <em>Global product search (your search contract)</em></p>
+<p>Every word must match names, descriptions, categories, brand, model, SKU and specs (Arabic and English); q over 100 characters → 422.</p>
+</main></div></body></html>

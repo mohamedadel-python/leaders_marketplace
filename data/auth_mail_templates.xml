@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The email-code messages of the storefront sign-in (sign-up and password reset), in the storefront's
+         look (logo from spark-fu.com, its colours). Arabic and English in one message: storefront accounts do
+         not carry a reliable language. Kept out of the noupdate file so a module update brings the current design. -->
+    <record id="mail_template_auth_signup_code" model="mail.template">
+        <field name="name">Auth API: sign-up email code</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="subject">Your verification code</field>
+        <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; background-color: #e8edf5;">
+<div style="display: none; max-height: 0px; overflow: hidden; opacity: 0; font-size: 1px; line-height: 1px; color: #e8edf5;">رمز التأكيد الخاص بك: <strong t-out="ctx.get('signup_code') or ''"/> &#183; Your verification code</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#e8edf5" style="background-color: #e8edf5; padding: 40px 12px; font-family: Cairo, 'Segoe UI', Tahoma, Arial, sans-serif;">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; background-color: #ffffff; border-radius: 22px; overflow: hidden; box-shadow: 0px 14px 40px rgba(3, 28, 110, 0.16);">
+    <!-- hero -->
+    <tr><td align="center" bgcolor="#031c6e" style="background-color: #031c6e; background-image: radial-gradient(circle at 85% 15%, rgba(99, 153, 208, 0.45) 0%, rgba(99, 153, 208, 0) 45%), radial-gradient(circle at 10% 110%, rgba(62, 83, 154, 0.9) 0%, rgba(62, 83, 154, 0) 55%), linear-gradient(160deg, #031c6e 0%, #0b2a7f 60%, #1d3b8f 100%); padding: 38px 28px 44px 28px;">
+        <a href="https://spark-fu.com" target="_blank" style="text-decoration: none;"><img t-att-src="object.get_base_url() + '/leaders_marketplace/static/src/img/email_logo.png'" width="210" alt="Spark Fu" style="display: block; width: 210px; max-width: 70%; height: auto; border: 0px;"/></a>
+        <div style="height: 1px; width: 64px; background-color: rgba(255, 255, 255, 0.25); margin: 26px auto 22px auto; line-height: 1px; font-size: 0px;">&#160;</div>
+        <p dir="rtl" style="margin: 0px; font-size: 26px; font-weight: 800; color: #ffffff; line-height: 1.4;">تأكيد بريدك الإلكتروني</p>
+        <p style="margin: 6px 0px 0px 0px; font-size: 14px; color: #a9c8ea; letter-spacing: 0.5px;">Confirm your email</p>
+    </td></tr>
+    <!-- greeting -->
+    <tr><td dir="rtl" align="center" style="padding: 36px 36px 0px 36px; text-align: center;">
+        <p style="margin: 0px 0px 6px 0px; font-size: 17px; color: #1f2326;">مرحبًا <strong t-out="object.name or ''" style="color: #031c6e;"/> &#128075;</p>
+        <p style="margin: 0px; font-size: 15px; line-height: 1.9; color: #4b5563;">أهلًا بك في Spark Fu! أدخل الرمز التالي لتأكيد بريدك الإلكتروني وتفعيل حسابك.</p>
+    </td></tr>
+    <!-- code tiles -->
+    <tr><td align="center" style="padding: 28px 20px 6px 20px;">
+        <table role="presentation" dir="ltr" cellpadding="0" cellspacing="0" border="0"><tr>
+            <t t-foreach="list(ctx.get('signup_code') or '')" t-as="digit">
+                <td style="padding: 0px 4px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+                    <td align="center" valign="middle" width="50" height="62" bgcolor="#f3f7fd" style="width: 50px; height: 62px; background-color: #f3f7fd; border: 1px solid #cddcf0; border-bottom: 3px solid #3e539a; border-radius: 12px; font-family: 'Segoe UI', Arial, sans-serif; font-size: 32px; font-weight: 800; color: #031c6e; text-align: center;"><t t-out="digit"/></td>
+                </tr></table></td>
+            </t>
+        </tr></table>
+    </td></tr>
+    <tr><td align="center" style="padding: 16px 28px 0px 28px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#eef4fb" style="background-color: #eef4fb; border-radius: 999px; padding: 7px 18px; font-size: 13px; color: #3e539a; font-weight: 600;">
+            <span dir="rtl">ينتهي خلال 10 دقائق</span> &#160;&#183;&#160; Expires in 10 minutes
+        </td></tr></table>
+    </td></tr>
+    <!-- safety -->
+    <tr><td style="padding: 30px 36px 0px 36px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+            <td bgcolor="#f8fafc" style="background-color: #f8fafc; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px 18px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+                    <td dir="rtl" style="font-size: 13px; line-height: 1.8; color: #374151; text-align: right;"><strong style="color: #031c6e;">حافظ على أمان حسابك</strong><br/>لا تشارك هذا الرمز مع أي شخص، فريق Spark Fu لن يطلبه منك أبدًا.</td>
+                </tr><tr>
+                    <td dir="ltr" style="padding-top: 8px; font-size: 12px; line-height: 1.7; color: #6b7280; text-align: left;"><strong style="color: #3e539a;">Keep your account safe.</strong> Never share this code. The Spark Fu team will never ask for it.</td>
+                </tr></table>
+            </td>
+        </tr></table>
+    </td></tr>
+    <!-- english -->
+    <tr><td dir="ltr" style="padding: 26px 36px 34px 36px; text-align: left;">
+        <p style="margin: 0px 0px 6px 0px; font-size: 16px; font-weight: 700; color: #031c6e;">Welcome to Spark Fu</p>
+        <p style="margin: 0px; font-size: 14px; line-height: 1.8; color: #4b5563;">Hello <strong t-out="object.name or ''" style="color: #1f2326;"/>, enter the code above to confirm your email and activate your account.</p>
+    </td></tr>
+    <!-- footer -->
+    <tr><td align="center" bgcolor="#1f2326" style="background-color: #1f2326; padding: 30px 28px 26px 28px; text-align: center;">
+        <p dir="rtl" style="margin: 0px 0px 16px 0px; font-size: 13px;">
+            <a href="https://spark-fu.com/ar/parts-and-oils" target="_blank" style="color: #e9f4ff; text-decoration: none; font-weight: 600;">المنتجات</a>
+            <span style="color: #4b5563;">&#160;&#160;|&#160;&#160;</span>
+            <a href="https://spark-fu.com/ar/how-it-works" target="_blank" style="color: #e9f4ff; text-decoration: none; font-weight: 600;">كيف نعمل</a>
+            <span style="color: #4b5563;">&#160;&#160;|&#160;&#160;</span>
+            <a href="https://spark-fu.com/ar/contact" target="_blank" style="color: #e9f4ff; text-decoration: none; font-weight: 600;">تواصل معنا</a>
+        </p>
+        <p style="margin: 0px; font-size: 12px; line-height: 1.8; color: #94a3b8;"><span dir="rtl">إذا لم تقم بإنشاء حساب، يمكنك تجاهل هذه الرسالة.</span><br/>If you did not sign up, you can ignore this email.</p>
+        <div style="height: 1px; background-color: #374151; margin: 18px 0px 14px 0px; line-height: 1px; font-size: 0px;">&#160;</div>
+        <p dir="rtl" style="margin: 0px; font-size: 12px; color: #6399d0; font-weight: 600;">Spark Fu &#183; معداتك وقطع غيارها عندنا</p>
+    </td></tr>
+</table>
+<p style="margin: 18px 0px 0px 0px; font-size: 11px; color: #8a94a6; text-align: center;">This is an automated message, please do not reply. &#183; <span dir="rtl">رسالة آلية، يرجى عدم الرد عليها.</span></p>
+</td></tr>
+</table>
+</div>
+        </field>
+    </record>
+    <record id="mail_template_auth_reset_code" model="mail.template">
+        <field name="name">Auth API: password reset code</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="subject">Your password reset code</field>
+        <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; background-color: #e8edf5;">
+<div style="display: none; max-height: 0px; overflow: hidden; opacity: 0; font-size: 1px; line-height: 1px; color: #e8edf5;">رمز استعادة كلمة المرور: <strong t-out="ctx.get('reset_code') or ''"/> &#183; Your password reset code</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#e8edf5" style="background-color: #e8edf5; padding: 40px 12px; font-family: Cairo, 'Segoe UI', Tahoma, Arial, sans-serif;">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; background-color: #ffffff; border-radius: 22px; overflow: hidden; box-shadow: 0px 14px 40px rgba(3, 28, 110, 0.16);">
+    <!-- hero -->
+    <tr><td align="center" bgcolor="#031c6e" style="background-color: #031c6e; background-image: radial-gradient(circle at 85% 15%, rgba(99, 153, 208, 0.45) 0%, rgba(99, 153, 208, 0) 45%), radial-gradient(circle at 10% 110%, rgba(62, 83, 154, 0.9) 0%, rgba(62, 83, 154, 0) 55%), linear-gradient(160deg, #031c6e 0%, #0b2a7f 60%, #1d3b8f 100%); padding: 38px 28px 44px 28px;">
+        <a href="https://spark-fu.com" target="_blank" style="text-decoration: none;"><img t-att-src="object.get_base_url() + '/leaders_marketplace/static/src/img/email_logo.png'" width="210" alt="Spark Fu" style="display: block; width: 210px; max-width: 70%; height: auto; border: 0px;"/></a>
+        <div style="height: 1px; width: 64px; background-color: rgba(255, 255, 255, 0.25); margin: 26px auto 22px auto; line-height: 1px; font-size: 0px;">&#160;</div>
+        <p dir="rtl" style="margin: 0px; font-size: 26px; font-weight: 800; color: #ffffff; line-height: 1.4;">استعادة كلمة المرور</p>
+        <p style="margin: 6px 0px 0px 0px; font-size: 14px; color: #a9c8ea; letter-spacing: 0.5px;">Reset your password</p>
+    </td></tr>
+    <!-- greeting -->
+    <tr><td dir="rtl" align="center" style="padding: 36px 36px 0px 36px; text-align: center;">
+        <p style="margin: 0px 0px 6px 0px; font-size: 17px; color: #1f2326;">مرحبًا <strong t-out="object.name or ''" style="color: #031c6e;"/> &#128075;</p>
+        <p style="margin: 0px; font-size: 15px; line-height: 1.9; color: #4b5563;">استلمنا طلبًا لاستعادة كلمة المرور الخاصة بحسابك. أدخل الرمز التالي لتعيين كلمة مرور جديدة.</p>
+    </td></tr>
+    <!-- code tiles -->
+    <tr><td align="center" style="padding: 28px 20px 6px 20px;">
+        <table role="presentation" dir="ltr" cellpadding="0" cellspacing="0" border="0"><tr>
+            <t t-foreach="list(ctx.get('reset_code') or '')" t-as="digit">
+                <td style="padding: 0px 4px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+                    <td align="center" valign="middle" width="50" height="62" bgcolor="#f3f7fd" style="width: 50px; height: 62px; background-color: #f3f7fd; border: 1px solid #cddcf0; border-bottom: 3px solid #3e539a; border-radius: 12px; font-family: 'Segoe UI', Arial, sans-serif; font-size: 32px; font-weight: 800; color: #031c6e; text-align: center;"><t t-out="digit"/></td>
+                </tr></table></td>
+            </t>
+        </tr></table>
+    </td></tr>
+    <tr><td align="center" style="padding: 16px 28px 0px 28px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#eef4fb" style="background-color: #eef4fb; border-radius: 999px; padding: 7px 18px; font-size: 13px; color: #3e539a; font-weight: 600;">
+            <span dir="rtl">ينتهي خلال 10 دقائق</span> &#160;&#183;&#160; Expires in 10 minutes
+        </td></tr></table>
+    </td></tr>
+    <!-- safety -->
+    <tr><td style="padding: 30px 36px 0px 36px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+            <td bgcolor="#f8fafc" style="background-color: #f8fafc; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px 18px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+                    <td dir="rtl" style="font-size: 13px; line-height: 1.8; color: #374151; text-align: right;"><strong style="color: #031c6e;">حافظ على أمان حسابك</strong><br/>لا تشارك هذا الرمز مع أي شخص، فريق Spark Fu لن يطلبه منك أبدًا.</td>
+                </tr><tr>
+                    <td dir="ltr" style="padding-top: 8px; font-size: 12px; line-height: 1.7; color: #6b7280; text-align: left;"><strong style="color: #3e539a;">Keep your account safe.</strong> Never share this code. The Spark Fu team will never ask for it.</td>
+                </tr></table>
+            </td>
+        </tr></table>
+    </td></tr>
+    <!-- english -->
+    <tr><td dir="ltr" style="padding: 26px 36px 34px 36px; text-align: left;">
+        <p style="margin: 0px 0px 6px 0px; font-size: 16px; font-weight: 700; color: #031c6e;">Password reset</p>
+        <p style="margin: 0px; font-size: 14px; line-height: 1.8; color: #4b5563;">Hello <strong t-out="object.name or ''" style="color: #1f2326;"/>, we received a request to reset your password. Enter the code above to set a new one.</p>
+    </td></tr>
+    <!-- footer -->
+    <tr><td align="center" bgcolor="#1f2326" style="background-color: #1f2326; padding: 30px 28px 26px 28px; text-align: center;">
+        <p dir="rtl" style="margin: 0px 0px 16px 0px; font-size: 13px;">
+            <a href="https://spark-fu.com/ar/parts-and-oils" target="_blank" style="color: #e9f4ff; text-decoration: none; font-weight: 600;">المنتجات</a>
+            <span style="color: #4b5563;">&#160;&#160;|&#160;&#160;</span>
+            <a href="https://spark-fu.com/ar/how-it-works" target="_blank" style="color: #e9f4ff; text-decoration: none; font-weight: 600;">كيف نعمل</a>
+            <span style="color: #4b5563;">&#160;&#160;|&#160;&#160;</span>
+            <a href="https://spark-fu.com/ar/contact" target="_blank" style="color: #e9f4ff; text-decoration: none; font-weight: 600;">تواصل معنا</a>
+        </p>
+        <p style="margin: 0px; font-size: 12px; line-height: 1.8; color: #94a3b8;"><span dir="rtl">إذا لم تطلب هذا الرمز، يمكنك تجاهل هذه الرسالة، فحسابك في أمان.</span><br/>If you did not ask for it, you can ignore this email. Your account is safe.</p>
+        <div style="height: 1px; background-color: #374151; margin: 18px 0px 14px 0px; line-height: 1px; font-size: 0px;">&#160;</div>
+        <p dir="rtl" style="margin: 0px; font-size: 12px; color: #6399d0; font-weight: 600;">Spark Fu &#183; معداتك وقطع غيارها عندنا</p>
+    </td></tr>
+</table>
+<p style="margin: 18px 0px 0px 0px; font-size: 11px; color: #8a94a6; text-align: center;">This is an automated message, please do not reply. &#183; <span dir="rtl">رسالة آلية، يرجى عدم الرد عليها.</span></p>
+</td></tr>
+</table>
+</div>
+        </field>
+    </record>
+</odoo>

@@ -5,4 +5,10 @@ __pycache__/
 
 # Tooling / agent artifacts (screenshots, console logs, session locks)
 .playwright-mcp/
-.claude/
+
+# built manual PDFs (made by scripts/make_manual.sh; too big for git)
+doc/manual/dist/
+# local backups and archives
+*.bak_*
+*.tgz
+.pw

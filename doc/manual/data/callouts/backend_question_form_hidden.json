@@ -1,0 +1,108 @@
+{
+ "screen_id": "backend_question_form_hidden",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_question_form_hidden_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 227,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "إظهار مرة أخرى",
+   "selector": "button[name=\"action_unhide\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1326,
+    "y": 113,
+    "w": 98,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "المنتج",
+   "selector": ".o_form_view .o_field_widget[name='product_tmpl_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 179,
+    "w": 578,
+    "h": 24
+   }
+  },
+  {
+   "n": 4,
+   "label": "صاحب السؤال",
+   "selector": ".o_form_view .o_field_widget[name='partner_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 216,
+    "w": 578,
+    "h": 24
+   }
+  },
+  {
+   "n": 5,
+   "label": "سؤال",
+   "selector": ".o_form_view .o_field_widget[name='question']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 426,
+    "w": 1358,
+    "h": 21
+   }
+  },
+  {
+   "n": 6,
+   "label": "الإجابة",
+   "selector": ".o_form_view .o_field_widget[name='answer']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 528,
+    "w": 1358,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "منشور",
+   "selector": ".o_form_view .o_field_widget[name='is_public']",
+   "device": "desktop",
+   "bbox": {
+    "x": 527,
+    "y": 179,
+    "w": 21,
+    "h": 23
+   }
+  },
+  {
+   "n": 8,
+   "label": "معتمد",
+   "selector": ".o_form_view .o_field_widget[name='approved']",
+   "device": "desktop",
+   "bbox": {
+    "x": 527,
+    "y": 215,
+    "w": 21,
+    "h": 23
+   }
+  }
+ ]
+}

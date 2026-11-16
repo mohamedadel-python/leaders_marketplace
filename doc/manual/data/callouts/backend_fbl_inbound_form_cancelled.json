@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_fbl_inbound_form_cancelled",
+ "images": {
+  "desktop": {
+   "file": "warehouse/backend_fbl_inbound_form_cancelled_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 196,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 179,
+    "w": 1302,
+    "h": 21
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 213,
+    "w": 1302,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "الموقع",
+   "selector": ".o_form_view .o_field_widget[name='location_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 252,
+    "w": 1302,
+    "h": 24
+   }
+  },
+  {
+   "n": 5,
+   "label": "بند",
+   "selector": ".o_form_view .o_field_widget[name='line_ids']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 289,
+    "w": 1358,
+    "h": 200
+   }
+  }
+ ]
+}

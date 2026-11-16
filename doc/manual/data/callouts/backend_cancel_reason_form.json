@@ -1,0 +1,60 @@
+{
+ "screen_id": "backend_cancel_reason_form",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_cancel_reason_form_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 138,
+    "w": 1281,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "ينطبق على",
+   "selector": ".o_form_view .o_field_widget[name='applies_to']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 177,
+    "w": 1281,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "التسلسل",
+   "selector": ".o_form_view .o_field_widget[name='sequence']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 216,
+    "w": 1281,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "نشط",
+   "selector": ".o_form_view .o_field_widget[name='active']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1301,
+    "y": 255,
+    "w": 21,
+    "h": 23
+   }
+  }
+ ]
+}

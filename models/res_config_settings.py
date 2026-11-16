@@ -66,6 +66,13 @@ class ResConfigSettings(models.TransientModel):
              "instead of an empty summary, and the customer receives a "
              "Marketplace order confirmation email listing the vendor orders.",
     )
+    # stored as "1"/"0" by set_values: a missing parameter means ON (the guide's instant activation)
+    marketplace_vendor_instant_activation = fields.Boolean(
+        string="Approve vendors automatically",
+        help="On: a vendor application from the website is approved the moment it is sent, and the vendor can "
+             "start at once; the documents are reviewed afterwards and every product still waits for approval. "
+             "Off: the application waits in Marketplace > Vendor Applications until staff approves it.",
+    )
     marketplace_vendor_apply_enabled = fields.Boolean(
         string="Public Vendor Application",
         config_parameter="leaders_marketplace.vendor_apply_enabled",
@@ -142,6 +149,20 @@ class ResConfigSettings(models.TransientModel):
         "account.tax", string="Commission Invoice Taxes",
         domain="[('type_tax_use', '=', 'sale')]",
         help="Taxes added to the marketplace invoice lines (e.g. VAT 14%).")
+    marketplace_rent_margin_percent = fields.Float(
+        string="Rent margin (%)", config_parameter="leaders_marketplace.rent_margin_percent", default=0.0,
+        help="Added to the vendor's daily rent price: the platform rents the machine in its own name. "
+             "A subcategory or a machine can have its own margin.")
+    marketplace_rent_margin_min = fields.Float(
+        string="Minimum rent margin per day", config_parameter="leaders_marketplace.rent_margin_min", default=0.0,
+        help="The margin is never below this amount, so short rentals still cover transport and inspection.")
+    marketplace_inspection_fee_mode = fields.Selection(
+        [("deduct", "Deduct from the vendor's next settlement"), ("invoice", "Separate invoice to the vendor")],
+        string="Inspection fee charged by", config_parameter="leaders_marketplace.inspection_fee_mode", default="deduct",
+        help="When an inspection finds that a product does not match its listing, the vendor pays the inspection. "
+             "The reviewer can still pick the other way for one case.")
+    marketplace_inspection_fee_amount = fields.Float(
+        string="Default inspection fee", config_parameter="leaders_marketplace.inspection_fee_amount", default=0.0)
     marketplace_return_window_days = fields.Integer(
         string="Return Window (Days)",
         config_parameter="leaders_marketplace.return_window_days",
@@ -510,6 +531,8 @@ class ResConfigSettings(models.TransientModel):
         raw = self.env["ir.config_parameter"].sudo().get_param("leaders_marketplace.commission_tax_ids") or ""
         ids = [int(x) for x in raw.split(",") if x.strip().isdigit()]
         res["marketplace_commission_tax_ids"] = [(6, 0, self.env["account.tax"].browse(ids).exists().ids)]
+        res["marketplace_vendor_instant_activation"] = (self.env["ir.config_parameter"].sudo().get_param(
+            "leaders_marketplace.vendor_instant_activation", "1") or "1") in ("1", "True", "true")
         # F4: stored as text even when 0 (a cleared integer would delete its parameter,
         # and a missing parameter reads as the default, so 0 must be kept explicitly).
         Provider = self.env["leaders.shipping.provider"]
@@ -554,6 +577,8 @@ class ResConfigSettings(models.TransientModel):
         super().set_values()
         icp = self.env["ir.config_parameter"].sudo()
         icp.set_param(PARAM_WEBHOOK_IP, str(max(self.marketplace_shipping_webhook_rate_limit, 0)))
+        icp.set_param("leaders_marketplace.vendor_instant_activation",
+                      "1" if self.marketplace_vendor_instant_activation else "0")
         icp.set_param(PARAM_WEBHOOK_PROVIDER,
                       str(max(self.marketplace_shipping_webhook_provider_rate_limit, 0)))
         self.env["ir.config_parameter"].sudo().set_param(

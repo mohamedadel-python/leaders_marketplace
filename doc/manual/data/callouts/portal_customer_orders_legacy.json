@@ -1,0 +1,41 @@
+{
+ "screen_id": "portal_customer_orders_legacy",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_orders_legacy_desktop.png",
+   "width": 1440,
+   "height": 1409
+  },
+  "mobile": {
+   "file": "customer/portal_customer_orders_legacy_mobile.png",
+   "width": 780,
+   "height": 8960
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قائمة طلبات البائعين",
+   "selector": "#lm_customer_orders",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 162,
+    "w": 1290,
+    "h": 814
+   }
+  },
+  {
+   "n": 1,
+   "label": "قائمة طلبات البائعين",
+   "selector": "#lm_customer_orders",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 320,
+    "w": 720,
+    "h": 6720
+   }
+  }
+ ]
+}

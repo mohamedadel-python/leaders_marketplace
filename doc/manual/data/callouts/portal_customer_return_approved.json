@@ -1,0 +1,65 @@
+{
+ "screen_id": "portal_customer_return_approved",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_return_approved_desktop.png",
+   "width": 1440,
+   "height": 1255
+  },
+  "mobile": {
+   "file": "customer/portal_customer_return_approved_mobile.png",
+   "width": 780,
+   "height": 4270
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الخطوة التالية",
+   "selector": "#lm_return_next_step",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 259,
+    "w": 1290,
+    "h": 58
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار المرتجع",
+   "selector": "#lm_return_timeline",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 333,
+    "w": 1290,
+    "h": 67
+   }
+  },
+  {
+   "n": 1,
+   "label": "الخطوة التالية",
+   "selector": "#lm_return_next_step",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 620,
+    "w": 720,
+    "h": 164
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار المرتجع",
+   "selector": "#lm_return_timeline",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 816,
+    "w": 720,
+    "h": 129
+   }
+  }
+ ]
+}

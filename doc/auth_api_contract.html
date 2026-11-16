@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auth API Contract</title>
+<style>
+:root {
+  --bg: #f7f5ef; --panel: #ffffff; --ink: #191917; --muted: #6a695f; --line: #e3e0d5; --soft: #f1eee4;
+  --accent: #c2410c; --accent-ink: #ffffff; --code-bg: #f3f0e6;
+  --ok: #15803d; --ok-bg: #e4f4e8; --warn: #92600a; --warn-bg: #fcf0d6; --err: #b91c1c; --err-bg: #fbe6e6; --info: #1d4ed8; --info-bg: #e5edfd;
+  --k: #9a3412; --s: #166534; --n: #1d4ed8; --b: #7c3aed;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131311; --panel: #1c1c19; --ink: #efeee7; --muted: #a2a196; --line: #33322c; --soft: #242421;
+    --accent: #fb923c; --accent-ink: #1a1208; --code-bg: #232320;
+    --ok: #6ee79a; --ok-bg: #153020; --warn: #f5c451; --warn-bg: #33290f; --err: #fca5a5; --err-bg: #3a1919; --info: #93b4ff; --info-bg: #182340;
+    --k: #fdba74; --s: #86efac; --n: #93c5fd; --b: #c4b5fd;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+a { color: var(--accent); }
+.layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 36px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+nav { position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 64px); overflow: auto; padding: 24px 0; }
+nav h2 { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+nav a { display: block; color: var(--muted); text-decoration: none; padding: 3px 0 3px 10px; border-left: 2px solid transparent; font-size: 14px; }
+nav a:hover, nav a.on { color: var(--ink); border-left-color: var(--accent); }
+nav a.sub { padding-left: 22px; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; }
+main { padding: 30px 0 90px; min-width: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 { font-size: 36px; line-height: 1.12; margin: 6px 0 12px; letter-spacing: -.01em; }
+h2.section { font-size: 24px; margin: 54px 0 10px; }
+h3 { font-size: 16px; margin: 24px 0 6px; }
+p { margin: 9px 0; }
+.lede { color: var(--muted); max-width: 70ch; font-size: 16px; }
+.pill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-weight: 600; font-size: 12.5px; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); } .pill.err { color: var(--err); background: var(--err-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); } .pill.info { color: var(--info); background: var(--info-bg); }
+.callout { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px; overflow-x: auto; font-size: 12.8px; line-height: 1.55; margin: 8px 0 14px; }
+.tw { overflow-x: auto; margin: 10px 0 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th { text-align: left; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.method { color: var(--accent); font-weight: 700; font-size: 12.5px; letter-spacing: .04em; }
+.tag { font-size: 10.5px; padding: 1px 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-weight: 600; white-space: nowrap; }
+
+/* sticky playground dock */
+.dock { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.dock-in { max-width: 1200px; margin: 0 auto; padding: 8px 20px; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--panel); }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 5px 13px; font: 600 12.5px inherit; font-family: inherit; cursor: pointer; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+.dock input.base { width: 250px; max-width: 100%; }
+input, select, textarea { font: 13px/1.4 "IBM Plex Mono", ui-monospace, monospace; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 100%; }
+input:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); white-space: nowrap; }
+.chip b { color: var(--ink); font-weight: 600; }
+.chip.live { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.live .dot { background: var(--ok); animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+.dock .sp { flex: 1; }
+.mini { font: 600 12px inherit; font-family: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.mini:hover { color: var(--ink); border-color: var(--accent); }
+.drawer { max-width: 1200px; margin: 0 auto; padding: 0 20px 10px; display: none; }
+.drawer.open { display: block; }
+.drawer .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 12.5px; }
+.box h4 { margin: 0 0 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.box pre { margin: 0; border: 0; padding: 0; background: transparent; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+
+/* endpoint cards */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; margin: 22px 0; overflow: hidden; scroll-margin-top: 70px; }
+.card-h { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px 22px 4px; }
+.mpill { background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 6px; letter-spacing: .05em; }
+.path { font-size: 19px; font-weight: 700; }
+.what { color: var(--muted); }
+.auth { margin-left: auto; font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.card-b { padding: 4px 22px 18px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 14px; background: var(--soft); }
+.tabs button { border: 0; background: transparent; color: var(--muted); padding: 10px 16px; font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+.pane { display: none; padding: 16px 22px 22px; }
+.pane.on { display: block; }
+.vars { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.vars button { font: 600 12.5px "IBM Plex Mono", ui-monospace, monospace; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 5px 11px; cursor: pointer; }
+.vars button.on { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+.vars .s2 { color: var(--ok); } .vars .s4 { color: var(--warn); } .vars .s5 { color: var(--err); }
+.http { background: #14130f; color: #ece9dc; border-radius: 12px; padding: 14px 16px; font-size: 12.8px; line-height: 1.6; overflow-x: auto; margin: 0; border: 0; position: relative; }
+@media (prefers-color-scheme: dark) { .http { background: #0e0e0c; } }
+.http .sl { font-weight: 700; } .http .sl.c2 { color: #86efac; } .http .sl.c4 { color: #fcd34d; } .http .sl.c5 { color: #fca5a5; }
+.http .hn { color: #93c5fd; } .http .ck { color: #fdba74; } .http .dim { color: #8d8a7c; }
+.http .jk { color: #fdba74; } .http .js { color: #86efac; } .http .jn { color: #93c5fd; } .http .jb { color: #c4b5fd; }
+.copyb { position: absolute; top: 8px; right: 8px; background: #2a2923; color: #cfcbb9; border: 1px solid #3b3a32; border-radius: 6px; font: 600 11px inherit; font-family: inherit; padding: 3px 9px; cursor: pointer; }
+.note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.jwt { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.jwt .box pre { font-size: 12px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 14px; }
+.form label { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.form .chk { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
+.form .chk input { width: auto; }
+.form .hint { font-size: 11.5px; color: var(--muted); margin-top: 3px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.btn { font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-radius: 9px; padding: 8px 18px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.res { margin-top: 14px; }
+.res .meta { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 12.5px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.ec { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.3px; padding: 3px 10px; border-radius: 6px; color: var(--warn); background: var(--warn-bg); }
+.ec.a { color: var(--err); background: var(--err-bg); }
+.flows { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px 30px; }
+ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 8px 0; }
+ol.steps li { counter-increment: s; position: relative; padding-left: 36px; margin: 8px 0; }
+ol.steps li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); color: var(--accent); font-size: 12px; display: grid; place-items: center; background: var(--panel); }
+.toast { position: fixed; right: 18px; bottom: 18px; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 12px 16px; box-shadow: 0 8px 28px rgba(0,0,0,.18); max-width: 320px; display: none; font-size: 13.5px; }
+.toast.show { display: block; }
+.toast .big { font: 700 26px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 6px; margin: 4px 0; }
+
+.step { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); margin-top: 8px; }
+.col { padding: 14px 20px 18px; min-width: 0; }
+.col + .col { border-top: 1px solid var(--line); background: color-mix(in srgb, var(--soft) 55%, transparent); }
+.col > h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.col .vars { margin-bottom: 10px; }
+.http { max-height: 520px; overflow: auto; }
+.tryd { border-top: 1px solid var(--line); padding: 4px 22px 18px; }
+.tryd > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 12px 0; }
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; gap: 0; }
+  nav { position: static; max-height: none; padding-bottom: 0; }
+  .auth { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="dock">
+  <div class="dock-in">
+    <span class="seg" role="group" aria-label="Mode"><button id="mMock" class="on" type="button">Mock</button><button id="mLive" type="button">Live</button></span>
+    <input id="base" class="base" placeholder="https://api.example.com" autocomplete="off" hidden>
+    <span class="chip" id="sessChip"><span class="dot"></span><span id="sessTxt">no session</span></span>
+    <span class="chip" id="jarChip">cookies: <b id="jarTxt">none</b></span>
+    <span class="chip" id="mailChip" hidden>inbox: <b id="mailTxt"></b></span>
+    <span class="sp"></span>
+    <button class="mini" id="drawerBtn" type="button">Playground tools</button>
+  </div>
+  <div class="drawer" id="drawer">
+    <div class="cols">
+      <div class="box"><h4>Cookie jar (mock)</h4><pre id="jarBox">empty</pre></div>
+      <div class="box"><h4>Access token (decoded)</h4><pre id="jwtBox">sign in to see the JWT payload</pre></div>
+      <div class="box"><h4>Simulate (mock only)</h4>
+        <div class="row" style="margin:0">
+          <button class="mini" id="simAccess" type="button">Expire access token</button>
+          <button class="mini" id="simCode" type="button">Expire reset code</button>
+          <button class="mini" id="simReset" type="button">Reset mock data</button>
+        </div>
+        <p class="note">Seed accounts: <code>layla.hassan@example.com</code> and <code>omar.disabled@example.com</code> (disabled), both with <code>Strong-pass1</code>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+<nav aria-label="Contents">
+  <h2>Contents</h2>
+  <a href="#summary">Summary</a>
+  <a href="#conventions">Conventions</a>
+  <a href="#session">Session model</a>
+  <a href="#endpoints">Endpoints</a>
+  <a class="sub" href="#register">/auth/register</a>
+  <a class="sub" href="#login">/auth/login</a>
+  <a class="sub" href="#refresh">/auth/refresh</a>
+  <a class="sub" href="#logout">/auth/logout</a>
+  <a class="sub" href="#forgot">/auth/password/forgot</a>
+  <a class="sub" href="#verify">/auth/password/verify</a>
+  <a class="sub" href="#reset">/auth/password/reset</a>
+  <a href="#errors">Error codes</a>
+  <a href="#flows">Flows</a>
+  <a href="#notes">Notes</a>
+</nav>
+
+<main>
+<div class="eyebrow">Spark FU · Frontend ↔ Backend</div>
+<h1>Auth API contract: login, registration and password reset</h1>
+<p class="lede">The seven endpoints the Next.js client calls, as the backend implements them. Every response below uses realistic data. Use <strong>Mock</strong> mode to run the whole API inside this page (no server needed), or <strong>Live</strong> mode to call the real backend.</p>
+<span class="pill ok">Confirmed by backend · 22 automated tests passing</span>
+
+<h2 class="section" id="summary">Summary</h2>
+<div class="tw"><table>
+<thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Success</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td class="method">POST</td><td class="mono">/auth/register</td><td>none</td><td>201 SessionResponse + cookies</td><td>Create account and sign in</td></tr>
+<tr><td class="method">POST</td><td class="mono">/auth/login</td><td>none</td><td>200 SessionResponse + cookies</td><td>Sign in</td></tr>
+<tr><td class="method">POST</td><td class="mono">/auth/refresh</td><td>refresh cookie</td><td>200 SessionResponse + rotated cookies</td><td>New access token</td></tr>
+<tr><td class="method">POST</td><td class="mono">/auth/logout</td><td>Bearer + refresh cookie</td><td>204, cookies cleared</td><td>Sign out this device</td></tr>
+<tr><td class="method">POST</td><td class="mono">/auth/password/forgot</td><td>none</td><td>202</td><td>Email a 6-digit code</td></tr>
+<tr><td class="method">POST</td><td class="mono">/auth/password/verify</td><td>none</td><td>200 VerifyResponse</td><td>Exchange code for reset token</td></tr>
+<tr><td class="method">POST</td><td class="mono">/auth/password/reset</td><td>none</td><td>204</td><td>Set the new password</td></tr>
+</tbody></table></div>
+<p>Paths are relative to <code>NEXT_PUBLIC_API_URL</code>, served at the root of the Odoo host (<code>/auth/…</code>, no <code>/api/v1</code>), so the refresh cookie's <code>Path=/auth</code> matches.</p>
+
+<h2 class="section" id="conventions">Conventions</h2>
+<ul>
+  <li>JSON in, JSON out, <code>Content-Type: application/json</code> on every request body (a JSON object).</li>
+  <li><strong>No envelope.</strong> A success body is the resource itself.</li>
+  <li><code>camelCase</code> names, durations in integer seconds, optional fields omitted, except <code>user.avatar</code> which is <code>null</code> when unset.</li>
+  <li>Protected endpoints read <code>Authorization: Bearer &lt;accessToken&gt;</code>. Missing, expired, forged or malformed is <code>401 session_expired</code>.</li>
+  <li>Every response carries <code>Cache-Control: no-store</code>. Send every request with <code>credentials: "include"</code>.</li>
+</ul>
+<p><strong>Errors</strong> are a non-2xx status with this body. <code>code</code> is a stable snake_case string the UI branches on; <code>message</code> is English, for developers and logs.</p>
+<pre>{ "code": "invalid_credentials", "message": "Email or password is wrong." }
+
+// 422 validation_error adds per-field messages keyed by request field:
+{ "code": "validation_error", "message": "Validation failed.", "fields": { "email": "Invalid email" } }</pre>
+
+<h2 class="section" id="session">Session model</h2>
+<p>Two tokens, two homes. The access token never touches storage; the refresh token never touches JavaScript.</p>
+<div class="tw"><table>
+<thead><tr><th>Token</th><th>Where it lives</th><th>Lifetime</th><th>Who sends it</th></tr></thead>
+<tbody>
+<tr><td>Access token (JWT, HS256)</td><td>Browser memory only</td><td>900 s. <code>expiresIn</code> is never below 120.</td><td>Client, as <code>Authorization: Bearer</code></td></tr>
+<tr><td>Refresh token (opaque)</td><td>Cookie <code>refresh_token</code><br><code>HttpOnly; Secure; SameSite=Lax; Path=/auth</code></td><td>7 days, 30 days with <code>remember: true</code>. Rotated on every refresh.</td><td>Browser, automatically, on <code>/auth/*</code></td></tr>
+<tr><td>Marker</td><td>Cookie <code>spark_session=1</code><br><code>Secure; SameSite=Lax; Path=/</code>, not HttpOnly</td><td>Same <code>Max-Age</code> as the refresh cookie</td><td>Read by Next.js middleware to gate pages</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>CORS.</strong> The backend answers with <code>Access-Control-Allow-Origin: &lt;your origin&gt;</code> (exact, never <code>*</code>) and <code>Access-Control-Allow-Credentials: true</code>, only for the origin configured on the server. Preflight <code>OPTIONS</code> returns 204 with <code>Allow-Methods: POST, OPTIONS</code> and <code>Allow-Headers: Content-Type, Authorization</code>.</div>
+<h3>SessionResponse</h3>
+<pre>interface SessionResponse {
+  accessToken: string;      // JWT
+  tokenType: "Bearer";
+  expiresIn: number;        // seconds until accessToken expires; 900, never below 120
+  user: {
+    id: string;             // numeric id as a string
+    name: string;
+    email: string;          // lower-cased
+    avatar: string | null;  // absolute URL, null when the user has no picture
+  };
+}</pre>
+<p>The client computes <code>expiresAt = now + expiresIn</code> and refreshes 60 seconds early.</p>
+
+<h2 class="section" id="endpoints">Endpoints</h2>
+<p>Each card has three tabs: <strong>Request</strong> (the schema), <strong>Responses</strong> (every status the endpoint can return, with realistic data), and <strong>Try it</strong> (run it against the mock or the live backend).</p>
+
+<section class="card" id="register" data-ep="register">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/auth/register</span><span class="what">Create account and sign in</span><span class="auth">no auth</span></div>
+<div class="card-b">
+<p>Creates the account and signs the user in at once (201 + cookies). There is no email-verification step, so <code>403 unverified</code> is never returned today.</p><div class="tw"><table><thead><tr><th>Field</th><th>Type</th><th>Rule</th><th>Example</th></tr></thead><tbody><tr><td class="mono">name</td><td>string</td><td>2–80 chars, trimmed</td><td class="mono">Nora Al-Qahtani</td></tr><tr><td class="mono">email</td><td>string</td><td>lower-cased by the server; unique, case-insensitive</td><td class="mono">nora.alqahtani@example.com</td></tr><tr><td class="mono">phone</td><td>string</td><td>E.164; unique</td><td class="mono">+966555019283</td></tr><tr><td class="mono">password</td><td>string</td><td>8+ chars, a capital letter, a digit</td><td class="mono">Marketplace7</td></tr></tbody></table></div><div class="chips"><span class="ec">422 validation_error</span><span class="ec">409 email_taken</span><span class="ec">409 phone_taken</span><span class="ec">429 rate_limited</span></div>
+</div></section>
+
+<section class="card" id="login" data-ep="login">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/auth/login</span><span class="what">Sign in</span><span class="auth">no auth</span></div>
+<div class="card-b">
+<p>Signs in. <code>invalid_credentials</code> is returned whether the email is unknown or the password is wrong; <code>account_disabled</code> only after the password is verified, so it never reveals whether an address exists.</p><div class="tw"><table><thead><tr><th>Field</th><th>Type</th><th>Rule</th><th>Example</th></tr></thead><tbody><tr><td class="mono">email</td><td>string</td><td>case-insensitive</td><td class="mono">layla.hassan@example.com</td></tr><tr><td class="mono">password</td><td>string</td><td>required</td><td class="mono">Strong-pass1</td></tr><tr><td class="mono">remember</td><td>boolean, optional</td><td>default false; true = 30-day cookie (must be a real boolean)</td><td class="mono">true</td></tr></tbody></table></div><div class="chips"><span class="ec a">401 invalid_credentials</span><span class="ec">403 account_disabled</span><span class="ec">422 validation_error</span><span class="ec">429 rate_limited</span></div>
+</div></section>
+
+<section class="card" id="refresh" data-ep="refresh">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/auth/refresh</span><span class="what">New access token</span><span class="auth">refresh cookie</span></div>
+<div class="card-b">
+<p>No body. The browser sends the <code>refresh_token</code> cookie by itself. On success a <strong>new</strong> refresh cookie is set (rotation) and the old one stops working; presenting an already-rotated token revokes the whole login chain. A 401 is normal and means "not signed in": both cookies are cleared in that response.</p><div class="chips"><span class="ec a">401 session_expired</span><span class="ec">429 rate_limited</span></div>
+</div></section>
+
+<section class="card" id="logout" data-ep="logout">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/auth/logout</span><span class="what">Sign out this device</span><span class="auth">Bearer + refresh cookie</span></div>
+<div class="card-b">
+<p>No body. Needs the access token as <code>Authorization: Bearer</code>; the refresh cookie is read if present. Revokes the refresh token and clears both cookies. Returns 204 even when the refresh token is already gone.</p><div class="chips"><span class="ec a">401 session_expired</span></div>
+</div></section>
+
+<section class="card" id="forgot" data-ep="forgot">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/auth/password/forgot</span><span class="what">Email a 6-digit code</span><span class="auth">no auth</span></div>
+<div class="card-b">
+<p>Emails a 6-digit code (valid 10 minutes; a new code replaces the previous one). The answer is the same whether or not the address is registered, so it never reveals who has an account.</p><div class="tw"><table><thead><tr><th>Field</th><th>Type</th><th>Rule</th><th>Example</th></tr></thead><tbody><tr><td class="mono">email</td><td>string</td><td>valid email</td><td class="mono">layla.hassan@example.com</td></tr></tbody></table></div><div class="chips"><span class="ec">422 validation_error</span><span class="ec">429 rate_limited</span></div>
+</div></section>
+
+<section class="card" id="verify" data-ep="verify">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/auth/password/verify</span><span class="what">Exchange code for reset token</span><span class="auth">no auth</span></div>
+<div class="card-b">
+<p>Exchanges the emailed code for a single-use reset token. At most 5 wrong attempts per code, then <code>429 too_many_attempts</code> until a new code is requested. An unknown email gets the same <code>invalid_code</code> as a wrong code.</p><div class="tw"><table><thead><tr><th>Field</th><th>Type</th><th>Rule</th><th>Example</th></tr></thead><tbody><tr><td class="mono">email</td><td>string</td><td>valid email</td><td class="mono">layla.hassan@example.com</td></tr><tr><td class="mono">code</td><td>string</td><td>exactly 6 digits</td><td class="mono">482913</td></tr></tbody></table></div><div class="chips"><span class="ec">400 invalid_code</span><span class="ec">400 code_expired</span><span class="ec">429 too_many_attempts</span><span class="ec">422 validation_error</span></div>
+</div></section>
+
+<section class="card" id="reset" data-ep="reset">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/auth/password/reset</span><span class="what">Set the new password</span><span class="auth">no auth</span></div>
+<div class="card-b">
+<p>Sets the new password, consumes the token, and signs the user out of every device. The UI then sends the user to the login page. The token works once.</p><div class="tw"><table><thead><tr><th>Field</th><th>Type</th><th>Rule</th><th>Example</th></tr></thead><tbody><tr><td class="mono">resetToken</td><td>string</td><td>from /auth/password/verify</td><td class="mono">xP4kV9mQ2dLr7TnYb1ZcHf6UeA0GxMiOt3Nj5wBySaC</td></tr><tr><td class="mono">password</td><td>string</td><td>same rules as register</td><td class="mono">Brand-new9</td></tr></tbody></table></div><div class="chips"><span class="ec">400 invalid_reset_token</span><span class="ec">400 reset_token_expired</span><span class="ec">422 validation_error</span><span class="ec">429 rate_limited</span></div>
+</div></section>
+
+<h2 class="section" id="errors">Error codes</h2>
+<p>Adding a code is non-breaking: the UI falls back to a generic message. Renaming or removing one, changing its status, or adding an envelope is breaking.</p>
+<div class="tw"><table>
+<thead><tr><th>Code</th><th>Status</th><th>Where</th><th>What the user sees</th></tr></thead>
+<tbody>
+<tr><td class="mono">validation_error</td><td>422</td><td>any</td><td>Generic message, plus <code>fields</code> inline</td></tr>
+<tr><td class="mono">invalid_credentials</td><td>401</td><td>login</td><td>Could not sign in. Check your details.</td></tr>
+<tr><td class="mono">email_taken</td><td>409</td><td>register</td><td>An account with this email already exists.</td></tr>
+<tr><td class="mono">phone_taken</td><td>409</td><td>register</td><td>An account with this phone number already exists.</td></tr>
+<tr><td class="mono">account_disabled</td><td>403</td><td>login</td><td>This account has been disabled.</td></tr>
+<tr><td class="mono">unverified</td><td>403</td><td>login</td><td>Verify your email before signing in. <span class="tag">reserved, not returned today</span></td></tr>
+<tr><td class="mono">invalid_code</td><td>400</td><td>password/verify</td><td>The code is incorrect.</td></tr>
+<tr><td class="mono">code_expired</td><td>400</td><td>password/verify</td><td>The code has expired. Request a new one.</td></tr>
+<tr><td class="mono">too_many_attempts</td><td>429</td><td>password/verify</td><td>Too many attempts. Request a new code.</td></tr>
+<tr><td class="mono">invalid_reset_token</td><td>400</td><td>password/reset</td><td>This reset link is no longer valid.</td></tr>
+<tr><td class="mono">reset_token_expired</td><td>400</td><td>password/reset</td><td>This reset link is no longer valid.</td></tr>
+<tr><td class="mono">session_expired</td><td>401</td><td>refresh, any Bearer endpoint</td><td>Your session has expired. Sign in again.</td></tr>
+<tr><td class="mono">rate_limited</td><td>429</td><td>any</td><td>Too many requests. Wait a moment.</td></tr>
+<tr><td class="mono">invalid_request <span class="tag">added</span></td><td>400</td><td>any</td><td>Body is not a JSON object. A developer error; show the generic message.</td></tr>
+<tr><td class="mono">server_error <span class="tag">added</span></td><td>500</td><td>any</td><td>Generic message.</td></tr>
+</tbody></table></div>
+
+<h2 class="section" id="flows">Flows end to end</h2>
+<div class="flows">
+<div><h3>Register or login</h3><ol class="steps">
+<li>Form posts to <code>/auth/register</code> or <code>/auth/login</code>.</li>
+<li>Client keeps <code>accessToken</code> and <code>user</code> in memory; the browser stores the two cookies.</li>
+<li>Redirect to the page the user came from, or the home page.</li></ol></div>
+<div><h3>Page reload</h3><ol class="steps">
+<li>Middleware sees <code>spark_session</code> and lets the protected page render.</li>
+<li>App calls <code>/auth/refresh</code> and rebuilds the session.</li>
+<li>On 401 the client clears its state and the user is signed out.</li></ol></div>
+<div><h3>Expiring access token</h3><ol class="steps">
+<li>Before any authenticated request the client checks expiry.</li>
+<li>Within 60 seconds of expiring, call <code>/auth/refresh</code> first.</li>
+<li>Run one refresh at a time and share its result: a concurrent second refresh with the old cookie counts as token reuse and signs the user out.</li></ol></div>
+<div><h3>Forgot password</h3><ol class="steps">
+<li><code>/auth/password/forgot</code>, then the app opens the code screen.</li>
+<li><code>/auth/password/verify</code> returns <code>resetToken</code>.</li>
+<li><code>/auth/password/reset</code>, then go to login.</li></ol></div>
+</div>
+
+<h2 class="section" id="notes">Notes</h2>
+<ul>
+  <li><strong>Limits.</strong> Register 10/min per IP. Login 30/min per IP and 10/min per email. Refresh 60/min per IP. Forgot 10/min per IP and 3 per 10 min per email. Verify 30/min, reset 10/min per IP. These numbers are the backend's choice and can change.</li>
+  <li><strong>Serialize refreshes.</strong> Two simultaneous <code>/auth/refresh</code> calls race and the second revokes the session. Use one in-flight promise.</li>
+  <li><strong>The JWT works on the auth endpoints for now.</strong> The existing marketplace routes (<code>/api/v1/vendor/…</code>) use API keys. Tell us which other endpoints the client will call with this Bearer token.</li>
+  <li><strong>Environment.</strong> We need your exact frontend origin (for CORS), HTTPS in every environment (cookies are <code>Secure</code>), and a shared parent domain if any (for <code>Domain=</code>). Email delivery depends on the server's outgoing mail setup.</li>
+  <li><strong>Frontend test fixtures (staging only).</strong> Set the system parameter <code>leaders_marketplace.auth_fixtures</code> to <code>True</code> and the user <code>demo@spark-fu.example</code> is created on its first <code>/auth/password/forgot</code>. Its code is always <code>123456</code>, its reset token is <code>mock-reset-token</code>, and it is exempt from the forgot-per-email limit. Off by default; never switch it on in production.</li>
+  <li><strong>Mock mode</strong> mirrors the backend rules, but it is a model, not the server. Confirm end to end in Live mode against your real origin.</li>
+  <li>Anything you want different, reply with the field or status and we adjust both sides together.</li>
+</ul>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script id="engine">
+/* In-page model of the backend (no DOM). Same rules, messages and statuses as the Odoo implementation. */
+function createEngine(clock) {
+  var now = clock || function () { return Date.now(); };
+  var EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/, PHONE = /^\+[1-9]\d{7,14}$/;
+  function b64(obj) { return btoa(typeof obj === 'string' ? obj : JSON.stringify(obj)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function rnd(n, alphabet) { var s = ''; for (var i = 0; i < n; i++) s += alphabet[Math.floor(Math.random() * alphabet.length)]; return s; }
+  var URLSAFE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_', HEX = '0123456789abcdef';
+  var e = { nextId: 41, ACCESS: 900 };
+
+  e.makeJwt = function (user) { return jwt(user); };
+  e.reset = function () {
+    e.users = {}; e.tokens = {}; e.codes = {}; e.resets = {}; e.access = {}; e.hits = {}; e.inbox = null;
+    e.jar = { refresh: null, marker: null };
+    e.addUser('Layla Hassan', 'layla.hassan@example.com', '+966501234567', 'Strong-pass1', false);
+    e.addUser('Omar Saleh', 'omar.disabled@example.com', '+966507654321', 'Strong-pass1', true);
+  };
+  e.addUser = function (name, email, phone, password, disabled) {
+    var u = { id: String(e.nextId++), name: name, email: email, phone: phone, password: password, disabled: !!disabled };
+    e.users[email] = u; return u;
+  };
+  function phoneTaken(p) { return Object.keys(e.users).some(function (k) { return e.users[k].phone === p; }); }
+  function jwt(user) {
+    var iat = Math.floor(now() / 1000), exp = iat + e.ACCESS;
+    var tok = b64({ alg: 'HS256', typ: 'JWT' }) + '.' + b64({ sub: user.id, typ: 'access', iat: iat, exp: exp, jti: rnd(32, HEX) }) + '.' + rnd(43, URLSAFE);
+    e.access[tok] = { uid: user.id, exp: exp * 1000 };
+    return tok;
+  }
+  function session(user) {
+    return { accessToken: jwt(user), tokenType: 'Bearer', expiresIn: e.ACCESS, user: { id: user.id, name: user.name, email: user.email, avatar: user.avatar || null } };
+  }
+  function issueRefresh(user, remember, family) {
+    var raw = rnd(64, URLSAFE);
+    e.tokens[raw] = { uid: user.id, email: user.email, family: family || rnd(32, HEX), remember: !!remember, revoked: false };
+    return raw;
+  }
+  function cookiesFor(raw, remember) {
+    var age = remember ? 2592000 : 604800;
+    e.jar.refresh = { name: 'refresh_token', value: raw, maxAge: age, path: '/auth', httpOnly: true, secure: true, sameSite: 'Lax' };
+    e.jar.marker = { name: 'spark_session', value: '1', maxAge: age, path: '/', httpOnly: false, secure: true, sameSite: 'Lax' };
+    return [e.jar.refresh, e.jar.marker];
+  }
+  function clearCookies() {
+    e.jar.refresh = null; e.jar.marker = null;
+    return [{ name: 'refresh_token', value: '', maxAge: 0, path: '/auth', clear: true }, { name: 'spark_session', value: '', maxAge: 0, path: '/', clear: true }];
+  }
+  function err(status, code, message, fields, cookies) {
+    var body = { code: code, message: message }; if (fields && Object.keys(fields).length) body.fields = fields;
+    return { status: status, body: body, cookies: cookies || [] };
+  }
+  function throttle(bucket, limit, windowMs) {
+    var h = e.hits[bucket] = (e.hits[bucket] || []).filter(function (t) { return now() - t < windowMs; });
+    h.push(now()); return h.length <= limit;
+  }
+  var RATE = function () { return err(429, 'rate_limited', 'Too many requests. Wait a moment.'); };
+  var VAL = function (f) { return err(422, 'validation_error', 'Validation failed.', f); };
+  var PWRULE = 'Password must be at least 8 characters with a capital letter and a digit.';
+  function pwBad(p) { return p.length < 8 || !/[A-Z]/.test(p) || !/\d/.test(p); }
+  function str(b, k) { return typeof b[k] === 'string' ? b[k] : ''; }
+  function openSession(user, remember) {
+    var raw = issueRefresh(user, remember);
+    return { status: remember === 'reg' ? 201 : 200, body: session(user), cookies: cookiesFor(raw, remember === true) };
+  }
+
+  e.handle = function (path, body, headers) {
+    body = body || {}; headers = headers || {};
+    var f = {}, u, email, r;
+    switch (path) {
+      case '/auth/register': {
+        if (!throttle('reg', 10, 60000)) return RATE();
+        var name = str(body, 'name').trim(); email = str(body, 'email').trim().toLowerCase();
+        var phone = str(body, 'phone').replace(/\s/g, ''), pw = str(body, 'password');
+        if (name.length < 2 || name.length > 80) f.name = 'Name must be 2 to 80 characters.';
+        if (!EMAIL.test(email)) f.email = 'Invalid email';
+        if (!PHONE.test(phone)) f.phone = 'Phone must be in E.164 format, e.g. +966501234567.';
+        if (pwBad(pw)) f.password = PWRULE;
+        if (Object.keys(f).length) return VAL(f);
+        if (e.users[email]) return err(409, 'email_taken', 'An account with this email already exists.');
+        if (phoneTaken(phone)) return err(409, 'phone_taken', 'An account with this phone number already exists.');
+        u = e.addUser(name, email, phone, pw, false);
+        r = openSession(u, false); r.status = 201; return r;
+      }
+      case '/auth/login': {
+        email = str(body, 'email').trim().toLowerCase();
+        var password = str(body, 'password'), remember = body.remember === true;
+        if (!throttle('login-ip', 30, 60000)) return RATE();
+        if (!EMAIL.test(email)) f.email = 'Invalid email';
+        if (!password) f.password = 'Password is required.';
+        if (Object.keys(f).length) return VAL(f);
+        if (!throttle('login:' + email, 10, 60000)) return RATE();
+        u = e.users[email];
+        if (!u || u.password !== password) return err(401, 'invalid_credentials', 'Email or password is wrong.');
+        if (u.disabled) return err(403, 'account_disabled', 'This account has been disabled.');
+        return openSession(u, remember);
+      }
+      case '/auth/refresh': {
+        var raw = e.jar.refresh && e.jar.refresh.value, t = raw && e.tokens[raw];
+        var gone = function () { return err(401, 'session_expired', 'Your session has expired. Sign in again.', null, clearCookies()); };
+        if (!t) return gone();
+        if (t.revoked) { Object.keys(e.tokens).forEach(function (k) { if (e.tokens[k].family === t.family) e.tokens[k].revoked = true; }); return gone(); }
+        t.revoked = true;
+        u = e.users[t.email];
+        var fresh = issueRefresh(u, t.remember, t.family);
+        return { status: 200, body: session(u), cookies: cookiesFor(fresh, t.remember) };
+      }
+      case '/auth/logout': {
+        var h = headers['Authorization'] || '', tok = h.indexOf('Bearer ') === 0 ? h.slice(7).trim() : '';
+        var a = e.access[tok];
+        if (!a || a.exp <= now()) return err(401, 'session_expired', 'Your session has expired. Sign in again.');
+        var rt = e.jar.refresh && e.tokens[e.jar.refresh.value]; if (rt) rt.revoked = true;
+        return { status: 204, body: null, cookies: clearCookies() };
+      }
+      case '/auth/password/forgot': {
+        if (!throttle('forgot-ip', 10, 60000)) return RATE();
+        email = str(body, 'email').trim().toLowerCase();
+        if (!EMAIL.test(email)) return VAL({ email: 'Invalid email' });
+        if (!throttle('forgot:' + email, 3, 600000)) return RATE();
+        u = e.users[email];
+        if (u && !u.disabled) {
+          var code = rnd(6, '0123456789');
+          e.codes[email] = { code: code, expires: now() + 600000, attempts: 0, state: 'pending' };
+          e.inbox = { to: email, code: code };
+        }
+        return { status: 202, body: null, cookies: [] };
+      }
+      case '/auth/password/verify': {
+        if (!throttle('verify-ip', 30, 60000)) return RATE();
+        email = str(body, 'email').trim().toLowerCase(); var c = str(body, 'code').trim();
+        if (!EMAIL.test(email)) f.email = 'Invalid email';
+        if (!/^\d{6}$/.test(c)) f.code = 'The code must be exactly 6 digits.';
+        if (Object.keys(f).length) return VAL(f);
+        var rec = e.codes[email];
+        if (!rec || rec.state !== 'pending') return err(400, 'invalid_code', 'The code is incorrect.');
+        if (rec.attempts >= 5) return err(429, 'too_many_attempts', 'Too many attempts. Request a new code.');
+        if (rec.expires <= now()) return err(400, 'code_expired', 'The code has expired. Request a new one.');
+        if (rec.code !== c) { rec.attempts++; return err(400, 'invalid_code', 'The code is incorrect.'); }
+        var token = rnd(43, URLSAFE);
+        rec.state = 'verified'; e.resets[token] = { email: email, expires: now() + 900000, used: false };
+        return { status: 200, body: { resetToken: token, expiresIn: 900 }, cookies: [] };
+      }
+      case '/auth/password/reset': {
+        if (!throttle('reset-ip', 10, 60000)) return RATE();
+        var rtoken = str(body, 'resetToken'), npw = str(body, 'password');
+        if (!rtoken) f.resetToken = 'Reset token is required.';
+        if (pwBad(npw)) f.password = PWRULE;
+        if (Object.keys(f).length) return VAL(f);
+        var rr = e.resets[rtoken];
+        if (!rr || rr.used) return err(400, 'invalid_reset_token', 'This reset link is no longer valid.');
+        if (rr.expires <= now()) return err(400, 'reset_token_expired', 'This reset link is no longer valid.');
+        rr.used = true; e.users[rr.email].password = npw;
+        Object.keys(e.tokens).forEach(function (k) { if (e.tokens[k].email === rr.email) e.tokens[k].revoked = true; });
+        return { status: 204, body: null, cookies: [] };
+      }
+    }
+    return err(404, 'not_found', 'No such endpoint.');
+  };
+  e.reset();
+  return e;
+}
+</script>
+
+<script id="ui">
+(function () {
+  var engine = createEngine();
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = function (t) { return String(t).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); };
+  var state = { mode: 'mock', token: '', exp: 0, resetToken: '' };
+  var TEXTS = { 200: 'OK', 201: 'Created', 202: 'Accepted', 204: 'No Content', 400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found', 409: 'Conflict', 422: 'Unprocessable Entity', 429: 'Too Many Requests', 500: 'Internal Server Error' };
+
+  /* ---------- real-looking sample data ---------- */
+  var SAMPLE = createEngine(), OLD = createEngine(function () { return Date.now() - 3600000; });
+  var tok = function (id) { return SAMPLE.makeJwt({ id: String(id) }); };
+  var LAYLA = { id: '41', name: 'Layla Hassan', email: 'layla.hassan@example.com' };
+  var NORA = { id: '43', name: 'Nora Al-Qahtani', email: 'nora.alqahtani@example.com' };
+  var T_LAYLA = tok(41), T_NORA = tok(43), T_LAYLA2 = tok(41), T_EXPIRED = OLD.makeJwt({ id: '41' });
+  var R1 = 'Qm9dX3sK2vLw8TnYb1ZcPq7HfRj4UeA6GxMiOt0Nd-5VyBhS3CkEzWl9aJrDgFu_';
+  var R2 = 'Ht3Lw8xVn0ZcPq7YbR1jK4UeA6GfMiOd2Nt-5SyBhE3CkVzWl9aJrDgFu_Qm9dXs';
+  var AVATAR = 'https://erp.example.com/web/image/res.partner/41/avatar_256?unique=2026-10-27T09:14:02';
+  var RESET_TOKEN = 'xP4kV9mQ2dLr7TnYb1ZcHf6UeA0GxMiOt3Nj5wBySaC';
+  var sess = function (u, token, avatar) { return { accessToken: token, tokenType: 'Bearer', expiresIn: 900, user: { id: u.id, name: u.name, email: u.email, avatar: avatar || null } }; };
+  var CK = function (val, age) { return ['refresh_token=' + val + '; Max-Age=' + age + '; Path=/auth; HttpOnly; Secure; SameSite=Lax', 'spark_session=1; Max-Age=' + age + '; Path=/; Secure; SameSite=Lax']; };
+  var CLEAR = ['refresh_token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/auth', 'spark_session=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/'];
+  var V = function (label, status, o) { o = o || {}; o.label = label; o.status = status; o.text = TEXTS[status]; return o; };
+  var E = function (label, status, code, message, o, fields) {
+    o = o || {}; o.body = { code: code, message: message }; if (fields) o.body.fields = fields; return V(label, status, o);
+  };
+  var VAL = function (rq, fields, rh) { return E('422 validation_error', 422, 'validation_error', 'Validation failed.', { rq: rq, rh: rh }, fields); };
+  var RL = function (rq, note, rh) { return E('429 rate_limited', 429, 'rate_limited', 'Too many requests. Wait a moment.', { rq: rq, rh: rh, note: note }); };
+  var EXPIRED = function (rq, rh, label, note) { return E(label || '401 session_expired', 401, 'session_expired', 'Your session has expired. Sign in again.', { rq: rq, rh: rh, note: note }); };
+  var NORA_RQ = { name: 'Nora Al-Qahtani', email: 'nora.alqahtani@example.com', phone: '+966555019283', password: 'Marketplace7' };
+  var LAYLA_LOGIN = { email: 'layla.hassan@example.com', password: 'Strong-pass1' };
+  var BEARER = function (t) { return 'Authorization: Bearer ' + t; };
+
+  var EP = {
+    register: { path: '/auth/register', step: '1 · Sign up',
+      fields: [{ k: 'name', l: 'Name' }, { k: 'email', l: 'Email' }, { k: 'phone', l: 'Phone (E.164)' }, { k: 'password', l: 'Password', hint: '8+ chars, a capital letter, a digit' }],
+      variants: [
+        V('201 Created', 201, { rq: NORA_RQ, body: sess(NORA, T_NORA), cookies: CK(R1, 604800), jwt: T_NORA, note: 'Signed in straight away. user.avatar is null because Nora has no picture yet.' }),
+        VAL({ name: 'N', email: 'nora.alqahtani', phone: '0555019283', password: 'market' },
+          { name: 'Name must be 2 to 80 characters.', email: 'Invalid email', phone: 'Phone must be in E.164 format, e.g. +966501234567.', password: 'Password must be at least 8 characters with a capital letter and a digit.' }),
+        E('409 email_taken', 409, 'email_taken', 'An account with this email already exists.', { rq: { name: 'Nora Al-Qahtani', email: 'layla.hassan@example.com', phone: '+966555019283', password: 'Marketplace7' }, note: 'Checked case-insensitively: Layla.Hassan@EXAMPLE.com would conflict too.' }),
+        E('409 phone_taken', 409, 'phone_taken', 'An account with this phone number already exists.', { rq: { name: 'Nora Al-Qahtani', email: 'nora.alqahtani@example.com', phone: '+966501234567', password: 'Marketplace7' } }),
+        RL(NORA_RQ, 'More than 10 sign-ups in a minute from one IP address.')] },
+    login: { path: '/auth/login', step: '2 · Sign in',
+      fields: [{ k: 'email', l: 'Email' }, { k: 'password', l: 'Password' }, { k: 'remember', l: 'Remember me (30 days)', type: 'bool' }],
+      variants: [
+        V('200 OK · remember', 200, { rq: Object.assign({ remember: true }, LAYLA_LOGIN), body: sess(LAYLA, T_LAYLA, AVATAR), cookies: CK(R1, 2592000), jwt: T_LAYLA, note: 'remember: true gives a 30-day cookie (Max-Age=2592000).' }),
+        V('200 OK · default', 200, { rq: LAYLA_LOGIN, body: sess(LAYLA, T_LAYLA2, AVATAR), cookies: CK(R2, 604800), jwt: T_LAYLA2, note: 'Without remember the cookie lasts 7 days (Max-Age=604800).' }),
+        E('401 invalid_credentials', 401, 'invalid_credentials', 'Email or password is wrong.', { rq: { email: 'layla.hassan@example.com', password: 'Strong-pass2' }, note: 'Identical for an unknown email, so the response never reveals which addresses exist.' }),
+        E('403 account_disabled', 403, 'account_disabled', 'This account has been disabled.', { rq: { email: 'omar.disabled@example.com', password: 'Strong-pass1' }, note: 'Returned only after the password was correct.' }),
+        VAL({ email: 'layla', password: '' }, { email: 'Invalid email', password: 'Password is required.' }),
+        RL(LAYLA_LOGIN, 'More than 10 attempts in a minute for one email, or 30 from one IP.')] },
+    refresh: { path: '/auth/refresh', step: '3 · Stay signed in', fields: [],
+      variants: [
+        V('200 OK', 200, { rh: ['Cookie: refresh_token=' + R1], body: sess(LAYLA, T_LAYLA2, AVATAR), cookies: CK(R2, 604800), jwt: T_LAYLA2, note: 'Rotation: the cookie value changed (…' + R1.slice(0, 8) + ' → …' + R2.slice(0, 8) + '). The old one is dead immediately.' }),
+        EXPIRED(null, [], '401 · no cookie', 'Normal for a visitor who is not signed in. Both cookies are cleared in this response.'),
+        EXPIRED(null, ['Cookie: refresh_token=' + R1], '401 · reused token', 'Sending an already-rotated token revokes the whole login chain, so a replayed stolen token signs everyone out.'),
+        RL(null, 'More than 60 refreshes in a minute from one IP.', ['Cookie: refresh_token=' + R2])] },
+    logout: { path: '/auth/logout', step: '4 · Sign out', fields: [], bearer: true,
+      variants: [
+        V('204 No Content', 204, { rh: [BEARER(T_LAYLA), 'Cookie: refresh_token=' + R2], body: null, cookies: CLEAR, note: 'Both cookies are cleared. Other devices stay signed in.' }),
+        EXPIRED(null, [BEARER(T_EXPIRED)], '401 · expired token', 'A missing, expired, forged or wrong-type Bearer token all answer the same way.')] },
+    forgot: { path: '/auth/password/forgot', step: '5 · Forgot password', fields: [{ k: 'email', l: 'Email' }],
+      variants: [
+        V('202 · registered email', 202, { rq: { email: 'layla.hassan@example.com' }, body: null, note: 'An email with a 6-digit code was sent (valid 10 minutes). The response itself says nothing about delivery.' }),
+        V('202 · unknown email', 202, { rq: { email: 'nobody@example.com' }, body: null, note: 'Exactly the same response, so no one can tell which addresses have an account.' }),
+        VAL({ email: 'layla' }, { email: 'Invalid email' }),
+        RL({ email: 'layla.hassan@example.com' }, 'A 4th request for the same email within 10 minutes (counted whether or not the account exists).')] },
+    verify: { path: '/auth/password/verify', step: '6 · Enter the code', fields: [{ k: 'email', l: 'Email' }, { k: 'code', l: 'Code (6 digits)', hint: 'Mock: read it from the inbox chip' }],
+      variants: [
+        V('200 OK', 200, { rq: { email: 'layla.hassan@example.com', code: '482913' }, body: { resetToken: RESET_TOKEN, expiresIn: 900 }, note: 'The reset token is single-use and valid for 900 seconds.' }),
+        E('400 invalid_code', 400, 'invalid_code', 'The code is incorrect.', { rq: { email: 'layla.hassan@example.com', code: '000000' }, note: 'An unknown email answers the same way.' }),
+        E('400 code_expired', 400, 'code_expired', 'The code has expired. Request a new one.', { rq: { email: 'layla.hassan@example.com', code: '482913' }, note: 'The code was sent more than 10 minutes ago.' }),
+        E('429 too_many_attempts', 429, 'too_many_attempts', 'Too many attempts. Request a new code.', { rq: { email: 'layla.hassan@example.com', code: '111111' }, note: 'After 5 wrong attempts, even the right code is refused until a new one is requested.' }),
+        VAL({ email: 'layla.hassan@example.com', code: '12' }, { code: 'The code must be exactly 6 digits.' })] },
+    reset: { path: '/auth/password/reset', step: '7 · New password', fields: [{ k: 'resetToken', l: 'Reset token', hint: 'Filled from the last verify' }, { k: 'password', l: 'New password' }],
+      variants: [
+        V('204 No Content', 204, { rq: { resetToken: RESET_TOKEN, password: 'Brand-new9' }, body: null, note: 'The password changed and every refresh token of the user was revoked: all devices are signed out.' }),
+        E('400 invalid_reset_token', 400, 'invalid_reset_token', 'This reset link is no longer valid.', { rq: { resetToken: RESET_TOKEN, password: 'Brand-new9' }, note: 'The token was already used (or never existed).' }),
+        E('400 reset_token_expired', 400, 'reset_token_expired', 'This reset link is no longer valid.', { rq: { resetToken: 'bT7nQ1vK8dLr4xYc2ZmHf9UeA3GwMiOt6Nj0pBySaR', password: 'Brand-new9' }, note: 'More than 900 seconds passed since verify.' }),
+        VAL({ resetToken: RESET_TOKEN, password: 'weak' }, { password: 'Password must be at least 8 characters with a capital letter and a digit.' }),
+        RL({ resetToken: RESET_TOKEN, password: 'Brand-new9' }, 'More than 10 resets in a minute from one IP.')] }
+  };
+  /* a default Try-it body per endpoint comes from its first variant */
+  Object.keys(EP).forEach(function (k) {
+    var d = Object.assign({}, EP[k].variants[0].rq || {});
+    delete d.code; delete d.resetToken;  /* these come from the previous step (inbox / verify), not from a sample */
+    EP[k].defaults = d;
+  });
+
+  /* ---------- rendering helpers ---------- */
+  function hl(json) {
+    return esc(json).replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (m) {
+      var c = 'jn'; if (/^"/.test(m)) c = /:$/.test(m) ? 'jk' : 'js'; else if (/true|false|null/.test(m)) c = 'jb';
+      return '<span class="' + c + '">' + m + '</span>';
+    });
+  }
+  function cookieLine(c) {
+    if (typeof c === 'string') return c;
+    if (c.clear) return c.name + '=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=' + c.path;
+    return c.name + '=' + c.value + '; Max-Age=' + c.maxAge + '; Path=' + c.path + (c.httpOnly ? '; HttpOnly' : '') + (c.secure ? '; Secure' : '') + '; SameSite=Lax';
+  }
+  function reqRaw(path, headers, body) {
+    var t = '<span class="sl c2">POST ' + esc(path) + ' HTTP/1.1</span>\n';
+    var hs = (body ? ['Content-Type: application/json'] : []).concat(headers || []);
+    hs.forEach(function (h) { t += '<span class="hn">' + esc(h.split(':')[0]) + '</span>: <span class="' + (/^Cookie|^Authorization/.test(h) ? 'ck' : '') + '">' + esc(h.slice(h.indexOf(':') + 2)) + '</span>\n'; });
+    t += body ? '\n' + hl(JSON.stringify(body, null, 2)) : '\n<span class="dim">(no body)</span>';
+    return t;
+  }
+  function resRaw(res) {
+    var cls = res.status < 300 ? 'c2' : res.status < 500 ? 'c4' : 'c5';
+    var t = '<span class="sl ' + cls + '">HTTP/1.1 ' + res.status + ' ' + esc(res.text) + '</span>\n';
+    if (res.body) t += '<span class="hn">Content-Type</span>: application/json; charset=utf-8\n';
+    t += '<span class="hn">Cache-Control</span>: no-store\n';
+    (res.cookies || []).forEach(function (c) { t += '<span class="hn">Set-Cookie</span>: <span class="ck">' + esc(cookieLine(c)) + '</span>\n'; });
+    t += res.body ? '\n' + hl(JSON.stringify(res.body, null, 2)) : '\n<span class="dim">(empty body)</span>';
+    return t;
+  }
+  function decodeJwt(t) {
+    try { var p = t.split('.'), d = function (x) { return JSON.parse(atob(x.replace(/-/g, '+').replace(/_/g, '/'))); }; return { header: d(p[0]), payload: d(p[1]) }; } catch (e) { return null; }
+  }
+  function jwtBoxes(t) {
+    var j = decodeJwt(t); if (!j) return '';
+    var p = j.payload, iso = function (s) { return new Date(s * 1000).toISOString().replace('.000', ''); };
+    return '<div class="jwt"><div class="box"><h4>JWT header</h4><pre>' + hl(JSON.stringify(j.header, null, 2)) + '</pre></div>' +
+      '<div class="box"><h4>JWT payload</h4><pre>' + hl(JSON.stringify(p, null, 2)) + '</pre></div>' +
+      '<div class="box"><h4>Reading it</h4><pre>sub = user id ' + esc(p.sub) + '\niat = ' + iso(p.iat) + '\nexp = ' + iso(p.exp) + '\n      (iat + ' + (p.exp - p.iat) + ' s)</pre></div></div>';
+  }
+  function toast(html) { var t = $('#toast'); t.innerHTML = html; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(function () { t.classList.remove('show'); }, 9000); }
+  function copy(text, btn) { if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { if (btn) { var o = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = o; }, 1200); } }, function () {}); }
+
+  /* ---------- dock ---------- */
+  function base() { return $('#base').value.replace(/\/+$/, ''); }
+  function renderDock() {
+    var left = Math.round((state.exp - Date.now()) / 1000), chip = $('#sessChip');
+    if (state.token && left > 0) { chip.classList.add('live'); $('#sessTxt').innerHTML = 'signed in · access token <b>' + left + ' s</b>'; }
+    else if (state.token) { chip.classList.remove('live'); $('#sessTxt').textContent = 'access token expired: call /auth/refresh'; }
+    else { chip.classList.remove('live'); $('#sessTxt').textContent = 'no session'; }
+    var jar = engine.jar, mock = state.mode === 'mock';
+    $('#jarChip').hidden = !mock; $('#jarTxt').textContent = jar.refresh ? 'refresh_token, spark_session' : 'none';
+    $('#jarBox').textContent = mock ? (jar.refresh ? [jar.refresh, jar.marker].map(cookieLine).join('\n\n') : 'empty') : 'Live mode: the browser keeps the cookies; open DevTools, Application, Cookies.';
+    var mail = engine.inbox; $('#mailChip').hidden = !(mock && mail); if (mail) $('#mailTxt').textContent = mail.code + ' → ' + mail.to;
+    var j = state.token && decodeJwt(state.token); $('#jwtBox').textContent = j ? JSON.stringify(j.payload, null, 2) : 'sign in to see the JWT payload';
+  }
+  setInterval(renderDock, 1000);
+  function setMode(m) {
+    state.mode = m; $('#mMock').classList.toggle('on', m === 'mock'); $('#mLive').classList.toggle('on', m === 'live');
+    $('#base').hidden = m !== 'live'; renderDock();
+  }
+  $('#mMock').onclick = function () { setMode('mock'); }; $('#mLive').onclick = function () { setMode('live'); };
+  try { $('#base').value = localStorage.getItem('authContractBase') || ''; } catch (e) {}
+  if (!$('#base').value) $('#base').value = 'http://localhost:8069';
+  $('#base').oninput = function () { try { localStorage.setItem('authContractBase', this.value); } catch (e) {} };
+  $('#drawerBtn').onclick = function () { $('#drawer').classList.toggle('open'); };
+  $('#simAccess').onclick = function () { Object.keys(engine.access).forEach(function (k) { engine.access[k].exp = 1; }); state.exp = 1; renderDock(); toast('The access token is now expired. <b>/auth/logout</b> will answer 401; <b>/auth/refresh</b> will issue a new one.'); };
+  $('#simCode').onclick = function () { Object.keys(engine.codes).forEach(function (k) { engine.codes[k].expires = 1; }); toast('Any pending reset code is now expired. <b>/auth/password/verify</b> will answer code_expired.'); };
+  $('#simReset').onclick = function () { engine.reset(); state.token = ''; state.exp = 0; state.resetToken = ''; renderDock(); toast('Mock data reset.'); };
+
+  /* ---------- endpoint cards: request | response side by side, then Try it ---------- */
+  Object.keys(EP).forEach(function (key) {
+    var cfg = EP[key], card = document.getElementById(key); if (!card) return;
+    var head = $('.card-h', card); var st = document.createElement('span'); st.className = 'step'; st.textContent = cfg.step; head.insertBefore(st, head.firstChild);
+
+    var split = document.createElement('div'); split.className = 'split';
+    split.innerHTML =
+      '<div class="col"><h4><span>Request</span><button class="mini copyc" type="button">Copy as curl</button></h4><pre class="http rq"></pre></div>' +
+      '<div class="col"><h4><span>Response</span></h4><div class="vars">' + cfg.variants.map(function (v, i) {
+        return '<button type="button" class="' + (i === 0 ? 'on ' : '') + 's' + String(v.status)[0] + '" data-i="' + i + '">' + esc(v.label) + '</button>';
+      }).join('') + '</div><pre class="http rs"></pre><div class="extra"></div></div>';
+    card.insertBefore(split, $('.card-b', card));
+    var cur = 0;
+    function curlOf(v) {
+      var c = "curl -i -X POST '" + base() + cfg.path + "' \\\n  -H 'Content-Type: application/json' \\\n  -b cookies.txt -c cookies.txt";
+      (v.rh || []).filter(function (h) { return /^Authorization/.test(h); }).forEach(function (h) { c += " \\\n  -H '" + h + "'"; });
+      if (v.rq) c += " \\\n  -d '" + JSON.stringify(v.rq).replace(/'/g, "'\\''") + "'"; return c;
+    }
+    function show(i) {
+      cur = i; var v = cfg.variants[i];
+      $('.rq', split).innerHTML = reqRaw(cfg.path, v.rh, v.rq);
+      $('.rs', split).innerHTML = resRaw(v);
+      $('.extra', split).innerHTML = (v.note ? '<p class="note">' + esc(v.note) + '</p>' : '') + (v.jwt ? '<details><summary class="note" style="cursor:pointer">Decode the accessToken</summary>' + jwtBoxes(v.jwt) + '</details>' : '');
+    }
+    $('.vars', split).onclick = function (ev) {
+      var b = ev.target.closest('button'); if (!b) return;
+      split.querySelectorAll('.vars button').forEach(function (x) { x.classList.toggle('on', x === b); }); show(+b.dataset.i);
+    };
+    $('.copyc', split).onclick = function (ev) { copy(curlOf(cfg.variants[cur]), ev.target); };
+    show(0);
+
+    /* Try it */
+    var d = document.createElement('details'); d.className = 'tryd';
+    var form = cfg.fields.map(function (f) {
+      var val = cfg.defaults[f.k];
+      if (f.type === 'bool') return '<div class="chk"><input type="checkbox" data-k="' + f.k + '" id="' + key + '_' + f.k + '"' + (val ? ' checked' : '') + '><label for="' + key + '_' + f.k + '" style="margin:0">' + esc(f.l) + '</label></div>';
+      return '<div><label>' + esc(f.l) + '</label><input data-k="' + f.k + '" value="' + esc(val || '') + '" autocomplete="off" spellcheck="false">' + (f.hint ? '<div class="hint">' + esc(f.hint) + '</div>' : '') + '</div>';
+    }).join('');
+    if (cfg.bearer) form += '<div style="grid-column:1/-1"><label>Authorization: Bearer</label><input class="bearer" placeholder="filled from the last sign-in" autocomplete="off" spellcheck="false"></div>';
+    d.innerHTML = '<summary>Try it ' + (state.mode === 'mock' ? '(mock)' : '') + '</summary>' +
+      (cfg.fields.length || cfg.bearer ? '<div class="form">' + form + '</div>' : '<p class="note" style="margin-top:0">No body. The refresh cookie travels by itself' + (key === 'refresh' ? ': sign in first, then call this to see rotation (the cookie value changes every time).' : '.') + '</p>') +
+      '<div class="row"><button class="btn send" type="button">Send request</button></div><div class="res"></div>';
+    card.appendChild(d);
+    function prefill() {
+      var bi = $('.bearer', d); if (bi && !bi.value) bi.value = state.token;
+      if (key === 'verify') { var ci = $('[data-k=code]', d); if (ci && !ci.value && engine.inbox) ci.value = engine.inbox.code; }
+      if (key === 'reset') { var ri = $('[data-k=resetToken]', d); if (ri && !ri.value && state.resetToken) ri.value = state.resetToken; }
+    }
+    d.addEventListener('toggle', function () { if (d.open) prefill(); });
+    function bodyOf() {
+      if (!cfg.fields.length) return null; var b = {};
+      cfg.fields.forEach(function (f) { var el = $('[data-k=' + f.k + ']', d); b[f.k] = f.type === 'bool' ? el.checked : el.value; });
+      if (key === 'login' && !b.remember) delete b.remember; return b;
+    }
+    function showRes(res, ms, note, b, hdr) {
+      var out = $('.res', d);
+      out.innerHTML = '<div class="meta"><span class="pill ' + (res.status < 300 ? 'ok' : res.status < 500 ? 'warn' : 'err') + '">' + res.status + ' ' + esc(res.text) + '</span><span>' + ms + ' ms · ' + (state.mode === 'mock' ? 'mock' : 'live') + '</span></div>' +
+        '<div class="split" style="border:1px solid var(--line);border-radius:10px;overflow:hidden"><div class="col"><h4>Request</h4><pre class="http">' + reqRaw(cfg.path, hdr, b) + '</pre></div><div class="col"><h4>Response</h4><pre class="http">' + resRaw(res) + '</pre></div></div>' +
+        (note ? '<p class="note">' + note + '</p>' : '') + (res.body && res.body.accessToken ? '<details open><summary class="note" style="cursor:pointer">Decode the accessToken</summary>' + jwtBoxes(res.body.accessToken) + '</details>' : '');
+    }
+    function after(res) {
+      var b = res.body || {};
+      if (b.accessToken) { state.token = b.accessToken; var j = decodeJwt(b.accessToken); state.exp = j ? j.payload.exp * 1000 : Date.now() + b.expiresIn * 1000; }
+      if (b.resetToken) state.resetToken = b.resetToken;
+      if (res.status === 401 && key === 'refresh') { state.token = ''; state.exp = 0; }
+      if (key === 'logout' && res.status === 204) { state.token = ''; state.exp = 0; }
+      if (key === 'forgot' && state.mode === 'mock' && engine.inbox) toast('<b>Email delivered (mock)</b><br>To ' + esc(engine.inbox.to) + '<div class="big">' + engine.inbox.code + '</div>Valid 10 minutes.');
+      renderDock();
+    }
+    $('.send', d).onclick = function () {
+      var btn = this, b = bodyOf(), bi = $('.bearer', d), hdr = [], headers = {}, t0 = performance.now();
+      if (bi && bi.value) { hdr.push(BEARER(bi.value)); headers['Authorization'] = 'Bearer ' + bi.value; }
+      if (state.mode === 'mock') {
+        var r = engine.handle(cfg.path, b, headers); r.text = TEXTS[r.status] || '';
+        if (key === 'refresh') hdr.push('Cookie: refresh_token=' + (engine.jar.refresh ? engine.jar.refresh.value : '(none)'));
+        showRes(r, Math.max(1, Math.round(performance.now() - t0)), '', b, hdr); after(r); return;
+      }
+      btn.disabled = true;
+      var opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include' };
+      if (headers['Authorization']) opts.headers['Authorization'] = headers['Authorization'];
+      if (b) opts.body = JSON.stringify(b);
+      fetch(base() + cfg.path, opts).then(function (resp) {
+        return resp.text().then(function (txt) {
+          var data = null; try { data = txt ? JSON.parse(txt) : null; } catch (e) {}
+          var r = { status: resp.status, text: resp.statusText, body: data, cookies: [] };
+          showRes(r, Math.round(performance.now() - t0), 'Set-Cookie headers are hidden from JavaScript by the browser. Check DevTools, Application, Cookies.', b, hdr); after(r);
+        });
+      }).catch(function (e) {
+        $('.res', d).innerHTML = '<div class="meta"><span class="pill err">request failed</span></div><p class="note">' + esc(e.message) + '. Usually CORS (the server must allow this page\'s origin), a wrong Base URL, or mixed http/https. A page opened from disk has the origin "null", which the backend does not allow: serve this file from your frontend origin, or use Mock mode.</p>';
+      }).then(function () { btn.disabled = false; });
+    };
+  });
+
+  var links = [].slice.call(document.querySelectorAll('nav a'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id); }); }); }, { rootMargin: '-20% 0px -70% 0px' });
+    links.forEach(function (a) { var t = document.querySelector(a.getAttribute('href')); if (t) io.observe(t); });
+  }
+  renderDock();
+})();
+</script>
+</body>
+</html>

@@ -289,7 +289,10 @@
                                 </t><t t-else=""><span class="lm-badge lm-badge--info">Warehouse controlled</span></t>
                             </td>
                             <td class="lm-cell-actions text-nowrap"><a t-att-href="'/my/vendor/products/%s/edit' % o.id" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <form t-if="o.state in ('draft','rejected')" t-att-action="'/my/vendor/products/%s/submit' % o.id" method="post" class="d-inline"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-sm btn-primary" data-lm-loading="1">Submit</button></form>
+                                <t t-if="o.state in ('draft','rejected')">
+                                    <a t-if="(submit_problems or {}).get(o.id)" t-att-href="'/my/vendor/products/%s/edit#lm_submit_check' % o.id" class="btn btn-sm btn-outline-warning lm-complete-btn"><i class="fa fa-pencil-square-o" aria-hidden="true"/> Complete details</a>
+                                    <form t-else="" t-att-action="'/my/vendor/products/%s/submit' % o.id" method="post" class="d-inline"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-sm btn-primary" data-lm-loading="1">Submit</button></form>
+                                </t>
                             </td>
                         </tr></tbody>
                     </table>
@@ -326,8 +329,13 @@
                 </div>
                 <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
                 <div t-if="created" class="alert alert-success" role="status">Product created. Review the details then submit it for approval.</div>
+                <div t-if="request.params.get('pending')" class="alert alert-info" role="status">Your change was sent for review. The listing stays on the website as it is until the platform approves it.</div>
                 <div t-if="offer and offer.reject_reason and offer.state == 'rejected'" class="alert alert-warning" role="status">Offer rejected: <t t-esc="offer.reject_reason"/></div>
 
+                <div t-if="bulk_import_enabled and not offer" class="alert alert-info d-flex flex-wrap align-items-center justify-content-between gap-2" id="lm_bulk_hint">
+                    <span><i class="fa fa-file-excel-o" aria-hidden="true"/> Many products? Upload them all at once with a sheet.</span>
+                    <a href="/my/vendor/import" class="btn btn-sm btn-primary"><i class="fa fa-upload" aria-hidden="true"/> Upload a products sheet</a>
+                </div>
                 <div t-if="catalog_enabled and not offer" class="lm-card mb-4" id="lm_catalog_card">
                     <h2 class="lm-section-title"><i class="fa fa-search" aria-hidden="true"/> Sell an existing product</h2>
                     <form method="get" action="/my/vendor/products/new" class="d-flex flex-wrap gap-2">
@@ -343,8 +351,9 @@
                             <div class="col-12 col-md-3"><strong t-esc="cp.display_name"/></div>
                             <div class="col-12 col-md-2 lm-form-field"><input class="form-control" name="seller_sku" placeholder="Seller SKU" aria-label="Seller SKU" required="required"/><div class="invalid-feedback">Enter your SKU.</div></div>
                             <div class="col-6 col-md-2 lm-form-field"><input class="form-control" type="number" min="0" step="0.01" name="price" placeholder="Price" aria-label="Price" required="required"/><div class="invalid-feedback">Enter a price.</div></div>
-                            <div class="col-6 col-md-2 lm-form-field"><select class="form-select" name="currency_id" aria-label="Currency"><option t-foreach="currencies" t-as="c" t-att-value="c.id" t-att-selected="c == request.env.company.currency_id" t-esc="c.name"/></select></div>
-                            <div class="col-6 col-md-2 lm-form-field"><select class="form-select" name="fulfillment_type" aria-label="Fulfillment"><option value="fbm">FBM</option><option t-if="fbl_enabled" value="fbl">FBL</option></select></div>
+                            <input type="hidden" name="currency_id" t-att-value="request.env.company.currency_id.id"/>
+                            <div t-if="fbl_enabled" class="col-6 col-md-4 lm-form-field"><select class="form-select" name="fulfillment_type" aria-label="Who ships the order"><option value="fbm">I ship it myself</option><option value="fbl">Shipped from the platform warehouse</option></select></div>
+                            <input t-else="" type="hidden" name="fulfillment_type" value="fbm"/>
                             <div class="col-6 col-md-1 lm-form-field"><button class="btn btn-primary w-100" data-lm-loading="1">Sell</button></div>
                         </form>
                     </div>
@@ -362,31 +371,118 @@
                             <div class="col-12 col-md-8 lm-form-field"><label class="form-label" for="lm_pf_name">Product Name</label><input class="form-control" id="lm_pf_name" name="name" required="required" t-att-value="offer and offer.product_tmpl_id.name or ''" t-att-readonly="'readonly' if not vendor_owns_content else None"/><div class="invalid-feedback">Enter the product name.</div></div>
                             <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_pf_sku">Seller SKU</label><input class="form-control text-break" id="lm_pf_sku" name="seller_sku" required="required" t-att-value="offer and offer.seller_sku or ''"/><div class="invalid-feedback">Enter your SKU.</div></div>
                             <div class="col-12 lm-form-field"><label class="form-label" for="lm_pf_desc">Description</label><textarea class="form-control" id="lm_pf_desc" name="description_sale" rows="4" t-att-readonly="'readonly' if not vendor_owns_content else None"><t t-esc="offer and offer.product_tmpl_id.description_sale or ''"/></textarea></div>
-                            <div class="col-12 col-md-6 lm-form-field"><label class="form-label" for="lm_pf_categ">Website Category</label><select class="form-select" id="lm_pf_categ" name="public_category_id" t-att-disabled="'disabled' if not vendor_owns_content else None"><option value="">Select</option><option t-foreach="categories" t-as="c" t-att-value="c.id" t-att-selected="offer and c in offer.product_tmpl_id.public_categ_ids" t-esc="c.display_name"/></select></div>
+                            <div class="col-12 col-md-6 lm-form-field"><label class="form-label" for="lm_pf_categ">Website Category</label><select class="form-select" id="lm_pf_categ" name="public_category_id" t-att-disabled="'disabled' if not vendor_owns_content else None"><option value="" disabled="disabled" hidden="hidden" t-att-selected="not (offer and offer.product_tmpl_id.public_categ_ids)">Choose a category</option><option t-foreach="categories" t-as="c" t-att-value="c.id" t-att-data-field-set="c._leaders_effective().leaders_field_set or ''" t-att-selected="offer and c in offer.product_tmpl_id.public_categ_ids" t-esc="c.display_name"/></select></div>
+                        </div>
+                    </div>
+
+                    <!-- the catalog data the reviewer checks: what a submitted product must carry -->
+                    <div t-if="vendor_owns_content" class="lm-card lm-form-section" id="lm_spec_card">
+                        <input type="hidden" name="lm_spec_form" value="1"/>
+                        <t t-set="st" t-value="spec_tmpl"/>
+                        <h2 class="lm-section-title"><i class="fa fa-cogs" aria-hidden="true"/> Catalog details</h2>
+                        <p class="lm-help">The marketplace reviews these before the product goes live. The fields shown depend on the category and the condition.</p>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_brand">Brand</label>
+                                <select class="form-select" id="lm_sp_brand" name="leaders_brand_id"><option value="" disabled="disabled" hidden="hidden" t-att-selected="not (st and st.leaders_brand_id)">Choose a brand</option><option t-foreach="spec_brands" t-as="b" t-att-value="b.id" t-att-selected="st and st.leaders_brand_id == b" t-esc="b.name"/><option value="__other__">Other (type it)</option></select>
+                                <input class="form-control mt-2 d-none" id="lm_sp_brand_other" name="leaders_brand_other" maxlength="64" placeholder="Brand name" aria-label="Brand name"/></div>
+                            <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_source">Source</label>
+                                <select class="form-select" id="lm_sp_source" name="leaders_source_id"><option value="" disabled="disabled" hidden="hidden" t-att-selected="not (st and st.leaders_source_id)">Choose the source</option><option t-foreach="spec_sources" t-as="so" t-att-value="so.id" t-att-selected="st and st.leaders_source_id == so" t-esc="so.name"/></select></div>
+                            <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_condition">Condition</label>
+                                <select class="form-select" id="lm_sp_condition" name="leaders_condition"><option value="" disabled="disabled" hidden="hidden" t-att-selected="not (st and st.leaders_condition)">Choose the condition</option><option t-foreach="spec_conditions" t-as="co" t-att-value="co[0]" t-att-selected="st and st.leaders_condition == co[0]" t-esc="co[1]"/></select></div>
+                        </div>
+                        <div class="alert alert-warning mt-3 mb-0 d-none" id="lm_used_notice" role="status">
+                            <i class="fa fa-search" aria-hidden="true"/> A used or refurbished product is inspected by the platform before it is published on the website.
+                        </div>
+
+                        <div data-lm-spec="equipment" class="mt-4">
+                            <h3 class="h6 fw-bold mb-3"><i class="fa fa-truck" aria-hidden="true"/> Equipment</h3>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_model">Model</label>
+                                    <select class="form-select" id="lm_sp_model" name="leaders_model_id"><option value="" disabled="disabled" hidden="hidden" t-att-selected="not (st and st.leaders_model_id)">Choose a model</option><option t-foreach="spec_models" t-as="mo" t-att-value="mo.id" t-att-data-brand="mo.brand_id.id or ''" t-att-selected="st and st.leaders_model_id == mo" t-esc="mo.display_name"/><option value="__other__">Other (type it)</option></select>
+                                    <input class="form-control mt-2 d-none" id="lm_sp_model_other" name="leaders_model_other" maxlength="64" placeholder="Model name" aria-label="Model name"/></div>
+                                <div class="col-6 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_capacity">Capacity / power</label>
+                                    <input class="form-control" id="lm_sp_capacity" type="number" min="0" step="0.01" name="leaders_capacity" t-att-value="st and st.leaders_capacity or ''"/></div>
+                                <div class="col-6 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_unit">Capacity unit</label>
+                                    <select class="form-select" id="lm_sp_unit" name="leaders_capacity_unit"><option value="" disabled="disabled" hidden="hidden" t-att-selected="not (st and st.leaders_capacity_unit)">Choose a unit</option><option t-foreach="spec_units" t-as="un" t-att-value="un[0]" t-att-selected="st and st.leaders_capacity_unit == un[0]" t-esc="un[1]"/></select></div>
+                                <div class="col-6 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_warranty">Warranty (months)</label>
+                                    <input class="form-control" id="lm_sp_warranty" type="number" min="0" step="1" name="leaders_warranty_months" t-att-value="st and st.leaders_warranty_months or ''"/></div>
+                                <div class="col-6 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_serial">Serial number</label>
+                                    <input class="form-control" id="lm_sp_serial" name="leaders_serial" maxlength="64" dir="ltr" t-att-value="st and st.leaders_serial or ''"/></div>
+                                <div class="col-6 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_listing">For sale or for rent</label>
+                                    <select class="form-select" id="lm_sp_listing" name="leaders_listing_type"><option t-foreach="spec_listing_types" t-as="lt" t-att-value="lt[0]" t-att-selected="(st and st.leaders_listing_type or 'sale') == lt[0]" t-esc="lt[1]"/></select></div>
+                                <div class="col-6 col-md-4 lm-form-field" id="lm_sp_rent_wrap"><label class="form-label" for="lm_sp_rent">Rent price per day</label>
+                                    <input class="form-control" id="lm_sp_rent" type="number" min="0" step="0.01" name="leaders_rent_price_day" t-att-value="st and st.leaders_rent_price_day or ''"/></div>
+                            </div>
+                            <div data-lm-spec="used" class="mt-4">
+                                <h3 class="h6 fw-bold mb-1"><i class="fa fa-history" aria-hidden="true"/> Used equipment</h3>
+                                <p class="lm-help">Required for used and refurbished machines.</p>
+                                <div class="row g-3">
+                                    <div class="col-6 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_year">Year of manufacture</label>
+                                        <input class="form-control" id="lm_sp_year" type="number" min="1950" step="1" name="leaders_year" t-att-value="st and st.leaders_year or ''"/></div>
+                                    <div class="col-6 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_hours">Operating hours</label>
+                                        <input class="form-control" id="lm_sp_hours" type="number" min="0" step="1" name="leaders_hours" t-att-value="st and st.leaders_hours or ''"/></div>
+                                    <div class="col-12 col-md-4 lm-form-field"><label class="form-label" for="lm_sp_video">Operation video link</label>
+                                        <input class="form-control" id="lm_sp_video" type="url" name="leaders_video_url" placeholder="https://youtube.com/..." t-att-value="st and st.leaders_video_url or ''"/></div>
+                                    <div class="col-12 col-md-6 lm-form-field"><label class="form-label" for="lm_sp_meter">Hour meter photo</label>
+                                        <input class="form-control" id="lm_sp_meter" type="file" accept="image/*" name="leaders_meter_photo"/>
+                                        <div t-if="st and st.leaders_meter_photo" class="form-text"><i class="fa fa-check text-success" aria-hidden="true"/> A photo is saved. Choose a file only to replace it.</div></div>
+                                    <div class="col-12 col-md-6 lm-form-field"><label class="form-label" for="lm_sp_plate">Data plate photo</label>
+                                        <input class="form-control" id="lm_sp_plate" type="file" accept="image/*" name="leaders_plate_photo"/>
+                                        <div t-if="st and st.leaders_plate_photo" class="form-text"><i class="fa fa-check text-success" aria-hidden="true"/> A photo is saved. Choose a file only to replace it.</div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div data-lm-spec="part" class="mt-4">
+                            <h3 class="h6 fw-bold mb-3"><i class="fa fa-wrench" aria-hidden="true"/> Spare part</h3>
+                            <div class="lm-form-field"><label class="form-label" for="lm_sp_compatible">Compatible equipment</label>
+                                <select class="form-select" id="lm_sp_compatible" name="leaders_compatible_model_ids" multiple="multiple" size="6"><option t-foreach="spec_models" t-as="mo" t-att-value="mo.id" t-att-selected="st and mo in st.leaders_compatible_model_ids" t-esc="mo.display_name"/></select>
+                                <div class="form-text">Hold Ctrl (or Cmd) to choose more than one model.</div></div>
                         </div>
                     </div>
 
                     <div class="lm-card lm-form-section" id="lm_offer_card">
                         <h2 class="lm-section-title"><i class="fa fa-tag" aria-hidden="true"/> Offer</h2>
                         <div class="row g-3">
-                            <div class="col-6 col-md-3 lm-form-field"><label class="form-label" for="lm_pf_price">Price</label><input class="form-control" id="lm_pf_price" type="number" min="0" step="0.01" name="price" required="required" t-att-value="offer and offer.price or 0"/><div class="invalid-feedback">Enter a valid price (0 or more).</div></div>
-                            <div class="col-6 col-md-3 lm-form-field"><label class="form-label" for="lm_pf_currency">Currency</label><select class="form-select" id="lm_pf_currency" name="currency_id"><option t-foreach="currencies" t-as="c" t-att-value="c.id" t-att-selected="offer and offer.currency_id == c or (not offer and c == request.env.company.currency_id)" t-esc="c.name"/></select></div>
-                            <div class="col-12 col-md-6 lm-form-field"><label class="form-label" for="lm_pf_fulfillment">Fulfillment</label>
+                            <div class="col-6 col-md-3 lm-form-field"><label class="form-label" for="lm_pf_price">Price (<t t-esc="company_currency.name"/>)</label><input class="form-control" id="lm_pf_price" type="number" min="0" step="0.01" name="price" required="required" t-att-value="offer and offer.price or 0"/><div class="invalid-feedback">Enter a valid price (0 or more).</div>
+                                <div t-if="offer and offer.product_tmpl_id.sudo().leaders_inspection_cost" class="form-text" id="lm_pf_price_note">On the website: your price plus the inspection cost (<t t-esc="offer.product_tmpl_id.sudo().leaders_inspection_cost"/>).</div></div>
+                            <input type="hidden" name="currency_id" t-att-value="company_currency.id"/>
+                            <div class="col-6 col-md-3 lm-form-field" id="lm_pf_qty_wrap" t-if="not offer or offer.fulfillment_type == 'fbm'"><label class="form-label" for="lm_pf_qty">Quantity in stock</label>
+                                <input class="form-control" id="lm_pf_qty" type="number" min="0" step="1" name="lm_stock_qty" t-att-value="stock_on_hand if offer else ''"/>
+                                <div class="form-text d-none" id="lm_pf_qty_used">A used item is one piece.</div></div>
+                            <div t-if="fbl_enabled or forced_fulfillment" class="col-12 col-md-6 lm-form-field"><label class="form-label" for="lm_pf_fulfillment">Who ships the order</label>
                                 <select class="form-select" id="lm_pf_fulfillment" name="fulfillment_type" t-att-disabled="'disabled' if forced_fulfillment else None">
-                                    <option value="fbm" t-att-selected="(forced_fulfillment == 'fbm') if forced_fulfillment else (not offer or offer.fulfillment_type == 'fbm')">FBM - Fulfilled by Vendor</option>
-                                    <option t-if="fbl_enabled" value="fbl" t-att-selected="(forced_fulfillment == 'fbl') if forced_fulfillment else (offer and offer.fulfillment_type == 'fbl')">FBL - Fulfilled by Leaders</option>
+                                    <option value="fbm" t-att-selected="(forced_fulfillment == 'fbm') if forced_fulfillment else (not offer or offer.fulfillment_type == 'fbm')">I ship it myself (from my store)</option>
+                                    <option t-if="fbl_enabled" value="fbl" t-att-selected="(forced_fulfillment == 'fbl') if forced_fulfillment else (offer and offer.fulfillment_type == 'fbl')">Shipped from the platform warehouse</option>
                                 </select>
+                                <div t-if="not forced_fulfillment" class="form-text">Either you keep the stock and ship each order, or you send the stock to the platform warehouse and the platform ships it.</div>
                                 <div t-if="forced_fulfillment" class="form-text">
                                     Set by the marketplace policy "<t t-esc="forced_fulfillment_name"/>" for this vendor or category; it cannot be changed here.
                                 </div>
                             </div>
-                            <div class="col-12"><span class="form-label d-block fw-semibold mb-1">Markets</span><div class="lm-check-group"><label t-foreach="websites" t-as="w"><input type="checkbox" class="form-check-input m-0" name="market_ids" t-att-value="w.id" t-att-checked="offer and w in offer.market_ids"/> <span t-esc="w.name"/></label></div></div>
+                            <input t-if="not (fbl_enabled or forced_fulfillment)" type="hidden" name="fulfillment_type" value="fbm"/>
                         </div>
                     </div>
 
                     <div class="lm-card lm-form-section" id="lm_main_image_card">
-                        <h2 class="lm-section-title"><i class="fa fa-picture-o" aria-hidden="true"/> Main Image</h2>
-                        <div class="lm-form-field mb-0"><label class="visually-hidden" for="lm_pf_image">Main Image</label><input class="form-control" id="lm_pf_image" type="file" name="image_1920" accept="image/*" t-att-disabled="'disabled' if not vendor_owns_content else None"/></div>
+                        <h2 class="lm-section-title"><i class="fa fa-picture-o" aria-hidden="true"/> Images</h2>
+                        <div class="lm-form-field"><label class="form-label" for="lm_pf_image">Main image</label>
+                            <div t-if="offer and offer.product_tmpl_id.sudo().image_1920" class="lm-thumbs mb-2" id="lm_pf_image_current">
+                                <span class="lm-thumb"><img t-att-src="image_data_uri(offer.product_tmpl_id.sudo().image_128)" width="96" height="96" alt=""/></span>
+                                <span class="form-text">The current image. Choose a file only to replace it.</span>
+                            </div>
+                            <input class="form-control" id="lm_pf_image" type="file" name="image_1920" accept="image/*" t-att-disabled="'disabled' if not vendor_owns_content else None"/></div>
+                        <div t-if="vendor_owns_content and not variants_enabled" class="lm-form-field mb-0" id="lm_gallery_field">
+                            <label class="form-label" for="lm_pf_gallery">More photos</label>
+                            <div t-if="gallery_images" class="lm-thumbs mb-2">
+                                <label t-foreach="gallery_images" t-as="img" class="lm-thumb">
+                                    <img t-att-src="image_data_uri(img.sudo().image_128)" width="96" height="96" alt=""/>
+                                    <span><input type="checkbox" class="form-check-input" name="gallery_remove_ids" t-att-value="img.id"/> Remove</span>
+                                </label>
+                            </div>
+                            <input class="form-control" id="lm_pf_gallery" type="file" name="gallery_images" accept="image/*" multiple="multiple"/>
+                            <div class="form-text">Choose several photos at once (up to <t t-esc="gallery_max"/>). They show in the product gallery.</div>
+                        </div>
                     </div>
 
                     <t t-if="variants_enabled and vendor_owns_content">
@@ -417,7 +513,7 @@
                             <p class="lm-help">Up to <t t-esc="max_extra_images"/> extra images shown in the product gallery.</p>
                             <div t-if="extra_images" class="lm-thumbs mb-3">
                                 <label t-foreach="extra_images" t-as="img" class="lm-thumb">
-                                    <img t-att-src="'/web/image/product.image/%s/image_128' % img.id" width="96" height="96" alt=""/>
+                                    <img t-att-src="image_data_uri(img.sudo().image_128)" width="96" height="96" alt=""/>
                                     <span><input type="checkbox" class="form-check-input" name="remove_image_ids" t-att-value="img.id"/> Remove</span>
                                 </label>
                             </div>
@@ -464,7 +560,23 @@
                         <span id="lm_confirm_clear_discount" class="d-none">Remove the discount from this offer?</span>
                     </form>
                 </div>
-                <div t-if="offer and offer.state in ('draft','rejected')" class="lm-form-actions"><form t-att-action="'/my/vendor/products/%s/submit' % offer.id" method="post"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-success" data-lm-loading="1"><i class="fa fa-paper-plane" aria-hidden="true"/> Submit for Review</button></form></div>
+                <div t-if="offer and offer.state in ('draft','rejected')" id="lm_submit_check" class="lm-card lm-submit-check mt-4">
+                    <t t-if="submit_problems">
+                        <h2 class="lm-section-title"><i class="fa fa-list-alt" aria-hidden="true"/> Before you submit</h2>
+                        <div t-att-class="'alert mb-3 ' + ('alert-danger' if submit_refused else 'alert-warning')" role="status">
+                            <t t-if="submit_refused">The product was not sent for review: some details are missing.</t>
+                            <t t-else="">Fill in these details, save the draft, then submit the product for review.</t>
+                        </div>
+                        <ul class="lm-submit-missing">
+                            <li t-foreach="submit_problems" t-as="problem"><i class="fa fa-circle-o" aria-hidden="true"/> <t t-esc="problem"/></li>
+                        </ul>
+                        <div class="lm-form-actions"><button type="button" class="btn btn-success" disabled="disabled" aria-disabled="true"><i class="fa fa-lock" aria-hidden="true"/> Submit for Review</button></div>
+                    </t>
+                    <t t-else="">
+                        <p class="lm-submit-ready mb-3"><i class="fa fa-check-circle" aria-hidden="true"/> Every required detail is filled in. The product is ready for review.</p>
+                        <div class="lm-form-actions"><form t-att-action="'/my/vendor/products/%s/submit' % offer.id" method="post"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-success" data-lm-loading="1"><i class="fa fa-paper-plane" aria-hidden="true"/> Submit for Review</button></form></div>
+                    </t>
+                </div>
             </div>
         </t>
     </template>
@@ -518,12 +630,10 @@
                         <div class="row g-3 mb-3">
                             <div class="col-12 col-md-3 lm-form-field"><label class="form-label" for="lm_var_fulfillment">Fulfillment</label>
                                 <select class="form-select" id="lm_var_fulfillment" name="fulfillment_type">
-                                    <option value="fbm" t-att-selected="form_fulfillment == 'fbm'">FBM - Fulfilled by Vendor</option>
-                                    <option t-if="fbl_enabled" value="fbl" t-att-selected="form_fulfillment == 'fbl'">FBL - Fulfilled by Leaders</option>
+                                    <option value="fbm" t-att-selected="form_fulfillment == 'fbm'">I ship it myself (from my store)</option>
+                                    <option t-if="fbl_enabled" value="fbl" t-att-selected="form_fulfillment == 'fbl'">Shipped from the platform warehouse</option>
                                 </select></div>
-                            <div class="col-12 col-md-3 lm-form-field"><label class="form-label" for="lm_var_currency">Currency</label>
-                                <select class="form-select" id="lm_var_currency" name="currency_id"><option t-foreach="currencies" t-as="c" t-att-value="c.id" t-att-selected="c.id == form_currency" t-esc="c.name"/></select></div>
-                            <div class="col-12 col-md-6"><span class="form-label d-block fw-semibold mb-1">Markets</span><div class="lm-check-group"><label t-foreach="websites" t-as="w"><input type="checkbox" class="form-check-input m-0" name="market_ids" t-att-value="w.id" t-att-checked="w.id in form_markets"/> <span t-esc="w.name"/></label></div></div>
+                            <input type="hidden" name="currency_id" t-att-value="request.env.company.currency_id.id"/>
                         </div>
                         <div class="lm-table-responsive">
                             <table class="table align-middle lm-table">
@@ -822,6 +932,86 @@
 
     <template id="portal_return_state_badge" name="Marketplace Return State Badge">
         <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="ret"/></t>
+    </template>
+
+    <template id="portal_vendor_contract" name="Vendor Contract Model">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_contract">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Contract model</h1>
+                        <p class="lm-page-subtitle">
+                            <t t-if="vendor.leaders_free_until">Your free period runs until <strong t-esc="vendor.leaders_free_until" t-options="{'widget': 'date'}"/>.</t>
+                            Then you sell with the model you choose here.
+                        </p>
+                    </div>
+                </div>
+                <div t-if="message" class="alert alert-success" role="status" t-esc="message"/>
+                <div t-if="error" class="alert alert-danger" role="alert" t-esc="error"/>
+                <div class="lm-table-responsive">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th/><th t-foreach="join_models" t-as="m" t-esc="m.name"/></tr></thead>
+                        <tbody>
+                            <tr><th>What you pay</th><td t-foreach="join_models" t-as="m" t-esc="m.what_you_pay"/></tr>
+                            <tr><th>The buyer sees your name</th><td t-foreach="join_models" t-as="m"><t t-if="m.name_shown">Yes</t><t t-else="">No</t></td></tr>
+                            <tr><th>Who talks to the buyer</th><td t-foreach="join_models" t-as="m" t-esc="m.buyer_contact"/></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <t t-if="vendor.leaders_contract_model">
+                    <p>Your model: <strong t-esc="dict(vendor._fields['leaders_contract_model'].selection).get(vendor.leaders_contract_model)"/>.</p>
+                    <p t-if="pending_switch" class="text-muted">Your switch request is being reviewed.</p>
+                    <form t-else="" method="post" class="d-flex flex-wrap gap-2 align-items-end">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="action" value="switch"/>
+                        <select name="model" class="form-select w-auto">
+                            <option t-foreach="join_models.filtered(lambda m: m.code != vendor.leaders_contract_model)" t-as="m" t-att-value="m.code" t-esc="m.name"/>
+                        </select>
+                        <input type="text" name="note" class="form-control w-auto" placeholder="Why (optional)"/>
+                        <button type="submit" class="btn btn-outline-primary">Ask for a switch</button>
+                    </form>
+                    <p class="small text-muted mt-2">A switch applies to all your products at once, after the platform approves it.</p>
+                </t>
+                <t t-elif="choice_open">
+                    <form method="post" class="d-flex flex-wrap gap-2">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <button t-foreach="join_models" t-as="m" type="submit" name="model" t-att-value="m.code" class="btn btn-primary">
+                            Choose <t t-esc="m.name"/>
+                        </button>
+                    </form>
+                </t>
+                <p t-else="" class="text-muted">You choose your model near the end of your free period: by then you know your views and your orders.</p>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_rentals" name="Vendor Rentals">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_rentals">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Rentals</h1>
+                        <p class="lm-page-subtitle">Your machines the platform rents out in its own name.</p>
+                    </div>
+                </div>
+                <t t-set="lb_from">From</t><t t-set="lb_to">To</t><t t-set="lb_area">Area</t><t t-set="lb_state">Machine</t>
+                <div t-if="rows" class="lm-table-responsive">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Machine</th><th>From</th><th>To</th><th>Area</th><th>Machine status</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="rows" t-as="row">
+                                <td class="lm-cell-title" t-esc="row['machine']"/>
+                                <td t-att-data-label="lb_from" t-esc="row['from']" t-options="{'widget': 'date'}"/>
+                                <td t-att-data-label="lb_to" t-esc="row['to']" t-options="{'widget': 'date'}"/>
+                                <td t-att-data-label="lb_area" t-esc="row['area']"/>
+                                <td t-att-data-label="lb_state" t-esc="row['asset_state']"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p t-else="" class="text-muted">None of your machines is on rent.</p>
+            </div>
+        </t>
     </template>
 
     <template id="portal_vendor_returns" name="Vendor Returns">

@@ -1,0 +1,48 @@
+{
+ "screen_id": "backend_order_dialog_ship_wizard",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_order_dialog_ship_wizard_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "نافذة كميات الشحن",
+   "selector": ".modal .modal-content",
+   "device": "desktop",
+   "bbox": {
+    "x": 230,
+    "y": 212,
+    "w": 980,
+    "h": 476
+   }
+  },
+  {
+   "n": 2,
+   "label": "رقم التتبع",
+   "selector": ".modal [name='tracking_ref']",
+   "device": "desktop",
+   "bbox": {
+    "x": 247,
+    "y": 332,
+    "w": 887,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "الكميات المطلوبة والمتاحة والمشحونة",
+   "selector": ".modal [name='line_ids']",
+   "device": "desktop",
+   "bbox": {
+    "x": 247,
+    "y": 371,
+    "w": 946,
+    "h": 200
+   }
+  }
+ ]
+}

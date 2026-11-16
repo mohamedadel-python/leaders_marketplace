@@ -12,13 +12,13 @@ KEPT_STANDARD_URLS = ("/my/security",)
 # Selection values shared by several models (approved, pending, done ...) share the tone.
 STATE_TONES = {
     # waiting for somebody
-    "pending": "warning", "requested": "warning", "submitted": "warning", "under_review": "warning",
+    "pending": "warning", "requested": "warning", "submitted": "warning", "under_review": "warning", "new": "warning",
     "pending_approval": "warning", "hold": "warning", "held": "warning", "open": "warning",
     "not_paid": "warning", "vendor_reply": "warning", "delivery_reported": "warning",
     "returned": "warning", "late": "danger", "draft": "secondary",
     "placed": "info", "partially_cancelled": "warning",
     # in progress
-    "confirmed": "info", "processing": "info", "allocated": "info", "picking": "info",
+    "confirmed": "info", "processing": "info", "inProgress": "info", "executing": "info", "reviewing": "info", "contacting": "info", "contacted": "info", "offered": "primary", "allocated": "info", "picking": "info",
     "packing": "info", "validating": "info", "scheduled": "info", "created": "info",
     "picked_up": "info", "in_transit": "info", "uploaded": "secondary", "not_started": "secondary",
     # moving on / nearly done
@@ -42,6 +42,7 @@ STATE_TONES = {
     "answered": "success", "hidden": "dark",
     # neutral
     "closed": "secondary", "none": "secondary", "consumed": "secondary",
+    "used": "secondary", "superseded": "secondary",
 }
 TIMELINE_KEYS = ("ordered", "confirmed", "shipped", "delivered")
 
@@ -138,6 +139,8 @@ class LeadersPortalNav(models.AbstractModel):
              "enabled": Import._leaders_import_enabled()},
             {"key": "orders", "url": "/my/vendor/orders", "icon": "fa-shopping-cart", "label": _("Orders")},
             {"key": "returns", "url": "/my/vendor/returns", "icon": "fa-undo", "label": _("Returns")},
+            {"key": "rentals", "url": "/my/vendor/rentals", "icon": "fa-calendar", "label": _("Rentals")},
+            {"key": "contract", "url": "/my/vendor/contract", "icon": "fa-handshake-o", "label": _("Contract model")},
             {"key": "disputes", "url": "/my/vendor/disputes", "icon": "fa-gavel", "label": _("Disputes")},
             # Product Q&A (D3): only while its master switch is on.
             {"key": "questions", "url": "/my/vendor/questions", "icon": "fa-question-circle",

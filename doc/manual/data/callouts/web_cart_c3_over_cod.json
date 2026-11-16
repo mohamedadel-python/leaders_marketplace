@@ -1,0 +1,41 @@
+{
+ "screen_id": "web_cart_c3_over_cod",
+ "images": {
+  "desktop": {
+   "file": "customer/web_cart_c3_over_cod_desktop.png",
+   "width": 1440,
+   "height": 900
+  },
+  "mobile": {
+   "file": "customer/web_cart_c3_over_cod_mobile.png",
+   "width": 780,
+   "height": 2432
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "بنود السلة",
+   "selector": "#cart_products, .oe_cart",
+   "device": "desktop",
+   "bbox": {
+    "x": 610,
+    "y": 138,
+    "w": 770,
+    "h": 136
+   }
+  },
+  {
+   "n": 1,
+   "label": "بنود السلة",
+   "selector": "#cart_products, .oe_cart",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 320,
+    "w": 780,
+    "h": 255
+   }
+  }
+ ]
+}

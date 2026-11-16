@@ -1,0 +1,16 @@
+{
+ "screen_id": "portal_customer_checkout_cancel_shipped",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_checkout_cancel_shipped_desktop.png",
+   "width": 1440,
+   "height": 1418
+  },
+  "mobile": {
+   "file": "customer/portal_customer_checkout_cancel_shipped_mobile.png",
+   "width": 780,
+   "height": 4184
+  }
+ },
+ "markers": []
+}

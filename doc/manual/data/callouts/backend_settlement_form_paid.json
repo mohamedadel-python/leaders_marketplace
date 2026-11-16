@@ -1,0 +1,120 @@
+{
+ "screen_id": "backend_settlement_form_paid",
+ "images": {
+  "desktop": {
+   "file": "finance/backend_settlement_form_paid_desktop.png",
+   "width": 1440,
+   "height": 1502
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 234,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 213,
+    "w": 1301,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "الفترة من",
+   "selector": ".o_form_view .o_field_widget[name='period_from']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 252,
+    "w": 1301,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "الفترة إلى",
+   "selector": ".o_form_view .o_field_widget[name='period_to']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 291,
+    "w": 1301,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "المبلغ الإجمالي",
+   "selector": ".o_form_view .o_field_widget[name='gross_amount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 369,
+    "w": 1192,
+    "h": 21
+   }
+  },
+  {
+   "n": 6,
+   "label": "الخصومات",
+   "selector": ".o_form_view .o_field_widget[name='deductions']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 403,
+    "w": 1192,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "المبلغ الصافي",
+   "selector": ".o_form_view .o_field_widget[name='net_amount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 437,
+    "w": 1192,
+    "h": 21
+   }
+  },
+  {
+   "n": 8,
+   "label": "يومية صرف المستحقات",
+   "selector": ".o_form_view .o_field_widget[name='payout_journal_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 471,
+    "w": 1192,
+    "h": 26
+   }
+  },
+  {
+   "n": 9,
+   "label": "الحساب البنكي لصرف المستحقات",
+   "selector": ".o_form_view .o_field_widget[name='payout_bank_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 510,
+    "w": 1192,
+    "h": 24
+   }
+  }
+ ]
+}

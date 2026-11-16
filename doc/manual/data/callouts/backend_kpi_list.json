@@ -1,0 +1,108 @@
+{
+ "screen_id": "backend_kpi_list",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_kpi_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "الفترة",
+   "selector": "th[data-name='period']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1294,
+    "y": 106,
+    "w": 105,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 950,
+    "y": 106,
+    "w": 344,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "عدد الطلبات",
+   "selector": "th[data-name='order_count']",
+   "device": "desktop",
+   "bbox": {
+    "x": 870,
+    "y": 106,
+    "w": 80,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "معدل الاكتمال",
+   "selector": "th[data-name='completion_rate']",
+   "device": "desktop",
+   "bbox": {
+    "x": 703,
+    "y": 106,
+    "w": 167,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "معدل الإلغاء",
+   "selector": "th[data-name='cancellation_rate']",
+   "device": "desktop",
+   "bbox": {
+    "x": 536,
+    "y": 106,
+    "w": 167,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "معدل الشحن المتأخر",
+   "selector": "th[data-name='late_shipment_rate']",
+   "device": "desktop",
+   "bbox": {
+    "x": 342,
+    "y": 106,
+    "w": 194,
+    "h": 38
+   }
+  },
+  {
+   "n": 8,
+   "label": "متوسط التقييم",
+   "selector": "th[data-name='avg_rating']",
+   "device": "desktop",
+   "bbox": {
+    "x": 138,
+    "y": 106,
+    "w": 102,
+    "h": 38
+   }
+  }
+ ]
+}

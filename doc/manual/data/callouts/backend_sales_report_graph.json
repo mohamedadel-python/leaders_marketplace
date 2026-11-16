@@ -1,0 +1,48 @@
+{
+ "screen_id": "backend_sales_report_graph",
+ "images": {
+  "desktop": {
+   "file": "finance/backend_sales_report_graph_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "أزرار تبديل العرض",
+   "selector": ".o_cp_switch_buttons",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 54,
+    "w": 112,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "الرسم البياني",
+   "selector": ".o_graph_renderer",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 105,
+    "w": 1440,
+    "h": 795
+   }
+  }
+ ]
+}

@@ -1,0 +1,132 @@
+{
+ "screen_id": "backend_application_form_approved",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_application_form_approved_desktop.png",
+   "width": 1440,
+   "height": 2039
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 258,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "إعادة إرسال دعوة البوابة",
+   "selector": "button[name=\"action_create_portal_user\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1294,
+    "y": 113,
+    "w": 130,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "اسم النشاط التجاري",
+   "selector": ".o_form_view .o_field_widget[name='business_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 380,
+    "y": 200,
+    "w": 1018,
+    "h": 34
+   }
+  },
+  {
+   "n": 4,
+   "label": "اسم المتجر",
+   "selector": ".o_form_view .o_field_widget[name='store_name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 348,
+    "w": 514,
+    "h": 21
+   }
+  },
+  {
+   "n": 5,
+   "label": "النوع القانوني",
+   "selector": ".o_form_view .o_field_widget[name='legal_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 382,
+    "w": 514,
+    "h": 21
+   }
+  },
+  {
+   "n": 6,
+   "label": "رقم التسجيل الضريبي / VAT",
+   "selector": ".o_form_view .o_field_widget[name='tax_number']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 484,
+    "w": 514,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "البريد الإلكتروني لمالك البائع",
+   "selector": ".o_form_view .o_field_widget[name='owner_email']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 382,
+    "w": 509,
+    "h": 21
+   }
+  },
+  {
+   "n": 8,
+   "label": "حالة KYC",
+   "selector": ".o_form_view .o_field_widget[name='kyc_state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 1062,
+    "w": 599,
+    "h": 26
+   }
+  },
+  {
+   "n": 9,
+   "label": "المراجع",
+   "selector": ".o_form_view .o_field_widget[name='reviewer_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 1101,
+    "w": 599,
+    "h": 26
+   }
+  },
+  {
+   "n": 10,
+   "label": "تبويبات النموذج",
+   "selector": ".o_notebook_headers",
+   "device": "desktop",
+   "bbox": {
+    "x": 17,
+    "y": 1150,
+    "w": 1406,
+    "h": 39
+   }
+  }
+ ]
+}

@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_order_form_cancelled_customer",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_order_form_cancelled_customer_desktop.png",
+   "width": 1440,
+   "height": 1929
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 322,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "نوع جهة الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='cancelled_by_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 668,
+    "w": 565,
+    "h": 21
+   }
+  },
+  {
+   "n": 3,
+   "label": "سبب الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='cancel_reason_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 702,
+    "w": 565,
+    "h": 24
+   }
+  },
+  {
+   "n": 4,
+   "label": "تاريخ الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='cancel_date']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 739,
+    "w": 565,
+    "h": 21
+   }
+  },
+  {
+   "n": 5,
+   "label": "ملاحظة الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='cancel_note']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 702,
+    "w": 571,
+    "h": 21
+   }
+  }
+ ]
+}

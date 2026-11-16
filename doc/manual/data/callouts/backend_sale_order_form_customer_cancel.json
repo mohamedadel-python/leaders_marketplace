@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_sale_order_form_customer_cancel",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_sale_order_form_customer_cancel_desktop.png",
+   "width": 1440,
+   "height": 2448
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "تم الإلغاء بواسطة",
+   "selector": ".o_form_view .o_field_widget[name='leaders_cancelled_by_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 475,
+    "w": 1266,
+    "h": 21
+   }
+  },
+  {
+   "n": 2,
+   "label": "سبب الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='leaders_cancel_reason_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 509,
+    "w": 1266,
+    "h": 24
+   }
+  },
+  {
+   "n": 3,
+   "label": "ملاحظة الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='leaders_cancel_note']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 546,
+    "w": 1266,
+    "h": 21
+   }
+  },
+  {
+   "n": 4,
+   "label": "تاريخ الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='leaders_cancel_date']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 580,
+    "w": 1266,
+    "h": 21
+   }
+  },
+  {
+   "n": 5,
+   "label": "استرداد الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='leaders_refund_payment_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 614,
+    "w": 1266,
+    "h": 24
+   }
+  }
+ ]
+}

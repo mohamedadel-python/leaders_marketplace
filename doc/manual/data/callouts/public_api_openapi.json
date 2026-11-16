@@ -1,0 +1,11 @@
+{
+ "screen_id": "public_api_openapi",
+ "images": {
+  "desktop": {
+   "file": "visitor/public_api_openapi_desktop.png",
+   "width": 1440,
+   "height": 2341
+  }
+ },
+ "markers": []
+}

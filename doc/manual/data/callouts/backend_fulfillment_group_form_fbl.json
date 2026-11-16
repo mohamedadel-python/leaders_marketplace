@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_fulfillment_group_form_fbl",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_fulfillment_group_form_fbl_desktop.png",
+   "width": 1440,
+   "height": 1339
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "طلب البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_order_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 179,
+    "w": 601,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "نوع التنفيذ",
+   "selector": ".o_form_view .o_field_widget[name='fulfillment_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 218,
+    "w": 601,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "رقم التتبع",
+   "selector": ".o_form_view .o_field_widget[name='tracking_ref']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 296,
+    "w": 601,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "حالة الشحن",
+   "selector": ".o_form_view .o_field_widget[name='shipping_status']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 330,
+    "w": 593,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "AWB",
+   "selector": ".o_form_view .o_field_widget[name='awb']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 252,
+    "w": 593,
+    "h": 26
+   }
+  }
+ ]
+}

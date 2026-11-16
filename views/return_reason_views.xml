@@ -7,6 +7,7 @@
             <list editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
+                <field name="leaders_parts_allowed"/>
                 <field name="requires_photo"/>
                 <field name="customer_pays_shipping"/>
                 <field name="active" widget="boolean_toggle"/>
@@ -22,6 +23,7 @@
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <group>
                         <field name="name"/>
+                        <field name="leaders_parts_allowed"/>
                         <field name="requires_photo"/>
                         <field name="customer_pays_shipping"/>
                         <field name="sequence"/>

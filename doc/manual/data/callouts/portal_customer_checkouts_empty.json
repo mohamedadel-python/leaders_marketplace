@@ -1,0 +1,41 @@
+{
+ "screen_id": "portal_customer_checkouts_empty",
+ "images": {
+  "desktop": {
+   "file": "customer/portal_customer_checkouts_empty_desktop.png",
+   "width": 1440,
+   "height": 1114
+  },
+  "mobile": {
+   "file": "customer/portal_customer_checkouts_empty_mobile.png",
+   "width": 780,
+   "height": 3712
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "رسالة عدم وجود طلبات",
+   "selector": "#lm_empty_state, .lm-empty",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 444,
+    "w": 1290,
+    "h": 222
+   }
+  },
+  {
+   "n": 1,
+   "label": "رسالة عدم وجود طلبات",
+   "selector": "#lm_empty_state, .lm-empty",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1317,
+    "w": 720,
+    "h": 444
+   }
+  }
+ ]
+}

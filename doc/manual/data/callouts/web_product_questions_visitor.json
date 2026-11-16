@@ -1,0 +1,65 @@
+{
+ "screen_id": "web_product_questions_visitor",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_product_questions_visitor_desktop.png",
+   "width": 1440,
+   "height": 1362
+  },
+  "mobile": {
+   "file": "visitor/web_product_questions_visitor_mobile.png",
+   "width": 780,
+   "height": 4374
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قسم الأسئلة والأجوبة",
+   "selector": "#lm_questions",
+   "device": "desktop",
+   "bbox": {
+    "x": 60,
+    "y": 821,
+    "w": 1320,
+    "h": 156
+   }
+  },
+  {
+   "n": 2,
+   "label": "دعوة لتسجيل الدخول",
+   "selector": "#lm_question_login",
+   "device": "desktop",
+   "bbox": {
+    "x": 92,
+    "y": 916,
+    "w": 1256,
+    "h": 44
+   }
+  },
+  {
+   "n": 1,
+   "label": "قسم الأسئلة والأجوبة",
+   "selector": "#lm_questions",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 2238,
+    "w": 780,
+    "h": 312
+   }
+  },
+  {
+   "n": 2,
+   "label": "دعوة لتسجيل الدخول",
+   "selector": "#lm_question_login",
+   "device": "mobile",
+   "bbox": {
+    "x": 64,
+    "y": 2429,
+    "w": 652,
+    "h": 88
+   }
+  }
+ ]
+}

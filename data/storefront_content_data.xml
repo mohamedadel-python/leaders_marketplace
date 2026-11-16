@@ -1,0 +1,23 @@
+<odoo noupdate="1">
+    <record id="seq_equipment_listing" model="ir.sequence">
+        <field name="name">Equipment listing</field>
+        <field name="code">leaders.equipment.listing</field>
+        <field name="prefix">SL-</field>
+        <field name="padding">4</field>
+        <field name="number_next">1001</field>
+    </record>
+
+    <!-- the legal and about pages of the storefront; the admin writes them and ticks Published -->
+    <record id="site_page_terms" model="leaders.site.page">
+        <field name="slug">terms</field>
+        <field name="title">Terms and conditions</field>
+    </record>
+    <record id="site_page_privacy" model="leaders.site.page">
+        <field name="slug">privacy</field>
+        <field name="title">Privacy policy</field>
+    </record>
+    <record id="site_page_about" model="leaders.site.page">
+        <field name="slug">about</field>
+        <field name="title">About us</field>
+    </record>
+</odoo>

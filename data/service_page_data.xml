@@ -1,0 +1,427 @@
+<odoo noupdate="1">
+    <!-- the five services of the storefront: products in a category of the services group, edited on the product form (Service page tab) -->
+    <record id="leaders_service_inspection" model="product.template">
+        <field name="type">service</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="leaders_slug">inspection</field>
+        <field name="sequence">10</field>
+        <field name="is_published" eval="True"/>
+        <field name="leaders_service_mandatory" eval="True"/>
+        <field name="leaders_service_responsible_id" ref="base.user_admin"/>
+        <field name="public_categ_ids" eval="[(6, 0, [ref('leaders_categ_inspection')])]"/>
+        <field name="name">Technical inspection</field>
+        <field name="leaders_service_summary">Inspect equipment and verify its technical condition before buying or renting, with the results clearly documented.</field>
+        <field name="leaders_service_lead">An independent technical inspection of any equipment before you buy, carried out by a technician from our network and ending with a written report you receive.</field>
+        <field name="leaders_service_panel_title">Inspection &amp; documentation</field>
+        <field name="leaders_service_request_title">Inspection &amp; documentation request</field>
+        <field name="leaders_service_checklist_title">What exactly do we inspect?</field>
+        <field name="leaders_service_checklist_lead">Every item is reviewed and recorded in the final report.</field>
+        <field name="leaders_service_deliverable">Written inspection report</field>
+        <field name="leaders_service_deliverable_short">Written report</field>
+    </record>
+    <record id="leaders_service_inspection_item_1" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_inspection"/>
+        <field name="sequence">10</field>
+        <field name="name">Engine condition and actual running hours</field>
+    </record>
+    <record id="leaders_service_inspection_item_2" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_inspection"/>
+        <field name="sequence">20</field>
+        <field name="name">Control and protection panel</field>
+    </record>
+    <record id="leaders_service_inspection_item_3" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_inspection"/>
+        <field name="sequence">30</field>
+        <field name="name">Running test under load</field>
+    </record>
+    <record id="leaders_service_inspection_item_4" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_inspection"/>
+        <field name="sequence">40</field>
+        <field name="name">Frame and sound-proof canopy</field>
+    </record>
+    <record id="leaders_service_inspection_item_5" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_inspection"/>
+        <field name="sequence">50</field>
+        <field name="name">Cooling and lubrication system</field>
+    </record>
+    <record id="leaders_service_inspection_item_6" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_inspection"/>
+        <field name="sequence">60</field>
+        <field name="name">Data matches the listing</field>
+    </record>
+    <record id="leaders_service_inspection_item_7" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_inspection"/>
+        <field name="sequence">70</field>
+        <field name="name">Electrical connections and cables</field>
+    </record>
+    <record id="leaders_service_inspection_item_8" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_inspection"/>
+        <field name="sequence">80</field>
+        <field name="name">Ownership and past maintenance documents</field>
+    </record>
+    <record id="leaders_service_maintenance" model="product.template">
+        <field name="type">service</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="leaders_slug">maintenance</field>
+        <field name="sequence">20</field>
+        <field name="is_published" eval="True"/>
+        <field name="leaders_service_mandatory" eval="False"/>
+        <field name="leaders_service_responsible_id" ref="base.user_admin"/>
+        <field name="public_categ_ids" eval="[(6, 0, [ref('leaders_categ_maintenance')])]"/>
+        <field name="name">Maintenance &amp; repair</field>
+        <field name="leaders_service_summary">Periodic maintenance and repair of generators and equipment by qualified technicians, on site or at the workshop.</field>
+        <field name="leaders_service_lead">A maintenance visit by a technician from our network that keeps your equipment running and ends with a written visit report.</field>
+        <field name="leaders_service_panel_title">Maintenance &amp; repair</field>
+        <field name="leaders_service_request_title">Maintenance request</field>
+        <field name="leaders_service_checklist_title">What does the visit cover?</field>
+        <field name="leaders_service_checklist_lead">Every item is checked and recorded in the visit report.</field>
+        <field name="leaders_service_deliverable">Maintenance visit report</field>
+        <field name="leaders_service_deliverable_short">Visit report</field>
+    </record>
+    <record id="leaders_service_maintenance_item_1" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_maintenance"/>
+        <field name="sequence">10</field>
+        <field name="name">Oil and filter change</field>
+    </record>
+    <record id="leaders_service_maintenance_item_2" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_maintenance"/>
+        <field name="sequence">20</field>
+        <field name="name">Cooling system and radiator</field>
+    </record>
+    <record id="leaders_service_maintenance_item_3" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_maintenance"/>
+        <field name="sequence">30</field>
+        <field name="name">Battery and charging</field>
+    </record>
+    <record id="leaders_service_maintenance_item_4" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_maintenance"/>
+        <field name="sequence">40</field>
+        <field name="name">Fuel system</field>
+    </record>
+    <record id="leaders_service_maintenance_item_5" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_maintenance"/>
+        <field name="sequence">50</field>
+        <field name="name">Control panel and alarms</field>
+    </record>
+    <record id="leaders_service_maintenance_item_6" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_maintenance"/>
+        <field name="sequence">60</field>
+        <field name="name">Running test under load</field>
+    </record>
+    <record id="leaders_service_maintenance_item_7" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_maintenance"/>
+        <field name="sequence">70</field>
+        <field name="name">Belts and hoses</field>
+    </record>
+    <record id="leaders_service_maintenance_item_8" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_maintenance"/>
+        <field name="sequence">80</field>
+        <field name="name">Electrical connections</field>
+    </record>
+    <record id="leaders_service_solar" model="product.template">
+        <field name="type">service</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="leaders_slug">solar</field>
+        <field name="sequence">30</field>
+        <field name="is_published" eval="True"/>
+        <field name="leaders_service_mandatory" eval="False"/>
+        <field name="leaders_service_responsible_id" ref="base.user_admin"/>
+        <field name="public_categ_ids" eval="[(6, 0, [ref('leaders_categ_solar')])]"/>
+        <field name="name">Solar energy</field>
+        <field name="leaders_service_summary">Design, installation and maintenance of solar power systems for sites and facilities.</field>
+        <field name="leaders_service_lead">A solar power system sized for your site, from the survey to commissioning, by an installer from our network.</field>
+        <field name="leaders_service_panel_title">Solar energy</field>
+        <field name="leaders_service_request_title">Solar energy request</field>
+        <field name="leaders_service_checklist_title">What does the study cover?</field>
+        <field name="leaders_service_checklist_lead">Every item is part of the design you receive.</field>
+        <field name="leaders_service_deliverable">System design and quotation</field>
+        <field name="leaders_service_deliverable_short">Design and quotation</field>
+    </record>
+    <record id="leaders_service_solar_item_1" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_solar"/>
+        <field name="sequence">10</field>
+        <field name="name">Site survey and shading</field>
+    </record>
+    <record id="leaders_service_solar_item_2" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_solar"/>
+        <field name="sequence">20</field>
+        <field name="name">Load study</field>
+    </record>
+    <record id="leaders_service_solar_item_3" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_solar"/>
+        <field name="sequence">30</field>
+        <field name="name">Panel sizing</field>
+    </record>
+    <record id="leaders_service_solar_item_4" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_solar"/>
+        <field name="sequence">40</field>
+        <field name="name">Inverter and batteries</field>
+    </record>
+    <record id="leaders_service_solar_item_5" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_solar"/>
+        <field name="sequence">50</field>
+        <field name="name">Mounting structure</field>
+    </record>
+    <record id="leaders_service_solar_item_6" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_solar"/>
+        <field name="sequence">60</field>
+        <field name="name">Wiring and protection</field>
+    </record>
+    <record id="leaders_service_solar_item_7" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_solar"/>
+        <field name="sequence">70</field>
+        <field name="name">Grid or hybrid connection</field>
+    </record>
+    <record id="leaders_service_solar_item_8" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_solar"/>
+        <field name="sequence">80</field>
+        <field name="name">Commissioning</field>
+    </record>
+    <record id="leaders_service_load_bank" model="product.template">
+        <field name="type">service</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="leaders_slug">load-bank</field>
+        <field name="sequence">40</field>
+        <field name="is_published" eval="True"/>
+        <field name="public_categ_ids" eval="[(6, 0, [ref('leaders_categ_services')])]"/>
+        <field name="leaders_service_mandatory" eval="False"/>
+        <field name="leaders_service_responsible_id" ref="base.user_admin"/>
+        <field name="name">Load bank testing</field>
+        <field name="leaders_service_summary">Test a generator under a real, stepped load to prove it delivers its rated power.</field>
+        <field name="leaders_service_lead">A load bank test on site by a technician from our network, ending with a written test report.</field>
+        <field name="leaders_service_panel_title">Load bank testing</field>
+        <field name="leaders_service_request_title">Load bank test request</field>
+        <field name="leaders_service_checklist_title">What do we measure?</field>
+        <field name="leaders_service_checklist_lead">Every reading is recorded in the test report.</field>
+        <field name="leaders_service_deliverable">Load test report</field>
+        <field name="leaders_service_deliverable_short">Test report</field>
+    </record>
+    <record id="leaders_service_load_bank_item_1" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_load_bank"/>
+        <field name="sequence">10</field>
+        <field name="name">Output at each load step</field>
+    </record>
+    <record id="leaders_service_load_bank_item_2" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_load_bank"/>
+        <field name="sequence">20</field>
+        <field name="name">Voltage and frequency stability</field>
+    </record>
+    <record id="leaders_service_load_bank_item_3" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_load_bank"/>
+        <field name="sequence">30</field>
+        <field name="name">Engine and coolant temperature</field>
+    </record>
+    <record id="leaders_service_load_bank_item_4" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_load_bank"/>
+        <field name="sequence">40</field>
+        <field name="name">Fuel consumption</field>
+    </record>
+    <record id="leaders_service_load_bank_item_5" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_load_bank"/>
+        <field name="sequence">50</field>
+        <field name="name">Exhaust smoke</field>
+    </record>
+    <record id="leaders_service_load_bank_item_6" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_load_bank"/>
+        <field name="sequence">60</field>
+        <field name="name">Protection trips</field>
+    </record>
+    <record id="leaders_service_load_bank_item_7" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_load_bank"/>
+        <field name="sequence">70</field>
+        <field name="name">Governor and AVR response</field>
+    </record>
+    <record id="leaders_service_load_bank_item_8" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_load_bank"/>
+        <field name="sequence">80</field>
+        <field name="name">Signed test log</field>
+    </record>
+    <record id="leaders_service_temporary_power" model="product.template">
+        <field name="type">service</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="leaders_slug">temporary-power</field>
+        <field name="sequence">50</field>
+        <field name="is_published" eval="True"/>
+        <field name="public_categ_ids" eval="[(6, 0, [ref('leaders_categ_services')])]"/>
+        <field name="leaders_service_mandatory" eval="False"/>
+        <field name="leaders_service_responsible_id" ref="base.user_admin"/>
+        <field name="name">Temporary power</field>
+        <field name="leaders_service_summary">Generators and power distribution for events, construction sites and emergencies, for the period you need.</field>
+        <field name="leaders_service_lead">Power delivered, installed and run on your site for the period you need, by a supplier from our network.</field>
+        <field name="leaders_service_panel_title">Temporary power</field>
+        <field name="leaders_service_request_title">Temporary power request</field>
+        <field name="leaders_service_checklist_title">What is included?</field>
+        <field name="leaders_service_checklist_lead">Every item is planned with you before delivery.</field>
+        <field name="leaders_service_deliverable">Power plan and quotation</field>
+        <field name="leaders_service_deliverable_short">Plan and quotation</field>
+    </record>
+    <record id="leaders_service_temporary_power_item_1" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_temporary_power"/>
+        <field name="sequence">10</field>
+        <field name="name">Load estimate</field>
+    </record>
+    <record id="leaders_service_temporary_power_item_2" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_temporary_power"/>
+        <field name="sequence">20</field>
+        <field name="name">Generator sizing</field>
+    </record>
+    <record id="leaders_service_temporary_power_item_3" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_temporary_power"/>
+        <field name="sequence">30</field>
+        <field name="name">Delivery and installation</field>
+    </record>
+    <record id="leaders_service_temporary_power_item_4" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_temporary_power"/>
+        <field name="sequence">40</field>
+        <field name="name">Distribution boards and cables</field>
+    </record>
+    <record id="leaders_service_temporary_power_item_5" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_temporary_power"/>
+        <field name="sequence">50</field>
+        <field name="name">Fuel supply</field>
+    </record>
+    <record id="leaders_service_temporary_power_item_6" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_temporary_power"/>
+        <field name="sequence">60</field>
+        <field name="name">On-site operator</field>
+    </record>
+    <record id="leaders_service_temporary_power_item_7" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_temporary_power"/>
+        <field name="sequence">70</field>
+        <field name="name">Maintenance during the period</field>
+    </record>
+    <record id="leaders_service_temporary_power_item_8" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_temporary_power"/>
+        <field name="sequence">80</field>
+        <field name="name">Removal at the end</field>
+    </record>
+    <record id="leaders_service_installation" model="product.template">
+        <field name="type">service</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="leaders_slug">installation</field>
+        <field name="sequence">60</field>
+        <field name="is_published" eval="True"/>
+        <field name="leaders_service_mandatory" eval="False"/>
+        <field name="leaders_service_responsible_id" ref="base.user_admin"/>
+        <field name="public_categ_ids" eval="[(6, 0, [ref('leaders_categ_installation')])]"/>
+        <field name="name">Installation &amp; commissioning</field>
+        <field name="leaders_service_summary">Installation and commissioning of generators and equipment on your site, ready to run.</field>
+        <field name="leaders_service_lead">A technician from our network installs, connects and starts up your equipment on site, and hands it over with a commissioning report.</field>
+        <field name="leaders_service_panel_title">Installation &amp; commissioning</field>
+        <field name="leaders_service_request_title">Installation request</field>
+        <field name="leaders_service_checklist_title">What does the installation cover?</field>
+        <field name="leaders_service_checklist_lead">Every step is checked and recorded in the handover report.</field>
+        <field name="leaders_service_deliverable">Installation and commissioning report</field>
+        <field name="leaders_service_deliverable_short">Handover report</field>
+    </record>
+    <record id="leaders_service_installation_item_1" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_installation"/>
+        <field name="sequence">10</field>
+        <field name="name">Site survey and foundation check</field>
+    </record>
+    <record id="leaders_service_installation_item_2" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_installation"/>
+        <field name="sequence">20</field>
+        <field name="name">Positioning and fixing the equipment</field>
+    </record>
+    <record id="leaders_service_installation_item_3" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_installation"/>
+        <field name="sequence">30</field>
+        <field name="name">Electrical connection and cabling</field>
+    </record>
+    <record id="leaders_service_installation_item_4" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_installation"/>
+        <field name="sequence">40</field>
+        <field name="name">Fuel, oil and coolant filling</field>
+    </record>
+    <record id="leaders_service_installation_item_5" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_installation"/>
+        <field name="sequence">50</field>
+        <field name="name">Start-up and test run</field>
+    </record>
+    <record id="leaders_service_installation_item_6" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_installation"/>
+        <field name="sequence">60</field>
+        <field name="name">Handover and operator briefing</field>
+    </record>
+    <record id="leaders_service_delivery" model="product.template">
+        <field name="type">service</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="leaders_slug">delivery</field>
+        <field name="sequence">70</field>
+        <field name="is_published" eval="True"/>
+        <field name="leaders_service_mandatory" eval="False"/>
+        <field name="leaders_service_responsible_id" ref="base.user_admin"/>
+        <field name="public_categ_ids" eval="[(6, 0, [ref('leaders_categ_delivery')])]"/>
+        <field name="name">Delivery &amp; transport</field>
+        <field name="leaders_service_summary">Transport of equipment and heavy machines to your site with the right truck and safe loading.</field>
+        <field name="leaders_service_lead">Your equipment moved to your site by a transport partner from our network: loaded, secured and unloaded safely.</field>
+        <field name="leaders_service_panel_title">Delivery &amp; transport</field>
+        <field name="leaders_service_request_title">Delivery request</field>
+        <field name="leaders_service_checklist_title">What is included?</field>
+        <field name="leaders_service_checklist_lead">Every step is planned with you before the move.</field>
+        <field name="leaders_service_deliverable">Delivery note signed on receipt</field>
+        <field name="leaders_service_deliverable_short">Signed delivery note</field>
+    </record>
+    <record id="leaders_service_delivery_item_1" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_delivery"/>
+        <field name="sequence">10</field>
+        <field name="name">Choosing the right truck or low-bed trailer</field>
+    </record>
+    <record id="leaders_service_delivery_item_2" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_delivery"/>
+        <field name="sequence">20</field>
+        <field name="name">Loading and securing the load</field>
+    </record>
+    <record id="leaders_service_delivery_item_3" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_delivery"/>
+        <field name="sequence">30</field>
+        <field name="name">Route planning and permits</field>
+    </record>
+    <record id="leaders_service_delivery_item_4" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_delivery"/>
+        <field name="sequence">40</field>
+        <field name="name">Unloading and positioning on site</field>
+    </record>
+    <record id="leaders_service_delivery_item_5" model="leaders.service.checklist.item">
+        <field name="product_tmpl_id" ref="leaders_service_delivery"/>
+        <field name="sequence">50</field>
+        <field name="name">Delivery note signed on receipt</field>
+    </record>
+    <!-- E.164 phones on service requests: the storefront sends international numbers; "0" accepts any phone -->
+    <record id="param_service_phone_e164" model="ir.config_parameter">
+        <field name="key">leaders_marketplace.storefront_service_phone_e164</field>
+        <field name="value">1</field>
+    </record>
+    <!-- development: every read endpoint answers Cache-Control: no-store; "0" at launch restores the cache headers -->
+    <record id="param_api_no_cache" model="ir.config_parameter">
+        <field name="key">leaders_marketplace.api_no_cache</field>
+        <field name="value">1</field>
+    </record>
+    <function model="product.template" name="load_service_icons"/>
+
+    <record id="mail_template_service_request_received" model="mail.template">
+        <field name="name">Storefront: service request received</field>
+        <field name="model_id" ref="leaders_marketplace.model_leaders_customer_request"/>
+        <field name="subject">We received your request {{ object.name }}</field>
+        <field name="email_from">{{ (object.env.company.email_formatted or user.email_formatted) }}</field>
+        <field name="lang">{{ ctx.get('lang') }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 13px;">
+<p>Hello <t t-out="object.partner_id.name or ''"/>,</p>
+<p>We received your request for <strong t-out="object.service_name() or object.service"/>.</p>
+<p>Your reference number is:</p>
+<p style="font-size: 20px; letter-spacing: 2px;"><strong t-out="object.name"/></p>
+<p>Our team will call you on <t t-out="object.phone or ''"/> to arrange it. Keep this number and quote it when you contact us.</p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

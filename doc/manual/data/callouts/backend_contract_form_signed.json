@@ -1,0 +1,120 @@
+{
+ "screen_id": "backend_contract_form_signed",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_contract_form_signed_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 117,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 179,
+    "w": 580,
+    "h": 24
+   }
+  },
+  {
+   "n": 3,
+   "label": "الشروط",
+   "selector": ".o_form_view .o_field_widget[name='terms_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 216,
+    "w": 580,
+    "h": 24
+   }
+  },
+  {
+   "n": 4,
+   "label": "إصدار الشروط",
+   "selector": ".o_form_view .o_field_widget[name='terms_version']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 253,
+    "w": 580,
+    "h": 21
+   }
+  },
+  {
+   "n": 5,
+   "label": "وقّع بواسطة",
+   "selector": ".o_form_view .o_field_widget[name='user_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 179,
+    "w": 548,
+    "h": 24
+   }
+  },
+  {
+   "n": 6,
+   "label": "وقت التوقيع",
+   "selector": ".o_form_view .o_field_widget[name='signed_at']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 216,
+    "w": 548,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "IP التوقيع",
+   "selector": ".o_form_view .o_field_widget[name='signed_ip']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 250,
+    "w": 548,
+    "h": 21
+   }
+  },
+  {
+   "n": 8,
+   "label": "تم القبول عبر الإنترنت",
+   "selector": ".o_form_view .o_field_widget[name='accepted']",
+   "device": "desktop",
+   "bbox": {
+    "x": 568,
+    "y": 284,
+    "w": 21,
+    "h": 23
+   }
+  },
+  {
+   "n": 9,
+   "label": "PDF",
+   "selector": ".o_form_view .o_field_widget[name='pdf_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 320,
+    "w": 548,
+    "h": 24
+   }
+  }
+ ]
+}

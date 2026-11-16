@@ -8,8 +8,8 @@ Run with the manual venv (Playwright + Chromium + Pillow), NOT with the Odoo env
 What it does
     * reads doc/manual/data/screens_manifest.json (built by scripts/gen_screens_manifest.py);
     * talks to a RUNNING Odoo server of the DB (``--base-url``, default http://localhost:<port>) or starts one
-      itself with ``--serve`` (port 8100-8199, data-dir /tmp/claude-1000/lmmanual, --workers=0, log in
-      /tmp/claude-1000; the server is stopped at the end by PID, never with a pattern kill);
+      itself with ``--serve`` (port 8100-8199, data-dir /tmp/lmmanual, --workers=0, log in
+      /tmp; the server is stopped at the end by PID, never with a pattern kill);
     * looks every record up at capture time through XML-RPC with the admin login (nothing hard-coded: a screen
       says ``{model, domain, order, index}`` and the script resolves the id), so it works on any copy of the
       demo data; a screen whose record does not exist yet is SKIPPED with a warning (``requires`` names the
@@ -77,7 +77,7 @@ REPORT = MANUAL / "data" / "capture_report.json"
 ODOO_DIR = Path("/projects/odoo18/odoo-18.0")
 ODOO_PY = "/odoo18/env-odoo18/bin/python"
 ODOO_CONF = "/etc/odoo/odoo18.conf.save"
-DATA_DIR = "/tmp/claude-1000/lmmanual"
+DATA_DIR = "/tmp/lmmanual"
 CHROME = "/home/mohamed/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome"
 FREEZE_UTC = "2026-09-01 06:00:00"          # 09:00 Cairo, end of the demo timeline
 FREEZE_JS_ISO = "2026-09-01T09:00:00+03:00"
@@ -235,14 +235,14 @@ def prepare_db(rpc):
 class Server:
     def __init__(self, db, port, freeze=True):
         self.db, self.port, self.freeze, self.proc = db, port, freeze, None
-        self.logfile = Path("/tmp/claude-1000/lm_capture_server_%d.log" % port)
+        self.logfile = Path("/tmp/lm_capture_server_%d.log" % port)
 
     def start(self):
         args = ["-c", ODOO_CONF, "-d", self.db, "--db-filter=^%s$" % self.db, "--addons-path=addons,custom",
                 "--data-dir=" + DATA_DIR, "--http-port=%d" % self.port, "--gevent-port=%d" % (self.port + 1),
                 "--workers=0", "--max-cron-threads=0", "--without-demo=all"]
         if self.freeze:
-            wrapper = Path("/tmp/claude-1000/lm_capture_freeze_wrapper.py")
+            wrapper = Path("/tmp/lm_capture_freeze_wrapper.py")
             wrapper.write_text(
                 "import sys, os, runpy, freezegun\n"
                 "sys.path.insert(0, os.getcwd())\n"

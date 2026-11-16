@@ -1,0 +1,108 @@
+{
+ "screen_id": "backend_question_list",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_question_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "create_date",
+   "selector": "th[data-name='create_date']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1217,
+    "y": 106,
+    "w": 183,
+    "h": 40
+   }
+  },
+  {
+   "n": 3,
+   "label": "المنتج",
+   "selector": "th[data-name='product_tmpl_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 919,
+    "y": 106,
+    "w": 298,
+    "h": 40
+   }
+  },
+  {
+   "n": 4,
+   "label": "صاحب السؤال",
+   "selector": "th[data-name='partner_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 813,
+    "y": 106,
+    "w": 106,
+    "h": 40
+   }
+  },
+  {
+   "n": 5,
+   "label": "سؤال",
+   "selector": "th[data-name='question']",
+   "device": "desktop",
+   "bbox": {
+    "x": 418,
+    "y": 106,
+    "w": 395,
+    "h": 40
+   }
+  },
+  {
+   "n": 6,
+   "label": "تمت الإجابة بواسطة (البائع)",
+   "selector": "th[data-name='answered_partner_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 190,
+    "y": 106,
+    "w": 228,
+    "h": 40
+   }
+  },
+  {
+   "n": 7,
+   "label": "الحالة",
+   "selector": "th[data-name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 85,
+    "y": 106,
+    "w": 104,
+    "h": 40
+   }
+  },
+  {
+   "n": 8,
+   "label": "معتمد",
+   "selector": "th[data-name='approved']",
+   "device": "desktop",
+   "bbox": {
+    "x": 32,
+    "y": 106,
+    "w": 53,
+    "h": 40
+   }
+  }
+ ]
+}

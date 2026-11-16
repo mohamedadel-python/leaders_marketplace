@@ -1,0 +1,144 @@
+{
+ "screen_id": "backend_dispute_form_open",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_dispute_form_open_desktop.png",
+   "width": 1440,
+   "height": 1016
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 328,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "تصعيد",
+   "selector": "button[name=\"action_escalate\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1373,
+    "y": 113,
+    "w": 51,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "حل",
+   "selector": "button[name=\"action_resolve\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1333,
+    "y": 113,
+    "w": 37,
+    "h": 33
+   }
+  },
+  {
+   "n": 4,
+   "label": "إغلاق",
+   "selector": "button[name=\"action_close\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1280,
+    "y": 113,
+    "w": 49,
+    "h": 33
+   }
+  },
+  {
+   "n": 5,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 380,
+    "y": 179,
+    "w": 1018,
+    "h": 34
+   }
+  },
+  {
+   "n": 6,
+   "label": "طلب البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_order_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 234,
+    "w": 601,
+    "h": 26
+   }
+  },
+  {
+   "n": 7,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 273,
+    "w": 601,
+    "h": 24
+   }
+  },
+  {
+   "n": 8,
+   "label": "العميل",
+   "selector": ".o_form_view .o_field_widget[name='partner_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 310,
+    "w": 601,
+    "h": 24
+   }
+  },
+  {
+   "n": 9,
+   "label": "الموعد النهائي للبائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_deadline']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 234,
+    "w": 547,
+    "h": 21
+   }
+  },
+  {
+   "n": 10,
+   "label": "السبب",
+   "selector": ".o_form_view .o_field_widget[name='reason']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 368,
+    "w": 1358,
+    "h": 21
+   }
+  },
+  {
+   "n": 11,
+   "label": "القرار",
+   "selector": ".o_form_view .o_field_widget[name='decision']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 415,
+    "w": 1358,
+    "h": 50
+   }
+  }
+ ]
+}

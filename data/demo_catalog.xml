@@ -1,0 +1,4 @@
+<odoo>
+    <!-- demo catalogue: 18 machines, 10 parts, the demo customer of the storefront contract; only with demo data -->
+    <function model="leaders.catalog.seed" name="load_demo_data"/>
+</odoo>

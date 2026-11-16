@@ -1,0 +1,264 @@
+<odoo>
+    <!-- Brands / tags / equipment models: admin-managed lists -->
+    <record id="view_leaders_brand_list" model="ir.ui.view">
+        <field name="name">leaders.brand.list</field>
+        <field name="model">leaders.brand</field>
+        <field name="arch" type="xml">
+            <list editable="bottom"><field name="logo" widget="image" options="{'size': [48, 48]}"/><field name="name"/><field name="product_count"/><field name="active" column_invisible="1"/></list>
+        </field>
+    </record>
+    <record id="action_leaders_brand" model="ir.actions.act_window">
+        <field name="name">Brands</field>
+        <field name="res_model">leaders.brand</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="view_leaders_product_tag_list" model="ir.ui.view">
+        <field name="name">leaders.product.tag.list</field>
+        <field name="model">leaders.product.tag</field>
+        <field name="arch" type="xml">
+            <list editable="bottom"><field name="name"/></list>
+        </field>
+    </record>
+    <record id="action_leaders_product_tag" model="ir.actions.act_window">
+        <field name="name">Spare Part Tags</field>
+        <field name="res_model">leaders.product.tag</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="view_leaders_equipment_model_list" model="ir.ui.view">
+        <field name="name">leaders.equipment.model.list</field>
+        <field name="model">leaders.equipment.model</field>
+        <field name="arch" type="xml">
+            <list editable="bottom"><field name="name"/><field name="brand_id"/><field name="equipment_count"/><field name="part_count"/></list>
+        </field>
+    </record>
+    <record id="action_leaders_equipment_model" model="ir.actions.act_window">
+        <field name="name">Equipment Models</field>
+        <field name="res_model">leaders.equipment.model</field>
+        <field name="view_mode">list</field>
+    </record>
+    <!-- Category tree -->
+    <record id="view_public_category_leaders_list" model="ir.ui.view">
+        <field name="name">product.public.category.list.leaders</field>
+        <field name="model">product.public.category</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="display_name" string="Category"/>
+                <field name="leaders_slug"/>
+                <field name="leaders_group"/>
+                <field name="leaders_field_set"/>
+                <field name="leaders_can_buy"/>
+                <field name="leaders_can_rent"/>
+                <field name="leaders_is_service"/>
+                <field name="leaders_accepts_used"/>
+                <field name="leaders_inspection_required"/>
+                <field name="leaders_hidden"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_public_category_leaders_search" model="ir.ui.view">
+        <field name="name">product.public.category.search.leaders</field>
+        <field name="model">product.public.category</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="leaders_slug"/>
+                <filter name="marketplace" string="Marketplace categories" domain="[('leaders_slug', '!=', False)]"/>
+                <filter name="hidden" string="Hidden" domain="[('leaders_hidden', '=', True)]"/>
+                <filter name="services" string="Services" domain="[('leaders_is_service', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="by_group" string="Storefront group" context="{'group_by': 'leaders_group'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_leaders_category" model="ir.actions.act_window">
+        <field name="name">Categories</field>
+        <field name="res_model">product.public.category</field>
+        <field name="search_view_id" ref="view_public_category_leaders_search"/>
+        <field name="context">{'search_default_marketplace': 1}</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_public_category_leaders_list')}), (0, 0, {'view_mode': 'form'})]"/>
+    </record>
+    <record id="view_leaders_source_list" model="ir.ui.view">
+        <field name="name">leaders.source.list</field>
+        <field name="model">leaders.source</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/><field name="name"/><field name="code"/><field name="api_code"/>
+                <field name="is_original"/><field name="aliases"/><field name="product_count"/><field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_leaders_source" model="ir.actions.act_window">
+        <field name="name">Sources</field>
+        <field name="res_model">leaders.source</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="view_leaders_energy_source_list" model="ir.ui.view">
+        <field name="name">leaders.energy.source.list</field>
+        <field name="model">leaders.energy.source</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/><field name="name"/><field name="code"/>
+                <field name="aliases"/><field name="product_count"/><field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_leaders_energy_source" model="ir.actions.act_window">
+        <field name="name">Energy Sources</field>
+        <field name="res_model">leaders.energy.source</field>
+        <field name="view_mode">list</field>
+    </record>
+    <!-- a menu of the four sections, see marketplace_category_views.xml -->
+    <menuitem id="menu_leaders_category" name="Categories" parent="menu_configuration" sequence="40"/>
+    <menuitem id="menu_leaders_brand" name="Brands" parent="menu_configuration" action="action_leaders_brand" sequence="50"/>
+    <menuitem id="menu_leaders_source" name="Sources" parent="menu_configuration" action="action_leaders_source" sequence="60"/>
+    <menuitem id="menu_leaders_energy_source" name="Energy Sources" parent="menu_configuration" action="action_leaders_energy_source" sequence="70"/>
+    <menuitem id="menu_leaders_tag" name="Spare Part Tags" parent="menu_configuration" action="action_leaders_product_tag" sequence="80"/>
+    <menuitem id="menu_leaders_equipment_model" name="Equipment Models" parent="menu_configuration" action="action_leaders_equipment_model" sequence="90"/>
+
+    <!-- Category settings -->
+    <record id="view_public_category_leaders" model="ir.ui.view">
+        <field name="name">product.public.category.form.leaders</field>
+        <field name="model">product.public.category</field>
+        <field name="inherit_id" ref="website_sale.product_public_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Marketplace behaviour" groups="leaders_marketplace.group_marketplace_manager">
+                    <field name="leaders_field_set"/>
+                    <field name="leaders_can_buy"/>
+                    <field name="leaders_can_rent"/>
+                    <field name="leaders_is_service"/>
+                    <field name="leaders_accepts_used"/>
+                    <field name="leaders_inspection_required" invisible="not leaders_accepts_used"/>
+                    <field name="leaders_delivery_surcharge" invisible="leaders_field_set != 'part'"/>
+                    <field name="leaders_rent_margin_percent" invisible="not leaders_can_rent"/>
+                    <field name="leaders_hidden"/>
+                    <field name="leaders_slug" readonly="1"
+                           help="Made from the category name, English or Arabic (Air Compressors -> air-compressors, ضواغط هوائية -> dwaght-hwaeya). It cannot be typed."/>
+                    <field name="leaders_group"/>
+                </group>
+                <group string="Storefront content" groups="leaders_marketplace.group_marketplace_manager">
+                    <field name="leaders_description"/>
+                    <field name="leaders_icon" widget="image" options="{'size': [64, 64]}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Product form: one tab in the order and with the names of the product sheet (labels only; field names unchanged) -->
+    <record id="view_product_template_leaders_catalog" model="ir.ui.view">
+        <field name="name">product.template.form.leaders.catalog</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="leaders_marketplace.view_product_template_marketplace_base"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook/page[@name='general_information']" position="before">
+                <!-- the guide's unified product form: the part number goes in the product name, other makers' numbers
+                     in Similar names; Part number, Alternative numbers and the inspection exemption stay hidden (their
+                     data and the storefront API are unchanged) -->
+                <page string="Product data" name="leaders_product_data" invisible="leaders_service_page">
+                    <field name="leaders_service_page" invisible="1"/>
+                    <field name="leaders_field_set" invisible="1"/>
+                    <div class="alert alert-info" role="status" invisible="leaders_field_set">
+                        Choose the subcategory first: the fields of equipment or of spare parts appear after it.
+                    </div>
+                    <group>
+                        <group string="Basic data">
+                            <!-- inside a section of Marketplace > Products: only that section's subcategories -->
+                            <field name="public_categ_ids" string="Subcategory" widget="many2many_tags"
+                                   options="{'no_create': True}"
+                                   domain="[('id', 'child_of', context.get('lm_section_root')), ('id', '!=', context.get('lm_section_root'))] if context.get('lm_section_root') else []" help="The subcategory of the product (for example Generators, Loaders, Filters). It decides the section of the website, the fields shown below, the filters and the link of the product. Inside a section only that section&#x27;s subcategories are offered. Required."/>
+                            <field name="leaders_brand_id" string="Brand" help="The maker of the product, chosen from the brand list (Marketplace &gt; Configuration &gt; Brands). A main filter on the website and part of the search. Required."/>
+                            <field name="leaders_model_id" string="Model (family)" invisible="leaders_field_set == 'part'"
+                                   domain="[('brand_id', 'in', [leaders_brand_id, False])] if leaders_brand_id else []"
+                                   context="{'default_brand_id': leaders_brand_id}" help="The model or family of the machine (for example P110-5), from the list of its brand&#x27;s models. Used in search, and it links the spare parts that fit this machine. Required for equipment."/>
+                            <field name="leaders_compatible_model_ids" string="Model (family)" widget="many2many_tags"
+                                   invisible="leaders_field_set != 'part'" help="The equipment models this part fits, one or more. It powers the &#x27;choose your machine&#x27; filter and the parts suggested with each machine. Required for spare parts."/>
+                            <field name="leaders_similar_names" string="Similar names"
+                                   placeholder="e.g. diesel genset, مولد ديزل, ماكينة كهربا" help="Other names people use for this product, separated by commas, in Arabic or English (for example: diesel genset, مولد ديزل). For a spare part, also write here the numbers of the same part at other makers (for example LF3349, P550162); the part&#x27;s own number goes in the product name. Search on the website also looks here. Optional, not shown to the customer."/>
+                            <field name="leaders_tag_ids" string="Tags" widget="many2many_tags" help="Tags that describe the product (family, type, size such as &#x27;oil filters&#x27;, &#x27;15W-40&#x27;). Used for filtering and search, and new tags can be added. Required for spare parts."/>
+                            <field name="leaders_source_id" string="Source" options="{'no_create': True}" help="Where the product comes from: Original, China or Egypt. A filter on the website. Required."/>
+                            <field name="leaders_condition" string="Condition" help="New, used or refurbished. A used or refurbished machine also needs the year, the operating hours, the operation video and the meter and data plate photos, and may need an inspection before it is published. Oils and filters are new only. Required."/>
+                        </group>
+                        <group string="Capacity and power" invisible="leaders_field_set == 'part'">
+                            <label for="leaders_capacity" string="Capacity / power"/>
+                            <div class="o_row"><field name="leaders_capacity" help="The capacity or power of the machine as a number, read with the unit next to it (for example 250 kVA, 3 ton). The most important filter in every equipment category. Required for equipment."/><field name="leaders_capacity_unit" placeholder="Capacity unit" help="The unit of the capacity: kVA, kW, ton, cubic metre, ampere, metre or litre. Shown with the capacity."/></div>
+                            <field name="leaders_energy_id" string="Energy source" options="{'no_create': True}" help="What powers the machine: diesel, petrol, gas, electric or hybrid. A filter on the website."/>
+                        </group>
+                        <group string="Part details" invisible="leaders_field_set != 'part'">
+                            <field name="leaders_part_number" string="Part number" help="The maker&#x27;s number of the part, exactly as written on it. The first thing a technician searches for. Required for spare parts." invisible="1"/>
+                            <field name="leaders_alt_numbers" string="Alternative numbers" help="The numbers of the same part at other makers, separated by commas (for example LF3349, P550162). Search finds the part by any of them. Optional, not shown to the customer." invisible="1"/>
+                            <field name="leaders_source_ids" invisible="1" string="Order sources" widget="many2many_tags" options="{'no_create': True}" help="The sources the customer may order this part in (Original, China, Egypt). Empty: only the single source above."/>
+                            <label for="leaders_capacity" string="Capacity / volume"/>
+                            <div class="o_row"><field name="leaders_capacity" help="The size or volume of the part when it matters, for example the litres of an oil pack. Shown in the specifications. Optional."/><field name="leaders_capacity_unit" help="The unit of the size or volume (litre, metre...)."/></div>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Price and sale">
+                            <field name="list_price" string="Price" widget="monetary" options="{'currency_field': 'currency_id'}" help="The price the customer pays, in the company currency. Empty or zero: the product shows &#x27;request a quote&#x27; instead of a price. A price-range filter on the website."/>
+                            <field name="leaders_listing_type" string="For sale or rent" widget="radio"
+                                   options="{'horizontal': true}" invisible="leaders_field_set == 'part'" help="Whether the machine is offered for sale or for rent. For rent shows the rental path on the website and needs the rent per day."/>
+                            <field name="leaders_rent_price_day" string="Rent per day" invisible="not leaders_rentable"
+                                   required="leaders_rentable" help="The vendor&#x27;s rent price for one day. The website shows it with the platform&#x27;s rent margin added. Required when the machine is for rent."/>
+                            <field name="leaders_rentable" invisible="1"/>
+                            <field name="qty_available" string="Quantity" readonly="1"
+                                   invisible="leaders_condition in ('used', 'refurbished')" help="The quantity on hand in the warehouses, for information only. Stock is updated from Inventory or by the vendor in their portal."/>
+                            <field name="leaders_warranty_months" string="Warranty (months)" help="The warranty length in months, shown on the product card as a buying reason. Required for equipment to be approved."/>
+                            <field name="leaders_service_ids" widget="many2many_tags" options="{'no_create': True}" help="The services a customer can ask for with this product (inspection, installation, delivery...). They are offered on the product page."/>
+                            <field name="leaders_warranty_provider" invisible="leaders_field_set == 'part'" help="Who gives the warranty: the vendor, the manufacturer or the platform. Required with the warranty for equipment to be approved."/>
+                            <field name="leaders_warranty_scope" invisible="leaders_field_set == 'part'"
+                                   placeholder="What it covers and what it excludes" help="What the warranty covers and what it excludes, in a few lines. Shown on the product page."/>
+                        </group>
+                        <group string="Serial and usage" invisible="leaders_field_set == 'part'">
+                            <field name="leaders_serial" string="Serial number" help="The serial number of the machine, for records and to tell machines apart. Optional, not a condition for publishing."/>
+                            <field name="leaders_year" string="Year of manufacture" invisible="leaders_condition not in ('used', 'refurbished')" help="The year the machine was made. A filter on the website. Required for used and refurbished machines."/>
+                            <field name="leaders_hours" string="Operating hours" invisible="leaders_condition not in ('used', 'refurbished')" help="How many hours the machine has run, as read on its hour meter. A filter on the website. Required for used and refurbished machines."/>
+                            <field name="leaders_video_url" string="Operation video link" widget="url" help="A YouTube or Google Drive link of the machine running. Shown on the product page. Required to approve a used machine; the platform checks every week that the link still works."/>
+                            <field name="leaders_video_broken" invisible="not leaders_video_broken" decoration-danger="1" help="Set by the weekly check when the video link stopped working. Put a working link to clear it."/>
+                            <field name="leaders_meter_photo" widget="image" options="{'size': [96, 96]}"
+                                   invisible="leaders_condition not in ('used', 'refurbished')" help="A photo of the machine&#x27;s hour meter, proving the operating hours. For the review only, not shown on the website. Required to approve a used machine."/>
+                            <field name="leaders_plate_photo" widget="image" options="{'size': [96, 96]}"
+                                   invisible="leaders_condition not in ('used', 'refurbished')" help="A photo of the data plate on the machine (maker, model, serial, year), proving the model and the year. For the review only. Required to approve a used machine."/>
+                        </group>
+                    </group>
+                    <group string="Product images">
+                        <field name="image_1920" string="Main image" widget="image" options="{'size': [128, 128]}" help="The main photo of the product, shown on the cards, in search and first on the product page. Required."/>
+                    </group>
+                    <field name="product_template_image_ids" class="o_website_sale_image_list" context="{'default_name': name}"
+                           mode="kanban" add-label="Add images" nolabel="1" widget="x2_many_media_viewer"
+                           options="{'convert_to_webp': True}" help="More photos shown in the product page gallery. Equipment needs at least three photos in all."/>
+                    <group string="Description">
+                        <field name="description_sale" string="Description" nolabel="1" colspan="2"
+                               placeholder="Write the Arabic text, then the English one with the language button." help="The description on the product page: every technical detail that is not a filter. Write the Arabic text, then the English one with the language button."/>
+                    </group>
+                </page>
+                <!-- what the storefront also uses but the project document does not list: apart, for the manager -->
+                <page string="Advanced settings" name="leaders_advanced" invisible="leaders_service_page"
+                      groups="leaders_marketplace.group_marketplace_manager">
+                    <group string="Engine and location" invisible="leaders_field_set == 'part'">
+                        <group>
+                            <field name="leaders_engine" help="The engine of the machine (for example Perkins 1106A). Shown in the specifications."/>
+                            <field name="leaders_engine_size" help="The engine size in litres. Shown in the specifications and used by the engine-size filter."/>
+                        </group>
+                        <group>
+                            <field name="leaders_prime_power" help="The continuous rating of a generator as text (for example 225 kVA). Shown in the specifications."/>
+                            <field name="leaders_city" help="The city where the machine is, as the website&#x27;s city key (for example cairo). Used by the location filter."/>
+                        </group>
+                    </group>
+                    <group string="Platform settings">
+                        <group>
+                            <field name="leaders_slug" string="Link (automatic)" readonly="1" help="The product&#x27;s link on the website (/products/slug). Made automatically from the brand and the model or the name (Arabic written in Latin letters). It follows the name until the product is published, then it stays so shared links keep working. It cannot be typed."/>
+                            <field name="leaders_kind" help="The website section of the product (power, equipment, part). Worked out from the subcategory; not typed."/>
+                            <field name="leaders_out_of_stock" help="Shows the product as out of stock on the website; adding it to a cart is refused."/>
+                        </group>
+                        <group>
+                            <field name="leaders_featured" help="Shows the product in the featured rows of the website&#x27;s home page."/>
+                            <field name="leaders_inspection_exempt" help="Lets a used product be published without the platform&#x27;s inspection. Only the administrator can set it." invisible="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

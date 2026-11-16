@@ -1,0 +1,209 @@
+{
+ "screen_id": "portal_vendor_finance_oasis",
+ "images": {
+  "desktop": {
+   "file": "vendor_owner/portal_vendor_finance_oasis_desktop.png",
+   "width": 1440,
+   "height": 3835
+  },
+  "mobile": {
+   "file": "vendor_owner/portal_vendor_finance_oasis_mobile.png",
+   "width": 780,
+   "height": 23576
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "قائمة البائع الجانبية",
+   "selector": ".lm-vendor-sidebar",
+   "device": "desktop",
+   "bbox": {
+    "x": 1135,
+    "y": 150,
+    "w": 230,
+    "h": 639
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 90,
+    "w": 1290,
+    "h": 48
+   }
+  },
+  {
+   "n": 3,
+   "label": "بطاقات الأرصدة (متاح ومعلق وتحت التسوية)",
+   "selector": "#lm_finance_cards",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 231,
+    "w": 1036,
+    "h": 78
+   }
+  },
+  {
+   "n": 4,
+   "label": "طلب تسوية",
+   "selector": "#lm_settlement_request",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 333,
+    "w": 1036,
+    "h": 174
+   }
+  },
+  {
+   "n": 5,
+   "label": "تسوياتي",
+   "selector": "#lm_settlements_panel",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 853,
+    "w": 1036,
+    "h": 204
+   }
+  },
+  {
+   "n": 6,
+   "label": "حركات المحفظة",
+   "selector": "#lm_wallet_panel",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 1081,
+    "w": 1036,
+    "h": 721
+   }
+  },
+  {
+   "n": 7,
+   "label": "احتياطي المرتجعات",
+   "selector": "#lm_reserve_panel",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 531,
+    "w": 1036,
+    "h": 298
+   }
+  },
+  {
+   "n": 8,
+   "label": "زر كشف الحساب",
+   "selector": "a[href='/my/vendor/finance/statement']",
+   "device": "desktop",
+   "bbox": {
+    "x": 75,
+    "y": 150,
+    "w": 122,
+    "h": 44
+   }
+  },
+  {
+   "n": 1,
+   "label": "قائمة البائع (شريط علوي في الجوال)",
+   "selector": ".lm-vendor-nav",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 297,
+    "w": 720,
+    "h": 108
+   }
+  },
+  {
+   "n": 2,
+   "label": "مسار التنقل",
+   "selector": "#lm_vendor_breadcrumbs",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 177,
+    "w": 720,
+    "h": 96
+   }
+  },
+  {
+   "n": 3,
+   "label": "بطاقات الأرصدة (متاح ومعلق وتحت التسوية)",
+   "selector": "#lm_finance_cards",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 585,
+    "w": 720,
+    "h": 482
+   }
+  },
+  {
+   "n": 4,
+   "label": "طلب تسوية",
+   "selector": "#lm_settlement_request",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1115,
+    "w": 720,
+    "h": 676
+   }
+  },
+  {
+   "n": 5,
+   "label": "تسوياتي",
+   "selector": "#lm_settlements_panel",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 3326,
+    "w": 720,
+    "h": 1581
+   }
+  },
+  {
+   "n": 6,
+   "label": "حركات المحفظة",
+   "selector": "#lm_wallet_panel",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 4955,
+    "w": 720,
+    "h": 6115
+   }
+  },
+  {
+   "n": 7,
+   "label": "احتياطي المرتجعات",
+   "selector": "#lm_reserve_panel",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1839,
+    "w": 720,
+    "h": 1438
+   }
+  },
+  {
+   "n": 8,
+   "label": "زر كشف الحساب",
+   "selector": "a[href='/my/vendor/finance/statement']",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 437,
+    "w": 245,
+    "h": 88
+   }
+  }
+ ]
+}

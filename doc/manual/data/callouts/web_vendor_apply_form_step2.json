@@ -1,0 +1,161 @@
+{
+ "screen_id": "web_vendor_apply_form_step2",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_vendor_apply_form_step2_desktop.png",
+   "width": 1440,
+   "height": 932
+  },
+  "mobile": {
+   "file": "visitor/web_vendor_apply_form_step2_mobile.png",
+   "width": 780,
+   "height": 3262
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "مؤشر الخطوات",
+   "selector": "#lm_apply_progress",
+   "device": "desktop",
+   "bbox": {
+    "x": 287,
+    "y": 203,
+    "w": 866,
+    "h": 6
+   }
+  },
+  {
+   "n": 2,
+   "label": "حقول الخطوة",
+   "selector": ".lm-step:not(.d-none)",
+   "device": "desktop",
+   "bbox": {
+    "x": 287,
+    "y": 225,
+    "w": 866,
+    "h": 239
+   }
+  },
+  {
+   "n": 3,
+   "label": "السابق",
+   "selector": "#lm_prev",
+   "device": "desktop",
+   "bbox": {
+    "x": 1077,
+    "y": 479,
+    "w": 76,
+    "h": 44
+   }
+  },
+  {
+   "n": 4,
+   "label": "التالي",
+   "selector": "#lm_next",
+   "device": "desktop",
+   "bbox": {
+    "x": 287,
+    "y": 479,
+    "w": 71,
+    "h": 44
+   }
+  },
+  {
+   "n": 5,
+   "label": "نوع الكيان القانوني",
+   "selector": "#lm_legal_type",
+   "device": "desktop",
+   "bbox": {
+    "x": 728,
+    "y": 310,
+    "w": 408,
+    "h": 44
+   }
+  },
+  {
+   "n": 6,
+   "label": "الرقم الضريبي",
+   "selector": "#lm_tax_number",
+   "device": "desktop",
+   "bbox": {
+    "x": 304,
+    "y": 402,
+    "w": 408,
+    "h": 44
+   }
+  },
+  {
+   "n": 1,
+   "label": "مؤشر الخطوات",
+   "selector": "#lm_apply_progress",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 388,
+    "w": 720,
+    "h": 11
+   }
+  },
+  {
+   "n": 2,
+   "label": "حقول الخطوة",
+   "selector": ".lm-step:not(.d-none)",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 432,
+    "w": 720,
+    "h": 840
+   }
+  },
+  {
+   "n": 3,
+   "label": "السابق",
+   "selector": "#lm_prev",
+   "device": "mobile",
+   "bbox": {
+    "x": 599,
+    "y": 1303,
+    "w": 151,
+    "h": 88
+   }
+  },
+  {
+   "n": 4,
+   "label": "التالي",
+   "selector": "#lm_next",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 1303,
+    "w": 141,
+    "h": 88
+   }
+  },
+  {
+   "n": 5,
+   "label": "نوع الكيان القانوني",
+   "selector": "#lm_legal_type",
+   "device": "mobile",
+   "bbox": {
+    "x": 64,
+    "y": 597,
+    "w": 652,
+    "h": 88
+   }
+  },
+  {
+   "n": 6,
+   "label": "الرقم الضريبي",
+   "selector": "#lm_tax_number",
+   "device": "mobile",
+   "bbox": {
+    "x": 64,
+    "y": 1149,
+    "w": 652,
+    "h": 88
+   }
+  }
+ ]
+}

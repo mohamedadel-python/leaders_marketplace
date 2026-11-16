@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_product_review_list",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_product_review_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "name",
+   "selector": "th[data-name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 949,
+    "y": 106,
+    "w": 451,
+    "h": 40
+   }
+  },
+  {
+   "n": 3,
+   "label": "بائع السوق",
+   "selector": "th[data-name='marketplace_vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 529,
+    "y": 106,
+    "w": 419,
+    "h": 40
+   }
+  },
+  {
+   "n": 4,
+   "label": "العروض",
+   "selector": "th[data-name='marketplace_offer_count']",
+   "device": "desktop",
+   "bbox": {
+    "x": 449,
+    "y": 106,
+    "w": 80,
+    "h": 40
+   }
+  },
+  {
+   "n": 5,
+   "label": "حالة السوق",
+   "selector": "th[data-name='marketplace_state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 32,
+    "y": 106,
+    "w": 235,
+    "h": 40
+   }
+  }
+ ]
+}

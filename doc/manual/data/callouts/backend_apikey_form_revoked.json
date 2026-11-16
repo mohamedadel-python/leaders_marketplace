@@ -1,0 +1,60 @@
+{
+ "screen_id": "backend_apikey_form_revoked",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_apikey_form_revoked_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاسم",
+   "selector": ".o_form_view .o_field_widget[name='name']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 146,
+    "w": 589,
+    "h": 21
+   }
+  },
+  {
+   "n": 2,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 180,
+    "w": 589,
+    "h": 24
+   }
+  },
+  {
+   "n": 3,
+   "label": "النطاق",
+   "selector": ".o_form_view .o_field_widget[name='scope']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 254,
+    "w": 589,
+    "h": 21
+   }
+  },
+  {
+   "n": 4,
+   "label": "تاريخ الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='revoked_date']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 248,
+    "w": 589,
+    "h": 21
+   }
+  }
+ ]
+}

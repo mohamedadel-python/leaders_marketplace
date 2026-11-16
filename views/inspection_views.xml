@@ -1,0 +1,63 @@
+<odoo>
+    <!-- Pre-listing inspection result buttons on the product form (reviewers) -->
+    <record id="view_product_template_leaders_inspection" model="ir.ui.view">
+        <field name="name">product.template.form.leaders.inspection</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="leaders_marketplace.view_product_template_leaders_catalog"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='leaders_product_data']" position="before">
+                <page string="Inspection" name="leaders_inspection" groups="leaders_marketplace.group_marketplace_reviewer"
+                      invisible="leaders_condition not in ('used', 'refurbished')">
+                    <div class="alert alert-warning" role="status" invisible="not leaders_requires_inspection or leaders_inspected">
+                        This used product is not shown on the storefront until it is inspected.
+                    </div>
+                    <group>
+                        <field name="leaders_requires_inspection" help="Set automatically when the product is used, its subcategory asks for an inspection and it is not exempted. Such a product is not shown on the website until it is inspected."/>
+                        <field name="leaders_inspected" readonly="1" help="Set by the inspection buttons below when the machine matches its listing. Shows the &#x27;inspected&#x27; badge on the website."/>
+                        <field name="leaders_inspection_result" help="The result of the platform&#x27;s inspection: the machine matches the listing or not."/>
+                        <field name="leaders_inspection_cost" help="What the vendor paid for the pre-listing inspection. It is added to the price the buyer sees."/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="leaders_duplicate_ids" widget="many2many_tags" invisible="not leaders_duplicate_ids"
+                               decoration-warning="1" help="Other listings with the same model, capacity, year and hours: maybe the same machine listed twice. Check before approving."/>
+                    </group>
+                    <div class="d-flex gap-2">
+                        <button name="action_leaders_inspection_passed" type="object" string="Inspection matches the listing"
+                                class="btn-primary" invisible="leaders_inspected"/>
+                        <button name="action_leaders_inspection_mismatch" type="object" string="Inspection does not match"
+                                class="btn-secondary"/>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_leaders_inspection_mismatch_wizard" model="ir.ui.view">
+        <field name="name">leaders.inspection.mismatch.wizard.form</field>
+        <field name="model">leaders.inspection.mismatch.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <p>The product is rejected and the vendor pays the inspection.</p>
+                <group>
+                    <field name="product_tmpl_id"/>
+                    <field name="vendor_id"/>
+                    <field name="amount"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="mode" widget="radio"/>
+                    <field name="reason" placeholder="e.g. running hours on the meter are 9,800, the listing says 6,200"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Reject and charge the vendor" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="cron_leaders_check_video_links" model="ir.cron">
+        <field name="name">Catalog: Check Operation Video Links</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_check_video_links()</field>
+        <field name="interval_number">1</field><field name="interval_type">days</field><field name="active">True</field>
+    </record>
+</odoo>

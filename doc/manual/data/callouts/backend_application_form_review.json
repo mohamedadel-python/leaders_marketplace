@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_application_form_review",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_application_form_review_desktop.png",
+   "width": 1440,
+   "height": 1876
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "المراجع",
+   "selector": ".o_form_view .o_field_widget[name='reviewer_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 1312,
+    "w": 599,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "حقول المراجعة",
+   "selector": ".o_notebook .tab-pane.active",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 1400,
+    "w": 1358,
+    "h": 232
+   }
+  }
+ ]
+}

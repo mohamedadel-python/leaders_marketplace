@@ -1,0 +1,156 @@
+{
+ "screen_id": "backend_offer_form_pending",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_offer_form_pending_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 336,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "اعتماد المنتج والعرض",
+   "selector": "button[name=\"action_approve_with_product\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1303,
+    "y": 113,
+    "w": 121,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "اعتماد",
+   "selector": "button[name=\"action_approve\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1250,
+    "y": 113,
+    "w": 49,
+    "h": 33
+   }
+  },
+  {
+   "n": 4,
+   "label": "رفض",
+   "selector": "button[name=\"action_reject\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1198,
+    "y": 113,
+    "w": 48,
+    "h": 33
+   }
+  },
+  {
+   "n": 5,
+   "label": "قالب المنتج",
+   "selector": ".o_form_view .o_field_widget[name='product_tmpl_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 232,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 6,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 310,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 7,
+   "label": "SKU البائع",
+   "selector": ".o_form_view .o_field_widget[name='seller_sku']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 349,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 8,
+   "label": "السعر",
+   "selector": ".o_form_view .o_field_widget[name='price']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 388,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 9,
+   "label": "نوع التنفيذ",
+   "selector": ".o_form_view .o_field_widget[name='fulfillment_type']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 466,
+    "w": 1234,
+    "h": 26
+   }
+  },
+  {
+   "n": 10,
+   "label": "درجة صندوق الشراء",
+   "selector": ".o_form_view .o_field_widget[name='buybox_score']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 576,
+    "w": 1234,
+    "h": 21
+   }
+  },
+  {
+   "n": 11,
+   "label": "الفائز بصندوق الشراء",
+   "selector": ".o_form_view .o_field_widget[name='is_buybox_winner']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1254,
+    "y": 610,
+    "w": 21,
+    "h": 23
+   }
+  },
+  {
+   "n": 12,
+   "label": "حالة العرض",
+   "selector": ".o_form_view .o_field_widget[name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 336,
+    "h": 33
+   }
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "screen_id": "portal_vendor_staff_forbidden",
+ "images": {
+  "desktop": {
+   "file": "vendor_staff/portal_vendor_staff_forbidden_desktop.png",
+   "width": 1440,
+   "height": 900
+  },
+  "mobile": {
+   "file": "vendor_staff/portal_vendor_staff_forbidden_mobile.png",
+   "width": 780,
+   "height": 2344
+  }
+ },
+ "markers": []
+}

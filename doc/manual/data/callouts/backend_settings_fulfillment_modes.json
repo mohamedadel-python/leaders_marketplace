@@ -1,0 +1,60 @@
+{
+ "screen_id": "backend_settings_fulfillment_modes",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_fulfillment_modes_desktop.png",
+   "width": 1306,
+   "height": 349
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "يمتلك السوق مستودعًا خاصًا (FBL)",
+   "selector": ".o_setting_box:has([name='marketplace_fbl_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 110
+   }
+  },
+  {
+   "n": 2,
+   "label": "رسوم التوصيل لـ FBL",
+   "selector": ".o_setting_box:has([name='marketplace_fbl_delivery_income'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 110
+   }
+  },
+  {
+   "n": 3,
+   "label": "دفتر يومية النقد للدفع عند الاستلام",
+   "selector": ".o_setting_box:has([name='marketplace_cod_cash_journal_id'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 200,
+    "w": 472,
+    "h": 131
+   }
+  },
+  {
+   "n": 4,
+   "label": "تأكيد التسليم لـ FBM",
+   "selector": ".o_setting_box:has([name='marketplace_fbm_delivery_mode'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 200,
+    "w": 472,
+    "h": 131
+   }
+  }
+ ]
+}

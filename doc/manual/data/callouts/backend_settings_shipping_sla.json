@@ -1,0 +1,36 @@
+{
+ "screen_id": "backend_settings_shipping_sla",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_shipping_sla_desktop.png",
+   "width": 1306,
+   "height": 223
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الشحن خلال (أيام)",
+   "selector": ".o_setting_box:has([name='marketplace_ship_sla_days'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 131
+   }
+  },
+  {
+   "n": 2,
+   "label": "تنبيه عند ارتفاع معدلات الشحن المتأخر",
+   "selector": ".o_setting_box:has([name='marketplace_late_shipment_auto_warning'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 131
+   }
+  }
+ ]
+}

@@ -47,4 +47,10 @@
         <field name="prefix">VBC/</field>
         <field name="padding">5</field>
     </record>
+    <record id="seq_storefront_contact" model="ir.sequence">
+        <field name="name">Storefront Contact Request</field>
+        <field name="code">leaders.contact.request</field>
+        <field name="prefix">CT-</field>
+        <field name="padding">6</field>
+    </record>
 </odoo>

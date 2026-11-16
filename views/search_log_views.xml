@@ -1,0 +1,136 @@
+<odoo>
+    <!-- Storefront search report: the searches and the filters customers use, and the searches that found nothing -->
+    <record id="view_leaders_search_log_list" model="ir.ui.view">
+        <field name="name">leaders.search.log.list</field>
+        <field name="model">leaders.search.log</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" decoration-danger="no_result">
+                <field name="create_date" string="Date"/>
+                <field name="query"/>
+                <field name="kind"/>
+                <field name="filter_ids" widget="many2many_tags" optional="show"/>
+                <field name="result_count"/>
+                <field name="clicked"/>
+                <field name="clicked_product_ids" widget="many2many_tags" optional="hide"/>
+                <field name="click_rate" optional="hide"/>
+                <field name="no_result" optional="hide"/>
+                <field name="lang" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_leaders_search_log_search" model="ir.ui.view">
+        <field name="name">leaders.search.log.search</field>
+        <field name="model">leaders.search.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="query"/>
+                <filter name="no_result" string="No results" domain="[('no_result', '=', True)]"/>
+                <filter name="with_query" string="With search words" domain="[('query', '!=', False)]"/>
+                <separator/>
+                <filter name="clicked" string="Clicked a result" domain="[('clicked', '=', True)]"/>
+                <filter name="not_clicked" string="Results, none opened"
+                        domain="[('clicked', '=', False), ('no_result', '=', False)]"/>
+                <separator/>
+                <filter name="last_30" string="Last 30 days"
+                        domain="[('create_date', '&gt;=', (context_today() - relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="by_query" string="Search words" context="{'group_by': 'query'}"/>
+                    <filter name="by_kind" string="Shelf" context="{'group_by': 'kind'}"/>
+                    <filter name="by_day" string="Day" context="{'group_by': 'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_leaders_search_log_pivot" model="ir.ui.view">
+        <field name="name">leaders.search.log.pivot</field>
+        <field name="model">leaders.search.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Searches">
+                <field name="query" type="row"/>
+                <field name="no_result" type="col"/>
+                <field name="click_rate" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_leaders_search_log" model="ir.actions.act_window">
+        <field name="name">Searches</field>
+        <field name="res_model">leaders.search.log</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="context">{'search_default_with_query': 1, 'search_default_by_query': 1}</field>
+        <field name="help" type="html"><p>The searches customers make on the storefront. Group by search words to rank them; filter "No results" to see what the catalogue is missing.</p></field>
+    </record>
+
+    <record id="view_leaders_search_log_filter_list" model="ir.ui.view">
+        <field name="name">leaders.search.log.filter.list</field>
+        <field name="model">leaders.search.log.filter</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="create_date" string="Date"/>
+                <field name="key"/>
+                <field name="value"/>
+                <field name="kind"/>
+                <field name="no_result" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_leaders_search_log_filter_search" model="ir.ui.view">
+        <field name="name">leaders.search.log.filter.search</field>
+        <field name="model">leaders.search.log.filter</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="key"/>
+                <field name="value"/>
+                <filter name="no_result" string="No results" domain="[('no_result', '=', True)]"/>
+                <filter name="last_30" string="Last 30 days"
+                        domain="[('create_date', '&gt;=', (context_today() - relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="by_key" string="Filter" context="{'group_by': 'key'}"/>
+                    <filter name="by_value" string="Value" context="{'group_by': 'value'}"/>
+                    <filter name="by_kind" string="Shelf" context="{'group_by': 'kind'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_leaders_search_log_filter_pivot" model="ir.ui.view">
+        <field name="name">leaders.search.log.filter.pivot</field>
+        <field name="model">leaders.search.log.filter</field>
+        <field name="arch" type="xml">
+            <pivot string="Filters used">
+                <field name="key" type="row"/>
+                <field name="value" type="row"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_leaders_search_log_filter" model="ir.actions.act_window">
+        <field name="name">Filters Used</field>
+        <field name="res_model">leaders.search.log.filter</field>
+        <field name="view_mode">pivot,list,graph</field>
+        <field name="help" type="html"><p>Every filter value customers choose on the storefront, so the most used filters come first.</p></field>
+    </record>
+
+    <menuitem id="menu_leaders_search_report" name="Search Report" parent="menu_performance" sequence="90"
+              groups="leaders_marketplace.group_marketplace_manager"/>
+    <menuitem id="menu_leaders_search_log" name="Searches" parent="menu_leaders_search_report"
+              action="action_leaders_search_log" sequence="10"/>
+    <menuitem id="menu_leaders_search_log_filter" name="Filters Used" parent="menu_leaders_search_report"
+              action="action_leaders_search_log_filter" sequence="20"/>
+
+    <record id="cron_leaders_search_log_purge" model="ir.cron">
+        <field name="name">Storefront: Purge Search Log (older than a year)</field>
+        <field name="model_id" ref="model_leaders_search_log"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_purge()</field>
+        <field name="interval_number">1</field><field name="interval_type">weeks</field><field name="active">True</field>
+    </record>
+
+    <!-- Approve several products at once (a vendor's imported sheet): Action menu of the product list -->
+    <record id="action_server_marketplace_approve_selected" model="ir.actions.server">
+        <field name="name">Approve selected products</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('leaders_marketplace.group_marketplace_reviewer'))]"/>
+        <field name="state">code</field>
+        <field name="code">records.filtered(lambda r: r.marketplace_state == 'pending' and not (r.leaders_requires_inspection and not r.leaders_inspected) and not r._leaders_listing_problems()).action_marketplace_approve()</field>
+    </record>
+</odoo>

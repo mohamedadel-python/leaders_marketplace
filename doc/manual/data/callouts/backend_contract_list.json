@@ -1,0 +1,108 @@
+{
+ "screen_id": "backend_contract_list",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_contract_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1079,
+    "y": 106,
+    "w": 321,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "الشروط",
+   "selector": "th[data-name='terms_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 760,
+    "y": 106,
+    "w": 319,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "إصدار الشروط",
+   "selector": "th[data-name='terms_version']",
+   "device": "desktop",
+   "bbox": {
+    "x": 680,
+    "y": 106,
+    "w": 80,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "وقّع بواسطة",
+   "selector": "th[data-name='user_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 504,
+    "y": 106,
+    "w": 175,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "وقت التوقيع",
+   "selector": "th[data-name='signed_at']",
+   "device": "desktop",
+   "bbox": {
+    "x": 322,
+    "y": 106,
+    "w": 182,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "IP التوقيع",
+   "selector": "th[data-name='signed_ip']",
+   "device": "desktop",
+   "bbox": {
+    "x": 145,
+    "y": 106,
+    "w": 176,
+    "h": 38
+   }
+  },
+  {
+   "n": 8,
+   "label": "الحالة",
+   "selector": "th[data-name='state']",
+   "device": "desktop",
+   "bbox": {
+    "x": 0,
+    "y": 106,
+    "w": 145,
+    "h": 38
+   }
+  }
+ ]
+}

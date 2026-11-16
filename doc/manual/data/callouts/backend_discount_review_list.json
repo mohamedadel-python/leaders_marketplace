@@ -1,0 +1,132 @@
+{
+ "screen_id": "backend_discount_review_list",
+ "images": {
+  "desktop": {
+   "file": "reviewer/backend_discount_review_list_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البحث والتصفية والتجميع",
+   "selector": ".o_searchview",
+   "device": "desktop",
+   "bbox": {
+    "x": 517,
+    "y": 54,
+    "w": 436,
+    "h": 35
+   }
+  },
+  {
+   "n": 2,
+   "label": "المنتج",
+   "selector": "th[data-name='product_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1266,
+    "y": 106,
+    "w": 134,
+    "h": 38
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": "th[data-name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1163,
+    "y": 106,
+    "w": 103,
+    "h": 38
+   }
+  },
+  {
+   "n": 4,
+   "label": "السعر",
+   "selector": "th[data-name='price']",
+   "device": "desktop",
+   "bbox": {
+    "x": 1048,
+    "y": 106,
+    "w": 114,
+    "h": 38
+   }
+  },
+  {
+   "n": 5,
+   "label": "نسبة الخصم",
+   "selector": "th[data-name='discount_percent']",
+   "device": "desktop",
+   "bbox": {
+    "x": 857,
+    "y": 106,
+    "w": 102,
+    "h": 38
+   }
+  },
+  {
+   "n": 6,
+   "label": "نسبة الخصم من السعر الأصلي",
+   "selector": "th[data-name='discount_regular_percent']",
+   "device": "desktop",
+   "bbox": {
+    "x": 640,
+    "y": 106,
+    "w": 102,
+    "h": 38
+   }
+  },
+  {
+   "n": 7,
+   "label": "بداية الخصم",
+   "selector": "th[data-name='discount_start']",
+   "device": "desktop",
+   "bbox": {
+    "x": 457,
+    "y": 106,
+    "w": 183,
+    "h": 38
+   }
+  },
+  {
+   "n": 8,
+   "label": "نهاية الخصم",
+   "selector": "th[data-name='discount_end']",
+   "device": "desktop",
+   "bbox": {
+    "x": 274,
+    "y": 106,
+    "w": 183,
+    "h": 38
+   }
+  },
+  {
+   "n": 9,
+   "label": "زر اعتماد الخصم",
+   "selector": "button[name='action_approve_discount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 119,
+    "y": 152,
+    "w": 61,
+    "h": 23
+   }
+  },
+  {
+   "n": 10,
+   "label": "زر رفض الخصم",
+   "selector": "button[name='action_reject_discount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 55,
+    "y": 152,
+    "w": 60,
+    "h": 23
+   }
+  }
+ ]
+}

@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vendor Application API Contract</title>
+<style>
+:root {
+  --bg: #f7f5ef; --panel: #ffffff; --ink: #191917; --muted: #6a695f; --line: #e3e0d5; --soft: #f1eee4;
+  --accent: #c2410c; --accent-ink: #ffffff; --code-bg: #f3f0e6;
+  --ok: #15803d; --ok-bg: #e4f4e8; --warn: #92600a; --warn-bg: #fcf0d6; --err: #b91c1c; --err-bg: #fbe6e6; --info: #1d4ed8; --info-bg: #e5edfd;
+  --k: #9a3412; --s: #166534; --n: #1d4ed8; --b: #7c3aed;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131311; --panel: #1c1c19; --ink: #efeee7; --muted: #a2a196; --line: #33322c; --soft: #242421;
+    --accent: #fb923c; --accent-ink: #1a1208; --code-bg: #232320;
+    --ok: #6ee79a; --ok-bg: #153020; --warn: #f5c451; --warn-bg: #33290f; --err: #fca5a5; --err-bg: #3a1919; --info: #93b4ff; --info-bg: #182340;
+    --k: #fdba74; --s: #86efac; --n: #93c5fd; --b: #c4b5fd;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+a { color: var(--accent); }
+.layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 36px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+nav { position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 64px); overflow: auto; padding: 24px 0; }
+nav h2 { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+nav a { display: block; color: var(--muted); text-decoration: none; padding: 3px 0 3px 10px; border-left: 2px solid transparent; font-size: 14px; }
+nav a:hover, nav a.on { color: var(--ink); border-left-color: var(--accent); }
+nav a.sub { padding-left: 22px; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; }
+main { padding: 30px 0 90px; min-width: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 { font-size: 36px; line-height: 1.12; margin: 6px 0 12px; letter-spacing: -.01em; }
+h2.section { font-size: 24px; margin: 54px 0 10px; }
+h3 { font-size: 16px; margin: 24px 0 6px; }
+p { margin: 9px 0; }
+.lede { color: var(--muted); max-width: 70ch; font-size: 16px; }
+.pill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-weight: 600; font-size: 12.5px; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); } .pill.err { color: var(--err); background: var(--err-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); } .pill.info { color: var(--info); background: var(--info-bg); }
+.callout { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px; overflow-x: auto; font-size: 12.8px; line-height: 1.55; margin: 8px 0 14px; }
+.tw { overflow-x: auto; margin: 10px 0 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th { text-align: left; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.method { color: var(--accent); font-weight: 700; font-size: 12.5px; letter-spacing: .04em; }
+.tag { font-size: 10.5px; padding: 1px 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-weight: 600; white-space: nowrap; }
+
+/* sticky playground dock */
+.dock { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.dock-in { max-width: 1200px; margin: 0 auto; padding: 8px 20px; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--panel); }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 5px 13px; font: 600 12.5px inherit; font-family: inherit; cursor: pointer; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+.dock input.base { width: 250px; max-width: 100%; }
+input, select, textarea { font: 13px/1.4 "IBM Plex Mono", ui-monospace, monospace; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 100%; }
+input:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); white-space: nowrap; }
+.chip b { color: var(--ink); font-weight: 600; }
+.chip.live { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.live .dot { background: var(--ok); animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+.dock .sp { flex: 1; }
+.mini { font: 600 12px inherit; font-family: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.mini:hover { color: var(--ink); border-color: var(--accent); }
+.drawer { max-width: 1200px; margin: 0 auto; padding: 0 20px 10px; display: none; }
+.drawer.open { display: block; }
+.drawer .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 12.5px; }
+.box h4 { margin: 0 0 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.box pre { margin: 0; border: 0; padding: 0; background: transparent; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+
+/* endpoint cards */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; margin: 22px 0; overflow: hidden; scroll-margin-top: 70px; }
+.card-h { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px 22px 4px; }
+.mpill { background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 6px; letter-spacing: .05em; }
+.path { font-size: 19px; font-weight: 700; }
+.what { color: var(--muted); }
+.auth { margin-left: auto; font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.card-b { padding: 4px 22px 18px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 14px; background: var(--soft); }
+.tabs button { border: 0; background: transparent; color: var(--muted); padding: 10px 16px; font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+.pane { display: none; padding: 16px 22px 22px; }
+.pane.on { display: block; }
+.vars { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.vars button { font: 600 12.5px "IBM Plex Mono", ui-monospace, monospace; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 5px 11px; cursor: pointer; }
+.vars button.on { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+.vars .s2 { color: var(--ok); } .vars .s4 { color: var(--warn); } .vars .s5 { color: var(--err); }
+.http { background: #14130f; color: #ece9dc; border-radius: 12px; padding: 14px 16px; font-size: 12.8px; line-height: 1.6; overflow-x: auto; margin: 0; border: 0; position: relative; }
+@media (prefers-color-scheme: dark) { .http { background: #0e0e0c; } }
+.http .sl { font-weight: 700; } .http .sl.c2 { color: #86efac; } .http .sl.c4 { color: #fcd34d; } .http .sl.c5 { color: #fca5a5; }
+.http .hn { color: #93c5fd; } .http .ck { color: #fdba74; } .http .dim { color: #8d8a7c; }
+.http .jk { color: #fdba74; } .http .js { color: #86efac; } .http .jn { color: #93c5fd; } .http .jb { color: #c4b5fd; }
+.copyb { position: absolute; top: 8px; right: 8px; background: #2a2923; color: #cfcbb9; border: 1px solid #3b3a32; border-radius: 6px; font: 600 11px inherit; font-family: inherit; padding: 3px 9px; cursor: pointer; }
+.note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.jwt { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.jwt .box pre { font-size: 12px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 14px; }
+.form label { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.form .chk { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
+.form .chk input { width: auto; }
+.form .hint { font-size: 11.5px; color: var(--muted); margin-top: 3px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.btn { font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-radius: 9px; padding: 8px 18px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.res { margin-top: 14px; }
+.res .meta { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 12.5px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.ec { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.3px; padding: 3px 10px; border-radius: 6px; color: var(--warn); background: var(--warn-bg); }
+.ec.a { color: var(--err); background: var(--err-bg); }
+.flows { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px 30px; }
+ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 8px 0; }
+ol.steps li { counter-increment: s; position: relative; padding-left: 36px; margin: 8px 0; }
+ol.steps li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); color: var(--accent); font-size: 12px; display: grid; place-items: center; background: var(--panel); }
+.toast { position: fixed; right: 18px; bottom: 18px; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 12px 16px; box-shadow: 0 8px 28px rgba(0,0,0,.18); max-width: 320px; display: none; font-size: 13.5px; }
+.toast.show { display: block; }
+.toast .big { font: 700 26px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 6px; margin: 4px 0; }
+
+.step { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); margin-top: 8px; }
+.col { padding: 14px 20px 18px; min-width: 0; }
+.col + .col { border-top: 1px solid var(--line); background: color-mix(in srgb, var(--soft) 55%, transparent); }
+.col > h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.col .vars { margin-bottom: 10px; }
+.http { max-height: 520px; overflow: auto; }
+.tryd { border-top: 1px solid var(--line); padding: 4px 22px 18px; }
+.tryd > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 12px 0; }
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; gap: 0; }
+  nav { position: static; max-height: none; padding-bottom: 0; }
+  .auth { margin-left: 0; }
+}
+
+.pane .tw { margin-top: 4px; }
+textarea { resize: vertical; }
+.dock .seg { margin-left: 4px; }
+main p code, main li code { overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+
+<div class="dock">
+  <div class="dock-in">
+    <input id="base" class="base" value="https://odooapp.mdarj.org" autocomplete="off" aria-label="API base URL">
+    <span class="chip" id="sessChip"><span class="dot"></span><span id="sessTxt">no session</span></span>
+    <button class="mini" id="demoBtn" type="button">Sign in as demo user</button>
+    <button class="mini" id="outBtn" type="button">Forget token</button>
+    <span class="seg" id="langSeg" aria-label="Accept-Language"><button type="button" data-l="ar" class="on">ar</button><button type="button" data-l="en">en</button></span>
+    <span class="sp"></span>
+    <span class="chip">Bearer token: <b id="tokTxt">none</b></span>
+  </div>
+</div>
+
+<div class="layout">
+<nav aria-label="Contents">
+  <h2>Contents</h2>
+  <a href="#summary">Summary</a>
+  <a href="#flow">What the button does</a>
+  <a href="#link">POST /vendor-apply/link</a>
+  <a href="#statuses">Where each status goes</a>
+  <a href="#rules">Rules</a>
+  <a href="#pages">Odoo pages</a>
+  <a href="#changed">What changed</a>
+  <a href="#verify">How to verify</a>
+</nav>
+
+<main>
+<div class="eyebrow">Spark Fu · Frontend ↔ Backend</div>
+<h1>Vendor application API contract: the "Sell with us" button</h1>
+<p class="lede">A signed-in customer applies to sell with the account they already have. The button asks the backend for a one-time link. The link signs the same account into the Odoo website and opens the application form, the status of their application or the vendor portal, so the customer never signs in twice. When the application is approved, the same account becomes the vendor owner.</p>
+<span class="pill ok">Implemented by backend · tested on a test server · 5 November 2026</span>
+<p class="note">Companion to <a href="storefront_api_contract.html">the storefront contract</a>, <a href="auth_api_contract.html">the auth contract</a> and <a href="storefront_content_api_contract.html">the storefront content contract</a>. One endpoint is new. No existing endpoint changed shape.</p>
+
+<h2 class="section" id="summary">Summary</h2>
+<div class="tw"><table><thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Purpose</th><th></th></tr></thead><tbody>
+<tr><td><span class="method">POST</span></td><td><span class="mono"><a href="#link">/vendor-apply/link</a></span></td><td>Bearer</td><td>The one-time link of the "Sell with us" button</td><td><span class="tag">new</span></td></tr>
+</tbody></table></div>
+<p>Same conventions as the other contracts: JSON, no envelope, <code>camelCase</code>, optional fields omitted, errors as <code>{ code, message }</code> in the language of <code>Accept-Language</code>. CORS as before.</p>
+
+<h2 class="section" id="flow">What the button does</h2>
+<ol>
+  <li><strong>Not signed in:</strong> send the visitor to your own sign-in or sign-up page (<code>/auth/login</code>, <code>/auth/register</code>), then come back to the button. There is no separate sign-up for vendors: the customer account is the vendor account.</li>
+  <li><strong>Signed in:</strong> call <code>POST /vendor-apply/link</code> with the Bearer token <em>when the button is clicked</em>, and open the returned <code>url</code> in the same tab.</li>
+</ol>
+<pre>async function sellWithUs() {
+  if (!accessToken) return router.push("/login?next=sell");
+  const r = await fetch(`${API}/vendor-apply/link`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}`, "Accept-Language": locale },
+  });
+  const body = await r.json();
+  if (r.status === 401) return refreshThenRetryOrLogin();
+  if (!r.ok) return showError(body.message);   // 403 / 429: see the error codes below
+  window.location.assign(body.url);            // valid once, for 60 seconds
+}</pre>
+<p class="note">Do not prefetch the link or keep it: it works <strong>once</strong> and only for <strong>60 seconds</strong>. A used or expired link opens the Odoo sign-in page, where the customer can still sign in with the same email and password.</p>
+
+<section class="card" id="link" data-ep="link">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/vendor-apply/link</span><span class="what">One-time link for the "Sell with us" button</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>No body. The answer depends on the customer's application, see <a href="#statuses">where each status goes</a>. <code>status</code> also lets you change the button text: "Sell with us", "Follow your application" or "Vendor dashboard". Limit: 10 requests a minute per IP.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><pre>// POST /vendor-apply/link
+// Authorization: Bearer &lt;accessToken&gt;
+// no body
+
+interface VendorApplyLink {
+  status: "none" | "pending" | "rejected" | "approved";
+  url: string;          // absolute; open it right away, works once within 60 s
+  reference?: string;   // the customer's latest application, e.g. "VA-0012"; omitted for "none"
+}</pre></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Never applied (captured from the test server)</h3><pre>{
+  "status": "none",
+  "url": "https://odooapp.mdarj.org/vendor/apply/start?ticket=XvP9RV0j3uiGk8Q329RI00NsJBBj6DM2XbAgNk9MVfI"
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> Application under review</h3><pre>{
+  "status": "pending",
+  "url": "https://odooapp.mdarj.org/vendor/apply/start?ticket=…",
+  "reference": "VA-0012"
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> Approved vendor</h3><pre>{
+  "status": "approved",
+  "url": "https://odooapp.mdarj.org/vendor/apply/start?ticket=…",
+  "reference": "VA-0012"
+}</pre>
+<h3 style="margin-top:14px"><span class="pill warn">401</span> No or expired token</h3><pre>{ "code": "session_expired", "message": "Your session has expired. Sign in again." }</pre>
+<h3 style="margin-top:14px"><span class="pill warn">403</span> Account that cannot apply</h3><pre>{ "code": "account_not_allowed",
+  "message": "لا يمكن لحسابات الموظفين التقديم للبيع. سجّل الدخول بحساب عميل." }</pre>
+<p>Also sent for a company account, or an account that already belongs to another company. Show <code>message</code> as it is.</p>
+<h3 style="margin-top:14px"><span class="pill warn">403</span> Applications closed by the admin</h3><pre>{ "code": "applications_closed", "message": "طلبات انضمام البائعين مغلقة حاليًا." }</pre>
+<p>An approved vendor still gets its link to the vendor portal while applications are closed.</p>
+<h3 style="margin-top:14px"><span class="pill warn">429</span></h3><pre>{ "code": "rate_limited", "message": "Too many requests. Wait a moment." }</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/vendor-apply/link"></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+
+<h2 class="section" id="statuses">Where each status goes</h2>
+<div class="tw"><table><thead><tr><th>status</th><th>The customer</th><th>The link opens</th><th>Suggested button text</th></tr></thead><tbody>
+<tr><td><code>none</code></td><td>Never applied</td><td>The application form. Name and phone come from the account. The email is the account's email and cannot be changed.</td><td>Sell with us</td></tr>
+<tr><td><code>pending</code></td><td>Application submitted or under review</td><td>The status page of that application. No second application can be opened.</td><td>Follow your application</td></tr>
+<tr><td><code>rejected</code></td><td>Last application refused</td><td>The status page with the reason and an <strong>Apply again</strong> button. The new form is filled with the old data, and the documents that were not refused are kept.</td><td>Apply again</td></tr>
+<tr><td><code>approved</code></td><td>Approved vendor</td><td>The vendor portal, <code>/my/vendor</code>.</td><td>Vendor dashboard</td></tr>
+</tbody></table></div>
+<p class="note">To set the button text before the click, call the endpoint when the page loads and use <code>status</code> only. Do not use the <code>url</code> of that call: ask for a new link on the click.</p>
+
+<h2 class="section" id="rules">Rules</h2>
+<ul>
+  <li><strong>The link works once, within 60 seconds.</strong> Ask for it on the click and do not keep it. Opened later, it shows the Odoo sign-in page, where the customer can still sign in with the same email and password.</li>
+  <li><strong>Open it in the same tab</strong> with <code>window.location.assign</code>, not in an iframe or a popup.</li>
+  <li><strong>Do not link to <code>/vendor/apply</code> directly.</strong> It needs a signed-in customer, so a visitor who opens it without the button sees the Odoo sign-in page.</li>
+</ul>
+
+<h2 class="section" id="pages">Odoo pages</h2>
+<p>These are Odoo website pages, not API endpoints. They are listed so you know where the customer lands.</p>
+<div class="tw"><table><thead><tr><th>Page</th><th>What it does</th></tr></thead><tbody>
+<tr><td><span class="mono">/vendor/apply/start?ticket=…</span></td><td>Signs the account in with the ticket and redirects. A used or expired ticket redirects to the Odoo sign-in page.</td></tr>
+<tr><td><span class="mono">/vendor/apply</span></td><td>The application form, for a signed-in customer.</td></tr>
+<tr><td><span class="mono">/vendor/apply/status/:token</span></td><td>Status of one application. Also the link in the confirmation email.</td></tr>
+<tr><td><span class="mono">/my/vendor</span></td><td>The vendor portal.</td></tr>
+</tbody></table></div>
+
+<h2 class="section" id="changed">What changed</h2>
+<ul>
+  <li><strong><code>/vendor/apply</code> now needs a signed-in customer.</strong> A guest who opens it goes to the Odoo sign-in page first, then back to the form. Use the button flow above rather than linking to <code>/vendor/apply</code> directly.</li>
+  <li><strong>Approval keeps the account.</strong> The customer's own account becomes the vendor owner: same email and password, no "set your password" email. The account joins the vendor company, so the customer's own orders and invoices from then on count under that company.</li>
+  <li>Applications filed earlier without an account, and applications created by staff, work as before.</li>
+</ul>
+
+<h2 class="section" id="verify">How to verify</h2>
+<pre>TOKEN=$(curl -s -X POST $API/auth/login -H 'Content-Type: application/json' \
+  -d '{"email":"customer@example.com","password":"…"}' | jq -r .accessToken)
+
+curl -s -X POST $API/vendor-apply/link -H "Authorization: Bearer $TOKEN"
+# {"status":"none","url":"…/vendor/apply/start?ticket=…"}
+
+curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' -c jar "&lt;url&gt;"
+# 303 …/vendor/apply          (signed in)
+curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' "&lt;url&gt;"
+# 303 …/web/login?redirect=…  (the link works once)</pre>
+<p>A ready Postman collection comes with this contract: <code>vendor_apply.postman_collection.json</code>.</p>
+</main>
+</div>
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var base = $('#base'), token = '';
+  try { token = sessionStorage.getItem('sf_token') || ''; base.value = sessionStorage.getItem('sf_base') || base.value; } catch (e) {}
+  function chip() {
+    $('#tokTxt').textContent = token ? token.slice(0, 14) + '…' : 'none';
+    $('#sessTxt').textContent = token ? 'token set' : 'no session';
+    $('#sessChip').classList.toggle('live', !!token);
+  }
+  function save() { try { sessionStorage.setItem('sf_token', token); sessionStorage.setItem('sf_base', base.value); } catch (e) {} }
+  base.addEventListener('change', save);
+  $('#demoBtn').onclick = function () {
+    fetch(base.value + '/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'demo@spark-fu.example', password: 'Secret123', remember: true }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j.accessToken) { token = j.accessToken; save(); chip(); } else alert(JSON.stringify(j)); })
+      .catch(function (e) { alert('Could not reach ' + base.value + ': ' + e.message); });
+  };
+  $('#outBtn').onclick = function () { token = ''; save(); chip(); };
+  var lang = 'ar';
+  try { lang = sessionStorage.getItem('sf_lang') || 'ar'; } catch (e) {}
+  document.querySelectorAll('#langSeg button').forEach(function (b) {
+    b.classList.toggle('on', b.dataset.l === lang);
+    b.onclick = function () { lang = b.dataset.l; try { sessionStorage.setItem('sf_lang', lang); } catch (e) {}
+      document.querySelectorAll('#langSeg button').forEach(function (x) { x.classList.toggle('on', x === b); }); };
+  });
+  chip();
+  document.querySelectorAll('.card').forEach(function (card) {
+    card.querySelectorAll('.tabs button').forEach(function (b) {
+      b.onclick = function () {
+        card.querySelectorAll('.tabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
+        card.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.dataset.p === b.dataset.t); });
+      };
+    });
+    card.querySelectorAll('.go').forEach(function (go) { go.onclick = function () {
+      var out = card.querySelector('.res'), body = card.querySelector('.tb'), file = card.querySelector('.tf');
+      var opts = { method: go.dataset.m, credentials: 'include', headers: { 'Accept-Language': lang } };
+      if (token) opts.headers.Authorization = 'Bearer ' + token;
+      if (body && go.dataset.m !== 'GET' && go.dataset.m !== 'DELETE') { opts.headers['Content-Type'] = 'application/json'; opts.body = body.value; }
+      if (file && go.dataset.m === 'POST') { var fd = new FormData(); if (file.files[0]) { fd.append('file', file.files[0]); } opts.body = fd; }
+      go.disabled = true; out.innerHTML = '';
+      var t0 = performance.now();
+      fetch(base.value + card.querySelector('.tp').value, opts).then(function (r) {
+        return r.text().then(function (t) {
+          var pretty = t; try { pretty = JSON.stringify(JSON.parse(t), null, 2); } catch (e) {}
+          var cls = r.status < 300 ? 'ok' : (r.status < 500 ? 'warn' : 'err');
+          out.innerHTML = '<div class="meta"><span class="pill ' + cls + '">' + r.status + '</span><span>' + Math.round(performance.now() - t0) + ' ms</span></div><pre></pre>';
+          out.querySelector('pre').textContent = pretty || '(empty body)';
+        });
+      }).catch(function (e) { out.innerHTML = '<p class="note">Request failed: ' + e.message + ' (is the base URL reachable, and its origin allowed by CORS?)</p>'; })
+        .then(function () { go.disabled = false; });
+    }; });
+  });
+})();
+</script>
+</body>
+</html>

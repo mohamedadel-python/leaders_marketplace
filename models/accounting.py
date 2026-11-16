@@ -89,9 +89,9 @@ class MarketplaceAccounting(models.AbstractModel):
     #: Wallet types that are a fee/adjustment between the marketplace and the
     #: vendor, and so need their own journal entry to keep the vendor payable
     #: account and the wallet ledger telling the same story.
-    _LEADERS_FEE_TYPES = ("storage_fee", "penalty", "adjustment")
+    _LEADERS_FEE_TYPES = ("storage_fee", "penalty", "adjustment", "inspection_fee")
     #: The fee types a settlement invoice bills, in "invoice" mode.
-    _LEADERS_INVOICED_FEE_TYPES = ("storage_fee", "penalty", "fulfillment_fee")
+    _LEADERS_INVOICED_FEE_TYPES = ("storage_fee", "penalty", "fulfillment_fee", "inspection_fee")
 
     @api.model
     def post_vendor_fee_entry(self, transaction, income_account=False):
@@ -775,7 +775,8 @@ class MarketplaceAccounting(models.AbstractModel):
         for tx_type, xmlid, label in (
                 ("fulfillment_fee", "product_fulfilment_fee", _("Fulfilment fee %s", settlement.name)),
                 ("storage_fee", "product_storage_fee", _("Storage fee %s", settlement.name)),
-                ("penalty", "product_penalty", _("Penalty %s", settlement.name))):
+                ("penalty", "product_penalty", _("Penalty %s", settlement.name)),
+                ("inspection_fee", "product_inspection_fee", _("Inspection fee %s", settlement.name))):
             amount = -sum(txs.filtered(lambda t: t.type == tx_type and not t.move_id).mapped("amount"))
             if amount > 0:
                 lines.append((xmlid, label, amount, "fee_income"))

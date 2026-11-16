@@ -1,0 +1,117 @@
+<odoo>
+    <!-- a service is a product whose category is under the services group: its page is a tab of the product form -->
+    <record id="view_product_template_service_page" model="ir.ui.view">
+        <field name="name">product.template.form.leaders.service.page</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="leaders_marketplace.view_product_template_marketplace_base"/>
+        <field name="arch" type="xml">
+            <!-- the vendor review status and buttons do not apply to a service: it is published with the toggle -->
+            <xpath expr="//header" position="inside">
+                <field name="leaders_service_page" invisible="1"/>
+            </xpath>
+            <xpath expr="//header/field[@name='marketplace_state']" position="attributes">
+                <attribute name="invisible">leaders_service_page</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_marketplace_approve']" position="attributes">
+                <attribute name="invisible">leaders_service_page or marketplace_state == 'published'</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_marketplace_reject']" position="attributes">
+                <attribute name="invisible">leaders_service_page or marketplace_state in ('rejected', 'draft')</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_marketplace_suspend']" position="attributes">
+                <attribute name="invisible">leaders_service_page or marketplace_state != 'published'</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_marketplace_reset']" position="attributes">
+                <attribute name="invisible">leaders_service_page or marketplace_state in ('draft', 'pending')</attribute>
+            </xpath>
+            <!-- services are published with their toggle: the vendor review tab does not apply to them -->
+            <xpath expr="//page[@name='leaders_marketplace_review']" position="attributes">
+                <attribute name="invisible">leaders_service_page</attribute>
+            </xpath>
+            <!-- the service page tab first, laid out in the order of the service page on the website -->
+            <xpath expr="//page[@name='leaders_marketplace_review']" position="before">
+                <page string="Service page" name="leaders_service_page" invisible="not leaders_service_page">
+                    <group>
+                        <group string="Publishing">
+                            <field name="public_categ_ids" string="Services category" widget="many2many_tags"
+                                   domain="[('id', 'child_of', context.get('lm_section_root'))] if context.get('lm_section_root') else []" help="A subcategory of Services gives the service a tile on the home page and its link; the Services category itself lists it without a tile."/>
+                            <field name="is_published" string="Published on the services pages" widget="boolean_toggle" help="Shows the service on the website&#x27;s services pages. A service is published with this switch, not with the review buttons."/>
+                            <field name="leaders_slug" string="Link (automatic)" readonly="1" help="The link of the service page (/services/slug): its services category&#x27;s link, or made from its name. It cannot be typed, so links and customers&#x27; requests keep working."/>
+                        </group>
+                        <group string="Service rules">
+                            <field name="leaders_service_responsible_id" help="The employee who gets a to-do every time a request for this service arrives."/>
+                            <field name="leaders_service_mandatory" help="Shows the &#x27;required on purchase&#x27; badge and rule on the services pages."/>
+                            <field name="leaders_service_coverage" help="How many governorates the service reaches, shown on its page. 0 leaves the number off."/>
+                            <field name="leaders_service_warranty_months" help="The warranty after the service, in months. 0: no warranty is shown."/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Card on the home page">
+                            <field name="image_1920" string="Service picture" widget="image" options="{'size': [128, 128]}"
+                                   help="The picture of the service tile in the Services section of the home page. Used when the service's category has no picture of its own."/>
+                            <field name="leaders_service_icon" widget="image" options="{'size': [64, 64]}" help="A square, single-colour icon (SVG or PNG) shown at 36 px on the service card."/>
+                            <field name="leaders_service_summary" help="One sentence about the service, shown on its card."/>
+                        </group>
+                        <group string="Top of the service page">
+                            <field name="leaders_service_lead" help="The opening paragraph of the service page; also its description for search engines."/>
+                            <field name="leaders_service_deliverable_short" help="A short version of what the customer receives, shown as a bullet at the top of the page."/>
+                        </group>
+                    </group>
+                    <group string="Request panel">
+                        <group>
+                            <field name="leaders_service_panel_title" help="The title of the side panel of the service page."/>
+                            <field name="leaders_service_request_title" help="The title of the request form on the service page."/>
+                        </group>
+                        <group>
+                            <field name="leaders_service_deliverable" help="What the customer receives, shown in the request panel."/>
+                        </group>
+                    </group>
+                    <group string="Scope of the service">
+                        <group>
+                            <field name="leaders_service_includes" placeholder="One item per line" help="What the service includes, one item per line. Shown in the request screen."/>
+                        </group>
+                        <group>
+                            <field name="leaders_service_excludes" placeholder="One item per line" help="What the service does not include, one item per line. Shown in the request screen."/>
+                        </group>
+                    </group>
+                    <group string="Checklist">
+                        <group>
+                            <field name="leaders_service_checklist_title" help="The title of the checklist section on the service page."/>
+                        </group>
+                        <group>
+                            <field name="leaders_service_checklist_lead" help="The sentence under the checklist title."/>
+                        </group>
+                    </group>
+                    <field name="leaders_service_checklist_ids" help="The items of the checklist, in order. Drag to reorder.">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_product_template_search_service" model="ir.ui.view">
+        <field name="name">product.template.search.leaders.service</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='services']" position="after">
+                <filter name="leaders_services" string="Storefront services" domain="[('leaders_service_page', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_customer_request_form_service" model="ir.ui.view">
+        <field name="name">leaders.customer.request.form.service</field>
+        <field name="model">leaders.customer.request</field>
+        <field name="inherit_id" ref="view_customer_request_form"/>
+        <field name="arch" type="xml">
+            <field name="service" position="after">
+                <field name="service_id" invisible="kind != 'service'"/>
+            </field>
+        </field>
+    </record>
+</odoo>

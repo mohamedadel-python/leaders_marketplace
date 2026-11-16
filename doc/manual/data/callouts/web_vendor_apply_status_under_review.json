@@ -1,0 +1,89 @@
+{
+ "screen_id": "web_vendor_apply_status_under_review",
+ "images": {
+  "desktop": {
+   "file": "visitor/web_vendor_apply_status_under_review_desktop.png",
+   "width": 1440,
+   "height": 1230
+  },
+  "mobile": {
+   "file": "visitor/web_vendor_apply_status_under_review_mobile.png",
+   "width": 780,
+   "height": 4966
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "صفحة حالة الطلب",
+   "selector": "#lm_apply_status_page",
+   "device": "desktop",
+   "bbox": {
+    "x": 272,
+    "y": 106,
+    "w": 896,
+    "h": 716
+   }
+  },
+  {
+   "n": 2,
+   "label": "المتطلبات الناقصة",
+   "selector": "#lm_apply_missing",
+   "device": "desktop",
+   "bbox": {
+    "x": 287,
+    "y": 203,
+    "w": 866,
+    "h": 138
+   }
+  },
+  {
+   "n": 3,
+   "label": "استبدال المستند",
+   "selector": "form[action*='document'] button",
+   "device": "desktop",
+   "bbox": {
+    "x": 299,
+    "y": 517,
+    "w": 45,
+    "h": 36
+   }
+  },
+  {
+   "n": 1,
+   "label": "صفحة حالة الطلب",
+   "selector": "#lm_apply_status_page",
+   "device": "mobile",
+   "bbox": {
+    "x": 0,
+    "y": 208,
+    "w": 780,
+    "h": 2886
+   }
+  },
+  {
+   "n": 2,
+   "label": "المتطلبات الناقصة",
+   "selector": "#lm_apply_missing",
+   "device": "mobile",
+   "bbox": {
+    "x": 30,
+    "y": 388,
+    "w": 720,
+    "h": 276
+   }
+  },
+  {
+   "n": 3,
+   "label": "استبدال المستند",
+   "selector": "form[action*='document'] button",
+   "device": "mobile",
+   "bbox": {
+    "x": 361,
+    "y": 1554,
+    "w": 91,
+    "h": 72
+   }
+  }
+ ]
+}

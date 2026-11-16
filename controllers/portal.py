@@ -13,6 +13,7 @@ from odoo.tools.float_utils import float_compare, float_is_zero
 from odoo.tools.mimetypes import guess_mimetype
 from odoo.addons.leaders_marketplace.models.product_question import ANSWER_MAX_LENGTH
 from odoo.addons.leaders_marketplace.models.returns import MAX_RETURN_PHOTOS
+from odoo.addons.leaders_marketplace.models.catalog_spec import USED_LIKE, normalize_model_name
 from odoo.addons.leaders_marketplace.controllers.vendor_apply import VendorApplyController
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.sale.controllers.portal import CustomerPortal as SaleCustomerPortal
@@ -154,7 +155,191 @@ class MarketplacePortal(CustomerPortal):
             "error": error,
         }
         values.update(self._vendor_variants_form_values(offer))
+        values.update(self._vendor_spec_form_values(offer.product_tmpl_id if offer else None))
+        values["submit_problems"] = self._vendor_submit_problems(offer, vendor) if offer else []
+        Template = request.env["product.template"]
+        tmpl = offer.product_tmpl_id.sudo() if offer else Template.browse()
+        values.update({
+            "bulk_import_enabled": request.env["leaders.vendor.import"]._leaders_import_enabled(),
+            "company_currency": request.env.company.currency_id,
+            # extra photos for every product; with variants on, the variants card carries them
+            "gallery_max": Template._leaders_max_extra_images(),
+            "gallery_images": tmpl.product_template_image_ids if tmpl else request.env["product.image"],
+            "stock_on_hand": self._vendor_stock_on_hand(offer) if offer else 0,
+        })
         return values
+
+    @staticmethod
+    def _vendor_stock_on_hand(offer):
+        """The FBM quantity the vendor holds for the offer (what "set" mode corrects)."""
+        if offer.fulfillment_type != "fbm" or not offer.product_id:
+            return 0
+        vendor = offer.vendor_id.commercial_partner_id
+        quants = request.env["stock.quant"].sudo().search([
+            ("product_id", "=", offer.product_id.id),
+            ("location_id", "=", vendor._marketplace_stock_location("fbm").id),
+            ("owner_id", "=", vendor.id), ("lot_id", "=", False), ("package_id", "=", False)])
+        return int(sum(quants.mapped("quantity")))
+
+    def _vendor_gallery_parse(self):
+        """Extra photos posted by the vendor form (without the variants card): ``(images, remove_ids)``."""
+        images = []
+        for image_file in request.httprequest.files.getlist("gallery_images"):
+            image_b64, image_error = self._read_vendor_image(image_file)
+            if image_error:
+                raise UserError(image_error)
+            if image_b64:
+                images.append((image_b64, image_file.filename))
+        remove_ids = [int(v) for v in request.httprequest.form.getlist("gallery_remove_ids") if str(v).isdigit()]
+        return images, remove_ids
+
+    @staticmethod
+    def _vendor_gallery_apply(tmpl, images, remove_ids):
+        tmpl = tmpl.sudo()
+        tmpl._leaders_check_extra_images(len(images), remove_ids)
+        tmpl._leaders_remove_extra_images(remove_ids)
+        for image_b64, filename in images:
+            tmpl._leaders_add_extra_image(image_b64, name=filename)
+
+    def _vendor_stock_from_post(self, post, spec_vals, tmpl=None):
+        """The quantity typed in the offer card: always 1 for a used or refurbished item; None when not posted."""
+        raw = str(post.get("lm_stock_qty") or "").strip()
+        condition = spec_vals.get("leaders_condition", tmpl.leaders_condition if tmpl else False)
+        if condition in USED_LIKE:
+            return 1.0
+        if not raw:
+            return None
+        qty = self._to_float(raw, -1.0)
+        if qty < 0:
+            raise UserError(_("The quantity must be 0 or more."))
+        return qty
+
+    @staticmethod
+    def _vendor_default_warranty(vals, tmpl=None):
+        """The vendor form no longer asks who gives the warranty: a warranty typed there is the vendor's own,
+        unless the platform already recorded another provider."""
+        if vals.get("leaders_warranty_months") and not vals.get("leaders_warranty_provider") \
+                and not (tmpl and tmpl.sudo().leaders_warranty_provider):
+            vals["leaders_warranty_provider"] = "vendor"
+        return vals
+
+    # -- catalog data the reviewer checks (brand, condition, equipment specs, used-equipment proof) --
+    _SPEC_SELECTIONS = ("leaders_condition", "leaders_capacity_unit", "leaders_warranty_provider")
+    _SPEC_PHOTOS = ("leaders_meter_photo", "leaders_plate_photo")
+
+    def _vendor_spec_form_values(self, tmpl=None):
+        env = request.env
+        Template = env["product.template"]
+        options = {name: Template._fields[name]._description_selection(env) for name in self._SPEC_SELECTIONS}
+        return {
+            "spec_tmpl": tmpl.sudo() if tmpl else Template.browse(),
+            "spec_brands": env["leaders.brand"].sudo().search([]),
+            "spec_sources": env["leaders.source"].sudo().search([]),
+            "spec_models": env["leaders.equipment.model"].sudo().search([]),
+            "spec_conditions": options["leaders_condition"],
+            "spec_units": options["leaders_capacity_unit"],
+            "spec_warranty_providers": options["leaders_warranty_provider"],
+            "spec_listing_types": Template._fields["leaders_listing_type"]._description_selection(env),
+        }
+
+    def _vendor_spec_parse(self, post, tmpl=None):
+        """Template values of the catalog fields posted by the vendor form; an emptied field is cleared.
+
+        :return: ``(values, error)``; ``values`` is empty when the form has no catalog section.
+        """
+        if not post.get("lm_spec_form"):
+            return {}, False
+        env = request.env
+        Template = env["product.template"]
+
+        def record(model, key):
+            raw = str(post.get(key) or "")
+            return raw.isdigit() and env[model].sudo().browse(int(raw)).exists().id or False
+
+        def number(key, cast):
+            try:
+                return max(cast(float(post.get(key) or 0)), 0)
+            except (TypeError, ValueError):
+                return 0
+
+        brand_id = record("leaders.brand", "leaders_brand_id")
+        if post.get("leaders_brand_id") == "__other__":
+            brand_id = self._vendor_brand_from_text(post.get("leaders_brand_other"))
+            if not brand_id:
+                return {}, _("Type the brand name, or choose a brand from the list.")
+        model_id = record("leaders.equipment.model", "leaders_model_id")
+        if post.get("leaders_model_id") == "__other__":
+            name = (post.get("leaders_model_other") or "").strip()[:64]
+            if not name:
+                return {}, _("Type the model name, or choose a model from the list.")
+            model = env["leaders.equipment.model"].sudo()._leaders_get_or_create([name])[:1]
+            if model and brand_id and not model.brand_id:
+                model.brand_id = brand_id
+            model_id = model.id
+        vals = {
+            "leaders_brand_id": brand_id,
+            "leaders_source_id": record("leaders.source", "leaders_source_id"),
+            "leaders_model_id": model_id,
+            "leaders_capacity": number("leaders_capacity", float),
+            "leaders_year": number("leaders_year", int),
+            "leaders_hours": number("leaders_hours", int),
+            "leaders_warranty_months": number("leaders_warranty_months", int),
+            "leaders_video_url": (post.get("leaders_video_url") or "").strip() or False,
+        }
+        for name in self._SPEC_SELECTIONS + ("leaders_listing_type",):
+            if name not in post:  # not on the form (the warranty provider): the stored value stays
+                continue
+            allowed = dict(Template._fields[name]._description_selection(env))
+            vals[name] = post.get(name) if post.get(name) in allowed else False
+        if vals.get("leaders_listing_type") is False:
+            vals.pop("leaders_listing_type")
+        if "leaders_rent_price_day" in post:
+            vals["leaders_rent_price_day"] = number("leaders_rent_price_day", float)
+        if vals.get("leaders_listing_type") == "rent" and not vals.get("leaders_rent_price_day"):
+            return {}, _("Enter the rent price per day for a product offered for rent.")
+        if "leaders_serial" in post:
+            serial = (post.get("leaders_serial") or "").strip()[:64]
+            vals["leaders_serial"] = serial or False
+            own = tmpl.id if tmpl else 0
+            if serial and Template.sudo().with_context(active_test=False).search_count(
+                    [("leaders_serial", "=", serial), ("id", "!=", own)]):
+                return {}, _("The serial number %s is already used by another product.", serial)
+        compatible = [int(x) for x in request.httprequest.form.getlist("leaders_compatible_model_ids") if str(x).isdigit()]
+        vals["leaders_compatible_model_ids"] = [(6, 0, env["leaders.equipment.model"].sudo().browse(compatible).exists().ids)]
+        this_year = fields.Date.today().year
+        if vals["leaders_year"] and not 1950 <= vals["leaders_year"] <= this_year + 1:
+            return {}, _("Enter a year of manufacture between 1950 and %s.", this_year + 1)
+        if vals["leaders_video_url"] and not vals["leaders_video_url"].lower().startswith(("http://", "https://")):
+            return {}, _("The operation video must be a link that starts with http:// or https://.")
+        for name in self._SPEC_PHOTOS:
+            image_b64, image_error = self._read_vendor_image(request.httprequest.files.get(name))
+            if image_error:
+                return {}, image_error
+            if image_b64:  # an empty file input keeps the current photo
+                vals[name] = image_b64.decode()
+        return vals, False
+
+    @staticmethod
+    def _vendor_brand_from_text(text):
+        """The brand typed under "Other": the existing one with that name, else a new brand."""
+        name = (text or "").strip()[:64]
+        key = normalize_model_name(name)
+        if not key:
+            return False
+        Brand = request.env["leaders.brand"].sudo().with_context(active_test=False)
+        brand = Brand.search([("key", "=", key)], limit=1) or Brand.create({"name": name})
+        return brand.id
+
+    def _vendor_submit_problems(self, offer, vendor):
+        """What the vendor still has to fill in before this offer can be sent for review (empty: ready).
+
+        Only the product content the vendor owns counts; a shared catalog product is the marketplace's.
+        The approval checks are included, so a submitted product does not stall at the reviewer.
+        """
+        tmpl = offer.product_tmpl_id.sudo()
+        if offer.state not in ("draft", "rejected") or not tmpl._leaders_vendor_owns_content(vendor):
+            return []
+        return tmpl._leaders_catalog_problems() + tmpl._leaders_listing_problems()
 
     def _vendor_variants_form_values(self, offer=None):
         """B3 form data (options, extra images, specifications); inert while the switch is off."""
@@ -378,6 +563,9 @@ class MarketplacePortal(CustomerPortal):
         offers = request.env["leaders.marketplace.offer"].sudo().search([
             ("vendor_id", "=", vendor.id), ("product_tmpl_id", "=", tmpl.id),
             ("state", "in", ("draft", "rejected"))])
+        incomplete = offers.filtered(lambda o: self._vendor_submit_problems(o, vendor))
+        if incomplete:
+            return request.redirect("/my/vendor/products/%s/edit?incomplete=1#lm_submit_check" % incomplete[0].id)
         for offer in offers:
             offer._leaders_vendor_submit(vendor)
         return request.redirect("/my/vendor/templates/%s/variants?notice=%s" % (
@@ -486,6 +674,7 @@ class MarketplacePortal(CustomerPortal):
             "discounts_enabled": request.env["leaders.marketplace.offer"]._leaders_discounts_enabled(),
             "bulk_import_enabled": request.env["leaders.vendor.import"]._leaders_import_enabled(),
             "offers": offers,
+            "submit_problems": {offer.id: self._vendor_submit_problems(offer, vendor) for offer in offers},
             "vendor": vendor,
             "error": kw.get("error"),
             "notice": kw.get("notice"),
@@ -547,12 +736,22 @@ class MarketplacePortal(CustomerPortal):
             template_vals["image_1920"] = image_b64
         if category_id:
             template_vals["public_categ_ids"] = [(6, 0, [category_id])]
+        spec_vals, spec_error = self._vendor_spec_parse(post)
+        if spec_error:
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, error=spec_error))
+        template_vals.update(self._vendor_default_warranty(spec_vals))
 
+        gallery = None
         try:
+            stock_qty = self._vendor_stock_from_post(post, spec_vals)
             b3 = self._vendor_b3_parse(post) if request.env["product.template"]._leaders_variants_enabled() else None
             if b3 and len(b3["images"]) > request.env["product.template"]._leaders_max_extra_images():
                 raise UserError(_("A product can have at most %s extra images.",
                                   request.env["product.template"]._leaders_max_extra_images()))
+            if not b3:
+                gallery = self._vendor_gallery_parse()
         except UserError as exc:
             return self._vendor_render(
                 "leaders_marketplace.portal_vendor_product_form",
@@ -561,6 +760,8 @@ class MarketplacePortal(CustomerPortal):
         try:
             with request.env.cr.savepoint():
                 tmpl = request.env["product.template"].sudo().create(template_vals)
+                if gallery and gallery[0]:
+                    self._vendor_gallery_apply(tmpl, *gallery)
                 if b3:
                     self._vendor_b3_apply(tmpl, b3)
                     if len(tmpl.product_variant_ids) > 1 and self._vendor_over_offer_limit(
@@ -586,6 +787,11 @@ class MarketplacePortal(CustomerPortal):
             "stock_location_id": vendor._marketplace_stock_location(fulfillment_type).id,
             "market_ids": [(6, 0, website_ids)],
         })
+        if stock_qty and offer.fulfillment_type == "fbm":
+            try:
+                offer._leaders_set_fbm_stock(stock_qty)
+            except UserError:
+                pass  # the quantity can still be set from the products list
         return request.redirect(f"/my/vendor/products/{offer.id}/edit?created=1")
 
     @http.route("/my/vendor/products/sell-existing", type="http", auth="user", website=True, methods=["POST"], csrf=True)
@@ -647,6 +853,7 @@ class MarketplacePortal(CustomerPortal):
             values = self._vendor_form_values(vendor, offer=offer)
             values["created"] = request.params.get("created")
             values["discount_result"] = request.params.get("discount")
+            values["submit_refused"] = request.params.get("incomplete")
             return self._vendor_render("leaders_marketplace.portal_vendor_product_form", values)
 
         name = (post.get("name") or "").strip()
@@ -684,6 +891,27 @@ class MarketplacePortal(CustomerPortal):
                     "You already have an offer for this product with the same fulfillment.")),
             )
 
+        spec_vals, spec_error = self._vendor_spec_parse(post, offer.product_tmpl_id)
+        if spec_error:
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, offer=offer, error=spec_error))
+        self._vendor_default_warranty(spec_vals, offer.product_tmpl_id)
+        try:
+            stock_qty = self._vendor_stock_from_post(post, spec_vals, offer.product_tmpl_id.sudo())
+            if stock_qty is not None and offer.fulfillment_type == "fbm" \
+                    and stock_qty != self._vendor_stock_on_hand(offer):
+                offer._leaders_set_fbm_stock(stock_qty)
+            if not request.env["product.template"]._leaders_variants_enabled() \
+                    and offer.product_tmpl_id.sudo()._leaders_vendor_owns_content(vendor):
+                images, remove_ids = self._vendor_gallery_parse()
+                if images or remove_ids:
+                    self._vendor_gallery_apply(offer.product_tmpl_id, images, remove_ids)
+        except (UserError, ValidationError) as exc:
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, offer=offer, error=str(exc)))
+
         b3 = None
         if request.env["product.template"]._leaders_variants_enabled() \
                 and offer.product_tmpl_id.sudo()._leaders_vendor_owns_content(vendor):
@@ -699,6 +927,20 @@ class MarketplacePortal(CustomerPortal):
         # content (name, image, publication) is only the vendor's to change
         # while they are the sole owner. Otherwise their edit is confined to
         # their own offer and the template is left untouched.
+        live = offer.state == "active" and offer.product_tmpl_id.sudo().marketplace_state == "published"
+        if live and fulfillment_type == offer.fulfillment_type:
+            # a live listing stays on the website as it is: the edit waits for the platform's approval
+            owns = offer.product_tmpl_id.sudo()._leaders_vendor_owns_content(vendor)
+            content = {"name": name, "description_sale": post.get("description_sale") or False} if owns else {}
+            if owns and category_id:
+                content["public_categ_ids"] = [(6, 0, [category_id])]
+            if owns:
+                content.update(spec_vals)
+            request.env["leaders.change.request"].sudo().leaders_propose(
+                offer, {"seller_sku": seller_sku, "price": price, "currency_id": currency_id,
+                        "market_ids": [(6, 0, website_ids)]},
+                content, image_b64 if owns else False)
+            return request.redirect(f"/my/vendor/products/{offer.id}/edit?pending=1")
         if offer.product_tmpl_id.sudo()._leaders_vendor_owns_content(vendor):
             tmpl_vals = {
                 "name": name,
@@ -712,6 +954,7 @@ class MarketplacePortal(CustomerPortal):
                 tmpl_vals["image_1920"] = image_b64
             if category_id:
                 tmpl_vals["public_categ_ids"] = [(6, 0, [category_id])]
+            tmpl_vals.update(spec_vals)
             offer.product_tmpl_id.sudo().write(tmpl_vals)
         offer.sudo().write({
             "seller_sku": seller_sku,
@@ -824,9 +1067,15 @@ class MarketplacePortal(CustomerPortal):
     def vendor_product_submit(self, offer_id, **post):
         vendor = self._require_vendor()
         offer = self._offer_owned_by_vendor(offer_id, vendor)
+        # An incomplete product goes back to its form, which lists what is missing, instead of an error page.
+        if self._vendor_submit_problems(offer, vendor):
+            return request.redirect("/my/vendor/products/%s/edit?incomplete=1#lm_submit_check" % offer.id)
         # Unpublishing a shared template would pull other sellers' offers off
         # the website too; only the sole owner may send it back for review.
-        offer._leaders_vendor_submit(vendor)
+        try:
+            offer._leaders_vendor_submit(vendor)
+        except UserError:
+            return request.redirect("/my/vendor/products/%s/edit?incomplete=1#lm_submit_check" % offer.id)
         return request.redirect("/my/vendor/products")
 
     def _vendor_stock_error(self, message):
@@ -898,7 +1147,7 @@ class MarketplacePortal(CustomerPortal):
         vendor = self._import_vendor()
         return self._vendor_render("leaders_marketplace.portal_vendor_import", self._import_index_values(vendor))
 
-    @http.route("/my/vendor/import/template/<any(new_products,catalog_offers,update):kind>.<any(xlsx,csv):fmt>",
+    @http.route("/my/vendor/import/template/<any(new_products,catalog_offers,update,equipment,spare_parts,products):kind>.<any(xlsx,csv):fmt>",
                 type="http", auth="user", website=True)
     def vendor_import_template(self, kind, fmt, **kw):
         self._import_vendor()
@@ -1527,6 +1776,45 @@ class MarketplacePortal(CustomerPortal):
     # -------------------------------------------------------------------------
     # Returns / disputes / performance
     # -------------------------------------------------------------------------
+    @http.route("/my/vendor/contract", type="http", auth="user", website=True, methods=["GET", "POST"])
+    def vendor_contract(self, **post):
+        """Choose the contract model near the end of the free period; afterwards, ask for a switch."""
+        vendor = self._require_vendor(allow_frozen=True)
+        message = error = False
+        if request.httprequest.method == "POST":
+            if not self._is_vendor_owner():
+                raise AccessError(_("Only the vendor owner can choose the contract model."))
+            code = post.get("model")
+            try:
+                if post.get("action") == "switch":
+                    if not vendor.leaders_contract_model or code == vendor.leaders_contract_model:
+                        raise UserError(_("Choose the other model to ask for a switch."))
+                    request.env["leaders.contract.switch"].sudo().create({
+                        "vendor_id": vendor.id, "from_model": vendor.leaders_contract_model, "to_model": code,
+                        "note": (post.get("note") or "")[:1000] or False})
+                    message = _("Your switch request was sent; the platform reviews it.")
+                else:
+                    vendor.leaders_choose_contract(code)
+                    message = _("Your contract model is saved.")
+            except UserError as exc:
+                error = str(exc)
+        pending = request.env["leaders.contract.switch"].sudo().search(
+            [("vendor_id", "=", vendor.id), ("state", "=", "pending")], limit=1)
+        return self._vendor_render("leaders_marketplace.portal_vendor_contract", {
+            "vendor": vendor, "join_models": request.env["leaders.vendor.join.model"].sudo().search([]),
+            "choice_open": vendor._leaders_contract_choice_open(), "pending_switch": pending,
+            "message": message, "error": error})
+
+    @http.route("/my/vendor/rentals", type="http", auth="user", website=True)
+    def vendor_rentals(self, **kw):
+        """The vendor's machines on rent: the machine, the period, the area and the asset state only
+        (the renter is never shown to the vendor)."""
+        vendor = self._require_vendor(allow_frozen=True)
+        rentals = request.env["leaders.rental"].sudo().search(
+            [("vendor_id", "=", vendor.id), ("state", "in", ("reserved", "with_customer", "returned"))], order="date_start desc")
+        return self._vendor_render("leaders_marketplace.portal_vendor_rentals", {"rows": rentals._leaders_vendor_view(),
+                                                                                "vendor": vendor})
+
     @http.route("/my/vendor/returns", type="http", auth="user", website=True)
     def vendor_returns(self, **kw):
         vendor = self._require_vendor(allow_frozen=True)

@@ -1,0 +1,48 @@
+{
+ "screen_id": "backend_settings_bulk_import",
+ "images": {
+  "desktop": {
+   "file": "admin/backend_settings_bulk_import_desktop.png",
+   "width": 1306,
+   "height": 287
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "الاستيراد الجماعي للبائع",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_bulk_import_enabled'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 74,
+    "w": 472,
+    "h": 100
+   }
+  },
+  {
+   "n": 2,
+   "label": "عدد صفوف الاستيراد في كل تشغيل مجدول",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_import_batch_size'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 310,
+    "y": 74,
+    "w": 472,
+    "h": 100
+   }
+  },
+  {
+   "n": 3,
+   "label": "الاستيراد: تنزيل الصور من الروابط",
+   "selector": ".o_setting_box:has([name='marketplace_vendor_import_allow_image_urls'])",
+   "device": "desktop",
+   "bbox": {
+    "x": 782,
+    "y": 190,
+    "w": 472,
+    "h": 79
+   }
+  }
+ ]
+}

@@ -1,0 +1,72 @@
+{
+ "screen_id": "backend_kpi_form",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_kpi_form_desktop.png",
+   "width": 1440,
+   "height": 900
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 138,
+    "w": 551,
+    "h": 26
+   }
+  },
+  {
+   "n": 2,
+   "label": "الفترة",
+   "selector": ".o_form_view .o_field_widget[name='period']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 138,
+    "w": 545,
+    "h": 26
+   }
+  },
+  {
+   "n": 3,
+   "label": "عدد الطلبات",
+   "selector": ".o_form_view .o_field_widget[name='order_count']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 177,
+    "w": 551,
+    "h": 26
+   }
+  },
+  {
+   "n": 4,
+   "label": "معدل الإلغاء",
+   "selector": ".o_form_view .o_field_widget[name='cancellation_rate']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 216,
+    "w": 551,
+    "h": 26
+   }
+  },
+  {
+   "n": 5,
+   "label": "متوسط التقييم",
+   "selector": ".o_form_view .o_field_widget[name='avg_rating']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 216,
+    "w": 545,
+    "h": 26
+   }
+  }
+ ]
+}

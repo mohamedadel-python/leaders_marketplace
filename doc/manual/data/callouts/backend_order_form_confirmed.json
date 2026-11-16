@@ -1,0 +1,156 @@
+{
+ "screen_id": "backend_order_form_confirmed",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_order_form_confirmed_desktop.png",
+   "width": 1440,
+   "height": 1359
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 268,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "إلغاء",
+   "selector": "button[name=\"action_cancel\"]",
+   "device": "desktop",
+   "bbox": {
+    "x": 1382,
+    "y": 113,
+    "w": 42,
+    "h": 33
+   }
+  },
+  {
+   "n": 3,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 301,
+    "w": 580,
+    "h": 24
+   }
+  },
+  {
+   "n": 4,
+   "label": "العميل",
+   "selector": ".o_form_view .o_field_widget[name='partner_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 338,
+    "w": 580,
+    "h": 24
+   }
+  },
+  {
+   "n": 5,
+   "label": "إتمام الشراء",
+   "selector": ".o_form_view .o_field_widget[name='sale_order_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 516,
+    "w": 580,
+    "h": 24
+   }
+  },
+  {
+   "n": 6,
+   "label": "تاريخ الطلب",
+   "selector": ".o_form_view .o_field_widget[name='date_order']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 412,
+    "w": 580,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "موعد الشحن",
+   "selector": ".o_form_view .o_field_widget[name='ship_by_date']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 446,
+    "w": 580,
+    "h": 21
+   }
+  },
+  {
+   "n": 8,
+   "label": "طريقة الدفع",
+   "selector": ".o_form_view .o_field_widget[name='payment_method']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 569,
+    "w": 566,
+    "h": 26
+   }
+  },
+  {
+   "n": 9,
+   "label": "إجمالي المبلغ",
+   "selector": ".o_form_view .o_field_widget[name='amount_total']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 379,
+    "w": 566,
+    "h": 26
+   }
+  },
+  {
+   "n": 10,
+   "label": "مبلغ العمولة",
+   "selector": ".o_form_view .o_field_widget[name='commission_amount']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 418,
+    "w": 566,
+    "h": 26
+   }
+  },
+  {
+   "n": 11,
+   "label": "صافي البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_net']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 530,
+    "w": 566,
+    "h": 26
+   }
+  },
+  {
+   "n": 12,
+   "label": "تبويبات النموذج",
+   "selector": ".o_notebook_headers",
+   "device": "desktop",
+   "bbox": {
+    "x": 17,
+    "y": 618,
+    "w": 1406,
+    "h": 39
+   }
+  }
+ ]
+}

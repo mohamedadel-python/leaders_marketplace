@@ -1,0 +1,132 @@
+{
+ "screen_id": "backend_import_form_validated",
+ "images": {
+  "desktop": {
+   "file": "manager/backend_import_form_validated_desktop.png",
+   "width": 1440,
+   "height": 949
+  }
+ },
+ "markers": [
+  {
+   "n": 1,
+   "label": "شريط الحالة",
+   "selector": ".o_statusbar_status",
+   "device": "desktop",
+   "bbox": {
+    "x": 16,
+    "y": 113,
+    "w": 319,
+    "h": 33
+   }
+  },
+  {
+   "n": 2,
+   "label": "البائع",
+   "selector": ".o_form_view .o_field_widget[name='vendor_id']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 179,
+    "w": 498,
+    "h": 24
+   }
+  },
+  {
+   "n": 3,
+   "label": "النوع",
+   "selector": ".o_form_view .o_field_widget[name='kind']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 253,
+    "w": 498,
+    "h": 21
+   }
+  },
+  {
+   "n": 4,
+   "label": "اسم الملف",
+   "selector": ".o_form_view .o_field_widget[name='filename']",
+   "device": "desktop",
+   "bbox": {
+    "x": 736,
+    "y": 287,
+    "w": 498,
+    "h": 21
+   }
+  },
+  {
+   "n": 5,
+   "label": "إجمالي الصفوف",
+   "selector": ".o_form_view .o_field_widget[name='total_rows']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 179,
+    "w": 548,
+    "h": 21
+   }
+  },
+  {
+   "n": 6,
+   "label": "الصفوف الصالحة",
+   "selector": ".o_form_view .o_field_widget[name='valid_rows']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 213,
+    "w": 548,
+    "h": 21
+   }
+  },
+  {
+   "n": 7,
+   "label": "الصفوف غير الصالحة",
+   "selector": ".o_form_view .o_field_widget[name='invalid_rows']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 247,
+    "w": 548,
+    "h": 21
+   }
+  },
+  {
+   "n": 8,
+   "label": "الصفوف المطبقة",
+   "selector": ".o_form_view .o_field_widget[name='applied_rows']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 281,
+    "w": 548,
+    "h": 21
+   }
+  },
+  {
+   "n": 9,
+   "label": "فشل عند التطبيق",
+   "selector": ".o_form_view .o_field_widget[name='failed_rows']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 315,
+    "w": 548,
+    "h": 21
+   }
+  },
+  {
+   "n": 10,
+   "label": "صفوف الاستيراد",
+   "selector": ".o_form_view .o_field_widget[name='line_ids']",
+   "device": "desktop",
+   "bbox": {
+    "x": 41,
+    "y": 492,
+    "w": 1358,
+    "h": 419
+   }
+  }
+ ]
+}

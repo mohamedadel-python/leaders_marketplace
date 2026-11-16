@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services API Contract</title>
+<style>
+:root {
+  --bg: #f7f5ef; --panel: #ffffff; --ink: #191917; --muted: #6a695f; --line: #e3e0d5; --soft: #f1eee4;
+  --accent: #c2410c; --accent-ink: #ffffff; --code-bg: #f3f0e6;
+  --ok: #15803d; --ok-bg: #e4f4e8; --warn: #92600a; --warn-bg: #fcf0d6; --err: #b91c1c; --err-bg: #fbe6e6; --info: #1d4ed8; --info-bg: #e5edfd;
+  --k: #9a3412; --s: #166534; --n: #1d4ed8; --b: #7c3aed;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131311; --panel: #1c1c19; --ink: #efeee7; --muted: #a2a196; --line: #33322c; --soft: #242421;
+    --accent: #fb923c; --accent-ink: #1a1208; --code-bg: #232320;
+    --ok: #6ee79a; --ok-bg: #153020; --warn: #f5c451; --warn-bg: #33290f; --err: #fca5a5; --err-bg: #3a1919; --info: #93b4ff; --info-bg: #182340;
+    --k: #fdba74; --s: #86efac; --n: #93c5fd; --b: #c4b5fd;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+code, pre, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+a { color: var(--accent); }
+.layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 36px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+nav { position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 64px); overflow: auto; padding: 24px 0; }
+nav h2 { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+nav a { display: block; color: var(--muted); text-decoration: none; padding: 3px 0 3px 10px; border-left: 2px solid transparent; font-size: 14px; }
+nav a:hover, nav a.on { color: var(--ink); border-left-color: var(--accent); }
+nav a.sub { padding-left: 22px; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; }
+main { padding: 30px 0 90px; min-width: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h1 { font-size: 36px; line-height: 1.12; margin: 6px 0 12px; letter-spacing: -.01em; }
+h2.section { font-size: 24px; margin: 54px 0 10px; }
+h3 { font-size: 16px; margin: 24px 0 6px; }
+p { margin: 9px 0; }
+.lede { color: var(--muted); max-width: 70ch; font-size: 16px; }
+.pill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-weight: 600; font-size: 12.5px; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); } .pill.err { color: var(--err); background: var(--err-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); } .pill.info { color: var(--info); background: var(--info-bg); }
+.callout { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px; overflow-x: auto; font-size: 12.8px; line-height: 1.55; margin: 8px 0 14px; }
+.tw { overflow-x: auto; margin: 10px 0 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th { text-align: left; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.method { color: var(--accent); font-weight: 700; font-size: 12.5px; letter-spacing: .04em; }
+.tag { font-size: 10.5px; padding: 1px 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font-weight: 600; white-space: nowrap; }
+
+/* sticky playground dock */
+.dock { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.dock-in { max-width: 1200px; margin: 0 auto; padding: 8px 20px; display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--panel); }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 5px 13px; font: 600 12.5px inherit; font-family: inherit; cursor: pointer; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+.dock input.base { width: 250px; max-width: 100%; }
+input, select, textarea { font: 13px/1.4 "IBM Plex Mono", ui-monospace, monospace; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 100%; }
+input:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); white-space: nowrap; }
+.chip b { color: var(--ink); font-weight: 600; }
+.chip.live { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.live .dot { background: var(--ok); animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+.dock .sp { flex: 1; }
+.mini { font: 600 12px inherit; font-family: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.mini:hover { color: var(--ink); border-color: var(--accent); }
+.drawer { max-width: 1200px; margin: 0 auto; padding: 0 20px 10px; display: none; }
+.drawer.open { display: block; }
+.drawer .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 12.5px; }
+.box h4 { margin: 0 0 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.box pre { margin: 0; border: 0; padding: 0; background: transparent; font-size: 12px; white-space: pre-wrap; word-break: break-all; }
+
+/* endpoint cards */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; margin: 22px 0; overflow: hidden; scroll-margin-top: 70px; }
+.card-h { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px 22px 4px; }
+.mpill { background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 12px; padding: 3px 9px; border-radius: 6px; letter-spacing: .05em; }
+.path { font-size: 19px; font-weight: 700; }
+.what { color: var(--muted); }
+.auth { margin-left: auto; font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.card-b { padding: 4px 22px 18px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 14px; background: var(--soft); }
+.tabs button { border: 0; background: transparent; color: var(--muted); padding: 10px 16px; font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+.pane { display: none; padding: 16px 22px 22px; }
+.pane.on { display: block; }
+.vars { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.vars button { font: 600 12.5px "IBM Plex Mono", ui-monospace, monospace; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: 5px 11px; cursor: pointer; }
+.vars button.on { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+.vars .s2 { color: var(--ok); } .vars .s4 { color: var(--warn); } .vars .s5 { color: var(--err); }
+.http { background: #14130f; color: #ece9dc; border-radius: 12px; padding: 14px 16px; font-size: 12.8px; line-height: 1.6; overflow-x: auto; margin: 0; border: 0; position: relative; }
+@media (prefers-color-scheme: dark) { .http { background: #0e0e0c; } }
+.http .sl { font-weight: 700; } .http .sl.c2 { color: #86efac; } .http .sl.c4 { color: #fcd34d; } .http .sl.c5 { color: #fca5a5; }
+.http .hn { color: #93c5fd; } .http .ck { color: #fdba74; } .http .dim { color: #8d8a7c; }
+.http .jk { color: #fdba74; } .http .js { color: #86efac; } .http .jn { color: #93c5fd; } .http .jb { color: #c4b5fd; }
+.copyb { position: absolute; top: 8px; right: 8px; background: #2a2923; color: #cfcbb9; border: 1px solid #3b3a32; border-radius: 6px; font: 600 11px inherit; font-family: inherit; padding: 3px 9px; cursor: pointer; }
+.note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.jwt { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.jwt .box pre { font-size: 12px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 14px; }
+.form label { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.form .chk { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
+.form .chk input { width: auto; }
+.form .hint { font-size: 11.5px; color: var(--muted); margin-top: 3px; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.btn { font: 600 13.5px inherit; font-family: inherit; cursor: pointer; border-radius: 9px; padding: 8px 18px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.res { margin-top: 14px; }
+.res .meta { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 12.5px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.ec { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.3px; padding: 3px 10px; border-radius: 6px; color: var(--warn); background: var(--warn-bg); }
+.ec.a { color: var(--err); background: var(--err-bg); }
+.flows { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px 30px; }
+ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 8px 0; }
+ol.steps li { counter-increment: s; position: relative; padding-left: 36px; margin: 8px 0; }
+ol.steps li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); color: var(--accent); font-size: 12px; display: grid; place-items: center; background: var(--panel); }
+.toast { position: fixed; right: 18px; bottom: 18px; z-index: 50; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 12px 16px; box-shadow: 0 8px 28px rgba(0,0,0,.18); max-width: 320px; display: none; font-size: 13.5px; }
+.toast.show { display: block; }
+.toast .big { font: 700 26px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 6px; margin: 4px 0; }
+
+.step { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); margin-top: 8px; }
+.col { padding: 14px 20px 18px; min-width: 0; }
+.col + .col { border-top: 1px solid var(--line); background: color-mix(in srgb, var(--soft) 55%, transparent); }
+.col > h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.col .vars { margin-bottom: 10px; }
+.http { max-height: 520px; overflow: auto; }
+.tryd { border-top: 1px solid var(--line); padding: 4px 22px 18px; }
+.tryd > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 12px 0; }
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; gap: 0; }
+  nav { position: static; max-height: none; padding-bottom: 0; }
+  .auth { margin-left: 0; }
+}
+
+.pane .tw { margin-top: 4px; }
+textarea { resize: vertical; }
+.dock .seg { margin-left: 4px; }
+main p code, main li code { overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+
+<div class="dock">
+  <div class="dock-in">
+    <input id="base" class="base" value="https://odooapp.mdarj.org" autocomplete="off" aria-label="API base URL">
+    <span class="chip" id="sessChip"><span class="dot"></span><span id="sessTxt">no session</span></span>
+    <button class="mini" id="demoBtn" type="button">Sign in as demo user</button>
+    <button class="mini" id="outBtn" type="button">Forget token</button>
+    <span class="seg" id="langSeg" aria-label="Accept-Language"><button type="button" data-l="ar" class="on">ar</button><button type="button" data-l="en">en</button></span>
+    <span class="sp"></span>
+    <span class="chip">Bearer token: <b id="tokTxt">none</b></span>
+  </div>
+</div>
+
+<div class="layout">
+<nav aria-label="Contents">
+  <h2>Contents</h2>
+  <a href="#reply">Answer to the services cycle</a>
+  <a href="#summary">Summary</a>
+  <a href="#conventions">Conventions</a>
+  <a href="#service-object">Service object</a>
+  <a href="#pages">Service pages</a>
+  <a class="sub" href="#services_list">GET /services</a>
+  <a class="sub" href="#service_get">GET /services/:slug</a>
+  <a class="sub" href="#service_icon">GET …/icon</a>
+  <a href="#tiles">Tiles in /categories</a>
+  <a href="#requests">Service requests</a>
+  <a class="sub" href="#request_create">POST /quotes</a>
+  <a class="sub" href="#rules">Validation rules</a>
+  <a class="sub" href="#request_get">GET /quotes/:reference</a>
+  <a href="#errors">Error codes</a>
+  <a href="#admin">Managed in Odoo</a>
+  <a href="#decisions">Decisions and open points</a>
+  <a href="#verify">How to verify</a>
+</nav>
+
+<main>
+<div class="eyebrow">Spark FU · Frontend ↔ Backend</div>
+<h1>Services API contract: service pages and service requests</h1>
+<p class="lede">What the services pages (<code>/services</code> and <code>/services/:slug</code>) call: the list of services, one service page with its checklist, and the request form, which sends <code>POST /quotes</code>. Every response below was captured from the running backend. The <strong>Try it</strong> tabs call a live server: set the base URL and the language in the bar above.</p>
+<span class="pill ok">Implemented by backend · live on odooapp.mdarj.org · updated 2026-11-03</span>
+<p class="note">Companion to <a href="storefront_api_contract.html">the storefront contract</a> (catalog, cart, checkout, quotes) and <a href="auth_api_contract.html">the auth contract</a>. Nothing in those two changed in a breaking way: the endpoints below are new, and <code>POST /quotes</code> and <code>GET /quotes/:reference</code> gained stricter checks and one field for service requests only.</p>
+
+<h2 class="section" id="reply">Answer to the services cycle contract (2026-11-03)</h2>
+<p>Item by item, as numbered in your <em>Services cycle API contract</em>. Everything marked done is live on <code>https://odooapp.mdarj.org</code> since 2026-11-03 and was checked there.</p>
+<div class="tw"><table><thead><tr><th>#</th><th>Request</th><th>Status</th><th>What changed for you</th></tr></thead><tbody>
+<tr><td>1</td><td>No cache on read endpoints</td><td><span class="pill ok">done</span></td><td><code>/services</code>, <code>/services/:slug</code>, the icons and <code>/categories</code> answer <code>Cache-Control: no-store</code>. One switch, <code>leaders_marketplace.api_no_cache</code>; at launch it goes to <code>0</code> and the values of your table come back, with no code change. Checked on the live host: each request is answered by Odoo, with no proxy cache in between. See <a href="#conventions">Conventions</a>.</td></tr>
+<tr><td>2</td><td>Raise the rate limit, exempt the build server</td><td><span class="pill ok">done</span></td><td><code>leaders_marketplace.storefront_rate_limit</code> raises the per-minute limit; <code>leaders_marketplace.storefront_rate_limit_exempt_ips</code> exempts IPs for good. <strong>Send us the IPs</strong> of the build server, the development server and each developer, and we list them.</td></tr>
+<tr><td>3</td><td>E.164 phones</td><td><span class="pill ok">done</span></td><td>On. A phone such as <code>0100 123 4567</code> gets <code>fields.phone</code>: <code>Enter the phone in international format, e.g. +201001234567.</code></td></tr>
+<tr><td>4</td><td>Icons for <code>load-bank</code> and <code>temporary-power</code></td><td><span class="pill ok">done</span></td><td>Every service now sends <code>icon</code>.</td></tr>
+<tr><td>5</td><td><code>requestTitle</code> on <code>GET /services</code></td><td><span class="pill ok">done</span></td><td>Sent on each item; omitted only when the admin leaves it empty.</td></tr>
+<tr><td>6</td><td>Coverage number</td><td><span class="pill ok">done</span></td><td>Your proposal: optional <code>coverageGovernorates</code> on each service, on the list and the details. It is omitted until the admin enters it per service; until then, count the governorates of <code>GET /delivery/regions</code>.</td></tr>
+<tr><td>7</td><td>Customer confirmation email</td><td><span class="pill ok">done</span></td><td>Send <code>locale</code> (<code>ar</code> or <code>en</code>) in <code>POST /quotes</code>. With <code>serviceDetails.email</code> set, the customer gets the reference and the service name in that language; without an email nothing is sent. Delivery starts once the mail server of the live host is set up.</td></tr>
+<tr><td>8</td><td>Attach guest requests to an account</td><td><span class="pill ok">done</span></td><td>At sign-up and sign-in, a guest request joins the account when <strong>both</strong> its email and its phone equal the account's. Not one or the other: neither is verified at sign-up. You can show the track link again. See <a href="#decisions">Decisions</a>.</td></tr>
+<tr><td>9</td><td>Final texts of four services</td><td><span class="pill warn">waiting</span></td><td>Entered in Odoo once the company confirms the wording. No change on your side.</td></tr>
+<tr><td>10</td><td>Icon URL in the contract</td><td><span class="pill ok">done</span></td><td>The live server and this document now agree: <code>icon</code> is always <code>/services/:slug/icon</code>, which serves the service's icon or its tile's, and answers a JSON <code>404</code> when there is none. See <a href="#service_icon">the icon route</a>.</td></tr>
+</tbody></table></div>
+
+<h2 class="section" id="summary">Summary</h2>
+<div class="tw"><table><thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Purpose</th><th></th></tr></thead><tbody><tr><td class="method">GET</td><td class="mono"><a href="#services_list">/services</a></td><td>no auth</td><td>Services index page, cards and footer links</td><td><span class="tag">new</span></td></tr><tr><td class="method">GET</td><td class="mono"><a href="#service_get">/services/:slug</a></td><td>no auth</td><td>One service page</td><td><span class="tag">new</span></td></tr><tr><td class="method">GET</td><td class="mono"><a href="#service_icon">/services/:slug/icon</a></td><td>no auth</td><td>The service icon (the URL comes in <code>icon</code>)</td><td><span class="tag">new</span></td></tr><tr><td class="method">POST</td><td class="mono"><a href="#request_create">/quotes</a></td><td>no auth; Bearer optional</td><td>Send a service request (<code>service</code> set)</td><td><span class="tag">changed</span></td></tr><tr><td class="method">GET</td><td class="mono"><a href="#request_get">/quotes/:reference</a></td><td>Bearer</td><td>Status page of a request; adds <code>serviceName</code></td><td><span class="tag">changed</span></td></tr><tr><td class="method">GET</td><td class="mono">/account/orders?kind=service</td><td>Bearer</td><td>The orders page's services tab (unchanged)</td><td></td></tr><tr><td class="method">POST</td><td class="mono">/quotes/:reference/cancel</td><td>Bearer</td><td>Withdraw a request (unchanged)</td><td></td></tr></tbody></table></div><p>Paths are relative to <code>NEXT_PUBLIC_API_URL</code>, at the root of the Odoo host, next to <code>/products</code> and <code>/auth/…</code>.</p>
+
+<h2 class="section" id="conventions">Conventions</h2>
+<ul>
+  <li>Same as the storefront contract: JSON, no envelope, <code>camelCase</code>, optional fields are <strong>omitted</strong> when unset (never <code>null</code>), errors are <code>{ code, message, fields? }</code>.</li>
+  <li><strong>Language.</strong> Send <code>Accept-Language: ar</code> or <code>en</code>. Every text of a service (name, summary, lead, titles, checklist, deliverables) comes in that language. A text without a translation falls back to the source text (English), never an empty string. The <strong>error messages</strong> of <code>POST /quotes</code> follow the same header.</li>
+  <li><strong>Cache: off during development.</strong> While the system parameter <code>leaders_marketplace.api_no_cache</code> is <code>1</code> (it is now), <code>GET /services</code>, <code>GET /services/:slug</code>, the icon and <code>/categories</code> answer <code>Cache-Control: no-store</code>, so an edit in Odoo shows in the very next response. At launch the backend sets it to <code>0</code>, with no code change, and they go back to <code>public, max-age=300</code>. Odoo keeps no other copy of these answers; a proxy cache in front of Odoo (nginx <code>proxy_cache</code>, a CDN) is a server setting to check on each host.</li>
+  <li><strong>Order.</strong> The list is in the order the admin sets (drag and drop in Odoo). The frontend shows it as it comes, it does not sort.</li>
+  <li><strong>Only published services</strong> are listed. An unpublished or unknown slug is <code>404 not_found</code>: show the 404 page.</li>
+  <li><strong>The slug never changes</strong> once a request uses it (Odoo refuses the edit), so links and old requests keep working.</li>
+  <li><strong>No price.</strong> A service has no price in the API; the team quotes it after the request.</li>
+  <li><strong>CORS</strong> is the storefront's: exact origin, <code>credentials: "include"</code>, <code>GET, POST, OPTIONS</code> are allowed. The origins come from the Odoo system parameter <code>leaders_marketplace.auth_cors_origin</code>; <code>https://new.spark-fu.com</code> must be in it on each server.</li>
+  <li><strong>Rate limit.</strong> <code>/services</code> uses the catalog group, <code>POST /quotes</code> the quotes group (120 per minute per IP each, <code>429 rate_limited</code> over it). Two system parameters change it without a deployment: <code>leaders_marketplace.storefront_rate_limit</code> raises the per-minute limit (a value below 120 is ignored), and <code>leaders_marketplace.storefront_rate_limit_exempt_ips</code> lists IPs that are never limited, comma separated (the build server stays on it after launch). Behind a proxy, Odoo must run with <code>proxy_mode</code> so it sees the caller's IP and not the proxy's.</li>
+</ul>
+
+<h2 class="section" id="service-object">Service object</h2>
+<pre>interface ServiceSummary {            // one item of GET /services
+  id: string;                         // "7"
+  slug: string;                       // "inspection": the page URL /services/inspection, and the value of POST /quotes service
+  name: string;                       // card title, page &lt;h1&gt;, footer link
+  summary: string;                    // one sentence for the card
+  icon?: string;                      // absolute URL, always /services/:slug/icon; omitted when there is no icon
+  mandatoryOnPurchase: boolean;       // true: show the "required on purchase" badge
+  requestTitle?: string;              // title of the request form; omitted when the admin left it empty
+  coverageGovernorates?: number;      // how many governorates the service reaches; omitted when not set
+}
+
+interface Service extends ServiceSummary {   // GET /services/:slug
+  lead: string;                       // hero paragraph; also the page's meta description
+  panelTitle: string;                 // title of the request panel
+  requestTitle: string;               // title of the request form
+  checklistTitle: string;             // "What exactly do we inspect?"
+  checklistLead: string;              // line under the checklist title
+  checklist: string[];                // in the admin's order; may be empty
+  deliverable: string;                // fact in the request panel ("Written inspection report")
+  deliverableShort: string;           // bullet in the hero ("Written report")
+}</pre>
+<div class="callout">On <code>GET /services/:slug</code> the text fields of the page are always sent (an empty string when the admin left one empty), so the page can render without checks. Only <code>icon</code> and <code>coverageGovernorates</code> are optional there.</div>
+
+<h2 class="section" id="pages">Service pages</h2>
+<section class="card" id="services_list" data-ep="services_list">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/services</span><span class="what">All published services</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>The services index page, its cards, and the footer's services links. Today there are five: <code>inspection</code>, <code>maintenance</code>, <code>solar</code>, <code>load-bank</code>, <code>temporary-power</code>. The admin can add, hide or reorder them without a deployment, so the frontend must not hard-code the list.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><p class="note" style="margin-top:0">No parameters. Send <code>Accept-Language</code>.</p></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Arabic (<code>Accept-Language: ar</code>)</h3><pre>[
+  {
+    "id": "7",
+    "slug": "inspection",
+    "name": "الفحص الفني",
+    "summary": "فحص المعدات والتحقق من حالتها الفنية قبل الشراء أو التأجير، مع توثيق النتائج بوضوح.",
+    "mandatoryOnPurchase": true,
+    "icon": "https://odooapp.mdarj.org/services/inspection/icon",
+    "requestTitle": "طلب خدمة فحص وتوثيق"
+  },
+  {
+    "id": "8",
+    "slug": "maintenance",
+    "name": "الصيانة والإصلاح",
+    "summary": "صيانة دورية وإصلاح للمولدات والمعدات على يد فنيين مؤهلين، في الموقع أو في الورشة.",
+    "mandatoryOnPurchase": false,
+    "icon": "https://odooapp.mdarj.org/services/maintenance/icon",
+    "requestTitle": "طلب خدمة صيانة"
+  },
+  {
+    "id": "9",
+    "slug": "solar",
+    "name": "الطاقة الشمسية",
+    "summary": "تصميم وتركيب وصيانة أنظمة الطاقة الشمسية للمواقع والمنشآت.",
+    "mandatoryOnPurchase": false,
+    "icon": "https://odooapp.mdarj.org/services/solar/icon",
+    "requestTitle": "طلب خدمة طاقة شمسية"
+  },
+  {
+    "id": "10",
+    "slug": "load-bank",
+    "name": "اختبار الأحمال",
+    "summary": "اختبار المولد تحت حمل حقيقي متدرج للتأكد من أنه يعطي قدرته المقننة.",
+    "mandatoryOnPurchase": false,
+    "icon": "https://odooapp.mdarj.org/services/load-bank/icon",
+    "requestTitle": "طلب خدمة اختبار أحمال"
+  },
+  {
+    "id": "11",
+    "slug": "temporary-power",
+    "name": "الطاقة المؤقتة",
+    "summary": "مولدات وتوزيع كهرباء للفعاليات ومواقع الإنشاء والطوارئ، للمدة التي تحتاجها.",
+    "mandatoryOnPurchase": false,
+    "icon": "https://odooapp.mdarj.org/services/temporary-power/icon",
+    "requestTitle": "طلب خدمة طاقة مؤقتة"
+  }
+]</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> English (<code>Accept-Language: en</code>)</h3><pre>[
+  {
+    "id": "7",
+    "slug": "inspection",
+    "name": "Technical inspection",
+    "summary": "Inspect equipment and verify its technical condition before buying or renting, with the results clearly documented.",
+    "mandatoryOnPurchase": true,
+    "icon": "https://odooapp.mdarj.org/services/inspection/icon",
+    "requestTitle": "Inspection &amp; documentation request"
+  },
+  {
+    "id": "8",
+    "slug": "maintenance",
+    "name": "Maintenance &amp; repair",
+    "summary": "Periodic maintenance and repair of generators and equipment by qualified technicians, on site or at the workshop.",
+    "mandatoryOnPurchase": false,
+    "icon": "https://odooapp.mdarj.org/services/maintenance/icon",
+    "requestTitle": "Maintenance request"
+  },
+  {
+    "id": "9",
+    "slug": "solar",
+    "name": "Solar energy",
+    "summary": "Design, installation and maintenance of solar power systems for sites and facilities.",
+    "mandatoryOnPurchase": false,
+    "icon": "https://odooapp.mdarj.org/services/solar/icon",
+    "requestTitle": "Solar energy request"
+  },
+  {
+    "id": "10",
+    "slug": "load-bank",
+    "name": "Load bank testing",
+    "summary": "Test a generator under a real, stepped load to prove it delivers its rated power.",
+    "mandatoryOnPurchase": false,
+    "icon": "https://odooapp.mdarj.org/services/load-bank/icon",
+    "requestTitle": "Load bank test request"
+  },
+  {
+    "id": "11",
+    "slug": "temporary-power",
+    "name": "Temporary power",
+    "summary": "Generators and power distribution for events, construction sites and emergencies, for the period you need.",
+    "mandatoryOnPurchase": false,
+    "icon": "https://odooapp.mdarj.org/services/temporary-power/icon",
+    "requestTitle": "Temporary power request"
+  }
+]</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/services"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="service_get" data-ep="service_get">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/services/:slug</span><span class="what">One service page</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>Everything the page shows: hero, checklist and request panel. Unknown or unpublished slug: <code>404 not_found</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">slug</td><td>path</td><td class="mono">string</td><td>a <code>slug</code> from <code>GET /services</code></td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Arabic</h3><pre>{
+  "id": "7",
+  "slug": "inspection",
+  "name": "الفحص الفني",
+  "summary": "فحص المعدات والتحقق من حالتها الفنية قبل الشراء أو التأجير، مع توثيق النتائج بوضوح.",
+  "mandatoryOnPurchase": true,
+  "lead": "فحص فني مستقل لأي معدة قبل الشراء، ينفذه فني من شبكتنا وينتهي بتقرير مكتوب تستلمه أنت.",
+  "panelTitle": "الفحص والتوثيق",
+  "requestTitle": "طلب خدمة فحص وتوثيق",
+  "checklistTitle": "ماذا نفحص بالضبط؟",
+  "checklistLead": "كل بند بيتراجع ويتسجل في التقرير النهائي.",
+  "checklist": [
+    "حالة المحرك وساعات التشغيل الفعلية",
+    "لوحة التحكم والحماية",
+    "اختبار التشغيل تحت حمل",
+    "الهيكل والكابينة الصوتية",
+    "نظام التبريد والتزييت",
+    "تطابق البيانات مع الإعلان",
+    "التوصيلات والكابلات الكهربائية",
+    "مستندات الملكية والصيانة السابقة"
+  ],
+  "deliverable": "تقرير فحص مكتوب",
+  "deliverableShort": "تقرير مكتوب"
+}</pre><h3 style="margin-top:14px"><span class="pill ok">200</span> English</h3><pre>{
+  "id": "7",
+  "slug": "inspection",
+  "name": "Technical inspection",
+  "summary": "Inspect equipment and verify its technical condition before buying or renting, with the results clearly documented.",
+  "mandatoryOnPurchase": true,
+  "lead": "An independent technical inspection of any equipment before you buy, carried out by a technician from our network and ending with a written report you receive.",
+  "panelTitle": "Inspection &amp; documentation",
+  "requestTitle": "Inspection &amp; documentation request",
+  "checklistTitle": "What exactly do we inspect?",
+  "checklistLead": "Every item is reviewed and recorded in the final report.",
+  "checklist": [
+    "Engine condition and actual running hours",
+    "Control and protection panel",
+    "Running test under load",
+    "Frame and sound-proof canopy",
+    "Cooling and lubrication system",
+    "Data matches the listing",
+    "Electrical connections and cables",
+    "Ownership and past maintenance documents"
+  ],
+  "deliverable": "Written inspection report",
+  "deliverableShort": "Written report"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">404</span> Unknown or unpublished slug</h3><pre>{
+  "code": "not_found",
+  "message": "Service not found."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/services/inspection"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<section class="card" id="service_icon" data-ep="service_icon">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/services/:slug/icon</span><span class="what">The service icon</span><span class="auth">no auth</span></div>
+<div class="card-b"><p>Do not build this URL: use <code>icon</code> as it comes. It is always this route on the API host, for example <code>https://odooapp.mdarj.org/services/inspection/icon</code>. The route answers the icon the admin uploaded on the service (a square single-colour SVG or PNG, shown at 36 px); when the service has none, it answers the icon of its landing tile. When both are missing, <code>icon</code> is omitted from the service and the route answers a JSON <code>404 not_found</code>: show the frontend's default icon.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><p class="note" style="margin-top:0">Answers the image itself (<code>image/svg+xml</code> or <code>image/png</code>), or a JSON <code>404</code> when the service has no icon.</p></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Image</h3><pre>Content-Type: image/svg+xml
+Cache-Control: no-store
+(the file)</pre><h3 style="margin-top:14px"><span class="pill warn">404</span> No icon</h3><pre>{
+  "code": "not_found",
+  "message": "This service has no icon."
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/services/inspection/icon"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+
+<h2 class="section" id="tiles">Tiles in <code>/categories</code></h2>
+<p>The services group of <code>GET /categories</code> is unchanged in shape. A tile that opens a service now carries <strong>the service's name</strong>, so a tile and its page never disagree. The tile's <code>slug</code> is the service's <code>slug</code> and its <code>href</code> is <code>/services/&lt;slug&gt;</code>. <code>load-bank</code> and <code>temporary-power</code> have no tile: they are reached from <code>/services</code> and the footer.</p>
+<pre>[
+  {
+    "id": "13",
+    "slug": "services",
+    "group": "services",
+    "href": "/services",
+    "labelKey": "services",
+    "productCount": 0,
+    "tone": "soft",
+    "parentSlug": null,
+    "name": "الخدمات"
+  },
+  {
+    "id": "14",
+    "slug": "maintenance",
+    "group": "services",
+    "href": "/services/maintenance",
+    "labelKey": "maintenance",
+    "productCount": 0,
+    "tone": "soft",
+    "parentSlug": "services",
+    "name": "الصيانة والإصلاح"
+  },
+  {
+    "id": "15",
+    "slug": "inspection",
+    "group": "services",
+    "href": "/services/inspection",
+    "labelKey": "inspection",
+    "productCount": 0,
+    "tone": "soft",
+    "parentSlug": "services",
+    "name": "الفحص الفني"
+  },
+  {
+    "id": "16",
+    "slug": "solar",
+    "group": "services",
+    "href": "/services/solar",
+    "labelKey": "solar",
+    "productCount": 0,
+    "tone": "soft",
+    "parentSlug": "services",
+    "name": "الطاقة الشمسية"
+  }
+]</pre>
+
+<h2 class="section" id="requests">Service requests</h2>
+<p>The form on a service page sends <code>POST /quotes</code> with <code>service</code> set and <code>items: []</code>. A guest may send one. With a valid Bearer the request is linked to the user and appears under <code>GET /account/orders?kind=service</code>. <strong>An invalid Bearer is ignored, never <code>401</code>.</strong> References are <code>SV-…</code>. A quote request of products (no <code>service</code>) keeps the rules of the storefront contract, unchanged.</p>
+<section class="card" id="request_create" data-ep="request_create">
+<div class="card-h"><span class="mpill mono">POST</span><span class="path mono">/quotes</span><span class="what">Send a service request</span><span class="auth">no auth; Bearer optional</span></div>
+<div class="card-b"><p>Every field is checked, and <strong>every problem is reported in one answer</strong>: <code>fields</code> has a message for each wrong field, keyed by its path (<code>name</code>, <code>serviceDetails.neededBy</code>). The messages are in the language of <code>Accept-Language</code>, so they can be shown as they are under each input. Nothing is saved when the answer is <code>422</code>. <strong>An empty string is the same as a missing field</strong>: the form can send its inputs as they are.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Body</h3><pre>{
+  "name": "Demo Buyer",
+  "phone": "+201001234567",
+  "items": [],
+  "service": "inspection",
+  "notes": "",
+  "locale": "ar",
+  "serviceDetails": {
+    "email": "demo@spark-fu.example",
+    "company": "Spark Demo Contracting",
+    "neededBy": "2026-12-01",
+    "governorate": "",
+    "equipmentType": "generator",
+    "brandModel": "Perkins 1506A",
+    "address": "Plot 4, 10th of Ramadan"
+  }
+}</pre><p class="note">The full rules are in <a href="#rules">Validation rules</a>.</p></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">201</span> Created</h3><pre>{
+  "reference": "SV-3121"
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Every problem at once, Arabic</h3><pre>{
+  "code": "validation_error",
+  "message": "البيانات غير صحيحة.",
+  "fields": {
+    "name": "الاسم مطلوب.",
+    "serviceDetails.neededBy": "يجب أن يكون التاريخ اليوم أو بعده.",
+    "serviceDetails.equipmentType": "نوع معدة غير معروف. القيم المتاحة: generator, loadBank, lightingTower, loader, forklift, weldingMachine, solar, other."
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> Same body, English</h3><pre>{
+  "code": "validation_error",
+  "message": "Validation failed.",
+  "fields": {
+    "name": "Name is required.",
+    "serviceDetails.neededBy": "The date must be today or later.",
+    "serviceDetails.equipmentType": "Unknown equipment type. One of: generator, loadBank, lightingTower, loader, forklift, weldingMachine, solar, other."
+  }
+}</pre><h3 style="margin-top:14px"><span class="pill warn">422</span> More rules</h3><pre>{
+  "code": "validation_error",
+  "message": "Validation failed.",
+  "fields": {
+    "name": "Name must be 2 to 80 characters.",
+    "service": "Unknown service. One of: inspection, maintenance, solar, load-bank, temporary-power.",
+    "serviceDetails.neededBy": "Enter a date as yyyy-mm-dd.",
+    "serviceDetails.email": "Enter a valid email address.",
+    "serviceDetails.governorate": "Choose a governorate from the list."
+  }
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>POST path</label><input class="tp" value="/quotes"></div></div><div class="form" style="margin-top:10px"><div style="grid-column:1/-1"><label>JSON body (this one is wrong on purpose: send it to see the errors)</label><textarea class="tb" rows="12">{
+  "phone": "+201001234567",
+  "items": [],
+  "service": "inspection",
+  "serviceDetails": {
+    "neededBy": "2001-01-01",
+    "equipmentType": "spaceship"
+  }
+}</textarea></div></div><div class="row"><button type="button" class="btn go" data-m="POST">Send POST</button></div><div class="res"></div></div>
+</section>
+<h3 id="rules" style="scroll-margin-top:70px">Validation rules</h3><div class="tw"><table><thead><tr><th>Field</th><th>Rule</th><th>Message (en)</th></tr></thead><tbody><tr><td class="mono">name</td><td>required, 2 to 80 characters after trimming</td><td>Name is required. / Name must be 2 to 80 characters.</td></tr><tr><td class="mono">phone</td><td>required, international format (<code>+201001234567</code>)</td><td>Phone is required. / Enter the phone in international format, e.g. +201001234567.</td></tr><tr><td class="mono">notes</td><td>optional, at most 1000 characters</td><td>Notes can be at most 1000 characters.</td></tr><tr><td class="mono">service</td><td>a published slug from <code>GET /services</code></td><td>Unknown service. One of: …</td></tr><tr><td class="mono">serviceDetails</td><td>required object</td><td>Required for a service request.</td></tr><tr><td class="mono">serviceDetails.neededBy</td><td>required, <code>yyyy-mm-dd</code>, today or later (Cairo time)</td><td>Required. / Enter a date as yyyy-mm-dd. / The date must be today or later.</td></tr><tr><td class="mono">serviceDetails.equipmentType</td><td>required, one of the codes below</td><td>Unknown equipment type. One of: …</td></tr><tr><td class="mono">serviceDetails.email</td><td>optional, a valid email</td><td>Enter a valid email address.</td></tr><tr><td class="mono">serviceDetails.governorate</td><td>optional, a governorate key of <code>GET /delivery/regions</code> (<code>cairo</code>)</td><td>Choose a governorate from the list.</td></tr><tr><td class="mono">serviceDetails.company</td><td>optional, at most 120 characters</td><td>At most 120 characters.</td></tr><tr><td class="mono">serviceDetails.brandModel</td><td>optional, at most 120 characters</td><td>At most 120 characters.</td></tr><tr><td class="mono">serviceDetails.address</td><td>optional, at most 300 characters</td><td>At most 300 characters.</td></tr><tr><td class="mono">locale</td><td>optional, <code>ar</code> or <code>en</code>: the language of the confirmation email. Another value, or none, uses <code>Accept-Language</code></td><td>(never an error)</td></tr></tbody></table></div><p><code>equipmentType</code> codes: <code>generator</code>, <code>loadBank</code>, <code>lightingTower</code>, <code>loader</code>, <code>forklift</code>, <code>weldingMachine</code>, <code>solar</code>, <code>other</code>. The frontend translates the codes it shows in the select.</p>
+<div class="callout">The general <code>message</code> is <code>Validation failed.</code> (<code>البيانات غير صحيحة.</code> in Arabic). Show the per-field messages under the inputs, and the general one only when <code>fields</code> is empty.</div>
+<section class="card" id="request_get" data-ep="request_get">
+<div class="card-h"><span class="mpill mono">GET</span><span class="path mono">/quotes/:reference</span><span class="what">One service request</span><span class="auth">Bearer</span></div>
+<div class="card-b"><p>Same as in the storefront contract, plus <code>serviceName</code>: the service's name in the request's language, to show instead of the slug. It is kept for old requests even after the admin unpublishes the service. Someone else's request is <code>404 not_found</code>.</p></div>
+<div class="tabs"><button type="button" class="on" data-t="req">Request</button><button type="button" data-t="res">Responses</button><button type="button" data-t="try">Try it</button></div>
+<div class="pane on" data-p="req"><h3 style="margin-top:0">Parameters</h3><div class="tw"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="mono">reference</td><td>path</td><td class="mono">string</td><td><code>SV-…</code></td></tr></tbody></table></div></div>
+<div class="pane" data-p="res"><h3 style="margin-top:14px"><span class="pill ok">200</span> Service request, Arabic</h3><pre>{
+  "reference": "SV-3121",
+  "placedAt": "2026-11-03T01:19:20Z",
+  "stage": "sent",
+  "history": {
+    "sent": "2026-11-03T01:19:20Z"
+  },
+  "cancelled": false,
+  "phone": "+201001234567",
+  "items": [],
+  "service": "inspection",
+  "serviceName": "الفحص الفني",
+  "serviceDetails": {
+    "email": "demo@spark-fu.example",
+    "company": "Spark Demo Contracting",
+    "neededBy": "2026-12-01",
+    "equipmentType": "generator",
+    "brandModel": "Perkins 1506A",
+    "address": "Plot 4, 10th of Ramadan"
+  }
+}</pre></div>
+<div class="pane" data-p="try"><div class="form"><div><label>GET path</label><input class="tp" value="/quotes/SV-3121"></div></div><div class="row"><button type="button" class="btn go" data-m="GET">Send GET</button></div><div class="res"></div></div>
+</section>
+<pre>interface ServiceRequest {             // GET /quotes/:reference, new field only
+  service: string;                    // "inspection"
+  serviceName?: string;               // "الفحص الفني"; omitted only if the service was deleted
+}</pre>
+<h2 class="section" id="errors">Error codes</h2>
+<p>No new code. The ones these endpoints answer:</p>
+<div class="tw"><table><thead><tr><th>Code</th><th>Status</th><th>Where</th><th>What the user sees</th></tr></thead><tbody><tr><td class="mono">not_found</td><td>404</td><td>GET /services/:slug, GET /quotes/:reference</td><td>The 404 page</td></tr><tr><td class="mono">validation_error</td><td>422</td><td>POST /quotes</td><td>The messages of <code>fields</code> under the inputs</td></tr><tr><td class="mono">not_cancellable</td><td>409</td><td>POST /quotes/:reference/cancel</td><td>It can no longer be cancelled.</td></tr><tr><td class="mono">session_expired</td><td>401</td><td>GET /quotes/:reference</td><td>Refresh once and retry</td></tr><tr><td class="mono">rate_limited</td><td>429</td><td>any</td><td>Too many requests. Wait a moment.</td></tr><tr><td class="mono">invalid_request</td><td>400</td><td>POST /quotes</td><td>Body is not a JSON object (a developer error)</td></tr></tbody></table></div>
+
+<h2 class="section" id="admin">Managed in Odoo</h2>
+<p>Marketplace › Operations › <strong>Service Pages</strong> (marketplace managers). Each service is an Odoo product of type <em>Service</em>, kept out of the shop and out of <code>/products</code>. The admin edits, per service:</p>
+<ul>
+  <li>name, slug, published, <em>required on purchase</em>, <em>governorates covered</em>, icon, the landing tile it belongs to, and the order (drag and drop);</li>
+  <li>the page texts (summary, lead, panel and form titles, deliverables) and the checklist lines, in English and Arabic;</li>
+  <li><strong>Service responsible</strong>: the user who gets a to-do in Odoo for every new request of that service.</li>
+</ul>
+<p>The requests themselves are in the customer requests list, with the service linked on each one.</p>
+
+<h2 class="section" id="decisions">Decisions and open points</h2>
+<ul>
+  <li><strong>Mandatory inspection (Part 4): option B, offline.</strong> <code>mandatoryOnPurchase</code> only shows the badge and the rule on the page. A purchase is not blocked and no inspection fee is added at checkout; the team arranges the inspection after the order. Tell backend if option A (fee and refund in checkout) is wanted: it is a separate piece of work.</li>
+  <li><strong>Phone format: on.</strong> A service request needs an international phone (<code>+20…</code>); otherwise <code>fields.phone</code> is <code>Enter the phone in international format, e.g. +201001234567.</code> The switch is the system parameter <code>leaders_marketplace.storefront_service_phone_e164</code> (<code>1</code>).</li>
+  <li><strong>Team notification:</strong> a to-do for the service responsible in Odoo.</li>
+  <li><strong>Customer confirmation: done.</strong> When <code>serviceDetails.email</code> is set, the customer gets an email with the reference (<code>SV-…</code>), the service name and the phone the team will call, in the language of <code>locale</code> (else <code>Accept-Language</code>). No email in the form, no email sent. The answer of <code>POST /quotes</code> never waits for or fails because of the email.</li>
+  <li><strong>Coverage number: done.</strong> <code>coverageGovernorates</code> on each service, set by the admin per service. It is omitted when the admin has not set it: then use the number of governorates of <code>GET /delivery/regions</code>.</li>
+  <li><strong>Guest requests: done.</strong> At sign-up and at every sign-in, requests sent as a guest join the account when <strong>both</strong> the request's email (<code>serviceDetails.email</code>) and its phone equal the account's email and phone. One alone is not enough, because neither is verified at sign-up and a stranger could otherwise read someone's request. A guest request without an email is never attached. The frontend can show the track link to a guest who then signs in.</li>
+  <li><strong>Texts.</strong> The inspection texts are the ones from the frontend. The other four services still have the texts written by backend: the admin replaces them under Marketplace › Operations › Service Pages once the company confirms the wording.</li>
+  <li><strong>Icons.</strong> <code>load-bank</code> and <code>temporary-power</code> now have their own icons, so every service sends <code>icon</code>.</li>
+</ul>
+
+<h2 class="section" id="verify">How to verify</h2>
+<div class="flows">
+<div><h3>Pages</h3><ol class="steps">
+<li><code>GET /services</code> with <code>ar</code> then <code>en</code>: five services, same order, translated names.</li>
+<li><code>GET /services/inspection</code>: eight checklist lines.</li>
+<li><code>GET /services/nope</code>: <code>404 not_found</code>.</li>
+<li>Headers: <code>curl -s -D - -o /dev/null https://odooapp.mdarj.org/services | grep -i cache-control</code> prints <code>Cache-Control: no-store</code>; the same for <code>/services/inspection</code> and <code>/categories</code>.</li></ol></div>
+<div><h3>Request</h3><ol class="steps">
+<li>Send the <em>Try it</em> body of <code>POST /quotes</code> with <code>ar</code>: <code>422</code> with <code>name</code>, <code>serviceDetails.neededBy</code> and <code>serviceDetails.equipmentType</code>, in Arabic.</li>
+<li>Fix the three fields: <code>201</code> with <code>SV-…</code>.</li>
+<li>Signed in: it is in <code>GET /account/orders?kind=service</code>, and <code>GET /quotes/SV-…</code> has <code>serviceName</code>.</li>
+<li>As a guest, send a request with an email, then sign up with the same email and phone: <code>GET /quotes/SV-…</code> answers <code>200</code>.</li></ol></div>
+</div>
+</main>
+</div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var base = $('#base'), token = '';
+  try { token = sessionStorage.getItem('sf_token') || ''; base.value = sessionStorage.getItem('sf_base') || base.value; } catch (e) {}
+  function chip() {
+    $('#tokTxt').textContent = token ? token.slice(0, 14) + '…' : 'none';
+    $('#sessTxt').textContent = token ? 'token set' : 'no session';
+    $('#sessChip').classList.toggle('live', !!token);
+  }
+  function save() { try { sessionStorage.setItem('sf_token', token); sessionStorage.setItem('sf_base', base.value); } catch (e) {} }
+  base.addEventListener('change', save);
+  $('#demoBtn').onclick = function () {
+    fetch(base.value + '/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'demo@spark-fu.example', password: 'Secret123', remember: true }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j.accessToken) { token = j.accessToken; save(); chip(); } else alert(JSON.stringify(j)); })
+      .catch(function (e) { alert('Could not reach ' + base.value + ': ' + e.message); });
+  };
+  $('#outBtn').onclick = function () { token = ''; save(); chip(); };
+  var lang = 'ar';
+  try { lang = sessionStorage.getItem('sf_lang') || 'ar'; } catch (e) {}
+  document.querySelectorAll('#langSeg button').forEach(function (b) {
+    b.classList.toggle('on', b.dataset.l === lang);
+    b.onclick = function () { lang = b.dataset.l; try { sessionStorage.setItem('sf_lang', lang); } catch (e) {}
+      document.querySelectorAll('#langSeg button').forEach(function (x) { x.classList.toggle('on', x === b); }); };
+  });
+  chip();
+  document.querySelectorAll('.card').forEach(function (card) {
+    card.querySelectorAll('.tabs button').forEach(function (b) {
+      b.onclick = function () {
+        card.querySelectorAll('.tabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
+        card.querySelectorAll('.pane').forEach(function (p) { p.classList.toggle('on', p.dataset.p === b.dataset.t); });
+      };
+    });
+    var go = card.querySelector('.go');
+    go.onclick = function () {
+      var out = card.querySelector('.res'), body = card.querySelector('.tb');
+      var opts = { method: go.dataset.m, credentials: 'include', headers: { 'Accept-Language': lang } };
+      if (token) opts.headers.Authorization = 'Bearer ' + token;
+      if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = body.value; }
+      go.disabled = true; out.innerHTML = '';
+      var t0 = performance.now();
+      fetch(base.value + card.querySelector('.tp').value, opts).then(function (r) {
+        return r.text().then(function (t) {
+          var pretty = t; try { pretty = JSON.stringify(JSON.parse(t), null, 2); } catch (e) {}
+          var cls = r.status < 300 ? 'ok' : (r.status < 500 ? 'warn' : 'err');
+          out.innerHTML = '<div class="meta"><span class="pill ' + cls + '">' + r.status + '</span><span>' + Math.round(performance.now() - t0) + ' ms</span></div><pre></pre>';
+          out.querySelector('pre').textContent = pretty || '(empty body)';
+        });
+      }).catch(function (e) { out.innerHTML = '<p class="note">Request failed: ' + e.message + ' (is the base URL reachable, and its origin allowed by CORS?)</p>'; })
+        .then(function () { go.disabled = false; });
+    };
+  });
+})();
+</script>
+</body>
+</html>

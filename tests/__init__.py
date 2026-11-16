@@ -8,6 +8,7 @@ from . import test_delivery_platform
 from . import test_cash_on_delivery
 from . import test_security_rpc
 from . import test_vendor_product_content
+from . import test_vendor_product_spec
 from . import test_stock_user_flows
 from . import test_fbm_delivery_proof
 from . import test_no_plan_commission
@@ -57,3 +58,7 @@ from . import test_settlement_cancel_ledger
 from . import test_cancel_remaining_money
 from . import test_vendor_import_ssrf
 from . import test_unified_orders_company_actions
+from . import test_auth_api
+from . import test_catalog_spec
+from . import test_services_api
+from . import test_storefront_content

@@ -168,6 +168,7 @@
          feature switches are decided in one place. The nav data is read from `lm_nav`, or fetched here. -->
     <template id="portal_vendor_nav" name="Vendor Portal Navigation">
         <t t-set="lm_nav" t-value="lm_nav or request.env['leaders.portal.nav']._vendor_nav(request.httprequest.path)"/>
+        <div class="lm-vendor-nav-title d-none d-lg-block">My store</div>
         <nav class="lm-vendor-nav" aria-label="Vendor menu">
             <t t-foreach="lm_nav['entries']" t-as="lm_e">
                 <a t-if="not lm_nav['disabled']" t-att-href="lm_e['url']"
@@ -177,6 +178,7 @@
             </t>
             <span class="lm-vendor-nav-sep" aria-hidden="true"/>
             <a t-att-href="lm_nav['purchases_url']" class="lm-vendor-nav-link" id="lm_nav_my_purchases"><i class="fa fa-shopping-bag"/> My purchases</a>
+            <a t-att-href="request.env['ir.config_parameter'].sudo().get_param('leaders_marketplace.storefront_url') or 'https://spark-fu.com'" class="lm-vendor-nav-link" id="lm_nav_back_to_platform"><i class="fa fa-arrow-left lm-flip" aria-hidden="true"/> Back to the website</a>
         </nav>
     </template>
 
@@ -1047,5 +1049,47 @@
                 </div>
             </div>
         </t>
+    </template>
+    <!-- Spark Fu look on the portal pages only: the storefront font (Cairo) -->
+    <template id="portal_spark_font" name="Portal: Spark Fu font" inherit_id="web.frontend_layout">
+        <xpath expr="//head" position="inside">
+            <t t-if="is_portal">
+                <link rel="preconnect" href="https://fonts.googleapis.com"/>
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&amp;display=swap"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Every portal page opens with the storefront's account hero (title panel and picture), as on spark-fu.com/account. -->
+    <template id="lm_account_hero" name="Portal: account hero">
+        <t t-set="lm_site" t-value="request.env['ir.config_parameter'].sudo().get_param('leaders_marketplace.storefront_url') or 'https://spark-fu.com'"/>
+        <section class="lm-acc-hero" id="lm_account_hero">
+            <div class="container">
+                <div class="lm-acc-hero-inner">
+                    <div class="lm-acc-hero-panel">
+                        <nav class="lm-acc-hero-crumbs" aria-label="breadcrumb">
+                            <a t-att-href="lm_site">Home</a>
+                            <i class="fa fa-angle-right lm-flip" aria-hidden="true"/>
+                            <a t-att-href="'/my/vendor' if lm_nav else '/my'"><t t-if="lm_nav">Vendor account</t><t t-else="">My account</t></a>
+                        </nav>
+                        <h1 class="lm-acc-hero-title"><t t-if="lm_nav">Vendor account</t><t t-else="">My account</t></h1>
+                        <p class="lm-acc-hero-sub">
+                            <t t-if="lm_nav">Manage your products, orders, returns and payouts from one place.</t>
+                            <t t-else="">Manage your account details, orders and security from one place.</t>
+                        </p>
+                    </div>
+                    <div class="lm-acc-hero-media" aria-hidden="true">
+                        <img src="/leaders_marketplace/static/src/img/portal_account_hero.png" alt="" width="724" height="416"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="portal_layout_account_hero" name="Portal: account hero on every page" inherit_id="portal.portal_layout">
+        <xpath expr="//div[@id='wrap']" position="before">
+            <t t-call="leaders_marketplace.lm_account_hero"/>
+        </xpath>
     </template>
 </odoo>
