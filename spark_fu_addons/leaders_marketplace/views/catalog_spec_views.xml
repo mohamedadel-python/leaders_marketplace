@@ -206,6 +206,7 @@
                                    invisible="leaders_condition in ('used', 'refurbished')" help="The quantity on hand in the warehouses, for information only. Stock is updated from Inventory or by the vendor in their portal."/>
                             <field name="leaders_warranty_months" string="Warranty (months)" help="The warranty length in months, shown on the product card as a buying reason. Required for equipment to be approved."/>
                             <field name="leaders_service_ids" widget="many2many_tags" options="{'no_create': True}" help="The services a customer can ask for with this product (inspection, installation, delivery...). They are offered on the product page."/>
+                            <field name="leaders_own_service_ids" widget="many2many_tags" options="{'no_create': True}" invisible="leaders_field_set == 'part'" help="Services the vendor offers himself with this machine. The price is agreed between the vendor and the buyer."/>
                             <field name="leaders_warranty_provider" invisible="leaders_field_set == 'part'" help="Who gives the warranty: the vendor, the manufacturer or the platform. Required with the warranty for equipment to be approved."/>
                             <field name="leaders_warranty_scope" invisible="leaders_field_set == 'part'"
                                    placeholder="What it covers and what it excludes" help="What the warranty covers and what it excludes, in a few lines. Shown on the product page."/>

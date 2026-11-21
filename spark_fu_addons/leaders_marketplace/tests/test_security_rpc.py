@@ -273,6 +273,50 @@ class TestVendorPortalRoutesStillWork(HttpCase, MarketplacePortalUserCommon):
         self._post("/my/vendor/products/%s/stock" % offer.id, edit_url, quantity="7")
         self.assertEqual(offer.available_qty(), 7)
 
+    def test_a_duplicate_seller_sku_is_said_in_the_form_not_by_the_database(self):
+        """BUG-00917: the vendor saw the database's English error page; now the form says it, in his language."""
+        Offer = self.env["leaders.marketplace.offer"]
+        data = dict(name="Dup Product", price="30", fulfillment_type="fbm",
+                    currency_id=str(self.env.company.currency_id.id))
+        self._post("/my/vendor/products/new", "/my/vendor/products/new", seller_sku="DUP-1", **data)
+        first = Offer.search([("seller_sku", "=", "DUP-1")])
+        self.assertEqual(len(first), 1)
+        before = Offer.search_count([("vendor_id", "=", self.vendor.id)])
+        page = self._post("/my/vendor/products/new", "/my/vendor/products/new", seller_sku="DUP-1", **data)
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("Seller SKU DUP-1 is already used by another of your offers.", page.text)
+        self.assertNotIn("The operation cannot be completed", page.text)
+        self.assertEqual(Offer.search_count([("vendor_id", "=", self.vendor.id)]), before)  # nothing was made
+        # the same on a change: another offer's SKU is refused, the offer's own SKU is fine
+        other = Offer.search([("vendor_id", "=", self.vendor.id), ("id", "!=", first.id)], limit=1)
+        edit_url = "/my/vendor/products/%s/edit" % first.id
+        page = self._post(edit_url, edit_url, seller_sku=other.seller_sku, **data)
+        self.assertIn("is already used by another of your offers.", page.text)
+        self.assertEqual(first.seller_sku, "DUP-1")
+        page = self._post(edit_url, edit_url, seller_sku="DUP-1", **data)
+        self.assertNotIn("is already used by another of your offers.", page.text)
+
+    def test_a_refused_save_gives_back_what_the_vendor_typed(self):
+        """The page with the error carries the typed values, so the form is filled back in (not emptied)."""
+        import json
+        from html import unescape
+        import re
+        page = self._post("/my/vendor/products/new", "/my/vendor/products/new",
+                          name="", seller_sku="KEEP-ME", price="42.5", fulfillment_type="fbm",
+                          description_sale="A long description the vendor wrote",
+                          currency_id=str(self.env.company.currency_id.id))
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("Product name, seller SKU and a valid price are required.", page.text)
+        match = re.search(r'id="lm_form_state"[^>]*data-state="([^"]*)"', page.text)
+        self.assertTrue(match, "the refused page does not carry what was typed")
+        state = json.loads(unescape(match.group(1)))
+        self.assertEqual(state["seller_sku"], ["KEEP-ME"])
+        self.assertEqual(state["price"], ["42.5"])
+        self.assertEqual(state["description_sale"], ["A long description the vendor wrote"])
+        self.assertNotIn("csrf_token", state)
+        # a normal page (no refusal) carries nothing
+        self.assertNotIn("lm_form_state", self.url_open("/my/vendor/products/new").text)
+
     def test_vendor_ships_an_fbm_group(self):
         vendor_order = self._confirmed_sale_order(self.fbm_product, 1).vendor_order_ids
         group = vendor_order.fulfillment_group_ids

@@ -284,6 +284,20 @@ class TestVendorApiOrders(VendorApiCommon):
         self.assertEqual(detail["groups"][0]["fulfillment_type"], "fbm")
         self.assertError(self.get("%s/orders/%s" % (BASE, self.b_order.id)), 404, "not_found")
 
+    def test_the_buyer_follows_the_contract_model(self):
+        order = self.a_order(1)
+        vendor = order.vendor_id
+        vendor.sudo().leaders_contract_model = "subscription"
+        detail = self.get("%s/orders/%s" % (BASE, order.id)).json()
+        self.assertEqual(detail["customer"], order._leaders_buyer_label())
+        self.assertIn("customer_phone", detail)
+        vendor.sudo().leaders_contract_model = "commission"
+        detail = self.get("%s/orders/%s" % (BASE, order.id)).json()
+        self.assertEqual(detail["customer"], "Platform customer")
+        self.assertNotIn("customer_phone", detail)
+        listed = self.get(BASE + "/orders").json()["items"]
+        self.assertEqual({o["customer"] for o in listed if o["id"] == order.id}, {"Platform customer"})
+
     def test_other_vendor_cannot_ship_or_deliver(self):
         for action in ("ship", "delivered"):
             response = self.call("POST", "%s/orders/%s/%s" % (BASE, self.b_order.id, action), self.wkey,

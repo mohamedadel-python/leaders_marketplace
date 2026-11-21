@@ -48,6 +48,50 @@ class TestServicesApi(HttpCase):
         self.env.flush_all()
         return user, encode_access_token(self.env, user)
 
+    def test_the_needed_by_date_of_the_form_reaches_the_request(self):
+        """The service form sends its date inside serviceDetails: it is stored as the request's needed-by date."""
+        response = self.post("/quotes", self.request_body())
+        self.assertEqual(response.status_code, 201, response.text)
+        record = self.env["leaders.customer.request"].sudo().search([("name", "=", response.json()["reference"])])
+        self.assertEqual(str(record.needed_by), self.tomorrow)
+        body = self.request_body(email="ali@example.com")
+        body["locale"] = "ar"
+        response = self.post("/quotes", body)
+        record = self.env["leaders.customer.request"].sudo().search([("name", "=", response.json()["reference"])])
+        # the name typed, the email of the form and the page's language are kept with the request
+        self.assertEqual((record.contact_name, record.contact_email, record.request_locale),
+                         ("Ali Hassan", "ali@example.com", "ar"))
+
+    def test_a_guest_who_asks_again_keeps_his_contact(self):
+        """The same person asking twice without signing in is one contact, not two."""
+        Partner = self.env["res.partner"].sudo()
+        before = Partner.search_count([])
+        first = self.post("/quotes", self.request_body(email="again@example.com"))
+        second = self.post("/quotes", self.request_body(email="Again@Example.com"))  # the case of the email is no difference
+        self.assertEqual((first.status_code, second.status_code), (201, 201))
+        self.assertEqual(Partner.search_count([]), before + 1)
+        names = [first.json()["reference"], second.json()["reference"]]
+        requests = self.env["leaders.customer.request"].sudo().search([("name", "in", names)])
+        self.assertEqual(len(requests.partner_id), 1)
+        # without an email: the same phone and name is the same person (he is the contact already kept), another name
+        # is another person
+        before = Partner.search_count([])
+        self.post("/quotes", self.request_body())
+        self.post("/quotes", self.request_body())
+        self.assertEqual(Partner.search_count([]), before)
+        other = self.request_body()
+        other["name"] = "Someone Else"
+        self.post("/quotes", other)
+        self.post("/quotes", other)
+        self.assertEqual(Partner.search_count([]), before + 1)
+        # a registered customer's own contact is never reused for a guest's request
+        user, _token = self.make_user()
+        guest = self.request_body(email="mona@example.com")
+        guest["name"] = "Mona Adel"
+        self.post("/quotes", guest)
+        mona = self.env["leaders.customer.request"].sudo().search([("contact_email", "=", "mona@example.com")], limit=1)
+        self.assertNotEqual(mona.partner_id, user.partner_id)
+
     # ------------------------------------------------------------------ one list for both endpoints
     def test_every_service_has_its_tile_in_categories(self):
         """The frontend reported 7 services in /services but 5 tiles in /categories: two services sat on the

@@ -1,6 +1,8 @@
+import json
 import re
 
 from odoo import _, api, models
+from odoo.http import request
 
 PARAM_STANDARD_ENTRIES = "leaders_marketplace.portal_show_standard_entries"
 STANDARD_MODES = ("only_if_documents", "always", "never")
@@ -43,8 +45,15 @@ STATE_TONES = {
     # neutral
     "closed": "secondary", "none": "secondary", "consumed": "secondary",
     "used": "secondary", "superseded": "secondary",
+    # equipment requests, rentals and assets, push messages
+    "confirming": "info", "awaitingPayment": "warning", "reserved": "info", "with_customer": "primary",
+    "rented": "primary", "inspection": "warning", "maintenance": "warning", "out_of_service": "dark",
+    "sent": "success",
 }
 TIMELINE_KEYS = ("ordered", "confirmed", "shipped", "delivered")
+
+
+FORM_STATE_SKIPPED = ("csrf_token", "password")  # never handed back to the page
 
 
 class LeadersPortalNav(models.AbstractModel):
@@ -138,6 +147,9 @@ class LeadersPortalNav(models.AbstractModel):
             {"key": "import", "url": "/my/vendor/import", "icon": "fa-upload", "label": _("Import"),
              "enabled": Import._leaders_import_enabled()},
             {"key": "orders", "url": "/my/vendor/orders", "icon": "fa-shopping-cart", "label": _("Orders")},
+            {"key": "equipment_requests", "url": "/my/vendor/equipment-requests", "icon": "fa-truck",
+             "label": _("Equipment requests")},
+            {"key": "own_services", "url": "/my/vendor/own-services", "icon": "fa-wrench", "label": _("My services")},
             {"key": "returns", "url": "/my/vendor/returns", "icon": "fa-undo", "label": _("Returns")},
             {"key": "rentals", "url": "/my/vendor/rentals", "icon": "fa-calendar", "label": _("Rentals")},
             {"key": "contract", "url": "/my/vendor/contract", "icon": "fa-handshake-o", "label": _("Contract model")},
@@ -175,6 +187,9 @@ class LeadersPortalNav(models.AbstractModel):
         (r"^/my/vendor/products/\d+", lambda s: _("Edit product")),
         (r"^/my/vendor/templates/\d+/variants", lambda s: _("Variants")),
         (r"^/my/vendor/orders/\d+", lambda s: _("Order details")),
+        (r"^/my/vendor/equipment-requests/\d+", lambda s: _("Request details")),
+        (r"^/my/vendor/own-services/new", lambda s: _("New service")),
+        (r"^/my/vendor/own-services/\d+", lambda s: _("Service details")),
         (r"^/my/vendor/returns/\d+", lambda s: _("Return details")),
         (r"^/my/vendor/disputes/\d+", lambda s: _("Dispute details")),
         (r"^/my/vendor/import/\d+", lambda s: _("Import job")),
@@ -317,3 +332,21 @@ class LeadersPortalNav(models.AbstractModel):
                 status = "todo"
             steps.append({"key": key, "label": labels[key], "status": status, "date": dates[key]})
         return {"steps": steps, "terminal": terminal}
+
+    @api.model
+    def _vendor_form_state(self):
+        """What the vendor typed, when a POST was refused and the page is shown again with an error.
+
+        The page puts it in a data attribute and portal_actions.js fills the form back in, so a refused
+        save never throws away what was entered. Files and passwords are not kept.
+        """
+        http = request.httprequest if request else None
+        if not http or http.method != "POST":
+            return ""
+        state = {}
+        for key in http.form:
+            if any(skipped in key.lower() for skipped in FORM_STATE_SKIPPED):
+                continue
+            state[key] = [value[:5000] for value in http.form.getlist(key)[:200]]
+        text = json.dumps(state)
+        return text if len(text) <= 200000 else ""

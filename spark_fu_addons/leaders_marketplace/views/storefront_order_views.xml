@@ -58,6 +58,6 @@
         </field>
     </record>
 
-    <menuitem id="menu_storefront_orders" name="Website Orders" parent="menu_marketplace_operations"
-              action="action_storefront_orders" sequence="25"/>
+    <menuitem id="menu_storefront_orders" name="Website Orders" parent="menu_marketplace_orders"
+              action="action_storefront_orders" sequence="10"/>
 </odoo>

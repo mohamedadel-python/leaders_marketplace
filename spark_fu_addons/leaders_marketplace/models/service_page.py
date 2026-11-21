@@ -214,6 +214,38 @@ class LeadersServiceChecklistItem(models.Model):
     name = fields.Char("Item", required=True, translate=True)
 
 
+class ResPartnerGuestContact(models.Model):
+    _inherit = "res.partner"
+
+    @api.model
+    def _leaders_guest_contact(self, name, phone, email=None):
+        """The contact of a person who asks without signing in: the one already kept for him, or a new one.
+
+        A person is found by his email, else by his phone and name; only a contact with no account of its own (a guest's
+        earlier request) is reused, never a customer's, a vendor's or a staff member's. His details fill what the
+        contact lacks and never overwrite what it has.
+        """
+        Partner = self.sudo()
+        name, phone, email = (name or "").strip(), (phone or "").strip(), (email or "").strip().lower()
+        plain = [("user_ids", "=", False), ("is_marketplace_vendor", "=", False), ("type", "=", "contact"),
+                 ("is_company", "=", False)]
+        found = Partner.browse()
+        if email:
+            found = Partner.search(plain + [("email", "=ilike", email)], order="id", limit=20).filtered(
+                lambda p: (p.email or "").strip().lower() == email)[:1]  # =ilike reads _ as a wildcard
+        if not found and phone and name:
+            found = Partner.search(plain + [("phone", "=", phone), ("name", "=ilike", name)], order="id", limit=20).filtered(
+                lambda p: (p.name or "").strip().lower() == name.lower()
+                and (not email or not p.email or p.email.strip().lower() == email))[:1]
+        if found:
+            fill = {key: value for key, value in (("phone", phone), ("email", email), ("name", name))
+                    if value and not found[key]}
+            if fill:
+                found.write(fill)
+            return found
+        return Partner.create({"name": name, "phone": phone or False, "email": email or False})
+
+
 class LeadersCustomerRequestService(models.Model):
     _name = "leaders.customer.request"
     _inherit = ["leaders.customer.request", "mail.activity.mixin"]
@@ -221,6 +253,45 @@ class LeadersCustomerRequestService(models.Model):
     service_id = fields.Many2one(
         "product.template", "Service page", ondelete="set null", index=True,
         domain=[("leaders_service_page", "=", True)])
+
+    service_label = fields.Char("Service", compute="_compute_service_form", help="The service asked, by its name.")
+    service_email = fields.Char("Email", compute="_compute_service_form")
+    service_company = fields.Char("Company", compute="_compute_service_form")
+    service_brand_model = fields.Char("Brand and model", compute="_compute_service_form")
+    service_equipment_label = fields.Char("Equipment type", compute="_compute_service_form")
+    service_governorate_name = fields.Char("Governorate", compute="_compute_service_form")
+    service_address = fields.Char("Address of the machine", compute="_compute_service_form")
+
+    @api.depends("service", "service_id", "service_details")
+    def _compute_service_form(self):
+        """What the customer typed in the service form, one field each, instead of the stored JSON."""
+        labels = self._service_equipment_labels()
+        states = {}
+        for rec in self:
+            details = {}
+            try:
+                details = json.loads(rec.service_details or "{}")
+            except ValueError:
+                pass
+            if not isinstance(details, dict):
+                details = {}
+            if details.get("governorate") and not states:
+                for state in self.env["res.country.state"].sudo().search([("country_id.code", "=", "EG")]):
+                    key = re.sub(r"\W", "", (state.with_context(lang="en_US").name or "").lower())
+                    states[key] = state.name
+            rec.service_label = rec.service_name() if rec.kind == "service" else False
+            rec.service_email = details.get("email") or False
+            rec.service_company = details.get("company") or False
+            rec.service_brand_model = details.get("brandModel") or False
+            rec.service_equipment_label = labels.get(details.get("equipmentType"), details.get("equipmentType") or False)
+            rec.service_governorate_name = states.get(details.get("governorate"), details.get("governorate") or False)
+            rec.service_address = details.get("address") or False
+
+    @api.model
+    def _service_equipment_labels(self):
+        return {"generator": _("Generator"), "loadBank": _("Load bank"), "lightingTower": _("Lighting tower"),
+                "loader": _("Loader"), "forklift": _("Forklift"), "weldingMachine": _("Welding machine"),
+                "solar": _("Solar energy"), "other": _("Other")}
 
     def service_name(self):
         """The service's name in the context language; requests made before service pages find it by slug."""

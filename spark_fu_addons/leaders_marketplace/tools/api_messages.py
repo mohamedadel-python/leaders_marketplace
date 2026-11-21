@@ -64,6 +64,10 @@ MESSAGES = [
     _lt("Must be a comma-separated list of ids."),
     _lt("The minimum order for delivery to this governorate is %s."),
     _lt("Only %s available from this seller."),
+    _lt("Only %s available."),
+    # equipment requests
+    _lt("This request can no longer be cancelled."),
+    _lt("This request cannot be marked as received now."),
     _lt("This seller does not sell this product any more."),
     # spare-part returns
     _lt("A spare part is returned only when it does not match the order."),

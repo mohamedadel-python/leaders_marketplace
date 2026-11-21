@@ -1,4 +1,17 @@
 <odoo>
+    <!-- A4 with small margins: the navy band sits at the top of the page, as in Spark Fu's designs. -->
+    <record id="paperformat_vendor_invoice" model="report.paperformat">
+        <field name="name">Vendor Invoice (A4)</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
     <record id="action_report_vendor_invoice" model="ir.actions.report">
         <field name="name">Vendor Invoice</field>
         <field name="model">leaders.vendor.invoice</field>
@@ -8,74 +21,176 @@
         <field name="print_report_name">object._get_report_base_filename()</field>
         <field name="binding_model_id" ref="model_leaders_vendor_invoice"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_vendor_invoice"/>
     </record>
 
     <template id="report_vendor_invoice_document">
-        <!-- basic_layout: no company header/footer, the invoice is issued by the vendor. -->
+        <!-- basic_layout: no company header/footer, the invoice is issued by the vendor, through the marketplace.
+             The look is the Spark Fu one (navy band with the logo, soft blue cards, the indigo table header) and the
+             labels are in Arabic with the English under them, so the document reads the same whatever the language
+             of the customer's account. Old WebKit (wkhtmltopdf): tables for the layout, no flex or grid. -->
         <t t-call="web.basic_layout">
-            <div class="page">
-                <div class="row mb-4">
-                    <div class="col-7">
-                        <img t-if="o.vendor_id.image_128" t-att-src="image_data_uri(o.vendor_id.image_128)" style="max-height: 60px;" alt="Vendor"/>
-                        <h3 class="mb-1" t-esc="o.vendor_id.vendor_store_name or o.vendor_id.name"/>
-                        <div t-field="o.vendor_id" t-options="{'widget': 'contact', 'fields': ['address', 'phone', 'email', 'vat'], 'no_marker': True}"/>
-                    </div>
-                    <div class="col-5 text-end">
-                        <h2 class="mb-1" t-if="o.move_type == 'out_refund'">Credit Note</h2>
-                        <h2 class="mb-1" t-else="">Invoice</h2>
-                        <div t-if="o.reversed_invoice_id">Reversal of: <span t-field="o.reversed_invoice_id.name"/></div>
-                        <div><strong t-field="o.name"/></div>
-                        <div>Date: <span t-field="o.invoice_date"/></div>
-                        <div>Order: <span t-field="o.vendor_order_id.name"/></div>
-                        <div t-if="o.state == 'cancelled'" class="text-danger fw-bold">CANCELLED</div>
-                    </div>
-                </div>
-                <div class="row mb-4">
-                    <div class="col-6">
-                        <strong>Bill To</strong>
-                        <div t-field="o.partner_id" t-options="{'widget': 'contact', 'fields': ['name', 'address', 'vat'], 'no_marker': True}"/>
-                    </div>
-                    <div class="col-6" t-if="o.vendor_order_id.partner_shipping_id and o.vendor_order_id.partner_shipping_id != o.partner_id">
-                        <strong>Ship To</strong>
-                        <div t-field="o.vendor_order_id.partner_shipping_id" t-options="{'widget': 'contact', 'fields': ['name', 'address'], 'no_marker': True}"/>
-                    </div>
-                </div>
-                <table class="table table-sm o_main_table">
+            <style>
+                @font-face { font-family: 'SparkInvoice'; font-weight: normal;
+                    src: url('/leaders_marketplace/static/fonts/NotoKufiArabic-Regular.ttf') format('truetype'); }
+                @font-face { font-family: 'SparkInvoice'; font-weight: bold;
+                    src: url('/leaders_marketplace/static/fonts/NotoKufiArabic-Bold.ttf') format('truetype'); }
+                .sf-inv { font-family: 'SparkInvoice', 'DejaVu Sans', Arial, sans-serif; color: #1f2326; font-size: 11px; line-height: 1.55; }
+                .sf-inv.rtl { direction: rtl; text-align: right; }
+                .sf-inv.ltr { direction: ltr; text-align: left; }
+                .sf-inv table { width: 100%; border-collapse: collapse; border: 0; }
+                .sf-inv td, .sf-inv th { vertical-align: top; border: 0; }
+                .sf-inv .en { display: block; font-size: 8px; color: #6b7280; font-weight: normal; letter-spacing: .2px; }
+                .sf-band { background: #031c6e; border-radius: 10px; }
+                .sf-band td { padding: 16px 22px; color: #ffffff; vertical-align: middle; }
+                .sf-band img { height: 38px; }
+                .sf-doc-title { font-size: 24px; font-weight: bold; line-height: 1.1; }
+                .sf-doc-title .en { color: #9fc3ec; font-size: 10px; }
+                .sf-doc-no { font-size: 12px; color: #c9dcf5; margin-top: 4px; direction: ltr; }
+                .rtl .sf-doc-no, .rtl td.sf-t { text-align: left; }
+                .ltr .sf-doc-no, .ltr td.sf-t { text-align: right; }
+                .rtl .sf-start { text-align: right; }
+                .ltr .sf-start { text-align: left; }
+                .sf-card { background: #e9f4ff; border-radius: 8px; padding: 12px 16px; }
+                .sf-card-title { color: #3e539a; font-size: 11px; font-weight: bold; border-bottom: 1px solid #c9dcf5;
+                    padding-bottom: 4px; margin-bottom: 6px; }
+                .sf-card h3 { margin: 0 0 3px 0; font-size: 14px; color: #031c6e; }
+                .sf-card address { margin: 0; font-style: normal; }
+                .sf-card .sf-id { margin-top: 5px; }
+                .sf-card .sf-id span { color: #6b7280; }
+                .sf-meta td { padding: 3px 0; border-bottom: 1px solid #e5e7eb; }
+                .sf-meta td.k { color: #6b7280; width: 38%; }
+                .sf-meta td.v { font-weight: bold; direction: ltr; text-align: right; }
+                .sf-badge { display: inline-block; padding: 3px 14px; border-radius: 12px; font-weight: bold; font-size: 10px; }
+                .sf-paid { background: #dff3e6; color: #378450; border: 1px solid #378450; }
+                .sf-cancelled { background: #fde3e5; color: #e40014; border: 1px solid #e40014; }
+                .sf-lines th { background: #3e539a; color: #ffffff; padding: 8px 8px; font-size: 10px; }
+                .sf-lines th .en { color: #c9dcf5; }
+                .sf-lines td { padding: 7px 8px; border-bottom: 1px solid #e5e7eb; }
+                .sf-lines tr.alt td { background: #f1f5f9; }
+                .sf-num { direction: ltr; white-space: nowrap; }
+                .rtl .sf-num { text-align: left; }
+                .ltr .sf-num { text-align: right; }
+                .sf-totals td { padding: 6px 12px; border-bottom: 1px solid #e5e7eb; }
+                .sf-totals tr.grand td { background: #031c6e; color: #ffffff; font-size: 14px; font-weight: bold; border: 0; }
+                .sf-totals tr.grand .en { color: #9fc3ec; }
+                .sf-note { color: #6b7280; font-size: 9.5px; border-top: 2px solid #6399d0; margin-top: 22px; padding-top: 8px; }
+                .sf-note .sub { font-size: 8.5px; margin-top: 2px; }
+            </style>
+            <t t-set="lang_code" t-value="o.partner_id.lang or o.env.lang or ''"/>
+            <t t-set="rtl" t-value="lang_code.startswith('ar')"/>
+            <div t-attf-class="page sf-inv #{'rtl' if rtl else 'ltr'}" t-att-dir="'rtl' if rtl else 'ltr'" t-translation="off">
+                <!-- the band: the marketplace logo and what the document is -->
+                <table class="sf-band">
+                    <tr>
+                        <td style="width: 45%;"><img src="/leaders_marketplace/static/src/img/email_logo.png" alt="Spark Fu"/></td>
+                        <td class="sf-t">
+                            <div class="sf-doc-title">
+                                <t t-if="o.move_type == 'out_refund'"><t t-out="'إشعار دائن' if rtl else 'Credit Note'"/><span class="en" t-out="'Credit Note' if rtl else 'إشعار دائن'"/></t>
+                                <t t-else=""><t t-out="'فاتورة' if rtl else 'Invoice'"/><span class="en" t-out="'Invoice' if rtl else 'فاتورة'"/></t>
+                            </div>
+                            <div class="sf-doc-no"><t t-esc="o.name"/></div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- who issues it, and the facts of the document -->
+                <table style="margin-top: 14px;">
+                    <tr>
+                        <td style="width: 58%; padding: 0 5px;">
+                            <div class="sf-card">
+                                <div class="sf-card-title"><t t-out="'صادرة عن' if rtl else 'Issued by'"/><span class="en" t-out="'Issued by' if rtl else 'صادرة عن'"/></div>
+                                <img t-if="o.vendor_id.image_128" t-att-src="image_data_uri(o.vendor_id.image_128)" style="max-height: 44px; margin-bottom: 4px;" alt="Vendor"/>
+                                <h3 t-esc="o.vendor_id.vendor_store_name or o.vendor_id.name"/>
+                                <address t-field="o.vendor_id" t-options="{'widget': 'contact', 'fields': ['address', 'phone', 'email'], 'no_marker': True}"/>
+                                <div class="sf-id" t-if="o.vendor_id.vat">
+                                    <span>الرقم الضريبي · Tax number:</span> <strong dir="ltr" t-esc="o.vendor_id.vat"/>
+                                </div>
+                                <div class="sf-id" t-if="o.vendor_id.company_registry">
+                                    <span>السجل التجاري · Commercial register:</span> <strong dir="ltr" t-esc="o.vendor_id.company_registry"/>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width: 42%; padding: 0 5px;">
+                            <table class="sf-meta">
+                                <tr><td class="k"><t t-out="'التاريخ' if rtl else 'Date'"/><span class="en" t-out="'Date' if rtl else 'التاريخ'"/></td><td class="v"><span t-field="o.invoice_date"/></td></tr>
+                                <tr><td class="k"><t t-out="'رقم الطلب' if rtl else 'Order'"/><span class="en" t-out="'Order' if rtl else 'رقم الطلب'"/></td><td class="v"><span t-field="o.vendor_order_id.name"/></td></tr>
+                                <tr t-if="o.reversed_invoice_id"><td class="k"><t t-out="'عكس الفاتورة' if rtl else 'Reversal of'"/><span class="en" t-out="'Reversal of' if rtl else 'عكس الفاتورة'"/></td><td class="v"><span t-field="o.reversed_invoice_id.name"/></td></tr>
+                                <tr t-if="o.state == 'cancelled' or o.payment_state == 'paid'">
+                                    <td class="k"><t t-out="'الحالة' if rtl else 'Status'"/><span class="en" t-out="'Status' if rtl else 'الحالة'"/></td>
+                                    <td style="padding-top: 6px;">
+                                        <span t-if="o.state == 'cancelled'" class="sf-badge sf-cancelled" t-out="'ملغاة · CANCELLED' if rtl else 'CANCELLED · ملغاة'"/>
+                                        <span t-elif="o.payment_state == 'paid'" class="sf-badge sf-paid" t-out="'مدفوعة · PAID' if rtl else 'PAID · مدفوعة'"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- the customer -->
+                <table style="margin-top: 10px;">
+                    <tr>
+                        <td style="padding: 0 5px;">
+                            <div class="sf-card">
+                                <div class="sf-card-title"><t t-out="'فاتورة إلى' if rtl else 'Bill to'"/><span class="en" t-out="'Bill to' if rtl else 'فاتورة إلى'"/></div>
+                                <div t-field="o.partner_id" t-options="{'widget': 'contact', 'fields': ['name', 'address', 'vat'], 'no_marker': True}"/>
+                            </div>
+                        </td>
+                        <td t-if="o.vendor_order_id.partner_shipping_id and o.vendor_order_id.partner_shipping_id != o.partner_id" style="padding: 0 5px;">
+                            <div class="sf-card">
+                                <div class="sf-card-title"><t t-out="'الشحن إلى' if rtl else 'Ship to'"/><span class="en" t-out="'Ship to' if rtl else 'الشحن إلى'"/></div>
+                                <div t-field="o.vendor_order_id.partner_shipping_id" t-options="{'widget': 'contact', 'fields': ['name', 'address'], 'no_marker': True}"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- the lines -->
+                <table class="sf-lines" style="margin-top: 16px;">
                     <thead>
                         <tr>
-                            <th class="text-start">Description</th>
-                            <th class="text-end">Quantity</th>
-                            <th class="text-end">Unit Price</th>
-                            <th class="text-end">Disc.%</th>
-                            <th class="text-end">Taxes</th>
-                            <th class="text-end">Amount</th>
+                            <th class="sf-start"><t t-out="'الوصف' if rtl else 'Description'"/><span class="en" t-out="'Description' if rtl else 'الوصف'"/></th>
+                            <th class="sf-num"><t t-out="'الكمية' if rtl else 'Quantity'"/><span class="en" t-out="'Quantity' if rtl else 'الكمية'"/></th>
+                            <th class="sf-num"><t t-out="'سعر الوحدة' if rtl else 'Unit price'"/><span class="en" t-out="'Unit price' if rtl else 'سعر الوحدة'"/></th>
+                            <th class="sf-num"><t t-out="'خصم %' if rtl else 'Disc.%'"/><span class="en" t-out="'Disc.%' if rtl else 'خصم %'"/></th>
+                            <th class="sf-num"><t t-out="'الضرائب' if rtl else 'Taxes'"/><span class="en" t-out="'Taxes' if rtl else 'الضرائب'"/></th>
+                            <th class="sf-num"><t t-out="'المبلغ' if rtl else 'Amount'"/><span class="en" t-out="'Amount' if rtl else 'المبلغ'"/></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr t-foreach="o.line_ids" t-as="line">
+                        <tr t-foreach="o.line_ids" t-as="line" t-att-class="'alt' if line_index % 2 else ''">
                             <td><span t-field="line.name"/></td>
-                            <td class="text-end"><span t-field="line.quantity"/> <span t-field="line.product_uom"/></td>
-                            <td class="text-end"><span t-field="line.price_unit"/></td>
-                            <td class="text-end"><span t-field="line.discount"/></td>
-                            <td class="text-end"><span t-esc="', '.join(line.tax_ids.mapped('name'))"/></td>
-                            <td class="text-end"><span t-field="line.price_subtotal"/></td>
+                            <td class="sf-num"><span t-field="line.quantity"/> <span t-field="line.product_uom"/></td>
+                            <td class="sf-num"><span t-field="line.price_unit"/></td>
+                            <td class="sf-num"><span t-field="line.discount"/></td>
+                            <td class="sf-num"><span t-esc="', '.join(line.tax_ids.mapped('name'))"/></td>
+                            <td class="sf-num"><strong t-field="line.price_subtotal"/></td>
                         </tr>
                     </tbody>
                 </table>
-                <div class="row justify-content-end">
-                    <div class="col-5">
-                        <table class="table table-sm">
-                            <tr><td>Untaxed Amount</td><td class="text-end"><span t-field="o.amount_untaxed"/></td></tr>
-                            <tr><td>Taxes</td><td class="text-end"><span t-field="o.amount_tax"/></td></tr>
-                            <tr class="border-black fw-bold"><td>Total</td><td class="text-end"><span t-field="o.amount_total"/></td></tr>
-                        </table>
-                    </div>
+
+                <!-- the totals -->
+                <table style="margin-top: 14px;">
+                    <tr>
+                        <td style="width: 52%;"/>
+                        <td style="width: 48%;">
+                            <table class="sf-totals">
+                                <tr><td><t t-out="'المبلغ قبل الضريبة' if rtl else 'Untaxed amount'"/><span class="en" t-out="'Untaxed amount' if rtl else 'المبلغ قبل الضريبة'"/></td><td class="sf-num"><span t-field="o.amount_untaxed"/></td></tr>
+                                <tr><td><t t-out="'الضرائب' if rtl else 'Taxes'"/><span class="en" t-out="'Taxes' if rtl else 'الضرائب'"/></td><td class="sf-num"><span t-field="o.amount_tax"/></td></tr>
+                                <tr class="grand"><td><t t-out="'الإجمالي' if rtl else 'Total'"/><span class="en" t-out="'Total' if rtl else 'الإجمالي'"/></td><td class="sf-num"><span t-field="o.amount_total"/></td></tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="sf-note">
+                    <t t-set="co" t-value="o.env.company.name"/>
+                    <t t-foreach="(['ar', 'en'] if rtl else ['en', 'ar'])" t-as="part">
+                        <div t-if="part == 'ar'" dir="rtl" t-att-class="'' if rtl else 'sub'" style="direction: rtl; text-align: right;">صدرت هذه الفاتورة عن المورّد المذكور أعلاه، وقد حصّلت&#160;<span t-out="co"/>&#160;المبلغ نيابةً عنه عبر المنصة</div>
+                        <div t-if="part == 'en'" dir="ltr" t-att-class="'sub' if rtl else ''" style="direction: ltr; text-align: left;">This invoice is issued by the vendor named above. Payment was collected by&#160;<span t-out="co"/>&#160;on the vendor's behalf through the marketplace.</div>
+                    </t>
                 </div>
-                <p t-if="o.payment_state == 'paid'" class="mt-3"><strong>Paid.</strong></p>
-                <p class="text-muted small mt-4">
-                    This invoice is issued by the vendor named above.
-                    Payment was collected by <span t-field="o.env.company.name"/> on the vendor's behalf through the marketplace.
-                </p>
             </div>
         </t>
     </template>

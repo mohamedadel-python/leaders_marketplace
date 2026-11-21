@@ -22,6 +22,40 @@
                     </div>
                 </div>
 
+                <!-- The subscription (or free period) ends soon, ended, or the products are hidden -->
+                <t t-set="lm_sub" t-value="vendor._leaders_subscription_notice()"/>
+                <div t-if="lm_sub" id="lm_subscription_notice"
+                     t-attf-class="alert #{'alert-danger' if lm_sub['state'] == 'hidden' else 'alert-warning'} d-flex flex-wrap align-items-center justify-content-between gap-3" role="alert">
+                    <div>
+                        <t t-if="lm_sub['state'] == 'hidden'">
+                            <div class="fw-bold"><i class="fa fa-eye-slash" aria-hidden="true"/> Your products are hidden from the website.</div>
+                            <div><t t-if="lm_sub['free']">Your free period ended on</t><t t-else="">Your subscription ended on</t> <t t-esc="lm_sub['end']" t-options="{'widget': 'date'}"/>. Everything is kept: renew and they come back at once.</div>
+                        </t>
+                        <t t-elif="lm_sub['state'] == 'grace'">
+                            <div class="fw-bold"><i class="fa fa-exclamation-triangle" aria-hidden="true"/> <t t-if="lm_sub['free']">Your free period has ended.</t><t t-else="">Your subscription has ended.</t></div>
+                            <div>Your products leave the website on <strong t-esc="lm_sub['hidden_on']" t-options="{'widget': 'date'}"/> unless you renew.</div>
+                        </t>
+                        <t t-else="">
+                            <div class="fw-bold"><i class="fa fa-clock-o" aria-hidden="true"/> <t t-if="lm_sub['free']">Your free period ends on</t><t t-else="">Your subscription ends on</t> <t t-esc="lm_sub['end']" t-options="{'widget': 'date'}"/>.</div>
+                            <div>Renew now so your products stay on the website.</div>
+                        </t>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="/my/vendor/contract#lm_contract_subscription" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"/> <t t-if="lm_sub['free']">Choose a plan</t><t t-else="">Renew</t></a>
+                        <form t-if="lm_sub['can_switch'] and request.env.user.has_group('leaders_marketplace.group_vendor_owner')"
+                              action="/my/vendor/contract" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="model" value="commission"/>
+                            <input t-if="not lm_sub['free']" type="hidden" name="action" value="switch"/>
+                            <input t-if="not lm_sub['free']" type="hidden" name="note" value="Subscription ending: switch to a commission"/>
+                            <button type="submit" class="btn btn-outline-secondary" title="No fee up front: your products show under the platform's name and the platform takes a share of each sale.">
+                                <i class="fa fa-percent" aria-hidden="true"/> Switch to a commission instead
+                            </button>
+                        </form>
+                        <span t-if="not lm_sub['can_switch']" class="small align-self-center">Your switch to a commission is being reviewed.</span>
+                    </div>
+                </div>
+
                 <!-- Alerts: what needs an answer today -->
                 <div t-if="cod_pending_confirmation or orders_late or returns_to_answer or disputes_open" class="lm-alerts" id="lm_dashboard_alerts">
                     <div t-if="cod_pending_confirmation" class="alert alert-warning" role="alert">
@@ -153,6 +187,10 @@
                             <a href="/my/vendor/orders?filter=late" class="lm-attention-row">
                                 <span><i class="fa fa-clock-o text-danger" aria-hidden="true"/> Late orders</span>
                                 <span t-attf-class="lm-count #{'lm-count--danger' if orders_late else ''}" t-esc="orders_late"/>
+                            </a>
+                            <a href="/my/vendor/equipment-requests" class="lm-attention-row">
+                                <span><i class="fa fa-truck text-primary" aria-hidden="true"/> New equipment requests</span>
+                                <span t-attf-class="lm-count #{'lm-count--primary' if equipment_requests_new else ''}" t-esc="equipment_requests_new or 0"/>
                             </a>
                             <a href="/my/vendor/returns" class="lm-attention-row">
                                 <span><i class="fa fa-undo text-warning" aria-hidden="true"/> Open returns</span>
@@ -329,7 +367,24 @@
                 </div>
                 <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
                 <div t-if="created" class="alert alert-success" role="status">Product created. Review the details then submit it for approval.</div>
-                <div t-if="request.params.get('pending')" class="alert alert-info" role="status">Your change was sent for review. The listing stays on the website as it is until the platform approves it.</div>
+                <div t-if="request.params.get('nochange')" class="alert alert-warning" role="status" id="lm_edit_nochange">
+                    <i class="fa fa-info-circle" aria-hidden="true"/> Nothing was sent: the values you saved are the same as the published ones. Change a field, then save again.
+                </div>
+                <div t-if="request.params.get('applied')" class="alert alert-success" role="status" id="lm_edit_applied">
+                    <i class="fa fa-check" aria-hidden="true"/> Saved at once (no review needed):
+                    <t t-if="'qty' in request.params.get('applied')"> the quantity</t><t t-if="'qty' in request.params.get('applied') and 'photos' in request.params.get('applied')"> and</t><t t-if="'photos' in request.params.get('applied')"> the photos</t>.
+                    Nothing else changed.
+                </div>
+                <div t-if="pending_change" class="alert alert-info" role="status" id="lm_edit_pending">
+                    <div class="fw-bold mb-1"><i class="fa fa-hourglass-half" aria-hidden="true"/> <t t-if="request.params.get('pending')">Your change was sent for review.</t><t t-else="">A change of yours is waiting for review.</t></div>
+                    <div>This product is published, so every change waits for the platform's approval. Until then the website, and this form, show the published values.</div>
+                    <div class="mt-2 small">Sent on <t t-esc="pending_change.create_date" t-options="{'widget': 'datetime'}"/>. The changes:</div>
+                    <pre class="mb-0 mt-1 small text-wrap" style="font-family: inherit; white-space: pre-wrap;" t-esc="pending_change.summary"/>
+                    <div class="mt-2 small text-muted">Saving again replaces this change with the new one.</div>
+                </div>
+                <div t-if="not pending_change and rejected_change and rejected_change.reject_reason" class="alert alert-warning" role="status" id="lm_edit_rejected">
+                    <i class="fa fa-times-circle" aria-hidden="true"/> Your last change was not approved: <t t-esc="rejected_change.reject_reason"/>
+                </div>
                 <div t-if="offer and offer.reject_reason and offer.state == 'rejected'" class="alert alert-warning" role="status">Offer rejected: <t t-esc="offer.reject_reason"/></div>
 
                 <div t-if="bulk_import_enabled and not offer" class="alert alert-info d-flex flex-wrap align-items-center justify-content-between gap-2" id="lm_bulk_hint">
@@ -444,7 +499,7 @@
                     <div class="lm-card lm-form-section" id="lm_offer_card">
                         <h2 class="lm-section-title"><i class="fa fa-tag" aria-hidden="true"/> Offer</h2>
                         <div class="row g-3">
-                            <div class="col-6 col-md-3 lm-form-field"><label class="form-label" for="lm_pf_price">Price (<t t-esc="company_currency.name"/>)</label><input class="form-control" id="lm_pf_price" type="number" min="0" step="0.01" name="price" required="required" t-att-value="offer and offer.price or 0"/><div class="invalid-feedback">Enter a valid price (0 or more).</div>
+                            <div class="col-6 col-md-3 lm-form-field"><label class="form-label" for="lm_pf_price">Price (<t t-esc="company_currency.symbol or company_currency.name"/>)</label><input class="form-control" id="lm_pf_price" type="number" min="0" step="0.01" name="price" required="required" t-att-value="offer and offer.price or 0"/><div class="invalid-feedback">Enter a valid price (0 or more).</div>
                                 <div t-if="offer and offer.product_tmpl_id.sudo().leaders_inspection_cost" class="form-text" id="lm_pf_price_note">On the website: your price plus the inspection cost (<t t-esc="offer.product_tmpl_id.sudo().leaders_inspection_cost"/>).</div></div>
                             <input type="hidden" name="currency_id" t-att-value="company_currency.id"/>
                             <div class="col-6 col-md-3 lm-form-field" id="lm_pf_qty_wrap" t-if="not offer or offer.fulfillment_type == 'fbm'"><label class="form-label" for="lm_pf_qty">Quantity in stock</label>
@@ -708,7 +763,7 @@
                                     <a class="fw-semibold" t-att-href="'/my/vendor/orders/%s' % o.id" t-esc="o.name"/>
                                     <div class="small text-muted fw-normal" t-esc="o.date_order" t-options="{'widget': 'date'}"/>
                                 </td>
-                                <td t-att-data-label="lb_customer" t-esc="o.partner_id.display_name"/>
+                                <td t-att-data-label="lb_customer" t-esc="o._leaders_buyer_label()"/>
                                 <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="o"/></t></td>
                                 <td t-att-data-label="lb_ship_by" class="text-nowrap">
                                     <span t-if="o.ship_by_date" t-esc="o.ship_by_date" t-options="{'widget': 'date'}"/><span t-else="" class="text-muted">-</span>
@@ -765,7 +820,16 @@
                             <t t-call="leaders_marketplace.portal_vendor_state_badge"><t t-set="record" t-value="order"/></t>
                             <span t-if="order.cod_cash_confirmed" class="lm-badge lm-badge--success"><i class="fa fa-check" aria-hidden="true"/> Cash Collected</span>
                         </div>
-                        <p class="lm-page-subtitle">Customer: <span t-esc="order.partner_id.display_name"/></p>
+                        <p class="lm-page-subtitle" id="lm_order_buyer">Customer: <span t-esc="order._leaders_buyer_label()"/>
+                            <t t-if="order._leaders_vendor_sees_buyer()">
+                                <t t-if="order._leaders_buyer_phone()"> · <a class="lm-ltr" t-att-href="'tel:%s' % order._leaders_buyer_phone()" t-esc="order._leaders_buyer_phone()"/></t>
+                                <t t-if="order._leaders_buyer_address()"> · <span t-esc="order._leaders_buyer_address()"/></t>
+                            </t>
+                            <t t-else="">
+                                <t t-if="order._leaders_buyer_area()"> · <span t-esc="order._leaders_buyer_area()"/></t>
+                                <span class="d-block small">You sell on a commission: the platform handles the buyer for you.</span>
+                            </t>
+                        </p>
                         <p t-if="order.ship_by_date" class="lm-page-subtitle">Ship by: <span t-esc="order.ship_by_date" t-options="{'widget': 'datetime'}"/>
                             <span t-if="order.is_late" class="lm-badge lm-badge--danger ms-1"><i class="fa fa-clock-o" aria-hidden="true"/> Late</span></p>
                     </div>
@@ -958,6 +1022,23 @@
                         </tbody>
                     </table>
                 </div>
+                <div t-if="plans and vendor.leaders_contract_model != 'commission'" class="lm-panel mb-4" id="lm_contract_subscription">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title"><i class="fa fa-calendar"/> Your subscription</h2></div>
+                    <div class="p-3">
+                        <p class="mb-1" t-if="vendor.leaders_subscription_plan_id">Plan: <strong t-esc="vendor.leaders_subscription_plan_id.name"/></p>
+                        <p class="mb-1" t-if="vendor.leaders_subscription_until">Your products stay on the website until <strong t-esc="vendor.leaders_subscription_until" t-options="{'widget': 'date'}"/>.</p>
+                        <div t-if="pending_plan" class="alert alert-info mt-2 mb-0">
+                            <i class="fa fa-hourglass-half"/> Waiting for your payment: <strong t-esc="pending_plan.plan_id.name"/>,
+                            <strong t-esc="'{:,.0f}'.format(pending_plan.price)"/> <t t-esc="pending_plan.currency_id.symbol or pending_plan.currency_id.name"/>
+                            (<t t-esc="pending_plan.name"/>). Your subscription is extended once the platform confirms it.
+                        </div>
+                        <p class="mt-3 mb-2 fw-bold">Renew or change your plan:</p>
+                        <t t-call="leaders_marketplace.portal_vendor_plan_cards"><t t-set="lm_plan_action" t-value="'contract'"/></t>
+                        <div t-if="paid_plans" class="small text-muted mt-3">
+                            Paid: <t t-foreach="paid_plans" t-as="po"><t t-esc="po.plan_id.name"/> (<t t-esc="po.date_start" t-options="{'widget': 'date'}"/> → <t t-esc="po.date_end" t-options="{'widget': 'date'}"/>)<t t-if="not po_last"> · </t></t>
+                        </div>
+                    </div>
+                </div>
                 <t t-if="vendor.leaders_contract_model">
                     <p>Your model: <strong t-esc="dict(vendor._fields['leaders_contract_model'].selection).get(vendor.leaders_contract_model)"/>.</p>
                     <p t-if="pending_switch" class="text-muted">Your switch request is being reviewed.</p>
@@ -981,6 +1062,388 @@
                     </form>
                 </t>
                 <p t-else="" class="text-muted">You choose your model near the end of your free period: by then you know your views and your orders.</p>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_plan_cards" name="Vendor Subscription Plan Cards">
+        <!-- lm_plan_action: 'welcome' (first choice) or 'contract' (renew / change on the contract page) -->
+        <div class="lm-welcome lm-welcome--plans p-0 bg-transparent">
+            <div class="lm-welcome-plans lm-welcome-plans--four">
+                <form t-foreach="plans" t-as="plan" method="post"
+                      t-att-action="'/my/vendor/welcome' if lm_plan_action == 'welcome' else '/my/vendor/contract'"
+                      t-attf-class="lm-plan #{'is-featured' if plan.highlight else ''}">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="plan_id" t-att-value="plan.id"/>
+                    <input t-if="lm_plan_action == 'welcome'" type="hidden" name="model" value="subscription"/>
+                    <input t-else="" type="hidden" name="action" value="plan"/>
+                    <span t-if="plan.highlight" class="lm-plan-ribbon">Best value</span>
+                    <div class="lm-plan-icon"><i class="fa fa-calendar"/></div>
+                    <h3 class="lm-plan-name" t-esc="plan.name"/>
+                    <p class="lm-plan-tagline" t-esc="plan.note or ''"/>
+                    <div class="lm-plan-price">
+                        <strong t-esc="'{:,.0f}'.format(plan.price)"/> <t t-esc="plan.currency_id.symbol or plan.currency_id.name"/>
+                        <div class="small fw-normal" t-if="plan.months > 1">≈ <t t-esc="'{:,.0f}'.format(plan._leaders_monthly())"/> <t t-esc="plan.currency_id.symbol or plan.currency_id.name"/> / month</div>
+                    </div>
+                    <ul class="lm-plan-points">
+                        <li><i class="fa fa-check"/> <span><t t-esc="plan.months"/> <t t-if="plan.months == 1">month</t><t t-else="">months</t></span></li>
+                        <li><i class="fa fa-check"/> <span t-if="plan.max_products">Up to <t t-esc="plan.max_products"/> products</span><span t-else="">Unlimited products</span></li>
+                        <li><i class="fa fa-check"/> Your name on your products</li>
+                        <li><i class="fa fa-check"/> The orders reach you directly</li>
+                    </ul>
+                    <button type="submit" t-attf-class="btn lm-plan-btn #{'btn-light' if plan.highlight else 'btn-outline-primary'}">Choose this plan</button>
+                </form>
+            </div>
+        </div>
+    </template>
+
+    <template id="portal_vendor_welcome" name="Vendor Welcome: Choose How You Sell">
+        <!-- a page of its own (no vendor menu): the first thing a newly approved vendor sees -->
+        <t t-call="portal.portal_layout">
+            <t t-set="no_breadcrumbs" t-value="True"/>
+            <div class="lm-welcome" id="lm_vendor_welcome">
+                <div class="container">
+                    <div class="lm-welcome-hero">
+                        <span class="lm-welcome-badge"><i class="fa fa-check-circle"/> Your seller account is approved</span>
+                        <h1 class="lm-welcome-title">Welcome<t t-if="vendor.vendor_store_name or vendor.name">, <t t-esc="vendor.vendor_store_name or vendor.name"/></t>!</h1>
+                        <p class="lm-welcome-lead">Choose how you want to sell on Spark Fu. You can change it later from Contract model.</p>
+                    </div>
+                    <div t-if="error" class="alert alert-danger" role="alert" t-esc="error"/>
+                    <t t-if="show_plans">
+                        <h2 class="lm-welcome-subtitle">Choose your subscription plan</h2>
+                        <p class="lm-welcome-lead mb-4">Your free period still counts: you pay the plan when it starts, after the platform confirms it.</p>
+                        <t t-call="leaders_marketplace.portal_vendor_plan_cards"><t t-set="lm_plan_action" t-value="'welcome'"/></t>
+                        <p class="lm-welcome-foot"><a href="/my/vendor/welcome"><i class="fa fa-angle-left lm-flip"/> Back to the three ways to sell</a></p>
+                    </t>
+                    <form t-else="" method="post" class="lm-welcome-plans">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div class="lm-plan">
+                            <div class="lm-plan-icon"><i class="fa fa-percent"/></div>
+                            <h2 class="lm-plan-name">Commission</h2>
+                            <p class="lm-plan-tagline">No fee up front: the platform takes a share of each sale.</p>
+                            <div class="lm-plan-price" t-if="commission.what_you_pay" t-esc="commission.what_you_pay"/>
+                            <ul class="lm-plan-points">
+                                <li class="is-off"><i class="fa fa-times"/> Your products show under the platform's name</li>
+                                <li><i class="fa fa-check"/> The platform talks to the buyer for you</li>
+                                <li><i class="fa fa-check"/> The orders reach you through the platform</li>
+                            </ul>
+                            <button type="submit" name="model" value="commission" class="btn lm-plan-btn btn-outline-primary">Choose commission</button>
+                        </div>
+
+                        <div class="lm-plan is-featured">
+                            <span class="lm-plan-ribbon">Best to start</span>
+                            <div class="lm-plan-icon"><i class="fa fa-gift"/></div>
+                            <h2 class="lm-plan-name">Free period</h2>
+                            <p class="lm-plan-tagline">Try the platform first and choose later.</p>
+                            <div class="lm-plan-price"><strong t-esc="free_months"/> months free</div>
+                            <ul class="lm-plan-points">
+                                <li><i class="fa fa-check"/> Your products show under your own name</li>
+                                <li><i class="fa fa-check"/> The orders reach you directly</li>
+                                <li><i class="fa fa-check"/> Choose commission or subscription before it ends</li>
+                            </ul>
+                            <p class="lm-plan-note" t-if="vendor.leaders_free_until">Free until <strong t-esc="vendor.leaders_free_until" t-options="{'widget': 'date'}"/></p>
+                            <button type="submit" name="model" value="free" class="btn lm-plan-btn btn-light">Start the free period</button>
+                        </div>
+
+                        <div class="lm-plan">
+                            <div class="lm-plan-icon"><i class="fa fa-star"/></div>
+                            <h2 class="lm-plan-name">Subscription</h2>
+                            <p class="lm-plan-tagline">A fixed fee, and the buyers deal with you directly.</p>
+                            <div class="lm-plan-price" t-if="subscription.what_you_pay" t-esc="subscription.what_you_pay"/>
+                            <ul class="lm-plan-points">
+                                <li><i class="fa fa-check"/> Your products show under your own name</li>
+                                <li><i class="fa fa-check"/> You talk to the buyer directly</li>
+                                <li><i class="fa fa-check"/> The orders reach you directly</li>
+                            </ul>
+                            <a t-if="plans" href="/my/vendor/welcome?step=plans" class="btn lm-plan-btn btn-outline-primary">See the plans</a>
+                            <button t-else="" type="submit" name="model" value="subscription" class="btn lm-plan-btn btn-outline-primary">Choose subscription</button>
+                        </div>
+                    </form>
+                    <p t-if="not show_plans" class="lm-welcome-foot"><i class="fa fa-info-circle"/> Rentals are always made in the platform's name, whatever you choose.</p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_equipment_requests" name="Vendor Equipment Requests">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_equipment_requests">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Equipment requests</h1>
+                        <p class="lm-page-subtitle">Purchase and quote requests on your machines. Open a quote request to send your price.</p>
+                    </div>
+                </div>
+                <div t-if="records" class="lm-stat-cards lm-stat-cards-3">
+                    <div class="lm-stat-card"><span class="lm-stat-icon"><i class="fa fa-truck" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Requests</div><div class="lm-stat-value" t-esc="len(records)"/></div></div>
+                    <div class="lm-stat-card"><span class="lm-stat-icon"><i class="fa fa-bell" aria-hidden="true"/></span><div class="lm-stat-body"><div class="lm-stat-label">Need your action</div><div class="lm-stat-value" t-esc="new_count"/></div></div>
+                </div>
+                <t t-set="lb_kind">Type</t><t t-set="lb_qty">Quantity</t><t t-set="lb_state">Status</t><t t-set="lb_date">Date</t>
+                <div t-if="records" class="lm-table-responsive">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Request</th><th>Machine</th><th>Type</th><th>Quantity</th><th>Status</th><th>Date</th><th/></tr></thead>
+                        <tbody>
+                            <tr t-foreach="records" t-as="rec">
+                                <td class="lm-cell-title"><a t-attf-href="/my/vendor/equipment-requests/#{rec.id}" t-esc="rec.name"/>
+                                    <span t-if="rec._leaders_vendor_needs_action()" class="badge text-bg-primary ms-1">New</span></td>
+                                <td t-esc="rec._leaders_request_label()"/>
+                                <td t-att-data-label="lb_kind" t-esc="dict(rec._fields['kind']._description_selection(rec.env)).get(rec.kind)"/>
+                                <td t-att-data-label="lb_qty" t-esc="rec.quantity"/>
+                                <td t-att-data-label="lb_state" t-esc="dict(rec._fields['state']._description_selection(rec.env)).get(rec.state)"/>
+                                <td t-att-data-label="lb_date" t-esc="rec.create_date" t-options="{'widget': 'date'}"/>
+                                <td><a t-attf-href="/my/vendor/equipment-requests/#{rec.id}" class="btn btn-sm btn-outline-primary">Open</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p t-else="" class="text-muted">No equipment request on your machines yet.</p>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_equipment_request" name="Vendor Equipment Request">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_equipment_request">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title"><t t-esc="record.name"/> · <t t-esc="kinds.get(record.kind)"/></h1>
+                        <p class="lm-page-subtitle"><t t-esc="record._leaders_request_label()"/> · <t t-esc="states.get(record.state)"/></p>
+                    </div>
+                </div>
+                <div t-if="message" class="alert alert-success" role="status" t-esc="message"/>
+                <div t-if="error" class="alert alert-danger" role="alert" t-esc="error"/>
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <div class="lm-panel">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title">The request</h2></div>
+                            <dl class="row mb-0 p-3">
+                                <dt t-if="record.kind != 'service'" class="col-5">Machine</dt><dt t-else="" class="col-5">Service</dt><dd class="col-7" t-esc="record._leaders_request_label()"/>
+                                <t t-if="record.kind != 'service'"><dt class="col-5">Quantity</dt><dd class="col-7" t-esc="record.quantity"/></t>
+                                <t t-if="record.kind == 'service'">
+                                    <t t-if="record.needed_by"><dt class="col-5">Needed by</dt><dd class="col-7" t-esc="record.needed_by" t-options="{'widget': 'date'}"/></t>
+                                    <t t-if="record.service_equipment_label"><dt class="col-5">Equipment type</dt><dd class="col-7" t-esc="record.service_equipment_label"/></t>
+                                    <t t-if="record.service_brand_model"><dt class="col-5">Brand and model</dt><dd class="col-7" t-esc="record.service_brand_model"/></t>
+                                    <t t-if="record.service_governorate_name"><dt class="col-5">Governorate</dt><dd class="col-7" t-esc="record.service_governorate_name"/></t>
+                                    <t t-if="record.service_address"><dt class="col-5">Address of the machine</dt><dd class="col-7" t-esc="record.service_address"/></t>
+                                </t>
+                                <t t-if="record.unit_price"><dt class="col-5">Price on the website</dt><dd class="col-7"><t t-esc="record.unit_price" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/></dd></t>
+                                <t t-if="record.equipment_services"><dt class="col-5">Services asked</dt><dd class="col-7" t-esc="', '.join(record._leaders_service_names())"/></t>
+                                <t t-if="record.vendor_rent_total"><dt class="col-5">Your rental price</dt><dd class="col-7"><t t-esc="record.vendor_rent_total" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/></dd></t>
+                                <t t-if="record.vendor_services_amount"><dt class="col-5">Price of your services</dt><dd class="col-7"><t t-esc="record.vendor_services_amount" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/></dd></t>
+                                <t t-if="record.equipment_vendor_services"><dt class="col-5">Services you do yourself</dt><dd class="col-7" t-esc="', '.join(record._leaders_service_names((record.equipment_vendor_services or '').split(',')))"/></t>
+                                <t t-if="record.shipping_state_id"><dt class="col-5">Governorate</dt><dd class="col-7" t-esc="record.shipping_state_id.name"/></t>
+                                <t t-if="record.note"><dt class="col-5">Buyer's note</dt><dd class="col-7" t-esc="record.note"/></t>
+                                <t t-if="record.kind == 'rent' and record.rental_id"><dt class="col-5">Rental period</dt><dd class="col-7"><t t-esc="record.rental_id.date_start"/> → <t t-esc="record.rental_id.date_end"/></dd></t>
+                                <dt class="col-5">Date</dt><dd class="col-7" t-esc="record.create_date" t-options="{'widget': 'datetime'}"/>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="lm-panel">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title">The buyer</h2></div>
+                            <dl t-if="sees_buyer" class="row mb-0 p-3">
+                                <dt class="col-5">Name</dt><dd class="col-7" t-esc="record.contact_name or record.partner_id.name"/>
+                                <dt class="col-5">Phone</dt><dd class="col-7"><a dir="ltr" class="d-inline-block" t-att-href="'tel:%s' % (record.phone or '')" t-esc="record.phone"/></dd>
+                                <t t-if="record.partner_id.email"><dt class="col-5">Email</dt><dd class="col-7" t-esc="record.partner_id.email"/></t>
+                                <t t-if="record.shipping_address"><dt class="col-5">Address</dt><dd class="col-7" t-esc="record.shipping_address"/></t>
+                            </dl>
+                            <p t-if="sees_buyer" class="small text-muted px-3">You sell on a subscription: contact the buyer and agree directly.</p>
+                            <p t-elif="record.kind == 'rent'" class="text-muted p-3 mb-0">The renter's details are not shown.</p>
+                            <p t-else="" class="text-muted p-3 mb-0">The platform handles this buyer for you; their details are not shown.</p>
+                        </div>
+                        <div t-if="record._leaders_quote_like()" class="lm-panel mt-3">
+                            <div class="lm-panel-header"><h2 class="lm-panel-title">Your price</h2></div>
+                            <div class="p-3">
+                                <p t-if="record.vendor_quote_date" class="mb-2">Sent: <strong t-esc="record.vendor_quote_price" t-options="{'widget': 'monetary', 'display_currency': record.currency_id}"/> (<t t-esc="record.vendor_quote_date" t-options="{'widget': 'datetime'}"/>)</p>
+                                <p t-if="not record.vendor_quote_date" class="text-muted mb-0">You have not sent your price yet.</p>
+                                <p t-if="record.vendor_quote_note" class="text-muted mb-0" t-esc="record.vendor_quote_note"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <t t-set="step" t-value="record._leaders_vendor_next_step()"/>
+                <div t-if="step" class="lm-panel mt-3" id="lm_eq_next">
+                    <div class="lm-panel-header"><h2 class="lm-panel-title">Your next step</h2></div>
+                    <div class="p-3">
+                        <ol t-if="record._leaders_vendor_steps()" class="list-unstyled d-flex flex-wrap gap-3 small mb-3" id="lm_eq_road">
+                            <li t-foreach="record._leaders_vendor_steps()" t-as="road" t-attf-class="#{'fw-bold text-primary' if road['status'] == 'current' else ('text-success' if road['status'] == 'done' else 'text-muted')}">
+                                <i t-attf-class="fa #{'fa-check-circle' if road['status'] == 'done' else ('fa-dot-circle-o' if road['status'] == 'current' else 'fa-circle-o')}"/> <t t-esc="road['label']"/>
+                            </li>
+                        </ol>
+                        <p class="text-muted small">The buyer follows these steps on the website.</p>
+                        <form t-if="step == 'quote'" method="post" class="d-grid gap-2 col-md-6" id="lm_eq_quote_form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <label class="form-label mb-0" for="lm_eq_price">Price for the whole request</label>
+                            <input id="lm_eq_price" type="number" min="1" step="0.01" name="price" class="form-control" required="required" t-att-value="record.vendor_quote_price or ''"/>
+                            <t t-if="record.equipment_vendor_services">
+                                <label class="form-label mb-0" for="lm_eq_quote_services">Price of your services</label>
+                                <input id="lm_eq_quote_services" type="number" min="1" step="0.01" name="services_price" class="form-control" required="required" t-att-value="record.vendor_services_amount or ''"/>
+                            </t>
+                            <label class="form-label mb-0" for="lm_eq_note">Note (optional)</label>
+                            <textarea id="lm_eq_note" name="note" rows="3" class="form-control" t-esc="record.vendor_quote_note or ''"/>
+                            <button type="submit" class="btn btn-primary">Send my price</button>
+                        </form>
+                        <p t-if="step == 'hold'" class="mb-0" id="lm_eq_hold"><i class="fa fa-clock-o"/> Your price is saved. The offer goes to the buyer once the other services are priced.</p>
+                        <p t-if="step == 'wait'" class="mb-0" id="lm_eq_waiting"><i class="fa fa-clock-o"/> Waiting for the buyer to accept your offer.</p>
+                        <form t-if="step == 'rent_price'" method="post" class="d-grid gap-2 col-md-6" id="lm_eq_rent_price">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <label class="form-label mb-0" for="lm_eq_rent_price_input">Price of the whole rental period</label>
+                            <input id="lm_eq_rent_price_input" type="number" min="1" step="0.01" name="rent_price" class="form-control" required="required" t-att-value="record.vendor_rent_total or ''"/>
+                            <p class="text-muted small mb-1">The renter sees this price on the website.</p>
+                            <button type="submit" class="btn btn-primary">Save the price</button>
+                        </form>
+                        <form t-if="step == 'price'" method="post" class="d-grid gap-2 col-md-6" id="lm_eq_services_price">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <label class="form-label mb-0" for="lm_eq_services_price_input">Price of your services</label>
+                            <input id="lm_eq_services_price_input" type="number" min="1" step="0.01" name="services_price" class="form-control" required="required" t-att-value="record.vendor_services_amount or ''"/>
+                            <p class="text-muted small mb-1">The buyer sees this price on the website and pays it to you directly.</p>
+                            <button type="submit" class="btn btn-primary">Save the price</button>
+                        </form>
+                        <form t-if="step in ('confirm', 'start', 'sell')" method="post" class="d-grid col-md-4">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <button t-if="step == 'confirm'" type="submit" name="step" value="confirm" class="btn btn-primary"><i class="fa fa-check"/> Confirm the request</button>
+                            <button t-if="step == 'start'" type="submit" name="step" value="start" class="btn btn-primary"><i class="fa fa-truck"/> Start carrying it out</button>
+                            <button t-if="step == 'sell'" type="submit" name="outcome" value="sold" class="btn btn-success"><i class="fa fa-check"/> Sold</button>
+                        </form>
+                    </div>
+                </div>
+                <p t-if="record.kind == 'purchase' and record.equipment_platform_services and record.state in ('pending', 'reviewing', 'contacting') and record._leaders_vendor_sees_buyer()" class="alert alert-info mt-3" id="lm_eq_services_note">The buyer also asked for services that are priced separately. The request is confirmed when the buyer pays for them.</p>
+                <details t-if="record._leaders_vendor_can_close()" class="lm-panel mt-3" id="lm_eq_outcome">
+                    <summary class="p-3 text-danger">The deal did not happen</summary>
+                    <form method="post" class="p-3 pt-0 d-flex gap-2">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="text" name="reason" class="form-control" maxlength="500" required="required" placeholder="Why the deal did not happen"/>
+                        <button type="submit" name="outcome" value="lost" class="btn btn-outline-danger text-nowrap">No deal</button>
+                    </form>
+                </details>
+                <p class="mt-3"><a href="/my/vendor/equipment-requests"><i class="fa fa-arrow-left"/> All equipment requests</a></p>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_own_services" name="Vendor Own Services">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_own_services">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">My services</h1>
+                        <p class="lm-page-subtitle">Services you offer. Each one is a page of the website, like the platform's services, once the marketplace approves it. The requests of your services come to you.</p>
+                    </div>
+                    <a t-if="is_owner" href="/my/vendor/own-services/new" class="btn btn-primary">Add a service</a>
+                </div>
+                <div t-if="message" class="alert alert-success" role="status" t-esc="message"/>
+                <div t-if="services" class="lm-table-responsive mb-4">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Service</th><th>Status</th><th>On the website</th><th/></tr></thead>
+                        <tbody>
+                            <tr t-foreach="services" t-as="svc">
+                                <td class="lm-cell-title"><span t-esc="svc.name"/><span t-if="not svc.active" class="badge text-bg-secondary ms-2">Archived</span></td>
+                                <td>
+                                    <span t-attf-class="badge #{'text-bg-success' if svc.state == 'approved' else ('text-bg-danger' if svc.state == 'rejected' else 'text-bg-warning')}" t-esc="states.get(svc.state)"/>
+                                    <div t-if="svc.state == 'rejected' and svc.reject_reason" class="small text-danger mt-1" t-esc="svc.reject_reason"/>
+                                </td>
+                                <td><span t-if="svc.live" class="text-success"><i class="fa fa-check"/> Live</span><span t-else="" class="text-muted">Not yet</span></td>
+                                <td class="text-end"><a t-attf-href="/my/vendor/own-services/#{svc.id}" class="btn btn-sm btn-outline-primary">Edit</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p t-else="" class="text-muted">You have no services yet.</p>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_own_service" name="Vendor Own Service">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_own_service">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title"><t t-if="service" t-esc="service.name"/><t t-else="">New service</t></h1>
+                        <p t-if="service" class="lm-page-subtitle"><t t-esc="state_label"/><t t-if="service.live"> · On the website</t></p>
+                    </div>
+                </div>
+                <div t-if="error" class="alert alert-danger" role="alert" t-esc="error"/>
+                <div t-if="service and service.state == 'rejected' and service.reject_reason" class="alert alert-warning" role="alert">
+                    The marketplace refused it: <strong t-esc="service.reject_reason"/>. Change it and send it again.
+                </div>
+                <div t-if="service and service.live and service.state == 'submitted'" class="alert alert-info" role="status">
+                    The page on the website keeps its current text until the marketplace approves your change.
+                </div>
+                <form method="post" enctype="multipart/form-data" class="lm-panel p-3 d-grid gap-3" id="lm_service_form">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <t t-set="v" t-value="lambda key: (post.get(key) if post else (service[key] if service else '')) or ''"/>
+                    <div>
+                        <label class="form-label mb-1" for="lm_svc_name">Service</label>
+                        <input id="lm_svc_name" type="text" name="name" class="form-control" maxlength="120" required="required" t-att-value="v('name')" t-att-disabled="None if is_owner else 'disabled'"/>
+                    </div>
+                    <div>
+                        <label class="form-label mb-1" for="lm_svc_summary">Card summary</label>
+                        <input id="lm_svc_summary" type="text" name="summary" class="form-control" maxlength="200" required="required" t-att-value="v('summary')" t-att-disabled="None if is_owner else 'disabled'"/>
+                        <div class="form-text">One sentence for the service card.</div>
+                    </div>
+                    <div>
+                        <label class="form-label mb-1" for="lm_svc_desc">Description</label>
+                        <textarea id="lm_svc_desc" name="description" rows="3" class="form-control" t-esc="v('description')" t-att-disabled="None if is_owner else 'disabled'"/>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label mb-1" for="lm_svc_includes">What it includes</label>
+                            <textarea id="lm_svc_includes" name="includes" rows="4" class="form-control" t-esc="v('includes')" t-att-disabled="None if is_owner else 'disabled'"/>
+                            <div class="form-text">One item per line.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label mb-1" for="lm_svc_excludes">What it excludes</label>
+                            <textarea id="lm_svc_excludes" name="excludes" rows="4" class="form-control" t-esc="v('excludes')" t-att-disabled="None if is_owner else 'disabled'"/>
+                            <div class="form-text">One item per line.</div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label mb-1" for="lm_svc_ctitle">Checklist title</label>
+                            <input id="lm_svc_ctitle" type="text" name="checklist_title" class="form-control" maxlength="120" t-att-value="v('checklist_title')" t-att-disabled="None if is_owner else 'disabled'"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label mb-1" for="lm_svc_deliverable">What the customer gets</label>
+                            <input id="lm_svc_deliverable" type="text" name="deliverable" class="form-control" maxlength="120" t-att-value="v('deliverable')" t-att-disabled="None if is_owner else 'disabled'"/>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label mb-1" for="lm_svc_checklist">Checklist</label>
+                        <textarea id="lm_svc_checklist" name="checklist" rows="4" class="form-control" t-esc="v('checklist')" t-att-disabled="None if is_owner else 'disabled'"/>
+                        <div class="form-text">One item per line.</div>
+                    </div>
+                    <div>
+                        <label class="form-label mb-1" for="lm_svc_rtitle">Request form title</label>
+                        <input id="lm_svc_rtitle" type="text" name="request_title" class="form-control" maxlength="120" t-att-value="v('request_title')" t-att-disabled="None if is_owner else 'disabled'"/>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label mb-1" for="lm_svc_cov">Governorates covered</label>
+                            <input id="lm_svc_cov" type="number" min="0" max="29" name="coverage" class="form-control" t-att-value="v('coverage') or 0" t-att-disabled="None if is_owner else 'disabled'"/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label mb-1" for="lm_svc_warranty">Warranty after the service (months)</label>
+                            <input id="lm_svc_warranty" type="number" min="0" max="120" name="warranty_months" class="form-control" t-att-value="v('warranty_months') or 0" t-att-disabled="None if is_owner else 'disabled'"/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label mb-1" for="lm_svc_icon">Picture</label>
+                            <input id="lm_svc_icon" type="file" name="icon" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="form-control" t-att-disabled="None if is_owner else 'disabled'"/>
+                        </div>
+                    </div>
+                    <div t-if="products">
+                        <label class="form-label mb-1">Also offered with your machines</label>
+                        <div t-foreach="products" t-as="prod" class="form-check">
+                            <input class="form-check-input" type="checkbox" name="product_ids" t-att-value="prod.id" t-attf-id="lm_p_#{prod.id}" t-att-checked="'checked' if service and prod in service.product_tmpl_ids else None" t-att-disabled="None if is_owner else 'disabled'"/>
+                            <label class="form-check-label" t-attf-for="lm_p_#{prod.id}" t-esc="prod.name"/>
+                        </div>
+                    </div>
+                    <div t-if="is_owner" class="d-flex gap-2 flex-wrap">
+                        <button type="submit" class="btn btn-primary">Save and send for approval</button>
+                        <button t-if="service and service.active" type="submit" name="archive" value="1" class="btn btn-outline-danger">Stop offering this service</button>
+                    </div>
+                </form>
+                <p class="mt-3"><a href="/my/vendor/own-services"><i class="fa fa-arrow-left"/> All my services</a></p>
             </div>
         </t>
     </template>
@@ -1040,7 +1503,7 @@
                             <tr t-foreach="records" t-as="ret">
                                 <td class="lm-cell-title"><a class="fw-semibold" t-att-href="'/my/vendor/returns/%s' % ret.id" t-esc="ret.name"/></td>
                                 <td t-att-data-label="lb_order" t-esc="ret.vendor_order_id.name"/>
-                                <td t-att-data-label="lb_customer" t-esc="ret.partner_id.display_name"/>
+                                <td t-att-data-label="lb_customer" t-esc="ret.vendor_order_id._leaders_buyer_label() if ret.vendor_order_id else ret.partner_id.display_name"/>
                                 <td t-att-data-label="lb_deadline"><span t-if="ret.state == 'requested'" t-esc="ret.vendor_deadline" t-options="{'widget': 'datetime'}"/></td>
                                 <td t-att-data-label="lb_refund" class="text-end text-nowrap" t-out="ret.refund_amount" t-options="{'widget': 'monetary', 'display_currency': ret.currency_id}"/>
                                 <td t-att-data-label="lb_status"><t t-call="leaders_marketplace.portal_return_state_badge"/></td>
@@ -1072,7 +1535,7 @@
                         </div>
                         <p class="lm-page-subtitle">
                             Order <a t-att-href="'/my/vendor/orders/%s' % record.vendor_order_id.id" t-esc="record.vendor_order_id.name"/>
-                            · Customer: <t t-esc="record.partner_id.display_name"/>
+                            · Customer: <t t-esc="record.vendor_order_id._leaders_buyer_label() if record.vendor_order_id else record.partner_id.display_name"/>
                         </p>
                     </div>
                     <div class="lm-page-actions">
@@ -1189,7 +1652,7 @@
                             <h1 class="lm-page-title" t-esc="record.name"/>
                             <t t-call="leaders_marketplace.lm_state_badge"><t t-set="lm_record" t-value="record"/></t>
                         </div>
-                        <p class="lm-page-subtitle">Order <a t-att-href="'/my/vendor/orders/%s' % record.vendor_order_id.id" t-esc="record.vendor_order_id.name"/> · Customer <t t-esc="record.partner_id.display_name"/></p>
+                        <p class="lm-page-subtitle">Order <a t-att-href="'/my/vendor/orders/%s' % record.vendor_order_id.id" t-esc="record.vendor_order_id.name"/> · Customer <t t-esc="record.vendor_order_id._leaders_buyer_label() if record.vendor_order_id else record.partner_id.display_name"/></p>
                     </div>
                     <div class="lm-page-actions"><a href="/my/vendor/disputes" class="btn btn-outline-secondary"><i class="fa fa-angle-left lm-flip" aria-hidden="true"/> Back</a></div>
                 </div>

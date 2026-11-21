@@ -2,13 +2,15 @@
 import base64
 import json
 from datetime import timedelta
+
+from dateutil.relativedelta import relativedelta
 from urllib.parse import urlencode
 from unittest.mock import patch
 
-from odoo import fields
+from odoo import fields, http
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form, tagged
-from odoo.tests.common import HttpCase
+from odoo.tests.common import HttpCase, TransactionCase
 
 from .test_vendor_import import FETCH, PNG, ImportCommon, make_csv
 
@@ -99,6 +101,26 @@ class TestCatalogSpec(ImportCommon):
         self.assertEqual(len(tmpl.product_template_image_ids), 2)
         self.assertEqual(tmpl.leaders_field_set, "equipment")
         self.assertFalse(tmpl.leaders_requires_inspection)
+
+    def test_quantity_and_product_code_columns(self):
+        headers = EQUIP_HEADERS + ["الكمية", "كود المنتج (SKU)"]
+        row = equip(**{"الرقم التسلسلي": "SER-QTY"}) + ["4", "GEN-QTY-1"]
+        self._apply("equipment", headers, [row])
+        offer = self.env["leaders.marketplace.offer"].search([("seller_sku", "=", "GEN-QTY-1")])
+        self.assertTrue(offer)
+        self.assertEqual(offer.available_qty(), 4)
+        # a used machine is one piece whatever the sheet says
+        used = equip(**{"الرقم التسلسلي": "SER-USED", "الحالة *": "مستعمل", "سنة الصنع": "2019",
+                        "ساعات التشغيل": "3000"}) + ["9", "GEN-USED-1"]
+        self._apply("equipment", headers, [used])
+        self.assertEqual(self.env["leaders.marketplace.offer"].search([("seller_sku", "=", "GEN-USED-1")]).available_qty(), 1)
+        # the same product code twice for one vendor is refused on that row
+        job = self._job(headers, [equip(**{"الرقم التسلسلي": "SER-DUP"}) + ["1", "GEN-QTY-1"]], kind="equipment")
+        self.assertTrue(any("GEN-QTY-1" in str(e) for e in self._errors(job)), self._errors(job))
+        # the downloadable sheets carry the two columns
+        content, _mime, _name = self.env["leaders.vendor.import"]._leaders_build_template("products", "csv")
+        self.assertIn("initial_qty", content.decode("utf-8-sig").splitlines()[0])
+        self.assertIn("sku", content.decode("utf-8-sig").splitlines()[0])
 
     def test_equipment_rules(self):
         rows = [
@@ -303,6 +325,32 @@ class TestStorefrontApi(HttpCase):
         self.assertIsInstance(landing, list)
         _s, featured = self.get("/products?featured=true&limit=8")
         self.assertIsInstance(featured, list)
+
+    def test_featured_pages_like_a_kind_listing(self):
+        # nothing flagged: the newest products, paged, with no kind needed
+        status, body = self.get("/products?featured=true&page=1&pageSize=2")
+        self.assertEqual(status, 200)
+        self.assertEqual((set(body), body["page"], body["pageSize"], len(body["items"])),
+                         ({"items", "totalCount", "page", "pageSize"}, 1, 2, 2))
+        total = body["totalCount"]
+        self.assertGreaterEqual(total, 3)
+        _s, last = self.get("/products?featured=true&page=2&pageSize=2")
+        self.assertEqual((last["page"], len(last["items"])), (2, min(2, total - 2)))
+        self.assertFalse({i["id"] for i in body["items"]} & {i["id"] for i in last["items"]})
+        # featured=true alone (no limit) is the paged shape too
+        self.assertEqual(self.get("/products?featured=true")[1]["pageSize"], 8)
+        # a flagged product: only the flagged ones, newest fallback gone
+        self.eq.leaders_featured = True
+        self.env.flush_all()
+        _s, body = self.get("/products?featured=true&page=1&pageSize=8")
+        self.assertEqual(([i["id"] for i in body["items"]], body["totalCount"]), ([str(self.eq.id)], 1))
+        # a filter still narrows it: no flagged part, so the newest parts (the fallback works inside the filter)
+        _s, parts = self.get("/products?featured=true&kind=part&pageSize=8")
+        self.assertEqual([i["id"] for i in parts["items"]], [str(self.part.id)])
+        self.assertEqual(self.get("/products?featured=true&q=zzznothing&pageSize=8")[1]["totalCount"], 0)
+        self.assertEqual(self.get("/products?featured=true&pageSize=49")[0], 422)
+        # the older landing call keeps answering a plain list
+        self.assertIsInstance(self.get("/products?featured=true&limit=8")[1], list)
 
     def test_facets_ignore_sidebar_picks(self):
         _s, f = self.get("/products/facets?kind=power")
@@ -573,6 +621,17 @@ class TestStorefrontBuyListingAndPayment(TestStorefrontApi):
         zone.write({"price": 50, "free_shipping_threshold": 1000, "minimum_order": 400})
         self.filters.leaders_delivery_surcharge = 30
         regions = {r["governorate"]: r for r in self.get("/delivery/regions")[1]}
+        self.assertEqual(regions["cairo"]["name"], "Cairo")  # BUG-00901: the name in the request's language
+        arabic = self.url_open("/delivery/regions", headers={"Accept-Language": "ar"}).json()
+        self.assertEqual({r["governorate"]: r["name"] for r in arabic}["cairo"], "القاهرة")
+        # the list is in alphabetical order of the language it is shown in
+        from odoo.addons.leaders_marketplace.controllers.storefront_orders import _name_sort_key
+        arabic_names = [r["name"] for r in arabic]
+        self.assertEqual(arabic_names, sorted(arabic_names, key=_name_sort_key))
+        self.assertEqual(sorted(["القاهرة", "الإسكندرية", "أسوان", "6 أكتوبر", "الجيزة", "بورسعيد"], key=_name_sort_key),
+                         ["الإسكندرية", "أسوان", "6 أكتوبر", "بورسعيد", "الجيزة", "القاهرة"])
+        english_names = [r["name"] for r in self.get("/delivery/regions")[1]]
+        self.assertEqual(english_names, sorted(english_names, key=_name_sort_key))
         self.assertEqual((regions["cairo"]["fee"], regions["cairo"]["freeShippingThreshold"], regions["cairo"]["minimumOrder"]),
                          (5000, 100000, 40000))
         tiles = {t["slug"]: t for t in self.get("/categories")[1]}
@@ -635,12 +694,21 @@ class TestStorefrontBuyListingAndPayment(TestStorefrontApi):
         r, placed = self.send("POST", "/orders", {"items": [item], "shipping": ship, "payment": "cod"}, token=token)
         self.assertEqual(r.status_code, 201, placed)
         sale = env["sale.order"].search([], order="id desc", limit=1)
-        self.assertEqual(sale.order_line.filtered(lambda l: not l.is_delivery).marketplace_offer_id, a)
+        # a free-period vendor gets the cash order at once: the line is on their vendor order
+        self.assertEqual(sale.vendor_order_ids.line_ids.filtered(lambda l: not l.is_delivery).offer_id, a)
         self.assertFalse(self.get("/cart", token=token)[1]["lines"])  # the ordered line left the cart
         item["quantity"] = 4
         r, body = self.send("POST", "/orders", {"items": [item], "shipping": ship, "payment": "cod"}, token=token)
         self.assertEqual((r.status_code, body["code"]), (409, "insufficient_stock"))
         self.assertIn("items.0.quantity", body["fields"])
+        # two lines of the same product from the same seller share its stock: 2 + 2 is more than the seller holds
+        env["stock.quant"]._leaders_adjust_vendor_stock(
+            self.part.product_variant_id, a.stock_location_id, a.vendor_id.commercial_partner_id, 2 - a.available_qty())
+        twins = [dict(item, quantity=2), dict(item, quantity=2, options={"offerId": str(a.id), "backorder": 0})]
+        twins[1]["options"] = {"offerId": str(a.id), "services": ""}
+        r, body = self.send("POST", "/orders", {"items": twins, "shipping": ship, "payment": "cod"}, token=token)
+        self.assertEqual((r.status_code, body["code"], body["fields"].get("items.1.quantity") is not None),
+                         (409, "insufficient_stock", True), body)
 
     def test_spare_part_is_returned_when_it_does_not_match_and_was_not_installed(self):
         env = self.env
@@ -763,8 +831,14 @@ class TestStorefrontBuyListingAndPayment(TestStorefrontApi):
         later = str(fields.Date.today() + timedelta(days=30))
         r, second = self.send("POST", "/equipment-requests", dict(book, contractAccepted=True, startDate=later,
                                                                   services=["delivery"]), token=token)
-        self.assertEqual((r.status_code, second["status"], second["amountDue"]), (201, "awaitingPayment", 5000), second)
-        self.assertIn("/orders/", second["paymentUrl"])
+        self.assertEqual((r.status_code, second["status"]), (201, "requested"), second)  # nobody has priced it yet
+        self.assertNotIn("amountDue", second)
+        second_req = env["leaders.customer.request"].search([("name", "=", second["reference"])])
+        second_req.action_send_rent_price()  # the price reaches the renter
+        _s, priced = self.get("/equipment-requests/%s" % second["reference"], token)
+        self.assertEqual((priced["status"], priced["amountDue"]), ("awaitingPayment", 5000), priced)
+        self.assertNotIn("paymentUrl", priced)  # a rental makes no quotation: the delivery fee is paid in cash
+        self.assertEqual((second_req.rent_delivery_fee, bool(second_req.payment_order_id)), (50, False))
         r, clash = self.send("POST", "/equipment-requests", dict(book, contractAccepted=True), token=token)
         self.assertEqual(r.status_code, 422)  # already rented over these dates
         env.user.groups_id |= env.ref("leaders_marketplace.group_marketplace_manager")
@@ -1068,6 +1142,17 @@ class TestStorefrontFilters(HttpCase):
         self.assertEqual(self.models(kind="part", sourceId=self.turkey.id), {"FP-1"})
         self.assertEqual(self.models(kind="equipment", brandId=self.jcb.id, condition="new"), set())
 
+    def test_brand_name_filter_works_in_arabic_and_english(self):
+        self.env["res.lang"]._activate_lang("ar_001")
+        self.esab.with_context(lang="ar_001").name = "إيساب"
+        self.env.flush_all()
+        expected = {"FL-2", "FW-1"}
+        status, body = self.get("/products", lang="ar", kind="equipment", brand="إيساب", page=1, pageSize=48)
+        self.assertEqual({i["model"] for i in body["items"]}, expected)
+        self.assertEqual({i["brand"] for i in body["items"]}, {"إيساب"})
+        status, body = self.get("/products", lang="ar", kind="equipment", brand="FltESAB", page=1, pageSize=48)
+        self.assertEqual({i["model"] for i in body["items"]}, expected)  # the English name still filters
+
     def test_unknown_id_is_empty_and_malformed_id_is_422(self):
         status, body = self.get("/products", kind="equipment", brandId=999999, page=1, pageSize=8)
         self.assertEqual((status, body["items"], body["totalCount"]), (200, [], 0))
@@ -1225,7 +1310,7 @@ class TestStorefrontFilters(HttpCase):
         Tmpl = self.env["product.template"]
         model = self.env["leaders.equipment.model"].create({"name": "DUP-9"})
         vals = {"public_categ_ids": [(6, 0, self.loaders.ids)], "leaders_condition": "used", "leaders_model_id": model.id,
-                "leaders_capacity": 3, "leaders_year": 2018, "leaders_hours": 7000, "marketplace_state": "pending"}
+                "leaders_capacity": 3, "leaders_capacity_unit": "m3", "leaders_year": 2018, "leaders_hours": 7000, "marketplace_state": "pending"}
         first = Tmpl.create(dict(vals, name="Dup A"))
         second = Tmpl.create(dict(vals, name="Dup B"))
         self.assertEqual(second.leaders_duplicate_ids, first)
@@ -2110,7 +2195,8 @@ class TestPartialStockBackorder(TestStorefrontApi):
         r, placed = self.send("POST", "/orders", {"items": [item], "shipping": ship, "payment": "cod"}, token=token)
         self.assertEqual(r.status_code, 201, placed)
         sale = env["sale.order"].search([("leaders_public_ref", "=", placed["reference"])])
-        self.assertEqual(sale.order_line.filtered(lambda l: not l.is_delivery).product_uom_qty, 3)  # not billed
+        # not billed (a free-period vendor gets the cash order at once: the line is on their vendor order)
+        self.assertEqual(sale.vendor_order_ids.line_ids.filtered(lambda l: not l.is_delivery).product_uom_qty, 3)
         todo = sale.activity_ids.filtered(lambda a: a.user_id == sales)
         self.assertIn("Source 4", todo.summary)
 
@@ -2164,3 +2250,987 @@ class TestWarrantyOnTheCard(TestStorefrontApi):
         self.env["res.lang"]._activate_lang("ar_001")
         r = self.url_open("/products/%s" % self.eq.leaders_slug, headers={"Accept-Language": "ar"})
         self.assertEqual(r.json()["specs"]["warrantyBy"], "الشركة المصنّعة")
+
+
+@tagged("post_install", "-at_install")
+class TestCapacityNeedsUnit(TransactionCase):
+    """A capacity without its unit shows as "-" on the storefront, so it is refused."""
+
+    def test_capacity_without_unit_is_refused(self):
+        Tmpl = self.env["product.template"]
+        with self.assertRaises(ValidationError):
+            Tmpl.create({"name": "No unit", "leaders_capacity": 60})
+        tmpl = Tmpl.create({"name": "With unit", "leaders_capacity": 60, "leaders_capacity_unit": "kva"})
+        self.assertEqual(tmpl.leaders_kva, 60)
+        with self.assertRaises(ValidationError):
+            tmpl.write({"leaders_capacity_unit": False})
+        Tmpl.create({"name": "No capacity"})  # no capacity, no unit: fine
+
+
+@tagged("post_install", "-at_install")
+class TestDirectVendorOrders(TestStorefrontApi):
+    """The PM's rules: a subscription vendor (or one in the free period) gets a cash order at once and under their
+    own name; a commission vendor's order waits for the admin and shows the platform's name (a setting)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        env = cls.env
+        cls.part.is_storable = True
+        cls.product = cls.part.product_variant_id
+        cairo = env["res.country.state"].with_context(lang="en_US").search([("name", "=", "Cairo")], limit=1)
+        Zone = env["leaders.vendor.delivery.zone"]
+        if not Zone.search([("is_platform", "=", True), ("state_id", "=", cairo.id)]):
+            Zone.create({"is_platform": True, "state_id": cairo.id, "price": 50})
+        cls.ship = {"name": "A B", "phone": "+201005550123", "governorate": "cairo", "city": "nasrCity", "address": "1 St"}
+
+    def _seller(self, name, contract=False):
+        env = self.env
+        vendor = env["res.partner"].create({"name": name, "is_marketplace_vendor": True, "vendor_state": "approved",
+                                            "leaders_contract_model": contract})
+        vendor._marketplace_ensure_vendor_stock()
+        offer = env["leaders.marketplace.offer"].create({
+            "product_tmpl_id": self.part.id, "product_id": self.product.id, "vendor_id": vendor.id,
+            "seller_sku": "DV-%s" % name, "price": 300, "fulfillment_type": "fbm",
+            "stock_location_id": vendor._marketplace_stock_location("fbm").id})
+        env["stock.quant"]._leaders_adjust_vendor_stock(self.product, vendor.vendor_location_id, vendor, 5)
+        offer.action_approve()
+        return vendor, offer
+
+    def _place(self, offers, payment="cod"):
+        items = [{"productId": str(self.part.id), "quantity": 1, "unitPrice": 30000, "options": {"offerId": str(o.id)}}
+                 for o in offers]
+        r, placed = self.send("POST", "/orders", {"items": items, "shipping": self.ship, "payment": payment},
+                              token=self.token())
+        self.assertEqual(r.status_code, 201, placed)
+        return placed["reference"], self.env["sale.order"].search([("leaders_public_ref", "=", placed["reference"])])
+
+    def test_free_period_and_subscription_vendors_get_the_cash_order_at_once(self):
+        for contract in (False, "subscription"):
+            vendor, offer = self._seller("Direct-%s" % contract, contract)
+            self.env.flush_all()
+            ref, sale = self._place(offer)
+            part = sale.vendor_order_ids
+            self.assertEqual((part.vendor_id, part.payment_method), (vendor, "cod"))
+            self.assertIn(part.state, ("confirmed", "processing"))  # confirmed: the picking is already made
+            self.assertTrue(sale.marketplace_vendor_only)
+            sale.action_confirm()  # the admin has nothing left to confirm: no error
+            _s, detail = self.get("/orders/%s" % ref, self.token())
+            self.assertEqual((detail["cancelled"], detail["stage"], len(detail["lines"])), (False, "preparing", 1))
+            self.assertEqual(detail["lines"][0]["options"]["offerId"], str(offer.id))
+            _s, listed = self.get("/account/orders?kind=purchase", self.token())
+            row = [x for x in listed["items"] if x["reference"] == ref][0]
+            self.assertEqual((row["status"], row["quantity"]), ("inProgress", 1))
+            self.assertEqual(row["total"], detail["totals"]["total"])
+
+    def test_commission_vendor_waits_for_the_admin_and_a_mixed_cart_is_split(self):
+        _direct, direct_offer = self._seller("MixDirect", "subscription")
+        commission, commission_offer = self._seller("MixCommission", "commission")
+        self.env.flush_all()
+        _ref, sale = self._place(commission_offer)
+        self.assertEqual((sale.state, sale.vendor_order_ids.ids), ("draft", []))
+        ref, sale = self._place(direct_offer | commission_offer)
+        self.assertEqual(sale.state, "draft")  # the commission line still waits for the admin
+        self.assertEqual(sale.order_line.filtered(lambda l: not l.is_delivery).marketplace_offer_id, commission_offer)
+        self.assertEqual(sale.vendor_order_ids.vendor_id.name, "MixDirect")
+        _s, detail = self.get("/orders/%s" % ref, self.token())
+        self.assertEqual((len(detail["lines"]), detail["stage"]), (2, "placed"))
+        sale.action_confirm()
+        self.assertEqual(sorted(sale.vendor_order_ids.vendor_id.mapped("name")), ["MixCommission", "MixDirect"])
+        self.assertEqual(commission.name, "MixCommission")
+
+    def test_online_orders_wait_for_the_payment(self):
+        _vendor, offer = self._seller("OnlineDirect", "subscription")
+        self.env.flush_all()
+        self.env["ir.config_parameter"].sudo().set_param("leaders_marketplace.online_payments", "on")
+        _ref, sale = self._place(offer, payment="card")
+        self.assertFalse(sale.vendor_order_ids)
+
+    def test_what_the_vendor_sees_of_the_buyer(self):
+        _direct, direct_offer = self._seller("SeeDirect", "subscription")
+        _commission, commission_offer = self._seller("SeeCommission", "commission")
+        self.env.flush_all()
+        _ref, sale = self._place(direct_offer)
+        mine = sale.vendor_order_ids
+        self.assertEqual((mine._leaders_buyer_label(), mine._leaders_buyer_phone()), ("A B", "+201005550123"))
+        self.assertIn("1 St", mine._leaders_buyer_address())
+        _ref, sale = self._place(commission_offer)
+        sale.action_confirm()
+        theirs = sale.vendor_order_ids
+        self.assertEqual((theirs._leaders_buyer_label(), theirs._leaders_buyer_phone(), theirs._leaders_buyer_address()),
+                         ("Platform customer", "", ""))
+        self.assertTrue(theirs._leaders_buyer_area())
+
+    def test_customer_cancel_reaches_the_vendor_order(self):
+        _vendor, offer = self._seller("CancelDirect")
+        self.env.flush_all()
+        ref, sale = self._place(offer)
+        r, body = self.send("POST", "/orders/%s/cancel" % ref, {}, token=self.token())
+        self.assertEqual(r.status_code, 200, body)
+        self.assertTrue(body["cancelled"])
+        self.assertEqual((sale.vendor_order_ids.state, sale.vendor_order_ids.cancelled_by_type), ("cancelled", "customer"))
+
+    def test_publisher_of_commission_products_is_a_setting(self):
+        subscription, _o = self._seller("PubSub", "subscription")
+        free, _o = self._seller("PubFree")
+        commission, _o = self._seller("PubCom", "commission")
+        self.assertEqual([v._leaders_name_hidden() for v in (subscription, free, commission)], [False, False, True])
+        self.assertEqual([v._leaders_sells_direct() for v in (subscription, free, commission)], [True, True, False])
+        self.env["ir.config_parameter"].sudo().set_param("leaders_marketplace.commission_publisher", "vendor")
+        self.assertFalse(commission._leaders_name_hidden())
+        settings = self.env["res.config.settings"].create({})
+        self.assertEqual((settings.marketplace_commission_publisher, settings.marketplace_rent_requests_to_vendor),
+                         ("vendor", False))
+        settings.marketplace_rent_requests_to_vendor = True
+        settings.execute()
+        self.assertTrue(self.env["res.partner"]._leaders_rent_requests_to_vendor())
+
+
+@tagged("post_install", "-at_install")
+class TestSubscriptionEndHidesProducts(TestStorefrontApi):
+    """When a vendor's subscription (or free period, without a chosen model) ends, their products leave the
+    website; extending it brings back exactly what was live."""
+
+    def test_products_leave_the_website_and_come_back(self):
+        env = self.env
+        env["ir.config_parameter"].sudo().set_param("leaders_marketplace.subscription_grace_days", "0")
+        vendor = env["res.partner"].create({"name": "Lapsing", "is_marketplace_vendor": True, "vendor_state": "approved",
+                                            "leaders_contract_model": "subscription",
+                                            "leaders_subscription_until": fields.Date.today() - timedelta(days=1)})
+        vendor._marketplace_ensure_vendor_stock()
+        product = self.part.product_variant_id
+        offer = env["leaders.marketplace.offer"].create({
+            "product_tmpl_id": self.part.id, "product_id": product.id, "vendor_id": vendor.id, "seller_sku": "LAP-1",
+            "price": 300, "fulfillment_type": "fbm", "stock_location_id": vendor._marketplace_stock_location("fbm").id})
+        offer.action_approve()
+        own = self.part.copy({"name": "Lapsing own part", "marketplace_owner_vendor_id": vendor.id,
+                              "marketplace_state": "published", "is_published": True})
+        commission = env["res.partner"].create({"name": "PerSale", "is_marketplace_vendor": True, "vendor_state": "approved",
+                                                "leaders_contract_model": "commission",
+                                                "leaders_free_until": fields.Date.today() - timedelta(days=30)})
+        free = env["res.partner"].create({"name": "FreeOver", "is_marketplace_vendor": True, "vendor_state": "approved",
+                                          "leaders_free_until": fields.Date.today() - timedelta(days=1)})
+        env["res.partner"].cron_pause_lapsed_subscriptions()
+        self.assertTrue(vendor.leaders_listing_paused)
+        self.assertEqual((offer.state, own.is_published), ("suspended", False))
+        self.assertEqual((commission.leaders_listing_paused, free.leaders_listing_paused), (False, True))
+        env.flush_all()
+        self.assertEqual(self.get("/products/%s" % own.leaders_slug)[0], 404)
+        vendor.leaders_subscription_until = fields.Date.today() + timedelta(days=30)  # renewed
+        self.assertFalse(vendor.leaders_listing_paused)
+        self.assertEqual((offer.state, own.is_published), ("active", True))
+        env["res.partner"].cron_pause_lapsed_subscriptions()  # nothing to do any more
+        self.assertFalse(vendor.leaders_listing_paused)
+
+
+@tagged("post_install", "-at_install")
+class TestVendorWelcomeChoice(HttpCase):
+    """A newly approved vendor picks the free period, a commission or a subscription before the dashboard; the
+    free months and the grace days are marketplace settings."""
+
+    def _owner(self, name):
+        env = self.env
+        vendor = env["res.partner"].create({"name": name, "is_marketplace_vendor": True, "vendor_state": "approved",
+                                            "leaders_free_until": fields.Date.today() + timedelta(days=90)})
+        vendor._marketplace_ensure_vendor_stock()
+        contact = env["res.partner"].create({"name": name + " Owner", "parent_id": vendor.id, "type": "contact",
+                                             "email": "%s@example.com" % name.lower()})
+        env["res.users"].with_context(no_reset_password=True).create({
+            "name": name + " Owner", "login": "%s@example.com" % name.lower(), "password": "Secret123!x",
+            "partner_id": contact.id, "groups_id": [(6, 0, [env.ref("leaders_marketplace.group_vendor_owner").id])]})
+        return vendor
+
+    def test_welcome_page_comes_before_the_dashboard(self):
+        old = self._owner("Oldvendor")  # vendors made before the page: never sent to it
+        self.assertTrue(old.leaders_contract_onboarded)
+        fresh = self._owner("Freshvendor")
+        fresh.leaders_contract_onboarded = False  # what the approval of an application does
+        self.authenticate("freshvendor@example.com", "Secret123!x")
+        r = self.url_open("/my/vendor", allow_redirects=False)
+        self.assertEqual(r.status_code, 303)
+        self.assertIn("/my/vendor/welcome", r.headers["Location"])
+        page = self.url_open("/my/vendor/welcome")
+        for word in ("Free period", "Choose commission", "See the plans"):
+            self.assertIn(word, page.text)
+        # the subscription without a plan opens the plans
+        r = self.url_open("/my/vendor/welcome", data={"csrf_token": http.Request.csrf_token(self), "model": "subscription"},
+                          allow_redirects=False)
+        self.assertIn("step=plans", r.headers["Location"])
+        self.assertFalse(fresh.leaders_contract_model)
+        monthly = self.env.ref("leaders_marketplace.subscription_plan_monthly")
+        r = self.url_open("/my/vendor/welcome", data={"csrf_token": http.Request.csrf_token(self), "model": "subscription",
+                                                     "plan_id": str(monthly.id)}, allow_redirects=False)
+        self.assertEqual(r.status_code, 303)
+        self.assertEqual((fresh.leaders_contract_model, fresh.leaders_contract_onboarded), ("subscription", True))
+        self.assertEqual(fresh.leaders_subscription_until, fresh.leaders_free_until)  # paid from the free period's end
+        self.assertEqual(self.url_open("/my/vendor", allow_redirects=False).status_code, 200)
+
+    def test_free_and_commission_choices(self):
+        Partner = self.env["res.partner"]
+        free = self._owner("Keepfree")
+        free.leaders_onboard_choice("free")
+        self.assertEqual((free.leaders_contract_model, free.leaders_contract_onboarded), (False, True))
+        com = self._owner("Takecom")
+        com.leaders_onboard_choice("commission")
+        self.assertEqual(com.leaders_contract_model, "commission")
+        with self.assertRaises(UserError):
+            Partner.browse(com.id).leaders_onboard_choice("other")
+
+    def test_free_months_and_grace_days_are_settings(self):
+        Partner = self.env["res.partner"]
+        settings = self.env["res.config.settings"].create({})
+        settings.marketplace_free_period_months = 6
+        settings.marketplace_subscription_grace_days = 0
+        settings.execute()
+        self.assertEqual((Partner._leaders_free_months(), Partner._leaders_grace_days()), (6, 0))
+        vendor = self._owner("Gracevendor")
+        vendor.write({"leaders_contract_model": "subscription",
+                      "leaders_subscription_until": fields.Date.today() - timedelta(days=3)})
+        self.assertTrue(vendor._leaders_subscription_lapsed())
+        self.env["ir.config_parameter"].sudo().set_param("leaders_marketplace.subscription_grace_days", "7")
+        self.assertFalse(vendor._leaders_subscription_lapsed())  # still inside the 7 grace days
+
+
+@tagged("post_install", "-at_install")
+class TestVendorEquipmentRequests(TestStorefrontApi):
+    """Equipment purchase and quote requests in the vendor portal: a subscription (or free-period) vendor sees them
+    at once with the buyer; a commission vendor once the admin takes them on, without the buyer; rent stays with the
+    platform unless the settings open it. The vendor prices a quote; the admin's offer starts from that price."""
+
+    def _vendor(self, name, contract=False):
+        env = self.env
+        vendor = env["res.partner"].create({"name": name, "is_marketplace_vendor": True, "vendor_state": "approved",
+                                            "leaders_contract_model": contract})
+        vendor._marketplace_ensure_vendor_stock()
+        return vendor
+
+    def _request(self, kind, vendor, product=None, **vals):
+        product = product or self.eq
+        Offer = self.env["leaders.marketplace.offer"]
+        offer = Offer.search([("product_tmpl_id", "=", product.id), ("vendor_id", "=", vendor.id)], limit=1) or Offer.create({
+            "product_tmpl_id": product.id, "product_id": product.product_variant_id.id, "vendor_id": vendor.id,
+            "seller_sku": "EQ-%s-%s" % (vendor.id, kind), "price": 1000, "fulfillment_type": "fbm",
+            "stock_location_id": vendor._marketplace_stock_location("fbm").id})
+        return self.env["leaders.customer.request"].create(dict({
+            "kind": kind, "partner_id": self.user.partner_id.id, "phone": "+201005550123", "product_tmpl_id": product.id,
+            "title": product.name, "offer_id": offer.id, "contact_name": "Buyer Name"}, **vals))
+
+    def test_who_sees_what(self):
+        Request = self.env["leaders.customer.request"]
+        direct = self._vendor("EqDirect")
+        commission = self._vendor("EqCommission", "commission")
+        mine = self._request("purchase", direct)
+        self.assertEqual(mine.vendor_id, direct)
+        self.assertTrue(mine._leaders_vendor_visible() and mine._leaders_vendor_sees_buyer())
+        self.assertTrue(mine.vendor_notified)
+        self.assertIn(mine, Request._leaders_vendor_requests(direct))
+        theirs = self._request("purchase", commission)
+        self.assertFalse(theirs._leaders_vendor_visible() or theirs.vendor_notified)
+        theirs.action_equipment_confirm()  # the admin takes it on
+        self.assertTrue(theirs._leaders_vendor_visible() and theirs.vendor_notified)
+        self.assertFalse(theirs._leaders_vendor_sees_buyer())
+        rent = self._request("rent", direct)
+        self.assertTrue(rent._leaders_vendor_visible())  # a vendor who deals directly prices his rental
+        self.assertFalse(rent._leaders_vendor_sees_buyer())  # the renter is never shown
+        commission_rent = self._request("rent", commission)
+        self.assertFalse(commission_rent._leaders_vendor_visible())  # a commission vendor's rent stays with the platform
+        self.env["ir.config_parameter"].sudo().set_param("leaders_marketplace.rent_requests_to_vendor", "1")
+        self.assertTrue(commission_rent._leaders_vendor_visible())
+        self.assertFalse(commission_rent._leaders_vendor_sees_buyer())
+
+    def test_vendor_prices_a_quote_and_the_offer_starts_from_it(self):
+        direct = self._vendor("EqQuote")
+        quote = self._request("quote", direct, product=self.quote_only, quantity=2)
+        with self.assertRaises(UserError):
+            quote.leaders_vendor_send_price(0)
+        quote.leaders_vendor_send_price(250000, "Delivered in a week")
+        self.assertEqual((quote.vendor_quote_price, quote.vendor_quote_note), (250000, "Delivered in a week"))
+        self.assertFalse(quote._leaders_vendor_needs_action())
+        quote.action_create_offer()
+        line = quote.quote_order_id.order_line
+        self.assertEqual((line.product_id, line.product_uom_qty, line.price_unit),
+                         (self.quote_only.product_variant_id, 2, 125000))  # the price is for the whole request
+
+    def test_portal_pages(self):
+        env = self.env
+        direct = self._vendor("EqPortal")
+        contact = env["res.partner"].create({"name": "EqPortal Owner", "parent_id": direct.id, "type": "contact",
+                                             "email": "eqportal@example.com"})
+        env["res.users"].with_context(no_reset_password=True).create({
+            "name": "EqPortal Owner", "login": "eqportal@example.com", "password": "Secret123!x", "partner_id": contact.id,
+            "groups_id": [(6, 0, [env.ref("leaders_marketplace.group_vendor_owner").id])]})
+        quote = self._request("quote", direct, product=self.quote_only)
+        other = self._request("purchase", self._vendor("EqOther"))
+        self.authenticate("eqportal@example.com", "Secret123!x")
+        listing = self.url_open("/my/vendor/equipment-requests")
+        self.assertIn(quote.name, listing.text)
+        self.assertNotIn(other.name, listing.text)
+        page = self.url_open("/my/vendor/equipment-requests/%s" % quote.id)
+        self.assertIn("Buyer Name", page.text)
+        self.assertIn("+201005550123", page.text)
+        self.url_open("/my/vendor/equipment-requests/%s" % quote.id,
+                      data={"csrf_token": http.Request.csrf_token(self), "price": "123,000", "note": "ok"})
+        self.assertEqual(quote.vendor_quote_price, 123000)
+        self.assertEqual(self.url_open("/my/vendor/equipment-requests/%s" % other.id).status_code, 403)
+        dashboard = self.url_open("/my/vendor")
+        self.assertIn("New equipment requests", dashboard.text)
+        # a subscription vendor closes the deal from the portal
+        purchase = self._request("purchase", direct)
+        page = self.url_open("/my/vendor/equipment-requests/%s" % purchase.id).text
+        self.assertIn("Your next step", page)
+        self.assertIn("Confirm the request", page)
+        self.assertNotIn("Start carrying it out", page)  # one action at a time
+        self.url_open("/my/vendor/equipment-requests/%s" % purchase.id,
+                      data={"csrf_token": http.Request.csrf_token(self), "outcome": "lost", "reason": ""})
+        self.assertEqual(purchase.state, "pending")  # a reason is needed
+        page = self.url_open("/my/vendor/equipment-requests/%s" % purchase.id,
+                             data={"csrf_token": http.Request.csrf_token(self), "outcome": "sold"}).text
+        self.assertEqual(purchase.state, "pending")  # not sold from the first stage: confirm it first
+        self.assertIn("Confirm the request first", page)
+        self.url_open("/my/vendor/equipment-requests/%s" % purchase.id,
+                      data={"csrf_token": http.Request.csrf_token(self), "step": "confirm"})
+        self.assertEqual(purchase.state, "inProgress")
+        self.url_open("/my/vendor/equipment-requests/%s" % purchase.id,
+                      data={"csrf_token": http.Request.csrf_token(self), "step": "start"})
+        self.assertEqual(purchase.state, "executing")
+        self.url_open("/my/vendor/equipment-requests/%s" % purchase.id,
+                      data={"csrf_token": http.Request.csrf_token(self), "outcome": "sold"})
+        self.assertEqual(purchase.state, "completed")
+        self.assertNotIn("Your next step", self.url_open("/my/vendor/equipment-requests/%s" % purchase.id).text)
+
+    def test_vendor_steps_follow_what_the_customer_sees(self):
+        direct = self._vendor("StepDirect")
+        plain = self._request("purchase", direct)
+        self.assertTrue(plain._leaders_vendor_can_confirm() and not plain._leaders_vendor_can_start())
+        self.assertFalse(plain._leaders_vendor_can_sell())
+        plain.leaders_vendor_confirm()
+        self.assertEqual((plain.state, plain.customer_status), ("inProgress", "confirmed"))
+        self.assertTrue(plain._leaders_vendor_can_start() and plain._leaders_vendor_can_sell())
+        plain.leaders_vendor_start()
+        self.assertEqual((plain.state, plain.customer_status), ("executing", "inProgress"))
+        plain.leaders_vendor_close("sold")
+        self.assertEqual((plain.state, plain.customer_status), ("completed", "completed"))
+        # services: the platform prices them, so the vendor cannot confirm the request
+        with_services = self._request("purchase", direct, equipment_services="delivery")
+        self.assertFalse(with_services._leaders_vendor_can_confirm())
+        with self.assertRaises(UserError):
+            with_services.leaders_vendor_confirm()
+        with self.assertRaises(UserError):
+            with_services.leaders_vendor_close("sold")
+        # a commission vendor never moves the steps
+        commission = self._request("purchase", self._vendor("StepCommission", "commission"))
+        commission.action_equipment_confirm()
+        self.assertFalse(commission._leaders_vendor_can_start())
+
+    def test_admin_closes_a_paid_equipment_quote(self):
+        quote = self._request("quote", self._vendor("QuoteAdmin"), product=self.quote_only)
+        quote.state = "executing"
+        quote.action_equipment_complete()
+        self.assertEqual(quote.state, "completed")
+
+    def test_only_a_subscription_vendor_closes_and_with_a_reason(self):
+        direct = self._request("quote", self._vendor("CloseDirect"), product=self.quote_only)
+        with self.assertRaises(UserError):
+            direct.leaders_vendor_close("lost")
+        direct.leaders_vendor_close("lost", "Price too high for the buyer")
+        self.assertEqual(direct.state, "cancelled")
+        commission = self._request("purchase", self._vendor("CloseCommission", "commission"))
+        commission.action_equipment_confirm()
+        self.assertFalse(commission._leaders_vendor_can_close())
+        with self.assertRaises(UserError):
+            commission.leaders_vendor_close("sold")
+
+
+@tagged("post_install", "-at_install")
+class TestSubscriptionPlans(TestVendorWelcomeChoice):
+    """The subscription card opens the plans; a picked plan waits for payment; the platform's confirmation extends
+    the subscription by the plan's period, starting where the paid (or free) time ends."""
+
+    def test_plans_on_the_welcome_page_and_the_payment(self):
+        fresh = self._owner("Planvendor")
+        fresh.leaders_contract_onboarded = False
+        self.authenticate("planvendor@example.com", "Secret123!x")
+        page = self.url_open("/my/vendor/welcome").text
+        self.assertIn("/my/vendor/welcome?step=plans", page)
+        plans = self.env["leaders.subscription.plan"].search([])
+        self.assertGreaterEqual(len(plans), 4)
+        page = self.url_open("/my/vendor/welcome?step=plans").text
+        for plan in plans:
+            self.assertIn('name="plan_id" value="%s"' % plan.id, page)
+        yearly = self.env.ref("leaders_marketplace.subscription_plan_yearly")
+        r = self.url_open("/my/vendor/welcome", data={"csrf_token": http.Request.csrf_token(self), "model": "subscription",
+                                                     "plan_id": str(yearly.id)}, allow_redirects=False)
+        self.assertEqual(r.status_code, 303)
+        self.assertEqual((fresh.leaders_contract_model, fresh.leaders_subscription_plan_id, fresh.leaders_contract_onboarded),
+                         ("subscription", yearly, True))
+        self.assertEqual(fresh.leaders_subscription_until, fresh.leaders_free_until)  # free time first
+        order = fresh.leaders_subscription_order_ids
+        self.assertEqual((order.state, order.price, order.months), ("pending", yearly.price, 12))
+        self.assertIn("Waiting for your payment", self.url_open("/my/vendor/contract").text)
+        order.action_mark_paid()
+        self.assertEqual(order.date_start, fresh.leaders_free_until)
+        self.assertEqual(fresh.leaders_subscription_until, fresh.leaders_free_until + relativedelta(months=12))
+        # renew from the contract page: a second period after the first
+        monthly = self.env.ref("leaders_marketplace.subscription_plan_monthly")
+        self.url_open("/my/vendor/contract", data={"csrf_token": http.Request.csrf_token(self), "action": "plan",
+                                                  "plan_id": str(monthly.id)})
+        renewal = fresh.leaders_subscription_order_ids.filtered(lambda o: o.state == "pending")
+        self.assertEqual(renewal.plan_id, monthly)
+        until = fresh.leaders_subscription_until
+        renewal.action_mark_paid()
+        self.assertEqual(fresh.leaders_subscription_until, until + relativedelta(months=1))
+
+    def test_contract_page_subscription_gets_a_date(self):
+        vendor = self._owner("Lateчoice".replace("ч", "c"))
+        vendor.leaders_free_until = fields.Date.today() + timedelta(days=5)  # the choice is open near the end
+        vendor.leaders_choose_contract("subscription")
+        self.assertEqual(vendor.leaders_subscription_until, vendor.leaders_free_until)
+
+
+@tagged("post_install", "-at_install")
+class TestSubscriptionEndNotice(TestVendorWelcomeChoice):
+    """Before and after a subscription ends: a reminder, a notice on the dashboard, and the way out to a commission."""
+
+    def test_reminder_once_per_period(self):
+        vendor = self._owner("Remindme")
+        vendor.write({"leaders_contract_model": "subscription",
+                      "leaders_subscription_until": fields.Date.today() + timedelta(days=3)})
+        before = len(vendor.message_ids)
+        self.env["res.partner"].cron_pause_lapsed_subscriptions()
+        self.assertEqual(len(vendor.message_ids), before + 1)
+        self.assertEqual(vendor.leaders_subscription_reminded_until, vendor.leaders_subscription_until)
+        self.env["res.partner"].cron_pause_lapsed_subscriptions()
+        self.assertEqual(len(vendor.message_ids), before + 1)  # not twice for the same period
+        self.assertEqual(vendor._leaders_subscription_notice()["state"], "ending")
+
+    def test_notice_states_and_switch_to_commission(self):
+        Param = self.env["ir.config_parameter"].sudo()
+        Param.set_param("leaders_marketplace.subscription_grace_days", "7")
+        vendor = self._owner("Noticevendor")
+        vendor.write({"leaders_contract_model": "subscription",
+                      "leaders_subscription_until": fields.Date.today() + timedelta(days=60)})
+        self.assertIsNone(vendor._leaders_subscription_notice())
+        vendor.leaders_subscription_until = fields.Date.today() - timedelta(days=2)
+        notice = vendor._leaders_subscription_notice()
+        self.assertEqual((notice["state"], notice["hidden_on"]), ("grace", fields.Date.today() + timedelta(days=5)))
+        self.authenticate("noticevendor@example.com", "Secret123!x")
+        page = self.url_open("/my/vendor").text
+        self.assertIn('id="lm_subscription_notice"', page)
+        self.assertIn("Switch to a commission instead", page)
+        self.url_open("/my/vendor/contract", data={"csrf_token": http.Request.csrf_token(self), "model": "commission",
+                                                  "action": "switch", "note": "ending"})
+        switch = self.env["leaders.contract.switch"].search([("vendor_id", "=", vendor.id)])
+        self.assertEqual((switch.to_model, switch.state), ("commission", "pending"))
+        self.assertIn("being reviewed", self.url_open("/my/vendor").text)
+        # hidden, then the switch is approved: commission vendors never lapse, the products come back
+        Param.set_param("leaders_marketplace.subscription_grace_days", "0")
+        self.env["res.partner"].cron_pause_lapsed_subscriptions()
+        self.assertTrue(vendor.leaders_listing_paused)
+        self.assertEqual(vendor._leaders_subscription_notice()["state"], "hidden")
+        switch.action_approve()
+        self.assertEqual(vendor.leaders_contract_model, "commission")
+        self.assertFalse(vendor.leaders_listing_paused)
+        self.assertIsNone(vendor._leaders_subscription_notice())
+
+    def test_free_period_vendor_chooses_commission_from_the_notice(self):
+        self.env["ir.config_parameter"].sudo().set_param("leaders_marketplace.subscription_grace_days", "0")
+        vendor = self._owner("Freeend")
+        vendor.leaders_free_until = fields.Date.today() - timedelta(days=1)
+        self.env["res.partner"].cron_pause_lapsed_subscriptions()
+        self.assertTrue(vendor.leaders_listing_paused)
+        self.authenticate("freeend@example.com", "Secret123!x")
+        self.assertIn("Your free period ended on", self.url_open("/my/vendor").text)
+        self.url_open("/my/vendor/contract", data={"csrf_token": http.Request.csrf_token(self), "model": "commission"})
+        self.assertEqual(vendor.leaders_contract_model, "commission")
+        self.assertFalse(vendor.leaders_listing_paused)
+
+
+class TestEquipmentCustomerStatus(TestStorefrontApi):
+    """The admin list of equipment requests shows the stage the customer sees on the website."""
+
+    def test_admin_status_equals_what_the_storefront_returns(self):
+        from odoo.addons.leaders_marketplace.controllers.storefront_equipment import STATUS
+        from odoo.addons.leaders_marketplace.models.equipment_request import CUSTOMER_STATUS
+        self.assertEqual(CUSTOMER_STATUS, STATUS)
+        token = self.token()
+        ship = {"name": "A B", "phone": "+201005550123", "governorate": "cairo"}
+        _r, placed = self.send("POST", "/equipment-requests", {"productId": str(self.eq.id), "shipping": ship}, token=token)
+        req = self.env["leaders.customer.request"].search([("name", "=", placed["reference"])])
+        for step in ("action_equipment_confirm", "action_equipment_execute", "action_equipment_complete", None):
+            _s, seen = self.send("GET", "/equipment-requests/" + req.name, token=token)
+            self.assertEqual(req.customer_status, seen["status"], req.state)
+            if step:
+                getattr(req, step)()
+
+
+class TestEquipmentQuoteOfferCash(TestStorefrontApi):
+    """An equipment quote whose offer was sent is confirmed from the equipment request's own payment route."""
+
+    def test_cash_on_the_equipment_route_accepts_and_confirms_the_offer(self):
+        env = self.env
+        token = self.token()
+        item = env["product.product"].create({"name": "Offer item", "type": "service", "list_price": 100})
+        req = env["leaders.customer.request"].create({
+            "kind": "quote", "partner_id": self.user.partner_id.id, "phone": "+201005550123",
+            "product_tmpl_id": self.quote_only.id, "title": self.quote_only.name, "quantity": 2})
+        req.leaders_vendor_send_price(60000)
+        req.action_create_offer()
+        order = req.quote_order_id
+        order.order_line.write({"tax_id": [(5, 0, 0)]})
+        order.action_leaders_send_offer()
+        env.flush_all()
+        self.assertEqual(req.state, "offered")
+        _s, before = self.send("GET", "/equipment-requests/" + req.name, token=token)
+        self.assertEqual(before["status"], "awaitingPayment")
+        r, bad = self.send("POST", "/equipment-requests/%s/payment" % req.name, {"method": "card"}, token=token)
+        self.assertEqual(r.status_code, 422)
+        r, body = self.send("POST", "/equipment-requests/%s/payment" % req.name, {"method": "cash"}, token=token)
+        self.assertEqual(r.status_code, 200, body)
+        self.assertEqual(body["status"], "inProgress")
+        req.invalidate_recordset()
+        self.assertEqual((req.state, req.sf_payment_method), ("executing", "cash"))
+        self.assertTrue(req.offer_accepted_at)
+        self.assertEqual(order.state, "sale")
+        r, again = self.send("POST", "/equipment-requests/%s/payment" % req.name, {"method": "cash"}, token=token)
+        self.assertEqual((r.status_code, again["code"]), (409, "invalid_stage"))
+        # a quote nobody sent an offer for is still refused here
+        plain = env["leaders.customer.request"].create({
+            "kind": "quote", "partner_id": self.user.partner_id.id, "phone": "+201005550123",
+            "product_tmpl_id": self.quote_only.id, "title": "x"})
+        r, no = self.send("POST", "/equipment-requests/%s/payment" % plain.name, {"method": "cash"}, token=token)
+        self.assertEqual(r.status_code, 409)
+
+
+class TestVendorOwnServices(TestStorefrontApi):
+    """A vendor's own services: written by the vendor, offered with his machines, asked with the request; the price
+    is agreed with the buyer, so the platform has nothing to price and the vendor can confirm the request."""
+
+    def setUp(self):
+        super().setUp()
+        env = self.env
+        self.vendor = env["res.partner"].create({"name": "OwnSvc Vendor", "is_marketplace_vendor": True,
+                                                 "vendor_state": "approved", "leaders_contract_model": False})
+        self.eq.marketplace_owner_vendor_id = self.vendor
+        self.svc = env["leaders.vendor.service"].create({
+            "name": "Own delivery", "description": "Delivered with our truck", "vendor_id": self.vendor.id,
+            "state": "approved", "product_tmpl_ids": [(6, 0, self.eq.ids)]})
+
+    def test_the_service_rides_in_the_same_services_list_and_request(self):
+        token = self.token()
+        self.assertTrue(self.svc.slug.startswith("v%s-" % self.vendor.id))
+        _s, detail = self.get("/products/%s" % self.eq.leaders_slug)
+        self.assertIn({"slug": self.svc.slug, "name": "Own delivery"}, detail["services"])
+        self.assertEqual(self.url_open("/products/%s/vendor-services" % self.eq.leaders_slug).status_code, 404)  # no extra route
+        _s, other = self.get("/products/%s" % self.quote_only.leaders_slug)
+        self.assertNotIn(self.svc.slug, [x["slug"] for x in other.get("services", [])])
+        ship = {"name": "A B", "phone": "+201005550123", "governorate": "cairo"}
+        r, bad = self.send("POST", "/equipment-requests", {"productId": str(self.quote_only.id), "shipping": ship,
+                                                            "services": [self.svc.slug]}, token=token)
+        self.assertEqual((r.status_code, list(bad["fields"])), (422, ["services"]))  # not offered with that machine
+        r, placed = self.send("POST", "/equipment-requests", {"productId": str(self.eq.id), "shipping": ship,
+                                                               "services": [self.svc.slug]}, token=token)
+        self.assertEqual(r.status_code, 201, placed)
+        self.assertEqual(placed["services"], [self.svc.slug])
+        self.assertEqual(placed["serviceLines"], [{"slug": self.svc.slug, "name": "Own delivery"}])
+        self.assertNotIn("vendorServices", placed)
+        self.assertNotIn("servicesPrice", placed)
+        req = self.env["leaders.customer.request"].search([("name", "=", placed["reference"])])
+        self.assertEqual((req.equipment_vendor_services, req.equipment_platform_services), (self.svc.slug, False))
+        self.assertEqual(req._leaders_service_names(), ["Own delivery"])
+        self.assertFalse(req._leaders_vendor_can_confirm())  # his own services are priced first
+        self.assertEqual(req._leaders_vendor_next_step(), "price")
+        req.leaders_vendor_price_services(300)
+        self.assertEqual(req._leaders_vendor_next_step(), "confirm")
+        self.assertEqual([x["status"] for x in req._leaders_vendor_steps()], ["done", "current", "todo", "todo"])
+        self.assertTrue(req._leaders_vendor_can_confirm())  # the vendor's own service: the platform prices nothing
+        with self.assertRaises(UserError):
+            req.action_send_service_prices()
+
+    def test_the_vendor_prices_his_services_and_the_buyer_sees_it(self):
+        token = self.token()
+        ship = {"name": "A B", "phone": "+201005550123", "governorate": "cairo"}
+        _r, placed = self.send("POST", "/equipment-requests", {"productId": str(self.eq.id), "shipping": ship,
+                                                                "services": [self.svc.slug]}, token=token)
+        req = self.env["leaders.customer.request"].search([("name", "=", placed["reference"])])
+        self.assertNotIn("total", placed)  # the vendor's services are not priced yet
+        self.assertTrue(req._leaders_vendor_can_price_services())
+        with self.assertRaises(UserError):
+            req.leaders_vendor_price_services(0)
+        req.leaders_vendor_price_services(750)
+        self.assertEqual(req.vendor_services_amount, 750)
+        _s, seen = self.send("GET", "/equipment-requests/" + req.name, token=token)
+        self.assertEqual(seen["serviceLines"], [{"slug": self.svc.slug, "name": "Own delivery", "amount": 75000}])
+        self.assertEqual(seen["total"], 185000000 + 75000)
+        self.assertNotIn("servicesPrice", seen)  # nothing for the platform to collect
+        self.assertNotIn("paymentUrl", seen)
+        self.assertNotIn("amountDue", seen)
+        # a platform service next to it: the total waits until the platform prices its own
+        services = self.env["product.template"].search([("leaders_service_page", "=", True), ("leaders_slug", "=", "delivery")])
+        self.eq.leaders_service_ids = services
+        _r, mixed = self.send("POST", "/equipment-requests", {"productId": str(self.eq.id), "shipping": ship,
+                                                               "services": [self.svc.slug, "delivery"]}, token=token)
+        mreq = self.env["leaders.customer.request"].search([("name", "=", mixed["reference"])])
+        mreq.leaders_vendor_price_services(100)
+        _s, still = self.send("GET", "/equipment-requests/" + mreq.name, token=token)
+        self.assertNotIn("total", still)
+        mreq.services_amount = 500
+        _s, done = self.send("GET", "/equipment-requests/" + mreq.name, token=token)
+        self.assertEqual(done["total"], 185000000 + 50000 + 10000)
+        # a request with no vendor service of his cannot be priced by the vendor
+        plain = self.env["leaders.customer.request"].create({
+            "kind": "purchase", "partner_id": self.user.partner_id.id, "phone": "+201005550123",
+            "product_tmpl_id": self.eq.id, "title": "x", "unit_price": 1000})
+        self.assertFalse(plain._leaders_vendor_can_price_services())
+
+    def test_slugs_never_repeat(self):
+        env = self.env
+        with self.assertRaises(ValidationError):  # the same name twice for one vendor is refused
+            env["leaders.vendor.service"].create({"name": "own DELIVERY", "vendor_id": self.vendor.id})
+        again = env["leaders.vendor.service"].create({"name": "Own delivery 2", "vendor_id": self.vendor.id})
+        self.assertNotEqual(again.slug, self.svc.slug)
+        arabic = env["leaders.vendor.service"].create({"name": "توصيل خاص", "vendor_id": self.vendor.id})
+        self.assertTrue(arabic.slug.isascii())
+        taken = self.eq.leaders_slug
+        clash = env["leaders.vendor.service"].with_context(lang="en_US").create({
+            "name": taken, "vendor_id": self.vendor.id})
+        slugs = [self.svc.slug, again.slug, arabic.slug, clash.slug]
+        self.assertEqual(len(set(slugs)), 4)
+        self.assertFalse(set(slugs) & set(env["product.template"].search([]).mapped("leaders_slug")))
+        self.assertFalse(set(slugs) & set(env["product.public.category"].search([]).mapped("leaders_slug")))
+        # a product made later never takes a service's slug
+        product = env["product.template"].create({"name": "Later", "leaders_brand_id": self.brand.id})
+        product.leaders_slug = False
+        self.svc.sudo().slug = product._leaders_make_slug()
+        self.assertTrue(product._leaders_make_slug() != self.svc.slug)
+
+
+class TestVendorFlowsEndToEnd(TestStorefrontApi):
+    """Every stage of an equipment request, walked one step at a time as the buyer (the storefront API) and the vendor
+    (the vendor portal) would: what each side sees at each step, and no word about the platform for a vendor who
+    deals with the buyer himself."""
+
+    def setUp(self):
+        super().setUp()
+        env = self.env
+        self.vendor = env["res.partner"].create({"name": "Flow Vendor", "is_marketplace_vendor": True,
+                                                 "vendor_state": "approved", "leaders_contract_model": "subscription"})
+        self.vendor._marketplace_ensure_vendor_stock()
+        self.eq.marketplace_owner_vendor_id = self.vendor
+        self.quote_only.marketplace_owner_vendor_id = self.vendor
+        contact = env["res.partner"].create({"name": "Flow Owner", "parent_id": self.vendor.id, "type": "contact",
+                                             "email": "flow@example.com"})
+        env["res.users"].with_context(no_reset_password=True).create({
+            "name": "Flow Owner", "login": "flow@example.com", "email": "flow@example.com", "password": "Secret123!x",
+            "partner_id": contact.id,
+            "groups_id": [(6, 0, [env.ref("base.group_portal").id, env.ref("leaders_marketplace.group_vendor_owner").id])]})
+        self.token_ = self.token()
+
+    # ---- helpers
+    def _offer(self, product, vendor=None):
+        vendor = vendor or self.vendor
+        return self.env["leaders.marketplace.offer"].create({
+            "product_tmpl_id": product.id, "product_id": product.product_variant_id.id, "vendor_id": vendor.id,
+            "seller_sku": "FLOW-%s-%s" % (vendor.id, product.id), "price": 1000, "fulfillment_type": "fbm",
+            "stock_location_id": vendor._marketplace_stock_location("fbm").id})
+
+    def _request(self, kind, product, vendor=None, **vals):
+        vendor = vendor or self.vendor
+        return self.env["leaders.customer.request"].create(dict({
+            "kind": kind, "partner_id": self.user.partner_id.id, "phone": "+201005550123", "product_tmpl_id": product.id,
+            "title": product.name, "offer_id": self._offer(product, vendor).id, "contact_name": "Buyer Name",
+            "unit_price": 185000000 / 100 if kind == "purchase" else 0}, **vals))
+
+    def _page(self, request):
+        from odoo import http
+        self.authenticate("flow@example.com", "Secret123!x")
+        return self.url_open("/my/vendor/equipment-requests/%s" % request.id)
+
+    def _post(self, request, **data):
+        from odoo import http
+        self.authenticate("flow@example.com", "Secret123!x")
+        data["csrf_token"] = http.Request.csrf_token(self)
+        return self.url_open("/my/vendor/equipment-requests/%s" % request.id, data=data)
+
+    def _region(self, response):
+        text = response.text
+        return text[text.index('id="lm_vendor_equipment_request"'):text.index("All equipment requests")]
+
+    def _buyer(self, request):
+        r, body = self.send("GET", "/equipment-requests/" + request.name, token=self.token_)
+        self.assertEqual(r.status_code, 200, body)
+        return body["status"]
+
+    def _no_platform_words(self, region):
+        self.assertNotIn("platform", region.lower().replace("platform's", ""))
+
+    # ---- a purchase with no services
+    def test_purchase_step_by_step(self):
+        req = self._request("purchase", self.eq)
+        self.assertEqual(self._buyer(req), "requested")
+        region = self._region(self._page(req))
+        self.assertIn("Confirm the request", region)
+        for absent in ("Start carrying it out", "Price of your services", ">Sold<"):
+            self.assertNotIn(absent, region)
+        self._no_platform_words(region)
+        self._post(req, step="start")  # out of order: refused, nothing moves
+        self.assertEqual(req.state, "pending")
+        self._post(req, step="confirm")
+        self.assertEqual((req.state, self._buyer(req)), ("inProgress", "confirmed"))
+        region = self._region(self._page(req))
+        self.assertIn("Start carrying it out", region)
+        self.assertNotIn("Confirm the request", region)
+        self._post(req, step="start")
+        self.assertEqual((req.state, self._buyer(req)), ("executing", "inProgress"))
+        region = self._region(self._page(req))
+        self.assertIn("Sold", region)
+        self.assertNotIn("Start carrying it out", region)
+        self._post(req, outcome="sold")
+        self.assertEqual((req.state, self._buyer(req)), ("completed", "completed"))
+        self.assertNotIn("Your next step", self._region(self._page(req)))
+
+    # ---- a purchase with a service of the vendor's own
+    def test_purchase_with_the_vendors_own_service(self):
+        svc = self.env["leaders.vendor.service"].create({"name": "Own delivery", "vendor_id": self.vendor.id,
+                                                         "state": "approved", "product_tmpl_ids": [(6, 0, self.eq.ids)]})
+        req = self._request("purchase", self.eq, equipment_services=svc.slug)
+        region = self._region(self._page(req))
+        self.assertIn("Price of your services", region)
+        self.assertNotIn("Confirm the request", region)  # his services are priced first
+        self._no_platform_words(region)
+        self._post(req, step="confirm")
+        self.assertEqual(req.state, "pending")
+        self._post(req, services_price="750")
+        self.assertEqual(req.vendor_services_amount, 750)
+        region = self._region(self._page(req))
+        self.assertIn("Confirm the request", region)
+        self.assertNotIn('name="services_price"', region)
+        self._post(req, step="confirm")
+        self.assertEqual(self._buyer(req), "confirmed")
+        r, seen = self.send("GET", "/equipment-requests/" + req.name, token=self.token_)
+        self.assertEqual(seen["serviceLines"], [{"slug": svc.slug, "name": "Own delivery", "amount": 75000}])
+        self._post(req, step="start")
+        self._post(req, outcome="sold")
+        self.assertEqual(self._buyer(req), "completed")
+
+    # ---- a quote: the vendor sends the offer himself
+    def test_quote_step_by_step_direct_vendor(self):
+        req = self._request("quote", self.quote_only, quantity=2)
+        self.assertEqual(self._buyer(req), "requested")
+        region = self._region(self._page(req))
+        self.assertIn("Send my price", region)
+        self.assertNotIn("Waiting for the buyer", region)
+        self._no_platform_words(region)
+        page = self._post(req, price="1,000,000", note="Delivered in a week")
+        self.assertIn("Your offer was sent to the buyer.", page.text)
+        self.assertNotIn("sent to the platform", page.text)
+        self.assertEqual((req.state, self._buyer(req)), ("offered", "awaitingPayment"))  # the buyer has the offer
+        r, seen = self.send("GET", "/equipment-requests/" + req.name, token=self.token_)
+        self.assertEqual((seen["total"], seen["amountDue"]), (100000000, 100000000))  # the vendor's price, no tax added
+        self.assertEqual([l["amount"] for l in seen["offer"]["lines"]], [100000000])
+        order = req.quote_order_id
+        self.assertEqual((order.state, order.order_line[:1].price_unit, order.order_line[:1].product_uom_qty),
+                         ("sent", 500000, 2))  # the price is for the whole request
+        region = self._region(self._page(req))
+        self.assertIn("Waiting for the buyer to accept your offer.", region)
+        self.assertNotIn("Send my price", region)
+        self._no_platform_words(region)
+        r, paid = self.send("POST", "/equipment-requests/%s/payment" % req.name, {"method": "cash"}, token=self.token_)
+        self.assertEqual((r.status_code, paid["status"]), (200, "inProgress"))
+        region = self._region(self._page(req))
+        self.assertIn("Sold", region)
+        self.assertNotIn("Waiting for the buyer", region)
+        r, got = self.send("POST", "/equipment-requests/%s/received" % req.name, {}, token=self.token_)
+        self.assertEqual((r.status_code, got["status"]), (200, "completed"))  # the buyer confirms receipt himself
+        self.assertEqual(req.state, "completed")
+
+    def test_quote_sold_by_the_vendor(self):
+        req = self._request("quote", self.quote_only)
+        self._post(req, price="2,000")
+        r, _p = self.send("POST", "/equipment-requests/%s/payment" % req.name, {"method": "cash"}, token=self.token_)
+        self.assertEqual(r.status_code, 200)
+        self._post(req, outcome="sold")
+        self.assertEqual((req.state, self._buyer(req)), ("completed", "completed"))
+
+    # ---- a quote of a commission vendor stays with the platform
+    def test_quote_of_a_commission_vendor_waits_for_the_platform(self):
+        commission = self.env["res.partner"].create({"name": "Commission Vendor", "is_marketplace_vendor": True,
+                                                     "vendor_state": "approved", "leaders_contract_model": "commission"})
+        commission._marketplace_ensure_vendor_stock()
+        req = self._request("quote", self.quote_only, vendor=commission)
+        req.action_equipment_confirm() if False else None
+        req.leaders_vendor_send_price(900000)
+        self.assertFalse(req.quote_order_id)  # no offer from the vendor: the platform prices it to the buyer
+        self.assertEqual(self._buyer(req), "requested")
+        req.action_create_offer()
+        self.assertEqual(req.quote_order_id.order_line[:1].price_unit, 900000)
+
+    # ---- a quote with services: his own and another one that is priced separately
+    def test_quote_with_the_vendors_service_and_another_service(self):
+        env = self.env
+        svc = env["leaders.vendor.service"].create({"name": "Own delivery", "vendor_id": self.vendor.id,
+                                                    "state": "approved", "product_tmpl_ids": [(6, 0, self.quote_only.ids)]})
+        other = env["product.template"].search([("leaders_service_page", "=", True), ("leaders_slug", "=", "installation")])
+        self.quote_only.leaders_service_ids = other
+        req = self._request("quote", self.quote_only, equipment_services="%s,installation" % svc.slug)
+        region = self._region(self._page(req))
+        self.assertIn('name="services_price"', region)  # his own services are priced with the offer
+        self._no_platform_words(region)
+        page = self._post(req, price="1,000,000", services_price="2,000")
+        self.assertEqual((req.vendor_quote_price, req.vendor_services_amount), (1000000, 2000))
+        self.assertFalse(req.quote_order_id.state == "sent")  # the other service is not priced yet: nothing goes out
+        self.assertEqual(self._buyer(req), "requested")
+        region = self._region(self._page(req))
+        self.assertIn("The offer goes to the buyer once the other services are priced.", region)
+        self._no_platform_words(region)
+        req.services_amount = 500  # the other service gets its price
+        req.action_send_service_prices()
+        self.assertEqual((req.state, self._buyer(req)), ("offered", "awaitingPayment"))
+        r, quote = self.send("GET", "/quotes/" + req.name, token=self.token_)
+        self.assertEqual(r.status_code, 200, quote)
+        labels = [(l["label"], l["amount"]) for l in quote["offer"]["lines"]]
+        self.assertEqual(len(labels), 3, labels)  # the machine, his own services, the other service
+        self.assertIn(("Own delivery", 200000), labels)
+        self.assertEqual(sorted(l for l, _a in labels if l != "Own delivery" and _a == 50000), [other.name])
+        self.assertEqual(sorted(a for _l, a in labels)[-1] > 200000, True)  # the machine line carries the offer's price
+
+    # ---- the rental, all on the request
+    def test_a_rental_runs_on_the_request_and_ends_with_an_invoice(self):
+        env = self.env
+        vendor_rental = env["leaders.rental"]
+        req = self._request("rent", self.eq)
+        self.assertEqual((req.state, self._buyer(req)), ("pending", "requested"))  # nothing is offered before a price
+        today = fields.Date.today()
+        req.rental_id = env["leaders.rental"].create({
+            "product_tmpl_id": self.eq.id, "partner_id": self.user.partner_id.id,
+            "date_start": today + timedelta(days=5), "date_end": today + timedelta(days=8),
+            "supplier_price_day": 1000, "customer_price_day": 1000})
+        req.rent_delivery_fee = 200
+        self.assertEqual((req.rent_days, req.rent_total), (3, 3200))
+        self.assertTrue(req._leaders_vendor_can_price_rent())
+        self.assertEqual(req._leaders_vendor_next_step(), "rent_price")
+        region = self._region(self._page(req))
+        self.assertIn('name="rent_price"', region)
+        self.assertNotIn("Buyer Name", region)  # the renter is never shown
+        self._no_platform_words(region)
+        self._post(req, rent_price="9,000")
+        self.assertEqual((req.vendor_rent_total, req.rental_id.customer_price_day, req.rent_total), (9000, 3000, 9200))
+        r, seen = self.send("GET", "/equipment-requests/" + req.name, token=self.token_)
+        self.assertEqual((seen["rental"]["pricePerDay"], seen["deliveryFee"], seen["total"]), (300000, 20000, 920000))
+        self.assertFalse(req.payment_order_id)  # no quotation in the cycle
+        self.assertEqual((req.state, self._buyer(req)), ("offered", "awaitingPayment"))  # his price reached the renter
+        r, ok = self.send("POST", "/equipment-requests/%s/payment" % req.name, {"method": "cash"}, token=self.token_)
+        self.assertEqual((r.status_code, ok["status"]), (200, "confirmed"))
+        req.action_equipment_execute()
+        self.assertFalse(req.rent_invoice_id)
+        req.action_equipment_complete()
+        invoice = req.rent_invoice_id
+        self.assertTrue(invoice, req.message_ids.mapped("body"))
+        self.assertEqual((invoice.move_type, invoice.state, invoice.amount_total, invoice.partner_id),
+                         ("out_invoice", "posted", 9200, self.user.partner_id.commercial_partner_id))
+        self.assertEqual(sorted(invoice.invoice_line_ids.mapped("price_subtotal")), [200, 9000])
+        req.action_rent_invoice()  # again: the same invoice
+        self.assertEqual(env["account.move"].search_count([("ref", "=", req.name)]), 1)
+
+    def test_a_rental_with_delivery_is_confirmed_in_cash_from_the_page(self):
+        env = self.env
+        Zone = env["leaders.vendor.delivery.zone"]
+        cairo = env["res.country.state"].search([("name", "=", "Cairo"), ("country_id.code", "=", "EG")], limit=1)
+        if not Zone.search([("is_platform", "=", True), ("state_id", "=", cairo.id)]):
+            Zone.create({"is_platform": True, "state_id": cairo.id, "price": 50})
+        self.eq.leaders_service_ids = env["product.template"].search([("leaders_service_page", "=", True),
+                                                                      ("leaders_slug", "=", "delivery")])
+        ship = {"name": "A B", "phone": "+201005550123", "governorate": "cairo", "address": "1 St"}
+        r, placed = self.send("POST", "/equipment-requests", {
+            "productId": str(self.eq.id), "listing": "rent", "rentPeriod": "week", "rentUnits": 1, "shipping": ship,
+            "services": ["delivery"], "contractAccepted": True}, token=self.token_)
+        self.assertEqual((r.status_code, placed["status"]), (201, "requested"), placed)  # waits for the price
+        self.assertNotIn("amountDue", placed)
+        req = env["leaders.customer.request"].search([("name", "=", placed["reference"])])
+        req.rental_id.customer_price_day = 0
+        with self.assertRaises(UserError):  # no rent price to send
+            req.action_send_rent_price()
+        req.rental_id.customer_price_day = 1000
+        req.action_send_rent_price()
+        _s, offered = self.send("GET", "/equipment-requests/" + req.name, token=self.token_)
+        self.assertEqual((offered["status"], offered["amountDue"]), ("awaitingPayment", 5000), offered)
+        self.assertNotIn("paymentUrl", offered)
+        self.assertFalse(req.payment_order_id)
+        r, paid = self.send("POST", "/equipment-requests/%s/payment" % req.name, {"method": "cash"}, token=self.token_)
+        self.assertEqual((r.status_code, paid["status"], paid["paymentMethod"]), (200, "confirmed", "cash"), paid)
+        r, done = self.send("POST", "/equipment-requests/%s/received" % req.name, {}, token=self.token_)
+        self.assertEqual((r.status_code, done["status"]), (200, "completed"))
+        self.assertTrue(req.rent_invoice_id)  # the renter received the machine: the platform invoices the rent
+
+
+class TestEquipmentRequestButtonsFollowTheRoad(TestStorefrontApi):
+    """The buttons of every equipment request screen show one step of the road at a time: what the request needs next
+    and nothing else, for each kind and each stage."""
+
+    ROADS = {
+        # (kind, services) -> {state: buttons visible}
+        ("purchase", ""): {"pending": {"Confirm request"}, "reviewing": {"Confirm request"}, "contacting": {"Confirm request"},
+                           "offered": set(), "inProgress": {"Start carrying out"}, "executing": {"Mark completed"},
+                           "completed": set(), "cancelled": set()},
+        ("purchase", "installation"): {"pending": {"Send service prices"}, "offered": set(),
+                                       "inProgress": {"Start carrying out"}, "executing": {"Mark completed"},
+                                       "completed": set(), "cancelled": set()},
+        ("rent", ""): {"pending": {"Send the rent price"}, "reviewing": {"Send the rent price"},
+                       "offered": set(), "inProgress": {"Start carrying out"}, "executing": {"Mark completed"},
+                       "completed": set(), "cancelled": set()},
+        ("quote", ""): {"pending": {"Prepare offer"}, "offered": set(), "executing": {"Mark completed"},
+                        "completed": set(), "cancelled": set()},
+    }
+
+    def _visible(self, view_xmlid, values):
+        import lxml.etree as ET
+        env = self.env
+        Request = env["leaders.customer.request"]
+        if view_xmlid:
+            arch = Request.get_view(view_id=env.ref(view_xmlid).id, view_type="form")["arch"]
+        else:
+            arch = Request.get_view(view_type="form")["arch"]
+        shown = set()
+        for button in ET.fromstring(arch).xpath("//header/button"):
+            hidden = button.get("invisible")
+            if hidden is None or not eval(hidden, {}, dict(values)):  # noqa: S307 - a view's own condition
+                shown.add(button.get("string"))
+        return shown - {"Open offer", "Make the invoice"}
+
+    def test_each_stage_shows_the_one_next_step(self):
+        for view in ("leaders_marketplace.view_equipment_request_form", None):
+            for (kind, services), road in self.ROADS.items():
+                for state, expected in road.items():
+                    values = {"kind": kind, "state": state, "equipment_platform_services": services,
+                              "quote_order_id": False, "rent_invoice_id": False}
+                    if kind == "quote" and state in ("offered", "executing"):
+                        values["quote_order_id"] = True
+                    if view is None and kind == "quote":
+                        continue  # the shared form's quote buttons live in the offer view
+                    self.assertEqual(self._visible(view, values), expected, (view, kind, services, state))
+
+
+class TestServiceRequestCompletion(TestStorefrontApi):
+    """A service request: the admin marks it completed once the service was done, and the customer sees it."""
+
+    def test_admin_completes_a_paid_service_and_the_customer_sees_it(self):
+        env = self.env
+        service = env["product.template"].search([("leaders_service_page", "=", True), ("is_published", "=", True)], limit=1)
+        req = env["leaders.customer.request"].create({
+            "kind": "service", "service": service.leaders_slug, "service_id": service.id, "title": service.leaders_slug,
+            "partner_id": self.user.partner_id.id, "phone": "+201005550123"})
+        import lxml.etree as ET
+        arch = env["leaders.customer.request"].get_view(
+            view_id=env.ref("leaders_marketplace.view_service_request_form").id, view_type="form")["arch"]
+        def shown(state):
+            values = {"state": state, "quote_order_id": False}
+            return {b.get("string") for b in ET.fromstring(arch).xpath("//header/button")
+                    if b.get("invisible") is None or not eval(b.get("invisible"), {}, dict(values))}
+        self.assertNotIn("Mark completed", shown("pending"))
+        self.assertNotIn("Mark completed", shown("offered"))
+        self.assertIn("Mark completed", shown("executing"))
+        self.assertNotIn("Mark completed", shown("completed"))
+        req.state = "executing"
+        req.action_equipment_complete()
+        self.assertEqual(req.state, "completed")
+        r, body = self.send("GET", "/quotes/" + req.name, token=self.token())
+        self.assertEqual((r.status_code, body["stage"]), (200, "completed"))

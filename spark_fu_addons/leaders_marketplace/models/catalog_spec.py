@@ -537,8 +537,8 @@ class ProductTemplate(models.Model):
             tmpl.leaders_search_text = normalize_search(" ".join(seen))
 
     # ---- rules -------------------------------------------------------------
-    @api.constrains("leaders_year", "leaders_hours", "leaders_capacity", "leaders_rent_price_day",
-                    "leaders_warranty_months")
+    @api.constrains("leaders_year", "leaders_hours", "leaders_capacity", "leaders_capacity_unit",
+                    "leaders_rent_price_day", "leaders_warranty_months")
     def _check_leaders_numbers(self):
         for tmpl in self:
             if tmpl.leaders_year and not MIN_YEAR <= tmpl.leaders_year <= fields.Date.today().year + 1:
@@ -546,6 +546,9 @@ class ProductTemplate(models.Model):
             if min(tmpl.leaders_hours, tmpl.leaders_warranty_months) < 0 \
                     or tmpl.leaders_capacity < 0 or tmpl.leaders_rent_price_day < 0:
                 raise ValidationError(_("Hours, capacity, rent price and warranty cannot be negative."))
+            # the storefront shows the capacity with its unit ("60 kVA"); without a unit it shows nothing
+            if tmpl.leaders_capacity > 0 and not tmpl.leaders_capacity_unit:
+                raise ValidationError(_("Choose the capacity unit (kVA, kW, ton...) next to the capacity."))
 
     @api.constrains("leaders_serial")
     def _check_leaders_serial(self):
@@ -562,7 +565,8 @@ class ProductTemplate(models.Model):
             brand.with_context(lang="en_US").name, self.with_context(lang="en_US").name]
         base = slug_ascii(" ".join(b for b in bits if b))[:80].strip("-") or "product-%s" % self.id
         slug, n = base, 1
-        while self.sudo().with_context(active_test=False).search_count([("leaders_slug", "=", slug), ("id", "!=", self.id)]):
+        while self.sudo().with_context(active_test=False).search_count([("leaders_slug", "=", slug), ("id", "!=", self.id)]) \
+                or self.env["leaders.vendor.service"].sudo().with_context(active_test=False).search_count([("slug", "=", slug)]):
             n += 1
             slug = "%s-%s" % (base, n)
         return slug

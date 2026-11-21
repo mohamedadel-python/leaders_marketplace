@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- sample plans: the admin changes the periods, products and prices in Configuration > Subscription Plans -->
+    <record id="subscription_plan_monthly" model="leaders.subscription.plan">
+        <field name="sequence">10</field>
+        <field name="name">Monthly</field>
+        <field name="months">1</field>
+        <field name="max_products">25</field>
+        <field name="price">1500</field>
+        <field name="note">Try the subscription for one month</field>
+    </record>
+    <record id="subscription_plan_quarterly" model="leaders.subscription.plan">
+        <field name="sequence">20</field>
+        <field name="name">3 months</field>
+        <field name="months">3</field>
+        <field name="max_products">75</field>
+        <field name="price">4000</field>
+        <field name="note">Save on three months</field>
+    </record>
+    <record id="subscription_plan_half_year" model="leaders.subscription.plan">
+        <field name="sequence">30</field>
+        <field name="name">6 months</field>
+        <field name="months">6</field>
+        <field name="max_products">150</field>
+        <field name="price">7500</field>
+        <field name="note">The most chosen plan</field>
+        <field name="highlight" eval="True"/>
+    </record>
+    <record id="subscription_plan_yearly" model="leaders.subscription.plan">
+        <field name="sequence">40</field>
+        <field name="name">Yearly</field>
+        <field name="months">12</field>
+        <field name="max_products">0</field>
+        <field name="price">13500</field>
+        <field name="note">Unlimited products for a full year</field>
+    </record>
+</odoo>

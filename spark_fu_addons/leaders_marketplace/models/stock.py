@@ -46,6 +46,11 @@ class StockQuant(models.Model):
             quant = Quant.create(dict(vals, product_id=product.id, location_id=location.id,
                                       owner_id=owner.id if owner else False))
         quant.with_context(inventory_name=reason or _("Marketplace vendor stock update"))._apply_inventory()
+        if qty_delta > 0:  # deliveries of this vendor that were waiting for stock take it now
+            self.env["stock.move"].sudo().search([
+                ("product_id", "=", product.id), ("location_id", "=", location.id),
+                ("state", "in", ("confirmed", "partially_available")),
+                ("restrict_partner_id", "=", owner.id if owner else False)])._action_assign()
         # Availability is a Buy Box signal, so the winner of this product is stale now.
         self.env["leaders.marketplace.offer"].sudo()._recompute_buybox_winner(
             product_ids=product.ids)

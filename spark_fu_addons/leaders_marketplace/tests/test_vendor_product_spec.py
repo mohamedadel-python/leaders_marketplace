@@ -210,3 +210,53 @@ class TestVendorProductFormReview(TestVendorProductSpec):
         self.assertIn('id="lm_pf_image_current"', page)
         self.assertIn('src="data:image/', page)  # shown from the record: works before the product is published
         self.assertIn('id="lm_pf_price_note"', page)
+
+
+@tagged("post_install", "-at_install")
+class TestLiveListingEditMessages(TestVendorProductSpec):
+    """Saving a published product says what happened: sent for review (with the changes), only the quantity saved,
+    or nothing changed."""
+
+    def test_the_three_outcomes(self):
+        data = self._form("SPEC-LIVE", leaders_condition="new", lm_stock_qty="2")
+        self._post(URL, URL, **data)
+        offer = self._offer("SPEC-LIVE")
+        tmpl = offer.product_tmpl_id
+        tmpl.sudo().write({"marketplace_state": "published", "is_published": True})
+        offer.sudo().state = "active"
+        url = "/my/vendor/products/%s/edit" % offer.id
+        response = self._post(url, url, **data)
+        self.assertIn("nochange=1", response.url)
+        self.assertIn("Nothing was sent", response.text)
+        response = self._post(url, url, **dict(data, lm_stock_qty="5"))
+        self.assertIn("applied=qty", response.url)
+        self.assertEqual(offer.available_qty(), 5)
+        response = self._post(url, url, **dict(data, lm_stock_qty="5", price="6500"))
+        self.assertIn("pending=1", response.url)
+        self.assertIn("Your change was sent for review", response.text)
+        self.assertIn("5000.0 → 6500.0", response.text)
+        self.assertIn("A change of yours is waiting for review", self.url_open(url).text)
+        self.assertEqual(offer.price, 5000)  # the website keeps the published price until approved
+        # a technical spec counts as a change too
+        response = self._post(url, url, **dict(data, lm_stock_qty="5", leaders_capacity="300"))
+        self.assertIn("pending=1", response.url)
+        self.assertIn("250.0 → 300.0", response.text)
+        self.assertEqual(tmpl.leaders_capacity, 250)
+
+
+@tagged("post_install", "-at_install")
+class TestVendorCategoryChoice(TestVendorProductSpec):
+    """BUG-00899: the vendor files a product under a subcategory only: no main category, no services."""
+
+    def test_only_subcategories_are_offered_and_accepted(self):
+        page = self.url_open(URL).text
+        select = page[page.index('id="lm_pf_categ"'):]
+        select = select[:select.index("</select>")]
+        main = self.env.ref("leaders_marketplace.leaders_categ_equipment")
+        service = self.env.ref("leaders_marketplace.leaders_categ_services")
+        self.assertIn('value="%s"' % self.gen.id, select)
+        for category in (main, service) + tuple(service.child_id):
+            self.assertNotIn('value="%s"' % category.id, select)
+        page = self._post(URL, URL, **self._form("SPEC-MAIN", public_category_id=str(main.id))).text
+        self.assertIn("Choose a subcategory for the product.", page)
+        self.assertFalse(self._offer("SPEC-MAIN"))

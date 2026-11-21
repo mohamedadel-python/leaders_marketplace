@@ -44,7 +44,9 @@ class LeadersChangeRequest(models.Model):
         lines = []
         for record, vals in ((offer, offer_vals), (tmpl, template_vals)):
             for key, value in vals.items():
-                lines.append("%s: %s → %s" % (LABELS.get(key) or record._fields[key].string, self._show(record, key, record[key]), self._show(record, key, value)))
+                # in the language of the one who edits (the vendor reads it back on the product page)
+                label = _(LABELS[key]) if key in LABELS else record._fields[key]._description_string(self.env)  # pylint: disable=gettext-variable
+                lines.append("%s: %s → %s" % (label, self._show(record, key, record[key]), self._show(record, key, value)))
         if image:
             lines.append(_("Image: a new image"))
         # one open request per offer: a new edit replaces the pending one

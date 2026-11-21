@@ -41,6 +41,9 @@
                             <field name="leaders_free_until" invisible="not is_marketplace_vendor"/>
                             <field name="leaders_contract_model" invisible="not is_marketplace_vendor"/>
                             <field name="leaders_contract_chosen_on" invisible="not leaders_contract_chosen_on"/>
+                            <field name="leaders_subscription_plan_id" invisible="leaders_contract_model != 'subscription'"/>
+                            <field name="leaders_subscription_until" invisible="leaders_contract_model != 'subscription'"/>
+                            <field name="leaders_listing_paused" invisible="not leaders_listing_paused"/>
                         </group>
                         <group>
                             <field name="vendor_store_name"/>

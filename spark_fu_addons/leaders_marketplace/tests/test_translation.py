@@ -52,3 +52,16 @@ class TestPortalScssIsRtlSafe(TransactionCase):
                     if not line.strip().startswith("//") and self.PHYSICAL.search(line):
                         offenders.append("%s:%s: %s" % (os.path.basename(path), n, line.strip()))
         self.assertFalse(offenders, offenders)
+
+
+class TestApiMessagesInArabic(TransactionCase):
+
+    def test_stock_and_equipment_messages_are_translated(self):
+        """BUG-00916: "Only 2 available." reached an Arabic page in English."""
+        from odoo.addons.leaders_marketplace.tools.api_messages import _translate
+        from odoo.tools.translate import code_translations
+        table = code_translations.get_python_translations("leaders_marketplace", "ar_001")
+        self.assertEqual(_translate("Only 2 available.", table), "المتاح 2 فقط.")
+        self.assertEqual(_translate("Only 2 available from this seller.", table), "المتاح عند هذا البائع 2 فقط.")
+        self.assertEqual(_translate("This request can no longer be cancelled.", table), "لا يمكن إلغاء هذا الطلب بعد الآن.")
+        self.assertEqual(_translate("This request cannot be marked as received now.", table), "لا يمكن تسجيل استلام هذا الطلب الآن.")

@@ -319,10 +319,15 @@ class VendorAPI(http.Controller):
             "currency": o.currency_id.name, "amount_untaxed": o.amount_untaxed,
             "amount_tax": o.amount_tax, "amount_total": o.amount_total,
             "commission_amount": o.commission_amount, "vendor_net": o.vendor_net,
-            "customer": o.partner_id.display_name, "date_shipped": _iso(o.date_shipped),
+            # the buyer as the contract allows: the name for a subscription vendor, "Platform customer" for a
+            # commission one (the same rule as the vendor portal)
+            "customer": o._leaders_buyer_label(), "date_shipped": _iso(o.date_shipped),
             "ship_by_date": _iso(o.ship_by_date), "is_late": bool(o.is_late),
             "updated": _iso(o.write_date),
         }
+        if detail and o._leaders_vendor_sees_buyer():  # a subscription vendor deals directly: how to reach the buyer
+            data["customer_phone"] = o._leaders_buyer_phone() or None
+            data["customer_address"] = o._leaders_buyer_address() or None
         if detail:
             data["lines"] = [{
                 "id": l.id, "name": l.name, "product_id": l.product_id.id,
@@ -343,7 +348,7 @@ class VendorAPI(http.Controller):
     def _return_json(r):
         return {
             "id": r.id, "name": r.name, "state": r.state, "order_id": r.vendor_order_id.id,
-            "order": r.vendor_order_id.name, "customer": r.partner_id.display_name,
+            "order": r.vendor_order_id.name, "customer": r.vendor_order_id._leaders_buyer_label(),
             "reason": r.reason, "vendor_note": r.vendor_note or None,
             "request_date": _iso(r.request_date), "vendor_deadline": _iso(r.vendor_deadline),
             "currency": r.currency_id.name, "refund_amount": r.refund_amount,
@@ -824,7 +829,10 @@ def openapi_document(base_url=""):
             "id": {"type": "integer"}, "name": {"type": "string"}, "state": {"type": "string"},
             "date_order": {"type": "string", "format": "date-time"}, "currency": {"type": "string"},
             "amount_untaxed": num, "amount_tax": num, "amount_total": num, "commission_amount": num,
-            "vendor_net": num, "customer": {"type": "string"},
+            "vendor_net": num, "customer": {"type": "string", "description": "The buyer's name for a subscription "
+                                                                              "vendor; \"Platform customer\" on a commission."},
+            "customer_phone": {"type": "string", "nullable": True, "description": "Order detail, subscription vendors only."},
+            "customer_address": {"type": "string", "nullable": True, "description": "Order detail, subscription vendors only."},
             "date_shipped": {"type": "string", "format": "date-time", "nullable": True},
             "ship_by_date": {"type": "string", "format": "date-time", "nullable": True},
             "is_late": {"type": "boolean"}, "updated": {"type": "string", "format": "date-time"}}},

@@ -138,14 +138,15 @@ class StorefrontQuotes(http.Controller):
         else:
             details, service_tmpl = self._check_quote_request(body, name, phone, items), None
         needed_by = self._needed_by(body)
+        if not needed_by and service and isinstance(details, dict) and details.get("neededBy"):
+            needed_by = date.fromisoformat(details["neededBy"])  # a service form sends it inside serviceDetails
         user = None
         try:
             user = bearer_user(required=False)
         except AuthApiError:
             pass  # an invalid Bearer is ignored on this endpoint
-        partner = user.partner_id.commercial_partner_id if user else request.env["res.partner"].sudo().create({
-            "name": name.strip(), "phone": phone.strip(),
-            "email": (details or {}).get("email") or False})
+        partner = user.partner_id.commercial_partner_id if user else request.env["res.partner"]._leaders_guest_contact(
+            name, phone, (details or {}).get("email") if isinstance(details, dict) else None)
         lines, first = [], None
         for index, item in enumerate(items):
             item = item if isinstance(item, dict) else {}
@@ -170,6 +171,10 @@ class StorefrontQuotes(http.Controller):
             "service": service or False, "service_id": service_tmpl.id if service_tmpl else False,
             "service_details": json.dumps(details) if isinstance(details, dict) else False,
             "line_ids": lines, "needed_by": needed_by,
+            # what the form carried besides the request itself: who typed it, how to write back, in which language
+            "contact_name": name.strip()[:120] or False,
+            "contact_email": ((details or {}).get("email") if isinstance(details, dict) else False) or False,
+            "request_locale": body.get("locale") if body.get("locale") in ("ar", "en") else False,
         })
         record._leaders_link_included_maintenance()
         record.notify_service_responsible()

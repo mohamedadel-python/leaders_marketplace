@@ -6,6 +6,22 @@
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
                 <app string="Marketplace" name="leaders_marketplace">
+                    <block title="Push Notifications">
+                        <setting string="Push notifications" help="Customers, vendors and the back office get a push on their phones (Firebase) for the events that already send an email, even while the app is closed. Each event keeps its own on/off setting and the customer's preferences.">
+                            <field name="marketplace_push_enabled"/>
+                            <div class="mt-2" invisible="not marketplace_push_enabled">
+                                <label for="marketplace_push_credentials" class="o_light_label"/>
+                                <field name="marketplace_push_credentials" password="True"/>
+                            </div>
+                            <div class="mt-2" invisible="not marketplace_push_enabled">
+                                <field name="marketplace_push_staff"/>
+                                <label for="marketplace_push_staff" class="o_light_label"/>
+                            </div>
+                            <div class="mt-2" invisible="not marketplace_push_enabled">
+                                <button name="action_push_test" type="object" string="Send a test to my phone" class="btn-secondary"/>
+                            </div>
+                        </setting>
+                    </block>
                     <block title="Vendor Finance &amp; Returns">
                         <setting string="Rent margin" help="The platform rents the vendor's machine and re-rents it in its own name: the customer pays the vendor's daily price plus this margin. A subcategory or a machine can override it.">
                             <field name="marketplace_rent_margin_percent"/>
@@ -72,6 +88,17 @@
                         </setting>
                         <setting string="Approve vendors automatically" help="On: a website application is approved the moment it is sent; the documents are reviewed afterwards. Off: it waits until you approve it in Vendor Applications.">
                             <field name="marketplace_vendor_instant_activation"/>
+                        </setting>
+                        <setting string="Publisher of commission products" help="The seller name the buyer sees on the products of a commission vendor. Subscription vendors and vendors in their free period always show their own name, and their orders go to them directly.">
+                            <field name="marketplace_commission_publisher" widget="radio"/>
+                        </setting>
+                        <setting string="Free period and grace days" help="How long a new vendor sells for free, and how many days the products stay on the website after a subscription or a free period ends before they are hidden.">
+                            <div class="mt8"><label for="marketplace_free_period_months"/> <field name="marketplace_free_period_months" class="oe_inline"/></div>
+                            <div class="mt8"><label for="marketplace_subscription_grace_days"/> <field name="marketplace_subscription_grace_days" class="oe_inline"/></div>
+                            <div class="mt8"><label for="marketplace_subscription_remind_days"/> <field name="marketplace_subscription_remind_days" class="oe_inline"/></div>
+                        </setting>
+                        <setting string="Send rent requests to the vendor" help="Off: rent requests stay with the platform, which rents the machine in its own name. On: the vendor who owns the machine also sees them in the vendor portal.">
+                            <field name="marketplace_rent_requests_to_vendor"/>
                         </setting>
                         <setting string="Catalog Offers, Storefronts and Ratings" help="Sell existing products, show sellers on the product page, seller storefronts and customer ratings.">
                             <field name="marketplace_catalog_offers_enabled"/>

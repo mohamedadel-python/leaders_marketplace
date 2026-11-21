@@ -177,17 +177,34 @@
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button name="action_send_service_prices" type="object" string="Send service prices" class="btn-primary"
-                        invisible="kind != 'purchase' or not equipment_services or state != 'pending'"/>
+                        invisible="kind not in ('purchase', 'quote') or not equipment_platform_services or (kind == 'purchase' and state != 'pending') or (kind == 'quote' and state not in ('pending', 'reviewing', 'contacting', 'offered'))"/>
                 <button name="action_equipment_confirm" type="object" string="Confirm request" class="btn-primary"
-                        invisible="kind not in ('purchase', 'rent') or state not in ('pending', 'reviewing', 'contacting') or (kind == 'purchase' and equipment_services)"/>
+                        invisible="kind != 'purchase' or state not in ('pending', 'reviewing', 'contacting') or equipment_platform_services"/>
+                <button name="action_send_rent_price" type="object" string="Send the rent price" class="btn-primary"
+                        invisible="kind != 'rent' or state not in ('pending', 'reviewing', 'contacting')"/>
                 <button name="action_equipment_execute" type="object" string="Start carrying out" class="btn-primary"
                         invisible="kind not in ('purchase', 'rent') or state != 'inProgress'"/>
                 <button name="action_equipment_complete" type="object" string="Mark completed"
-                        invisible="kind not in ('purchase', 'rent') or state not in ('inProgress', 'executing')"/>
+                        invisible="kind not in ('purchase', 'rent', 'quote') or state != 'executing'"/>
             </xpath>
             <xpath expr="//sheet" position="inside">
+                <group invisible="kind not in ('purchase', 'quote', 'rent') or not customer_status">
+                    <field name="customer_status" readonly="1"/>
+                </group>
                 <group invisible="not included_rental_id">
                     <field name="included_rental_id" string="Free: included in the rental"/>
+                </group>
+                <group string="Vendor" invisible="kind not in ('purchase', 'quote', 'rent') or not vendor_id">
+                    <group>
+                        <field name="vendor_id" readonly="1"/>
+                        <field name="equipment_platform_services" readonly="1" invisible="not equipment_services"/>
+                        <field name="equipment_vendor_services" readonly="1" invisible="not equipment_services"/>
+                    </group>
+                    <group invisible="kind != 'quote'">
+                        <field name="vendor_quote_price" readonly="1"/>
+                        <field name="vendor_quote_note" readonly="1"/>
+                        <field name="vendor_quote_date" readonly="1"/>
+                    </group>
                 </group>
                 <group string="Equipment request" invisible="kind not in ('purchase', 'rent')">
                     <group>
@@ -199,7 +216,7 @@
                     </group>
                     <group>
                         <field name="equipment_services"/>
-                        <field name="services_amount" invisible="kind != 'purchase' or not equipment_services"/>
+                        <field name="services_amount" invisible="kind not in ('purchase', 'quote') or not equipment_platform_services"/>
                         <field name="payment_order_id"/>
                         <field name="rental_id" invisible="kind != 'rent'"/>
                     </group>

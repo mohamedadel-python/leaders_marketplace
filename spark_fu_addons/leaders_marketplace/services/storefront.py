@@ -155,6 +155,9 @@ class Storefront:
         services = t._leaders_available_services() if t.leaders_kind else []
         if services:  # optional: the services the customer can ask with this product
             data["services"] = [{"slug": s.leaders_slug, "name": s.name} for s in services]
+        own = t._leaders_vendor_own_services() if t.leaders_kind else []
+        if own:  # the vendor's own services ride in the same list, with a slug of their own
+            data["services"] = data.get("services", []) + [s._leaders_card() for s in own]
         offers = self.offers(t) if "buy" in available else []
         if offers:  # optional: one card per seller with its price and quantity (Buy Box winner first)
             data["offers"] = [self.offer_card(o) for o in offers]
@@ -342,9 +345,13 @@ class Storefront:
 
     def _brand_ids(self, names):
         ids = []
+        Brand = self.env["leaders.brand"].sudo()
         for name in names:
-            ids += self.env["leaders.brand"].sudo().search([("name", "=ilike", name)]).ids
-        return ids or [0]
+            # the brand's name in the request's language or in English: a link made on the English site keeps
+            # working on the Arabic one once the brands carry Arabic names
+            ids += Brand.search([("name", "=ilike", name)]).ids
+            ids += Brand.with_context(lang="en_US").search([("name", "=ilike", name)]).ids
+        return list(dict.fromkeys(ids)) or [0]
 
     def _ids(self, params, key, errors):
         """The comma list of record ids in ``params[key]``: None when absent, 422 when not digits."""
@@ -545,9 +552,14 @@ class Storefront:
 
     def listing(self, params):
         errors = {}
-        landing = bool(params.get("featured")) or bool(params.get("limit"))
+        featured_on = params.get("featured") in ("true", "1")
+        # featured=true pages like a kind listing ({items, totalCount, page, pageSize}) and needs no kind. The older
+        # landing call (featured=true with limit, no page / pageSize) keeps answering a plain list.
+        featured_paged = featured_on and (not params.get("limit") or bool(params.get("page")) or bool(params.get("pageSize")))
+        landing = (bool(params.get("featured")) or bool(params.get("limit"))) and not featured_paged
         # the global search (q alone) looks across every kind; any other listing names a kind or a category
-        if not landing and not params.get("kind") and not params.get("categoryId") and not (params.get("q") or "").strip():
+        if not landing and not featured_paged and not params.get("kind") and not params.get("categoryId") \
+                and not (params.get("q") or "").strip():
             errors["kind"] = "kind is required."
         sort = params.get("sort") or "newest"
         if sort not in SORTS:
@@ -568,6 +580,11 @@ class Storefront:
             else:
                 rows = self.Template.browse(self.ordered_ids(domain, sort)[:limit])
             return [self.product(t) for t in rows]
+        if featured_paged:
+            # the flagged products; when none is flagged, the newest ones (the same fallback as the landing list)
+            ids = self.ordered_ids(domain + [("leaders_featured", "=", True)], sort) or self.ordered_ids(domain, "newest")
+            chunk = self.Template.browse(ids[(page - 1) * page_size: page * page_size])
+            return {"items": [self.product(t) for t in chunk], "totalCount": len(ids), "page": page, "pageSize": page_size}
         ids = self.ordered_ids(domain, sort)
         log = None
         if page == 1:  # one log row per search, not per page turned
@@ -824,6 +841,9 @@ class Storefront:
     def service_summary(self, tmpl):
         out = {"id": str(tmpl.id), "slug": tmpl.leaders_slug, "name": tmpl.name,
                "summary": tmpl.leaders_service_summary or "", "mandatoryOnPurchase": tmpl.leaders_service_mandatory}
+        vendor = tmpl.leaders_service_vendor_id.commercial_partner_id if "leaders_service_vendor_id" in tmpl._fields else None
+        if vendor and not vendor._leaders_name_hidden():  # optional: the vendor of a vendor's service
+            out["provider"] = {"name": vendor.vendor_store_name or vendor.name or ""}
         if self.service_icon(tmpl)[0]:  # one URL whatever holds the icon; /web/image would refuse the product
             out["icon"] = "%s/services/%s/icon" % (self.base_url, tmpl.leaders_slug)
         if tmpl.leaders_service_request_title:

@@ -23,6 +23,16 @@ def _gov_key(state):
 STAGES = ("placed", "preparing", "shipped", "outForDelivery", "delivered")
 
 
+def _name_sort_key(name):
+    """Alphabetical order of a place name, as a reader of its language expects: Arabic ignores the leading "ال" and
+    reads أ إ آ as ا and a number as nothing ("6 أكتوبر" sits with the أ names); Latin names sort by their letters."""
+    text = re.sub(r"[0-9\u0660-\u0669\s]+", " ", (name or "").strip()).strip().lower()
+    text = text.translate(str.maketrans("أإآٱىةؤئ", "اااايهوي"))
+    if text.startswith("ال") and len(text) > 2:
+        text = text[2:]
+    return text
+
+
 class StorefrontOrders(http.Controller):
 
     def _base_url(self):
@@ -126,6 +136,7 @@ class StorefrontOrders(http.Controller):
         promo = self._promo(body["promoCode"]) if body.get("promoCode") else None
 
         lines = []
+        asked = {}  # units asked so far per (seller, product), across the lines
         for index, item in enumerate(items):
             item = item if isinstance(item, dict) else {}
             template = request.env["product.template"].sudo().search([("id", "=", item.get("productId"))], limit=1) \
@@ -156,8 +167,11 @@ class StorefrontOrders(http.Controller):
                 raise AuthApiError(409, "price_changed", "The product price changed.",
                                    fields={"items.%s" % index: "Price changed."})
             if options.get("listing") == "buy":
+                # lines of the same product from the same seller share one stock: the check counts them together
+                seller = ("platform" if options.get("offerId") == "platform" else offer.id, template.id)
+                asked[seller] = asked.get(seller, 0) + quantity
                 try:
-                    Storefront(request.env).stock_check(template, offer, quantity,
+                    Storefront(request.env).stock_check(template, offer, asked[seller],
                                                         platform=options.get("offerId") == "platform")
                 except AuthApiError as error:  # say which line
                     error.fields = {"items.%s.quantity" % index: error.fields.get("quantity")}
@@ -191,7 +205,9 @@ class StorefrontOrders(http.Controller):
         order = request.env["sale.order"].sudo().create({
             "partner_id": partner.id, "partner_invoice_id": partner.id,
             "partner_shipping_id": shipping_partner.id,
-            "leaders_sf_payment": body["payment"], "leaders_sf_percent_off": promo.percent_off if promo else 0,
+            "leaders_sf_payment": body["payment"],
+            "leaders_payment_method": "cod" if body["payment"] == "cod" else "online",
+            "leaders_sf_percent_off": promo.percent_off if promo else 0,
             "leaders_sf_delivery_fee": fee, "leaders_sf_lead_min": zone.lead_days_min,
             "leaders_sf_lead_max": zone.lead_days_max, "leaders_sf_city_key": shipping["city"].strip(),
             "leaders_sf_governorate_key": shipping["governorate"].strip(),
@@ -237,6 +253,8 @@ class StorefrontOrders(http.Controller):
                 "name": "Delivery", "is_delivery": True, "tax_id": [(5, 0, 0)]})
         if body["payment"] != "cod":
             order.write({"require_payment": True, "prepayment_percent": 1.0})
+        else:  # cash: a subscription vendor's part goes to them now (online orders go once paid)
+            order._leaders_route_direct_lines()
         cart = request.env["leaders.cart"].sudo().search([("user_id", "=", user.id)], limit=1)
         if cart:  # only what was ordered; unpriced lines stay in the quote tab
             ordered = set()
@@ -266,37 +284,68 @@ class StorefrontOrders(http.Controller):
         user = bearer_user(required=True)
         order = self._order_for(reference, user)
         stage, _history = self._stage(order)
-        if order.state == "cancel" or stage not in ("placed", "preparing"):
+        if order._leaders_sf_state() == "cancel" or stage not in ("placed", "preparing"):
             raise AuthApiError(409, "not_cancellable", "This order can no longer be cancelled.")
-        order._action_cancel()
+        parts = order.sudo().vendor_order_ids.filtered(lambda v: v.state != "cancelled")
+        if parts:  # the parts already sent to a vendor are cancelled with the checkout
+            parts.write({"cancelled_by_type": "customer"})
+            parts.with_context(leaders_customer_cancel=True).action_cancel()
+        if order.state != "cancel":
+            order._action_cancel()
         return json_response(self._render(order), 200, cors)
 
     def _stage(self, order):
-        """(stage, history): the furthest stage the order reached and when each stage was reached."""
+        """(stage, history): the furthest stage the order reached and when each stage was reached.
+
+        An order can hold several parts: what the platform sells itself and one part per vendor. Each part has its own
+        stage and the order is where its slowest part is, so it is never shown delivered while a part is still being
+        prepared. A shipment that left a vendor (its picking is done) is shipped; it is delivered when the vendor's
+        shipment is confirmed delivered."""
+        fmt = "%Y-%m-%dT%H:%M:%SZ"
         history = json.loads(order.leaders_sf_history or "{}")
-        history.setdefault("placed", order.create_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
-        stage = "placed"
-        if order.state in ("sale", "done"):
-            stage = "preparing"
-            history.setdefault("preparing", (order.date_order or order.create_date).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        pickings = order.picking_ids.filtered(lambda p: p.state != "cancel")
-        if pickings and all(p.state == "done" for p in pickings):
-            stage = "delivered"
-            history.setdefault("delivered", max(pickings.mapped("date_done")).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        elif any(p.state == "done" for p in pickings):
-            stage = "shipped"
-            history.setdefault("shipped", max(pickings.filtered("date_done").mapped("date_done")).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        history.setdefault("placed", order.create_date.strftime(fmt))
+        rank = {name: i for i, name in enumerate(STAGES)}
+        company_stage = "placed"
+        if order._leaders_sf_state() in ("sale", "done"):
+            company_stage = "preparing"
+            history.setdefault("preparing", (order.date_order or order.create_date).strftime(fmt))
+        own = order.picking_ids.filtered(lambda p: p.state != "cancel")
+        if own and all(p.state == "done" for p in own):
+            company_stage = "delivered"
+        elif any(p.state == "done" for p in own):
+            company_stage = "shipped"
+        vendor_orders = order.sudo().vendor_order_ids.filtered(lambda v: v.state != "cancelled")
+        parts = [company_stage] if (order._marketplace_company_lines() or not vendor_orders) else []
+        for vendor_order in vendor_orders:
+            groups = vendor_order.fulfillment_group_ids.filtered(lambda g: g.state != "cancelled" and not g.is_replacement)
+            sent = groups.picking_ids.filtered(lambda p: p.state == "done")
+            part = "preparing"  # it reached the vendor
+            if sent:
+                part = "shipped"
+            if groups and all(g.state == "delivered" for g in groups):
+                part = "delivered"
+            parts.append(part)
+        stage = min(parts, key=rank.get)
+        if stage in ("placed", "preparing") and any(rank[p] >= rank["shipped"] for p in parts):
+            stage = "preparing"  # a part is already on its way: the order is at least being prepared
+        pickings = (own | vendor_orders.fulfillment_group_ids.picking_ids).filtered(lambda p: p.state == "done")
+        if stage in ("shipped", "delivered") and pickings:
+            history.setdefault(stage, max(pickings.mapped("date_done")).strftime(fmt))
+        if stage == "delivered":
+            history.setdefault("shipped", min(pickings.mapped("date_done")).strftime(fmt)) if pickings else None
+        if stage != "placed":
+            history.setdefault("preparing", (order.date_order or order.create_date).strftime(fmt))
         return stage, {k: v for k, v in history.items() if k in STAGES}
 
     def _render(self, order):
         lines, goods = [], 0
-        for line in order.order_line.filtered(lambda l: not l.display_type and not l.is_delivery):
-            template = line.product_id.product_tmpl_id
-            unit = minor(line.price_unit)
-            goods += unit * int(line.product_uom_qty)
+        for product, quantity, price_unit, options in order._leaders_sf_lines():
+            template = product.product_tmpl_id
+            unit = minor(price_unit)
+            goods += unit * int(quantity)
             row = {"productId": str(template.id), "slug": template.leaders_slug or str(template.id),
-                   "name": template.display_name, "quantity": int(line.product_uom_qty), "unitPrice": unit,
-                   "options": json.loads(line.leaders_sf_options or "{}")}
+                   "name": template.display_name, "quantity": int(quantity), "unitPrice": unit,
+                   "options": json.loads(options or "{}")}
             if template.image_1920:
                 row["image"] = "%s/web/image/product.template/%s/image_1024" % (self._base_url(), template.id)
             lines.append(row)
@@ -314,7 +363,7 @@ class StorefrontOrders(http.Controller):
         placed = order.create_date
         low, high = order.leaders_sf_lead_min or 3, order.leaders_sf_lead_max or max(order.leaders_sf_lead_min, 5)
         result = {"reference": order.leaders_public_ref_get(), "placedAt": placed.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                  "stage": stage, "history": history, "cancelled": order.state == "cancel",
+                  "stage": stage, "history": history, "cancelled": order._leaders_sf_state() == "cancel",
                   "lines": lines, "shipping": details, "payment": order.leaders_sf_payment or "cod",
                   "totals": {"subtotal": goods, "shipping": fee, "discount": discount, "total": goods - discount + fee},
                   "eta": {"from": (placed + timedelta(days=low)).date().isoformat(),
@@ -354,16 +403,23 @@ class StorefrontOrders(http.Controller):
     @http.route("/delivery/regions", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, save_session=False)
     @storefront_api(["GET"])
     def regions(self, cors, **kw):
+        from .vendor_apply import GOVERNORATES_AR
         zones = request.env["leaders.vendor.delivery.zone"].sudo().search([("is_platform", "=", True), ("active", "=", True)])
+        arabic = (request.httprequest.headers.get("Accept-Language") or "").lower().startswith("ar")
         regions = []
         for zone in zones:
             governorate = _gov_key(zone.state_id)
             cities = [c.strip() for c in (zone.storefront_cities or "").split(",") if c.strip()]
-            region = {"governorate": governorate, "cities": cities, "fee": minor(zone.price)}
+            # name: the governorate in the Accept-Language language, for the list (BUG-00901); the key stays as is
+            name = (GOVERNORATES_AR.get(zone.state_id.code) if arabic else None) \
+                or zone.state_id.with_context(lang="en_US").name or governorate
+            region = {"governorate": governorate, "name": name, "cities": cities, "fee": minor(zone.price)}
             # optional keys: free delivery from this amount of goods / minimum order (far governorates)
             if zone.free_shipping_threshold > 0:
                 region["freeShippingThreshold"] = minor(zone.free_shipping_threshold)
             if zone.minimum_order > 0:
                 region["minimumOrder"] = minor(zone.minimum_order)
             regions.append(region)
+        # the list reads in the order of the language it is shown in (the zones come in the English order)
+        regions.sort(key=lambda r: _name_sort_key(r["name"]))
         return json_response(regions, 200, cors)

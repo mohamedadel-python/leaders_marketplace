@@ -197,6 +197,9 @@
                         </t>
                     </ol>
                 </nav>
+                <!-- a refused save keeps what was typed: portal_actions.js fills the form back in from this -->
+                <div t-if="error and request.httprequest.method == 'POST'" id="lm_form_state" class="d-none"
+                     t-att-data-state="request.env['leaders.portal.nav']._vendor_form_state()"/>
                 <div t-if="freeze_notice" class="alert alert-warning" role="alert">
                     <i class="fa fa-lock"/> <t t-esc="freeze_notice"/>
                     <div class="small mt-1">You can still ship your open orders, answer returns and follow your settlements. New or changed listings are on hold.</div>

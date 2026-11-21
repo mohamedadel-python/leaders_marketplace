@@ -54,3 +54,8 @@ from . import item_request
 from . import account_profile
 from . import quote_offer
 from . import backorder
+from . import equipment_vendor
+from . import subscription_plan
+from . import push
+from . import push_events
+from . import vendor_service

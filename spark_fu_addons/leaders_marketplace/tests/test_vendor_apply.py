@@ -51,7 +51,7 @@ class TestVendorApply(HttpCase):
             "owner_email": "apply.owner@example.com",
             "business_type_id": str(self.env.ref("leaders_marketplace.vendor_business_type_trader").id),
             "state_id": str(cairo.id),
-            "commercial_registration_number": "CR-1", "tax_number": "TAX-1",
+            "commercial_registration_number": "12345", "tax_number": "123-456-789",
             "product_category_ids": str(self.category.id), "delivery_method": "Own trucks",
             "business_activity": "Generator spare parts",
             "terms_accepted": "1", "data_confirmed": "1",
@@ -96,6 +96,19 @@ class TestVendorApply(HttpCase):
         self.assertEqual(len(mails), 1)
         self.assertIn(application.access_token, mails.body_html)
         self.assertTrue(application.activity_ids.filtered(lambda a: a.user_id == self.reviewer))
+
+    def test_tax_and_commercial_registration_numbers_are_checked(self):
+        """BUG-00904: the tax number is 9 digits, the commercial registration number 3 to 10 digits."""
+        page = self._apply(self._data(tax_number="34736453543845386546454486544794353493",
+                                      commercial_registration_number="12AB")).text
+        self.assertEqual(self._field_error(page, "tax_number"), "The tax number is 9 digits.")
+        self.assertEqual(self._field_error(page, "commercial_registration_number"),
+                         "The commercial registration number is 3 to 10 digits.")
+        self.assertFalse(self._application())
+        self.assertIn('data-step="2"', page)  # back on the step of the wrong inputs
+        self._apply(self._data(tax_number="١٢٣-٤٥٦ ٧٨٩", commercial_registration_number="٩٨٧٦٥"))
+        application = self._application()
+        self.assertEqual((application.tax_number, application.commercial_registration_number), ("123456789", "98765"))
 
     def test_only_the_required_inputs_are_needed(self):
         """Step 2, delivery method and the description are optional."""

@@ -74,8 +74,8 @@ class StorefrontItemRequests(http.Controller):
             user = bearer_user(required=False)
         except AuthApiError:
             pass  # an invalid Bearer is ignored: the request is kept as a guest's
-        partner = user.partner_id.commercial_partner_id if user else request.env["res.partner"].sudo().create({
-            "name": form["name"], "phone": form["phone"], "email": form["email"]})
+        partner = user.partner_id.commercial_partner_id if user else request.env["res.partner"]._leaders_guest_contact(
+            form["name"], form["phone"], form["email"])
         brand = request.env["leaders.brand"].sudo().search([("name", "=ilike", form["brand"])], limit=1) \
             if form.get("brand") else request.env["leaders.brand"]
         record = request.env["leaders.customer.request"].sudo().create({

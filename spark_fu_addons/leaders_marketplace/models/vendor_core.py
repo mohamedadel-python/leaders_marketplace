@@ -502,8 +502,10 @@ class VendorApplication(models.Model):
             rec._ensure_vendor_owner_user(partner)
             rec._leaders_queue_products_sheet(partner)
             if not partner.leaders_free_until:  # the free period starts with the activation
-                months = max(self.env["leaders.vendor.join.model"].sudo().search([]).mapped("free_months") or [3])
+                months = self.env["res.partner"]._leaders_free_months()
                 partner.leaders_free_until = fields.Date.context_today(rec) + relativedelta(months=months)
+            if not partner.leaders_contract_model:  # the welcome page offers the three ways to sell
+                partner.leaders_contract_onboarded = False
             rec.state = "approved"
             self.env["leaders.notification"].notify("vendor_application_approved", rec, partners=rec.owner_partner_id)
         return True

@@ -38,11 +38,23 @@ class LeadersCustomerRequestOffer(models.Model):
             lines = [(0, 0, {"product_id": line.product_tmpl_id.product_variant_id.id, "product_uom_qty": line.quantity})
                      for line in self.line_ids if line.product_tmpl_id.product_variant_id]
             if not lines and self.service_id.product_variant_id:
-                lines = [(0, 0, {"product_id": self.service_id.product_variant_id.id, "product_uom_qty": 1})]
+                line = {"product_id": self.service_id.product_variant_id.id, "product_uom_qty": 1}
+                if "vendor_quote_price" in self._fields and self.vendor_quote_price:  # a vendor's own service
+                    line.update({"price_unit": self.vendor_quote_price, "tax_id": [(5, 0, 0)]})
+                lines = [(0, 0, line)]
+            if not lines and self.product_tmpl_id.product_variant_id:
+                # an equipment quote: the machine itself, at the vendor's price when the vendor sent one
+                line = {"product_id": self.product_tmpl_id.product_variant_id.id,
+                        "product_uom_qty": max(self.quantity, 1)}
+                if "vendor_quote_price" in self._fields and self.vendor_quote_price:  # for the whole request
+                    line["price_unit"] = self.vendor_quote_price / max(self.quantity, 1)
+                    line["tax_id"] = [(5, 0, 0)]  # the vendor's price is final
+                lines = [(0, 0, line)]
             order = self.env["sale.order"].sudo().create({
                 "partner_id": self.partner_id.id, "leaders_quote_request_id": self.id, "order_line": lines})
             order.leaders_public_ref_get()
             self.quote_order_id = order
+            self._leaders_sync_service_lines()
         return {"type": "ir.actions.act_window", "res_model": "sale.order", "res_id": order.id, "view_mode": "form",
                 "target": "current"}
 

@@ -704,6 +704,10 @@ class VendorDispute(models.Model):
             rec.state = "escalated"
             rec.message_post(body=_("Dispute escalated to the marketplace for a decision."))
             self.env["leaders.notification"].notify_vendor("vendor_dispute_escalated", rec, rec.vendor_id)
+            self.env["leaders.push.helpers"]._lp_staff(rec, "staff_dispute_escalated", lambda r: (
+                r.env._("A dispute needs a decision"),
+                r.env._("Dispute %(ref)s was escalated to the marketplace.", ref=rec.name)),
+                {"model": rec._name, "id": str(rec.id), "reference": rec.name or ""})
         return True
 
     def action_resolve(self, decision=None):

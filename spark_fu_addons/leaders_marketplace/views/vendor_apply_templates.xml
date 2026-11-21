@@ -49,6 +49,8 @@
 
                     <span hidden="hidden" id="lm_af_msg_required">This field is required.</span>
                     <span hidden="hidden" id="lm_af_msg_email">Enter a valid email address.</span>
+                    <span hidden="hidden" id="lm_af_msg_tax">The tax number is 9 digits.</span>
+                    <span hidden="hidden" id="lm_af_msg_cr">The commercial registration number is 3 to 10 digits.</span>
                     <span hidden="hidden" id="lm_af_msg_categories">Choose at least one category.</span>
 
                     <form t-if="not blocked" id="lm_apply_form" method="post" action="/vendor/apply" enctype="multipart/form-data" novalidate="novalidate"
@@ -122,12 +124,15 @@
                                     <t t-set="name" t-value="'commercial_registration_number'"/><t t-set="required" t-value="False"/>
                                     <t t-set="label">Commercial registration number</t>
                                     <input class="lm-af-input" id="lm_af_commercial_registration_number" name="commercial_registration_number"
+                                           inputmode="numeric" maxlength="14" data-lm-check="^[0-9]{3,10}$" data-lm-msg="lm_af_msg_cr"
                                            t-att-value="v.get('commercial_registration_number')"/>
                                 </t>
                                 <t t-call="leaders_marketplace.vendor_apply_field">
                                     <t t-set="name" t-value="'tax_number'"/><t t-set="required" t-value="False"/>
                                     <t t-set="label">Tax number / VAT registration number</t>
-                                    <input class="lm-af-input" id="lm_af_tax_number" name="tax_number" t-att-value="v.get('tax_number')"/>
+                                    <input class="lm-af-input" id="lm_af_tax_number" name="tax_number" inputmode="numeric" maxlength="13"
+                                           placeholder="123-456-789" data-lm-check="^[0-9]{9}$" data-lm-msg="lm_af_msg_tax"
+                                           t-att-value="v.get('tax_number')"/>
                                 </t>
                                 <t t-call="leaders_marketplace.vendor_apply_field">
                                     <t t-set="name" t-value="'doc_commercial_register'"/><t t-set="required" t-value="False"/>
@@ -250,6 +255,18 @@
                                 setError(el.name, msg);
                                 if (msg) { ok = false; }
                             });
+                            // numbers with a fixed shape (tax number, commercial registration): Arabic digits, spaces
+                            // and dashes are accepted, the digits are checked
+                            steps[i].querySelectorAll('[data-lm-check]').forEach(function (el) {
+                                var raw = el.value.trim();
+                                if (!raw) { return; }
+                                var digits = raw.replace(/[\u0660-\u0669]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+                                                .replace(/[\u06F0-\u06F9]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
+                                                .replace(/[\s-]/g, '');
+                                var msg = new RegExp(el.getAttribute('data-lm-check')).test(digits) ? '' : text(el.getAttribute('data-lm-msg'));
+                                setError(el.name, msg);
+                                if (msg) { ok = false; }
+                            });
                             if (steps[i].contains(catSelect)) {
                                 var none = !chips.querySelector('input[name="product_category_ids"]');
                                 setError('product_category_ids', none ? text('lm_af_msg_categories') : '');
@@ -273,6 +290,9 @@
                                 label.classList.toggle('has-file', !!input.files.length);
                                 setError(input.name, '');
                             });
+                        });
+                        form.querySelectorAll('[data-lm-check]').forEach(function (el) {
+                            el.addEventListener('input', function () { setError(el.name, ''); });
                         });
                         form.querySelectorAll('[data-lm-required]').forEach(function (el) {
                             // clear while typing: clearing on blur would move the button under the pointer

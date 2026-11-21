@@ -3,7 +3,7 @@ from odoo.exceptions import UserError
 
 from .shipping_provider import PARAM_WEBHOOK_IP, PARAM_WEBHOOK_PROVIDER
 
-NOTIFICATION_EVENTS = [('vendor_order_confirmed', 'Vendor: new order confirmed'), ('vendor_return_requested', 'Vendor: return requested'), ('vendor_return_escalated', 'Vendor: return escalated'), ('vendor_return_decided', 'Vendor: return decided by the marketplace'), ('vendor_dispute_opened', 'Vendor: dispute opened'), ('vendor_dispute_escalated', 'Vendor: dispute escalated'), ('vendor_dispute_resolved', 'Vendor: dispute resolved'), ('vendor_settlement_approved', 'Vendor: settlement approved'), ('vendor_settlement_paid', 'Vendor: settlement paid'), ('vendor_settlement_debt', 'Vendor: settlement debt to pay'), ('vendor_offer_approved', 'Vendor: offer approved'), ('vendor_offer_rejected', 'Vendor: offer rejected'), ('vendor_product_approved', 'Vendor: product approved'), ('vendor_product_rejected', 'Vendor: product rejected'), ('vendor_application_approved', 'Vendor: application approved'), ('vendor_application_rejected', 'Vendor: application rejected'), ('vendor_penalty_applied', 'Vendor: penalty applied'), ('vendor_penalty_lifted', 'Vendor: penalty lifted'), ('customer_order_shipped', 'Customer: order shipped'), ('customer_order_delivered', 'Customer: order delivered'), ('customer_return_approved', 'Customer: return approved'), ('customer_return_rejected', 'Customer: return rejected'), ('customer_return_refunded', 'Customer: return refunded'), ('customer_order_cancelled', 'Customer: order cancelled'), ('customer_order_cancelled_by_customer', 'Customer: cancellation confirmed'), ('vendor_order_cancelled_by_customer', 'Vendor: order cancelled by the customer'), ('vendor_bank_change_approved', 'Vendor: payout account change approved'), ('vendor_bank_change_rejected', 'Vendor: payout account change rejected'), ('vendor_order_late', 'Vendor: order not shipped by its ship-by date'), ('vendor_question_asked', 'Vendor: customer question on your product'), ('customer_question_answered', 'Customer: question answered')]
+NOTIFICATION_EVENTS = [('vendor_order_confirmed', 'Vendor: new order confirmed'), ('vendor_return_requested', 'Vendor: return requested'), ('vendor_return_escalated', 'Vendor: return escalated'), ('vendor_return_decided', 'Vendor: return decided by the marketplace'), ('vendor_dispute_opened', 'Vendor: dispute opened'), ('vendor_dispute_escalated', 'Vendor: dispute escalated'), ('vendor_dispute_resolved', 'Vendor: dispute resolved'), ('vendor_settlement_approved', 'Vendor: settlement approved'), ('vendor_settlement_paid', 'Vendor: settlement paid'), ('vendor_settlement_debt', 'Vendor: settlement debt to pay'), ('vendor_offer_approved', 'Vendor: offer approved'), ('vendor_offer_rejected', 'Vendor: offer rejected'), ('vendor_product_approved', 'Vendor: product approved'), ('vendor_product_rejected', 'Vendor: product rejected'), ('vendor_application_approved', 'Vendor: application approved'), ('vendor_application_rejected', 'Vendor: application rejected'), ('vendor_penalty_applied', 'Vendor: penalty applied'), ('vendor_penalty_lifted', 'Vendor: penalty lifted'), ('customer_order_shipped', 'Customer: order shipped'), ('customer_order_delivered', 'Customer: order delivered'), ('customer_return_approved', 'Customer: return approved'), ('customer_return_rejected', 'Customer: return rejected'), ('customer_return_refunded', 'Customer: return refunded'), ('customer_order_cancelled', 'Customer: order cancelled'), ('customer_order_cancelled_by_customer', 'Customer: cancellation confirmed'), ('vendor_order_cancelled_by_customer', 'Vendor: order cancelled by the customer'), ('vendor_bank_change_approved', 'Vendor: payout account change approved'), ('vendor_bank_change_rejected', 'Vendor: payout account change rejected'), ('vendor_order_late', 'Vendor: order not shipped by its ship-by date'), ('vendor_question_asked', 'Vendor: customer question on your product'), ('customer_question_answered', 'Customer: question answered'), ('vendor_service_approved', 'Vendor: service approved'), ('vendor_service_rejected', 'Vendor: service rejected')]
 
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
@@ -73,6 +73,30 @@ class ResConfigSettings(models.TransientModel):
              "start at once; the documents are reviewed afterwards and every product still waits for approval. "
              "Off: the application waits in Marketplace > Vendor Applications until staff approves it.",
     )
+    # the PM's rules: a commission vendor's products show the platform's name by default; rent requests stay
+    # with the platform unless the admin opens them to the vendor
+    marketplace_commission_publisher = fields.Selection(
+        [("platform", "The platform (Spark Fu)"), ("vendor", "The vendor's name")],
+        string="Publisher of commission products",
+        config_parameter="leaders_marketplace.commission_publisher", default="platform",
+        help="The seller name the buyer sees on the products of a commission vendor. Subscription vendors and "
+             "vendors in their free period always show their own name.")
+    marketplace_rent_requests_to_vendor = fields.Boolean(
+        string="Send rent requests to the vendor",
+        help="Off (default): equipment rent requests stay with the platform, which rents the machine in its own "
+             "name. On: the vendor who owns the machine also sees the rent requests in the vendor portal.")
+    marketplace_free_period_months = fields.Integer(
+        string="Free period (months)",
+        help="How long a newly approved vendor sells for free. It counts from the approval; vendors already "
+             "approved keep their date.")
+    marketplace_subscription_remind_days = fields.Integer(
+        string="Reminder before the end (days)",
+        help="How many days before a subscription ends the vendor is reminded (email and a notice on the vendor "
+             "dashboard).")
+    marketplace_subscription_grace_days = fields.Integer(
+        string="Grace days after the end",
+        help="Days the products stay on the website after a subscription or a free period ends, before they are "
+             "hidden. 0: hidden the day after.")
     marketplace_vendor_apply_enabled = fields.Boolean(
         string="Public Vendor Application",
         config_parameter="leaders_marketplace.vendor_apply_enabled",
@@ -531,6 +555,10 @@ class ResConfigSettings(models.TransientModel):
         raw = self.env["ir.config_parameter"].sudo().get_param("leaders_marketplace.commission_tax_ids") or ""
         ids = [int(x) for x in raw.split(",") if x.strip().isdigit()]
         res["marketplace_commission_tax_ids"] = [(6, 0, self.env["account.tax"].browse(ids).exists().ids)]
+        res["marketplace_free_period_months"] = self.env["res.partner"]._leaders_free_months()
+        res["marketplace_subscription_grace_days"] = self.env["res.partner"]._leaders_grace_days()
+        res["marketplace_subscription_remind_days"] = self.env["res.partner"]._leaders_subscription_remind_days()
+        res["marketplace_rent_requests_to_vendor"] = self.env["res.partner"]._leaders_rent_requests_to_vendor()
         res["marketplace_vendor_instant_activation"] = (self.env["ir.config_parameter"].sudo().get_param(
             "leaders_marketplace.vendor_instant_activation", "1") or "1") in ("1", "True", "true")
         # F4: stored as text even when 0 (a cleared integer would delete its parameter,
@@ -579,6 +607,11 @@ class ResConfigSettings(models.TransientModel):
         icp.set_param(PARAM_WEBHOOK_IP, str(max(self.marketplace_shipping_webhook_rate_limit, 0)))
         icp.set_param("leaders_marketplace.vendor_instant_activation",
                       "1" if self.marketplace_vendor_instant_activation else "0")
+        icp.set_param("leaders_marketplace.free_period_months", str(max(self.marketplace_free_period_months, 0)))
+        icp.set_param("leaders_marketplace.subscription_grace_days", str(max(self.marketplace_subscription_grace_days, 0)))
+        icp.set_param("leaders_marketplace.subscription_remind_days", str(max(self.marketplace_subscription_remind_days, 0)))
+        icp.set_param("leaders_marketplace.rent_requests_to_vendor",
+                      "1" if self.marketplace_rent_requests_to_vendor else "0")
         icp.set_param(PARAM_WEBHOOK_PROVIDER,
                       str(max(self.marketplace_shipping_webhook_provider_rate_limit, 0)))
         self.env["ir.config_parameter"].sudo().set_param(

@@ -266,3 +266,60 @@ class TestDeliveryPortalRoutes(HttpCase, FbmDeliveryCommon):
             data={"csrf_token": self._csrf("/my/vendor/products")})
         self.assertIn(response.status_code, (403, 400))
         self.assertEqual(group.state, "delivery_reported")
+
+
+@tagged("post_install", "-at_install")
+class TestCustomerStageOfAMultiPartOrder(FbmDeliveryCommon):
+    """The track page's stage is where the slowest part of the order is: a vendor's shipment that left is shipped,
+    not delivered, and an order with a part nobody has shipped yet is never shown delivered."""
+
+    def _stage(self, order):
+        from odoo.addons.leaders_marketplace.controllers.storefront_orders import StorefrontOrders
+        return StorefrontOrders()._stage(order)[0]
+
+    def test_a_vendors_shipment_is_shipped_until_it_is_delivered(self):
+        vendor_order, group = self._shipped_fbm_group()
+        order = vendor_order.sale_order_id
+        self.assertEqual(self._stage(order), "shipped")  # the picking is done: it left, it did not arrive
+        group.action_delivered()
+        self.assertEqual(group.state, "delivered")
+        self.assertEqual(self._stage(order), "delivered")
+
+    def test_a_part_still_waiting_keeps_the_order_from_being_delivered(self):
+        own = self.env["product.product"].create({"name": "Platform part", "is_storable": True,
+                                                  "leaders_platform_sold": True, "list_price": 50}) \
+            if "leaders_platform_sold" in self.env["product.product"]._fields else None
+        order = self.env["sale.order"].create({
+            "partner_id": self.customer.id,
+            "order_line": [Command.create({"product_id": self.fbm_product.id, "product_uom_qty": 1}),
+                           Command.create({"product_id": (own or self.fbm_product).id, "product_uom_qty": 2,
+                                           "leaders_platform_sold": True})]})
+        order.action_confirm()
+        group = order.vendor_order_ids.fulfillment_group_ids
+        group.tracking_ref = "TRK-MIX"
+        group.action_ship()
+        group.action_delivered()
+        self.assertEqual(group.state, "delivered")
+        # the platform's own part is not shipped: the order is not delivered, and it is being prepared
+        self.assertEqual(self._stage(order), "preparing")
+
+
+@tagged("post_install", "-at_install")
+class TestStockArrivingAfterTheShipmentWasMade(FbmDeliveryCommon):
+    """A vendor who had too little stock ships the rest once he adds it: the waiting delivery takes the new stock."""
+
+    def test_the_waiting_delivery_is_reserved_when_the_vendor_adds_stock(self):
+        product = self.fbm_product
+        offer = self.env["leaders.marketplace.offer"].search(
+            [("product_id", "=", product.id), ("vendor_id", "=", self.vendor.id)], limit=1)
+        owner = self.vendor.commercial_partner_id
+        Quant = self.env["stock.quant"]
+        Quant._leaders_adjust_vendor_stock(product, offer.stock_location_id, owner, 1 - offer.available_qty())
+        order = self.env["sale.order"].create({
+            "partner_id": self.customer.id,
+            "order_line": [Command.create({"product_id": product.id, "product_uom_qty": 3})]})
+        order.action_confirm()
+        move = order.vendor_order_ids.fulfillment_group_ids.picking_ids.move_ids
+        self.assertNotEqual(move.state, "assigned")  # the vendor holds 1 of the 3
+        Quant._leaders_adjust_vendor_stock(product, offer.stock_location_id, owner, 5)
+        self.assertEqual((move.state, move.quantity), ("assigned", 3))  # the stock he added is reserved at once

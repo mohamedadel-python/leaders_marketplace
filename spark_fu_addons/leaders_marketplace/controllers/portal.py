@@ -129,6 +129,20 @@ class MarketplacePortal(CustomerPortal):
             raise AccessError(_("You cannot access this offer."))
         return offer
 
+    @staticmethod
+    def _vendor_categories(offer=None):
+        """The categories a vendor files a product under (BUG-00899): the subcategories only, never a main category
+        nor the services (the platform's own), nor a hidden one. The product's current category stays listed."""
+        Category = request.env["product.public.category"].sudo()
+        services = request.env.ref("leaders_marketplace.leaders_categ_services", raise_if_not_found=False)
+        domain = [("parent_id", "!=", False), ("leaders_is_service", "=", False), ("leaders_hidden", "=", False)]
+        if services:
+            domain.append(("id", "not in", Category.search([("id", "child_of", services.id)]).ids))
+        categories = Category.search(domain, order="name")
+        if offer:
+            categories |= offer.product_tmpl_id.sudo().public_categ_ids
+        return categories.sorted(lambda c: c.display_name or "")
+
     def _vendor_form_values(self, vendor, offer=None, error=None):
         # A new product is always the vendor's own content; an existing one only
         # while no other seller shares its template.
@@ -139,9 +153,15 @@ class MarketplacePortal(CustomerPortal):
             request.env["product.public.category"].browse()
         forced_policy = request.env["leaders.fulfillment.policy"].sudo()._policy_for(
             vendor, categories)
+        Change = request.env["leaders.change.request"].sudo()
         values = {
             "vendor": vendor,
             "offer": offer,
+            # the edit of a live listing waiting for the platform, and the last one it turned down
+            "pending_change": Change.search([("offer_id", "=", offer.id), ("state", "=", "pending")], limit=1)
+            if offer else Change,
+            "rejected_change": Change.search([("offer_id", "=", offer.id), ("state", "=", "rejected")], limit=1)
+            if offer else Change,
             "vendor_owns_content": owns_content,
             "fbl_enabled": request.env["leaders.marketplace.offer"]._leaders_fbl_allowed(),
             "forced_fulfillment": forced_policy.forced_fulfillment_type or False,
@@ -149,7 +169,7 @@ class MarketplacePortal(CustomerPortal):
             "discounts_enabled": request.env["leaders.marketplace.offer"]._leaders_discounts_enabled(),
             "discount_start_local": self._dt_to_local(offer.discount_start) if offer else "",
             "discount_end_local": self._dt_to_local(offer.discount_end) if offer else "",
-            "categories": request.env["product.public.category"].sudo().search([], order="name"),
+            "categories": self._vendor_categories(offer),
             "websites": request.env["website"].sudo().search([]),
             "currencies": request.env["res.currency"].sudo().search([("active", "=", True)], order="name"),
             "error": error,
@@ -625,6 +645,9 @@ class MarketplacePortal(CustomerPortal):
     @http.route("/my/vendor", type="http", auth="user", website=True)
     def vendor_dashboard(self, **kw):
         vendor = self._require_vendor(allow_frozen=True)
+        if not vendor.leaders_contract_onboarded and self._is_vendor_owner():
+            # a newly approved vendor first picks the free period, a commission or a subscription
+            return request.redirect("/my/vendor/welcome")
         VendorOrder = request.env["leaders.vendor.order"].sudo()
         Offer = request.env["leaders.marketplace.offer"].sudo()
         Return = request.env["leaders.vendor.return"].sudo()
@@ -654,6 +677,8 @@ class MarketplacePortal(CustomerPortal):
             ]).filtered(lambda o: o.fulfillment_group_ids and set(o.fulfillment_group_ids.mapped("fulfillment_type")) == {"fbm"}),
             "disputes_count": Dispute.search_count(vendor_domain),
             "disputes_open": Dispute.search_count(vendor_domain + [("state", "in", ("open", "vendor_reply", "escalated"))]),
+            "equipment_requests_new": len(request.env["leaders.customer.request"]._leaders_vendor_requests(vendor).filtered(
+                lambda r: r._leaders_vendor_needs_action())),
             "wallet_available": vendor.vendor_wallet_balance,
             "wallet_hold": vendor.vendor_wallet_hold,
             "is_vendor_owner": self._is_vendor_owner(),
@@ -680,6 +705,14 @@ class MarketplacePortal(CustomerPortal):
             "notice": kw.get("notice"),
         })
 
+    @staticmethod
+    def _seller_sku_taken(vendor, seller_sku, exclude=None):
+        """Another offer of this vendor already has this SKU (archived ones count: the database refuses them too)."""
+        domain = [("vendor_id", "=", vendor.id), ("seller_sku", "=", seller_sku)]
+        if exclude:
+            domain.append(("id", "!=", exclude.id))
+        return bool(request.env["leaders.marketplace.offer"].sudo().with_context(active_test=False).search_count(domain))
+
     @http.route(["/my/vendor/products/new"], type="http", auth="user", website=True, methods=["GET", "POST"], csrf=True)
     def vendor_product_create(self, **post):
         vendor = self._require_vendor()
@@ -695,6 +728,10 @@ class MarketplacePortal(CustomerPortal):
         category_id = int(post.get("public_category_id") or 0)
         currency_id = int(post.get("currency_id") or request.env.company.currency_id.id)
         website_ids = [int(x) for x in request.httprequest.form.getlist("market_ids") if x]
+        if category_id and category_id not in self._vendor_categories().ids:
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, error=_("Choose a subcategory for the product.")))
 
         if fulfillment_type == "fbl" and not request.env["leaders.marketplace.offer"]._leaders_fbl_allowed():
             return self._vendor_render(
@@ -705,6 +742,11 @@ class MarketplacePortal(CustomerPortal):
             return self._vendor_render(
                 "leaders_marketplace.portal_vendor_product_form",
                 self._vendor_form_values(vendor, error=_("Product name, seller SKU and a valid price are required.")),
+            )
+        if self._seller_sku_taken(vendor, seller_sku):  # said here, in the vendor's language, not by the database
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, error=_("Seller SKU %s is already used by another of your offers.", seller_sku)),
             )
 
         if self._vendor_over_offer_limit(vendor):
@@ -863,6 +905,10 @@ class MarketplacePortal(CustomerPortal):
         category_id = int(post.get("public_category_id") or 0)
         currency_id = int(post.get("currency_id") or offer.currency_id.id)
         website_ids = [int(x) for x in request.httprequest.form.getlist("market_ids") if x]
+        if category_id and category_id not in self._vendor_categories(offer).ids:
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, offer=offer, error=_("Choose a subcategory for the product.")))
         if fulfillment_type == "fbl" and not request.env["leaders.marketplace.offer"]._leaders_fbl_allowed():
             return self._vendor_render(
                 "leaders_marketplace.portal_vendor_product_form",
@@ -872,6 +918,12 @@ class MarketplacePortal(CustomerPortal):
             return self._vendor_render(
                 "leaders_marketplace.portal_vendor_product_form",
                 self._vendor_form_values(vendor, offer=offer, error=_("Product name, seller SKU and a valid price are required.")),
+            )
+        if self._seller_sku_taken(vendor, seller_sku, exclude=offer):
+            return self._vendor_render(
+                "leaders_marketplace.portal_vendor_product_form",
+                self._vendor_form_values(vendor, offer=offer,
+                                         error=_("Seller SKU %s is already used by another of your offers.", seller_sku)),
             )
 
         image_b64, image_error = self._read_vendor_image(
@@ -897,16 +949,19 @@ class MarketplacePortal(CustomerPortal):
                 "leaders_marketplace.portal_vendor_product_form",
                 self._vendor_form_values(vendor, offer=offer, error=spec_error))
         self._vendor_default_warranty(spec_vals, offer.product_tmpl_id)
+        applied_now = []  # what is saved at once, without the platform's review (quantity, extra photos)
         try:
             stock_qty = self._vendor_stock_from_post(post, spec_vals, offer.product_tmpl_id.sudo())
             if stock_qty is not None and offer.fulfillment_type == "fbm" \
                     and stock_qty != self._vendor_stock_on_hand(offer):
                 offer._leaders_set_fbm_stock(stock_qty)
+                applied_now.append("qty")
             if not request.env["product.template"]._leaders_variants_enabled() \
                     and offer.product_tmpl_id.sudo()._leaders_vendor_owns_content(vendor):
                 images, remove_ids = self._vendor_gallery_parse()
                 if images or remove_ids:
                     self._vendor_gallery_apply(offer.product_tmpl_id, images, remove_ids)
+                    applied_now.append("photos")
         except (UserError, ValidationError) as exc:
             return self._vendor_render(
                 "leaders_marketplace.portal_vendor_product_form",
@@ -936,11 +991,18 @@ class MarketplacePortal(CustomerPortal):
                 content["public_categ_ids"] = [(6, 0, [category_id])]
             if owns:
                 content.update(spec_vals)
-            request.env["leaders.change.request"].sudo().leaders_propose(
+            change = request.env["leaders.change.request"].sudo().leaders_propose(
                 offer, {"seller_sku": seller_sku, "price": price, "currency_id": currency_id,
                         "market_ids": [(6, 0, website_ids)]},
                 content, image_b64 if owns else False)
-            return request.redirect(f"/my/vendor/products/{offer.id}/edit?pending=1")
+            # say what really happened: a change sent for review, only the quantity / photos saved, or nothing
+            if change:
+                result = "pending=1"
+            elif applied_now:
+                result = "applied=%s" % ",".join(applied_now)
+            else:
+                result = "nochange=1"
+            return request.redirect(f"/my/vendor/products/{offer.id}/edit?{result}")
         if offer.product_tmpl_id.sudo()._leaders_vendor_owns_content(vendor):
             tmpl_vals = {
                 "name": name,
@@ -1776,6 +1838,185 @@ class MarketplacePortal(CustomerPortal):
     # -------------------------------------------------------------------------
     # Returns / disputes / performance
     # -------------------------------------------------------------------------
+    @http.route("/my/vendor/equipment-requests", type="http", auth="user", website=True)
+    def vendor_equipment_requests(self, **kw):
+        """Purchase and quote requests on the vendor's machines (rent ones only when the settings open them)."""
+        vendor = self._require_vendor(allow_frozen=True)
+        records = request.env["leaders.customer.request"]._leaders_vendor_requests(vendor)
+        return self._vendor_render("leaders_marketplace.portal_vendor_equipment_requests", {
+            "vendor": vendor, "records": records,
+            "new_count": len(records.filtered(lambda r: r._leaders_vendor_needs_action()))})
+
+    @http.route("/my/vendor/equipment-requests/<int:request_id>", type="http", auth="user", website=True,
+                methods=["GET", "POST"])
+    def vendor_equipment_request(self, request_id, **post):
+        vendor = self._require_vendor(allow_frozen=True)
+        record = request.env["leaders.customer.request"].sudo().search(
+            request.env["leaders.customer.request"]._leaders_vendor_domain(vendor) + [("id", "=", request_id)], limit=1)
+        if not record or not record._leaders_vendor_visible():
+            raise AccessError(_("You cannot access this request."))
+        message = error = False
+        if request.httprequest.method == "POST":
+            try:
+                if "rent_price" in post:
+                    raw = (post.get("rent_price") or "").replace(",", "").strip()
+                    try:
+                        price = float(raw)
+                    except ValueError:
+                        raise UserError(_("Enter a price above zero."))
+                    record.leaders_vendor_price_rent(price)
+                    message = _("The price of the rental was saved. The renter sees it.")
+                elif "services_price" in post and "price" not in post:
+                    raw = (post.get("services_price") or "").replace(",", "").strip()
+                    try:
+                        price = float(raw)
+                    except ValueError:
+                        raise UserError(_("Enter a price above zero."))
+                    record.leaders_vendor_price_services(price)
+                    message = _("The price of your services was saved. The buyer sees it.")
+                elif post.get("step") == "confirm":
+                    record.leaders_vendor_confirm()
+                    message = _("The request is confirmed. The buyer sees it.")
+                elif post.get("step") == "start":
+                    record.leaders_vendor_start()
+                    message = _("The request is marked as being carried out.")
+                elif post.get("outcome"):  # a subscription vendor says how the deal ended
+                    record.leaders_vendor_close(post.get("outcome"), post.get("reason"))
+                    message = _("The request is closed.")
+                else:
+                    raw = (post.get("price") or "").replace(",", "").strip()
+                    try:
+                        price = float(raw)
+                    except ValueError:
+                        raise UserError(_("Enter a price above zero."))
+                    services_price = None
+                    if (post.get("services_price") or "").strip():
+                        try:
+                            services_price = float(post["services_price"].replace(",", "").strip())
+                        except ValueError:
+                            raise UserError(_("Enter the price of your services."))
+                    record.leaders_vendor_send_price(price, post.get("note"), services_price)
+                    message = (_("Your offer was sent to the buyer.") if record._leaders_vendor_sees_buyer()
+                               else _("Your price was sent to the platform."))
+            except UserError as exc:
+                error = str(exc)
+        return self._vendor_render("leaders_marketplace.portal_vendor_equipment_request", {
+            "vendor": vendor, "record": record, "sees_buyer": record._leaders_vendor_sees_buyer(),
+            "kinds": dict(record._fields["kind"]._description_selection(request.env)),
+            "states": dict(record._fields["state"]._description_selection(request.env)),
+            "message": message, "error": error})
+
+    # ---- the vendor's own services: a service page of the storefront, after the back office approves it ----------
+    ICON_TYPES = {"image/png", "image/jpeg", "image/webp", "image/svg+xml"}
+    ICON_MAX = 300 * 1024
+
+    def _own_service_products(self, vendor):
+        return request.env["product.template"].sudo().search(
+            [("marketplace_owner_vendor_id", "=", vendor.id), ("leaders_kind", "in", ("power", "equipment"))], order="name")
+
+    def _own_service_owner_only(self):
+        if not self._is_vendor_owner():
+            raise AccessError(_("Only the vendor owner can manage the services."))
+
+    @http.route("/my/vendor/own-services", type="http", auth="user", website=True, methods=["GET"])
+    def vendor_own_services(self, **kw):
+        vendor = self._require_vendor(allow_frozen=True)
+        services = request.env["leaders.vendor.service"].sudo().with_context(active_test=False).search(
+            [("vendor_id", "=", vendor.id)])
+        return self._vendor_render("leaders_marketplace.portal_vendor_own_services", {
+            "vendor": vendor, "services": services, "is_owner": self._is_vendor_owner(),
+            "message": _("The service was sent for approval.") if kw.get("sent") else False,
+            "states": dict(request.env["leaders.vendor.service"]._fields["state"]._description_selection(request.env))})
+
+    @http.route(["/my/vendor/own-services/new", "/my/vendor/own-services/<int:service_id>"], type="http", auth="user",
+                website=True, methods=["GET", "POST"])
+    def vendor_own_service(self, service_id=None, **post):
+        vendor = self._require_vendor(allow_frozen=True)
+        Service = request.env["leaders.vendor.service"].sudo().with_context(active_test=False)
+        service = Service.browse()
+        if service_id:
+            service = Service.search([("id", "=", service_id), ("vendor_id", "=", vendor.id)], limit=1)
+            if not service:
+                raise AccessError(_("You cannot access this service."))
+        error = False
+        if request.httprequest.method == "POST":
+            self._own_service_owner_only()
+            try:
+                if post.get("archive") and service:
+                    service.active = False
+                    return request.redirect("/my/vendor/own-services")
+                service = self._save_own_service(vendor, service, post, request.httprequest.form.getlist("product_ids"))
+                return request.redirect("/my/vendor/own-services?sent=1")
+            except (UserError, ValidationError) as exc:
+                error = str(exc)
+        return self._vendor_render("leaders_marketplace.portal_vendor_own_service", {
+            "vendor": vendor, "service": service, "products": self._own_service_products(vendor), "error": error,
+            "post": post, "is_owner": self._is_vendor_owner(),
+            "state_label": dict(Service._fields["state"]._description_selection(request.env)).get(service.state)
+            if service else False})
+
+    def _save_own_service(self, vendor, service, post, product_ids):
+        Service = request.env["leaders.vendor.service"].sudo().with_context(active_test=False)
+        name = (post.get("name") or "").strip()[:120]
+        if not name:
+            raise UserError(_("Write the name of the service."))
+        summary = (post.get("summary") or "").strip()[:200]
+        if not summary:
+            raise UserError(_("Write a one-sentence summary for the service card."))
+        same = Service.search([("vendor_id", "=", vendor.id), ("name", "=ilike", name), ("id", "!=", service.id)], limit=1)
+        if same:
+            raise UserError(_("You already have a service with this name."))
+        vals = {key: (post.get(key) or "").strip()[:limit] or False for key, limit in (
+            ("description", 2000), ("request_title", 120), ("deliverable", 120), ("includes", 1500), ("excludes", 1500),
+            ("checklist_title", 120), ("checklist", 2500))}
+        for key, top in (("coverage", 29), ("warranty_months", 120)):
+            raw = (post.get(key) or "").strip()
+            vals[key] = min(int(raw), top) if raw.isdigit() else 0
+        allowed = self._own_service_products(vendor).ids
+        vals["product_tmpl_ids"] = [(6, 0, [int(i) for i in product_ids if str(i).isdigit() and int(i) in allowed])]
+        icon = request.httprequest.files.get("icon")
+        if icon and icon.filename:
+            data = icon.read(self.ICON_MAX + 1)
+            if icon.mimetype not in self.ICON_TYPES or len(data) > self.ICON_MAX:
+                raise UserError(_("The picture must be PNG, JPG, WEBP or SVG, up to 300 KB."))
+            vals["icon"] = base64.b64encode(data)
+        vals.update(name=name, summary=summary)
+        if service:
+            service.write(vals)
+        else:
+            service = Service.create(dict(vals, vendor_id=vendor.id))
+        service.action_submit()
+        return service
+
+    @http.route("/my/vendor/welcome", type="http", auth="user", website=True, methods=["GET", "POST"])
+    def vendor_welcome(self, **post):
+        """The page a newly approved vendor sees before the dashboard: the free period, a commission or a
+        subscription."""
+        vendor = self._require_vendor(allow_frozen=True)
+        if vendor.leaders_contract_onboarded or not self._is_vendor_owner():
+            return request.redirect("/my/vendor")
+        error = False
+        Plan = request.env["leaders.subscription.plan"].sudo()
+        plans = Plan.search([])
+        if request.httprequest.method == "POST":
+            try:
+                if post.get("model") == "subscription" and plans:
+                    # the subscription card opens the plans; a picked plan finishes the choice
+                    plan = Plan.browse(int(post["plan_id"])) if str(post.get("plan_id") or "").isdigit() else Plan
+                    if not plan:
+                        return request.redirect("/my/vendor/welcome?step=plans")
+                    vendor.leaders_request_plan(plan)
+                vendor.leaders_onboard_choice(post.get("model"))
+                return request.redirect("/my/vendor")
+            except UserError as exc:
+                error = str(exc)
+        Join = request.env["leaders.vendor.join.model"].sudo()
+        return self._vendor_render("leaders_marketplace.portal_vendor_welcome", {
+            "vendor": vendor, "free_months": request.env["res.partner"]._leaders_free_months(),
+            "commission": Join.search([("code", "=", "commission")], limit=1),
+            "subscription": Join.search([("code", "=", "subscription")], limit=1), "error": error,
+            "plans": plans, "show_plans": post.get("step") == "plans" and bool(plans)})
+
     @http.route("/my/vendor/contract", type="http", auth="user", website=True, methods=["GET", "POST"])
     def vendor_contract(self, **post):
         """Choose the contract model near the end of the free period; afterwards, ask for a switch."""
@@ -1786,7 +2027,14 @@ class MarketplacePortal(CustomerPortal):
                 raise AccessError(_("Only the vendor owner can choose the contract model."))
             code = post.get("model")
             try:
-                if post.get("action") == "switch":
+                if post.get("action") == "plan":  # pick or renew a subscription plan
+                    plan = request.env["leaders.subscription.plan"].sudo().browse(
+                        int(post["plan_id"]) if str(post.get("plan_id") or "").isdigit() else 0)
+                    order = vendor.leaders_request_plan(plan)
+                    message = _("Plan %(plan)s chosen. Pay %(price)s to the platform; your subscription is extended "
+                                "once the payment is confirmed.", plan=order.plan_id.name,
+                                price="%s %s" % (order.price, order.currency_id.symbol or order.currency_id.name))
+                elif post.get("action") == "switch":
                     if not vendor.leaders_contract_model or code == vendor.leaders_contract_model:
                         raise UserError(_("Choose the other model to ask for a switch."))
                     request.env["leaders.contract.switch"].sudo().create({
@@ -1800,9 +2048,13 @@ class MarketplacePortal(CustomerPortal):
                 error = str(exc)
         pending = request.env["leaders.contract.switch"].sudo().search(
             [("vendor_id", "=", vendor.id), ("state", "=", "pending")], limit=1)
+        Order = request.env["leaders.subscription.order"].sudo()
         return self._vendor_render("leaders_marketplace.portal_vendor_contract", {
             "vendor": vendor, "join_models": request.env["leaders.vendor.join.model"].sudo().search([]),
             "choice_open": vendor._leaders_contract_choice_open(), "pending_switch": pending,
+            "plans": request.env["leaders.subscription.plan"].sudo().search([]),
+            "pending_plan": Order.search([("vendor_id", "=", vendor.id), ("state", "=", "pending")], limit=1),
+            "paid_plans": Order.search([("vendor_id", "=", vendor.id), ("state", "=", "paid")], limit=5),
             "message": message, "error": error})
 
     @http.route("/my/vendor/rentals", type="http", auth="user", website=True)

@@ -1,10 +1,11 @@
 <odoo>
     <menuitem id="menu_marketplace_root" name="Marketplace" sequence="30" web_icon="leaders_marketplace,static/description/icon.png" groups="leaders_marketplace.group_marketplace_reviewer,leaders_marketplace.group_marketplace_finance,leaders_marketplace.group_marketplace_manager,leaders_marketplace.group_equipment_listing_sales"/>
     <menuitem id="menu_marketplace_operations" name="Operations" parent="menu_marketplace_root" sequence="10"/>
+    <menuitem id="menu_marketplace_orders" name="Orders" parent="menu_marketplace_root" sequence="15"/>
     <menuitem id="menu_vendor_applications" name="Vendor Applications" parent="menu_marketplace_operations" action="action_vendor_application" sequence="10"/>
     <menuitem id="menu_offers" name="Offers" parent="menu_marketplace_operations" action="action_marketplace_offer" sequence="20"/>
     <menuitem id="menu_offer_discounts_to_review" name="Discounts to Review" parent="menu_marketplace_operations" action="action_offer_discounts_to_review" sequence="21" groups="leaders_marketplace.group_marketplace_reviewer"/>
-    <menuitem id="menu_vendor_orders" name="Vendor Orders" parent="menu_marketplace_operations" action="action_vendor_order" sequence="30"/>
+    <menuitem id="menu_vendor_orders" name="Vendor Orders" parent="menu_marketplace_orders" action="action_vendor_order" sequence="20"/>
     <menuitem id="menu_vendor_invoices" name="Vendor Invoices" parent="menu_marketplace_operations" action="action_vendor_invoice" sequence="35"/>
     <menuitem id="menu_returns" name="Returns" parent="menu_marketplace_operations" action="action_vendor_return" sequence="40"/>
     <menuitem id="menu_disputes" name="Disputes" parent="menu_marketplace_operations" action="action_vendor_dispute" sequence="50"/>

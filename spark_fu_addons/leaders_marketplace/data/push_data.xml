@@ -1,0 +1,12 @@
+<odoo noupdate="1">
+    <!-- a safety net: what a trigger did not send is sent within five minutes, old messages are forgotten -->
+    <record id="cron_push_send" model="ir.cron">
+        <field name="name">Marketplace: send push notifications</field>
+        <field name="model_id" ref="model_leaders_push_message"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

@@ -14,7 +14,7 @@
             <form>
                 <header><field name="state" widget="statusbar" statusbar_visible="pending,reviewing,contacting,offered,completed"/></header>
                 <sheet><group>
-                    <field name="name"/><field name="kind"/><field name="partner_id"/><field name="phone"/>
+                    <field name="name"/><field name="kind"/><field name="partner_id"/><field name="phone" widget="phone"/>
                     <field name="product_tmpl_id"/><field name="title"/><field name="quantity"/><field name="note"/>
                     <field name="service"/><field name="service_details"/>
                 </group>
@@ -60,18 +60,281 @@
                 <filter name="kind_item" string="Product requests" domain="[('kind', '=', 'item')]"/>
                 <filter name="kind_quote" string="Quotes" domain="[('kind', '=', 'quote')]"/>
                 <filter name="kind_service" string="Service requests" domain="[('kind', '=', 'service')]"/>
+                <filter name="kind_purchase" string="Equipment purchase" domain="[('kind', '=', 'purchase')]"/>
+                <filter name="kind_rent" string="Equipment rent" domain="[('kind', '=', 'rent')]"/>
+                <filter name="with_services" string="With services" domain="[('equipment_services', '!=', False)]"/>
                 <filter name="open" string="Open" domain="[('state', 'not in', ('completed', 'cancelled'))]"/>
                 <group><filter name="by_kind" string="Type" context="{'group_by': 'kind'}"/></group>
             </search>
         </field>
     </record>
+    <!-- one menu per kind: a quote of a cart of parts, a product the customer asked for, a service request -->
     <record id="action_customer_request" model="ir.actions.act_window">
-        <field name="name">Quotes &amp; Service Requests</field>
+        <field name="name">Part quotes</field>
         <field name="res_model">leaders.customer.request</field>
         <field name="view_mode">list,form</field>
+        <field name="domain">[('kind', '=', 'quote'), ('line_ids', '!=', False)]</field>
+        <field name="search_view_id" ref="view_customer_request_search"/>
     </record>
-    <menuitem id="menu_customer_requests" name="Quotes &amp; Service Requests" parent="menu_marketplace_operations"
-              action="action_customer_request" sequence="60"/>
+    <menuitem id="menu_customer_requests" name="Part quotes" parent="menu_marketplace_orders"
+              action="action_customer_request" sequence="40"/>
+    <record id="action_item_requests" model="ir.actions.act_window">
+        <field name="name">Product requests</field>
+        <field name="res_model">leaders.customer.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('kind', '=', 'item')]</field>
+        <field name="search_view_id" ref="view_customer_request_search"/>
+    </record>
+    <menuitem id="menu_item_requests" name="Product requests" parent="menu_marketplace_orders"
+              action="action_item_requests" sequence="50"/>
+    <record id="action_service_requests" model="ir.actions.act_window">
+        <field name="name">Service requests</field>
+        <field name="res_model">leaders.customer.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('kind', '=', 'service')]</field>
+        <field name="search_view_id" ref="view_customer_request_search"/>
+    </record>
+    <record id="view_service_request_list" model="ir.ui.view">
+        <field name="name">leaders.customer.request.list.service</field>
+        <field name="model">leaders.customer.request</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="create_date" string="Placed on"/>
+                <field name="service_label" string="Service"/>
+                <field name="partner_id"/>
+                <field name="vendor_id" string="Vendor" optional="show"/>
+                <field name="phone" widget="phone"/>
+                <field name="service_equipment_label" string="Equipment type"/>
+                <field name="needed_by"/>
+                <field name="state" widget="badge" decoration-info="state in ('pending', 'reviewing', 'contacting')"
+                       decoration-warning="state in ('offered', 'confirming', 'executing', 'inProgress')"
+                       decoration-success="state == 'completed'" decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_service_request_form" model="ir.ui.view">
+        <field name="name">leaders.customer.request.form.service.screen</field>
+        <field name="model">leaders.customer.request</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_create_offer" type="object" class="btn-primary" string="Prepare offer"
+                            invisible="quote_order_id or state in ('completed', 'cancelled')"/>
+                    <button name="action_create_offer" type="object" string="Open offer" invisible="not quote_order_id"/>
+                    <button name="action_equipment_complete" type="object" string="Mark completed" class="btn-primary"
+                            invisible="state != 'executing'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,reviewing,contacting,offered,executing,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="service_label" readonly="1"/></h3>
+                    </div>
+                    <group>
+                        <group string="Customer">
+                            <field name="partner_id" string="Account"/>
+                            <field name="contact_name" string="Name" invisible="not contact_name"/>
+                            <field name="phone" string="Phone" widget="phone"/>
+                            <field name="service_email" string="Email" invisible="not service_email"/>
+                            <field name="request_locale" string="Form language" invisible="not request_locale"/>
+                            <field name="service_company" string="Company" invisible="not service_company"/>
+                        </group>
+                        <group string="The service">
+                            <field name="vendor_id" string="Vendor" readonly="1" invisible="not vendor_id"/>
+                            <field name="vendor_quote_price" string="Vendor's price" readonly="1" invisible="not vendor_quote_date"/>
+                            <field name="vendor_quote_date" invisible="1"/>
+                            <field name="needed_by" string="Needed by"/>
+                            <field name="service_equipment_label" string="Equipment type" invisible="not service_equipment_label"/>
+                            <field name="service_brand_model" string="Brand and model" invisible="not service_brand_model"/>
+                            <field name="service_governorate_name" string="Governorate" invisible="not service_governorate_name"/>
+                            <field name="service_address" string="Address of the machine" invisible="not service_address"/>
+                        </group>
+                    </group>
+                    <group string="Customer's note" invisible="not note">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                    <group string="Offer" invisible="not quote_order_id">
+                        <group>
+                            <field name="quote_order_id" string="Offer" readonly="1"/>
+                            <field name="offer_accepted_at" string="Offer accepted on"/>
+                        </group>
+                        <group>
+                            <field name="offer_paid_at" string="Paid on"/>
+                            <field name="sf_payment_method" string="Payment method"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_service_requests_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_service_request_list"/>
+        <field name="act_window_id" ref="action_service_requests"/>
+    </record>
+    <record id="action_service_requests_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_service_request_form"/>
+        <field name="act_window_id" ref="action_service_requests"/>
+    </record>
+    <menuitem id="menu_service_requests" name="Service requests" parent="menu_marketplace_orders"
+              action="action_service_requests" sequence="60"/>
+    <!-- equipment requests: purchase, rent and the equipment quotes (a machine, no cart lines); the services asked
+         with the machine are on the request itself -->
+    <record id="action_equipment_requests" model="ir.actions.act_window">
+        <field name="name">Equipment requests</field>
+        <field name="res_model">leaders.customer.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">['|', ('kind', 'in', ('purchase', 'rent')), '&amp;', ('kind', '=', 'quote'), ('line_ids', '=', False)]</field>
+        <field name="search_view_id" ref="view_customer_request_search"/>
+        <field name="context">{'search_default_open': 1}</field>
+    </record>
+    <record id="view_equipment_request_list" model="ir.ui.view">
+        <field name="name">leaders.customer.request.list.equipment</field>
+        <field name="model">leaders.customer.request</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="create_date" string="Placed on"/>
+                <field name="kind"/>
+                <field name="title"/>
+                <field name="partner_id"/>
+                <field name="vendor_id"/>
+                <field name="equipment_services" optional="show"/>
+                <field name="customer_status" widget="badge" decoration-info="customer_status in ('requested', 'awaitingPayment')"
+                       decoration-warning="customer_status in ('confirmed', 'inProgress')"
+                       decoration-success="customer_status == 'completed'" decoration-danger="customer_status == 'cancelled'"/>
+                <field name="state" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_equipment_request_form" model="ir.ui.view">
+        <field name="name">leaders.customer.request.form.equipment.screen</field>
+        <field name="model">leaders.customer.request</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_send_service_prices" type="object" string="Send service prices" class="btn-primary"
+                            invisible="kind not in ('purchase', 'quote') or not equipment_platform_services or (kind == 'purchase' and state != 'pending') or (kind == 'quote' and state not in ('pending', 'reviewing', 'contacting', 'offered'))"/>
+                    <button name="action_equipment_confirm" type="object" string="Confirm request" class="btn-primary"
+                            invisible="kind != 'purchase' or state not in ('pending', 'reviewing', 'contacting') or equipment_platform_services"/>
+                    <button name="action_send_rent_price" type="object" string="Send the rent price" class="btn-primary"
+                            invisible="kind != 'rent' or state not in ('pending', 'reviewing', 'contacting')"/>
+                    <button name="action_create_offer" type="object" class="btn-primary" string="Prepare offer"
+                            invisible="kind != 'quote' or quote_order_id or state in ('completed', 'cancelled')"/>
+                    <button name="action_create_offer" type="object" string="Open offer"
+                            invisible="kind != 'quote' or not quote_order_id"/>
+                    <button name="action_equipment_execute" type="object" string="Start carrying out" class="btn-primary"
+                            invisible="kind not in ('purchase', 'rent') or state != 'inProgress'"/>
+                    <button name="action_equipment_complete" type="object" string="Mark completed"
+                            invisible="kind not in ('purchase', 'rent', 'quote') or state != 'executing'"/>
+                    <button name="action_rent_invoice" type="object" string="Make the invoice" class="btn-primary"
+                            invisible="kind != 'rent' or rent_invoice_id or state != 'completed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,offered,inProgress,executing,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="kind" readonly="1"/></h3>
+                    </div>
+                    <div class="alert alert-info" role="status">
+                        The customer sees this stage on the website: <field name="customer_status" widget="badge" readonly="1" nolabel="1"/>
+                    </div>
+                    <group>
+                        <group string="Customer">
+                            <field name="partner_id" string="Account"/>
+                            <field name="contact_name" string="Name"/>
+                            <field name="phone" string="Phone" widget="phone"/>
+                            <field name="shipping_state_id" string="Governorate"/>
+                            <field name="shipping_address" string="Address"/>
+                        </group>
+                        <group string="Machine">
+                            <field name="product_tmpl_id" string="Machine"/>
+                            <field name="quantity" string="Quantity"/>
+                            <field name="unit_price" string="Price on the website" invisible="kind in ('quote', 'rent')"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="vendor_id" string="Seller" readonly="1"/>
+                            <field name="offer_id" string="Seller's offer" invisible="kind in ('quote', 'rent')"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Services" invisible="not equipment_services">
+                            <field name="equipment_platform_services" invisible="1"/>
+                            <field name="equipment_platform_service_names" string="By the platform"
+                                   invisible="not equipment_platform_services"/>
+                            <field name="services_amount" string="Price of the platform's services"
+                                   invisible="kind not in ('purchase', 'quote') or not equipment_platform_services"/>
+                            <field name="equipment_vendor_service_names" string="By the vendor (the buyer pays him directly)"
+                                   invisible="not equipment_vendor_service_names"/>
+                            <field name="vendor_services_amount" string="Price of the vendor's services" readonly="1"
+                                   invisible="not equipment_vendor_service_names"/>
+                            <field name="equipment_services" invisible="1"/>
+                        </group>
+                        <group string="Payment" invisible="kind == 'rent' and not sf_payment_method or kind == 'quote' and not quote_order_id and not payment_order_id">
+                            <field name="payment_order_id" string="Payment order" invisible="not payment_order_id"/>
+                            <field name="sf_payment_method" string="Payment method"/>
+                            <field name="included_rental_id" string="Free: included in the rental" invisible="not included_rental_id"/>
+                        </group>
+                    </group>
+                    <group string="Rent" invisible="kind != 'rent'">
+                        <group>
+                            <field name="rental_id" string="Rental"/>
+                            <field name="rent_date_start" string="From"/>
+                            <field name="rent_date_end" string="To"/>
+                            <field name="rent_period" string="Booked by the"/>
+                            <field name="rent_units" string="How many"/>
+                        </group>
+                        <group>
+                            <field name="vendor_rent_total" string="Vendor's price of the period" readonly="1"
+                                   invisible="not vendor_rent_total"/>
+                            <field name="rent_price_day" string="Rent per day"/>
+                            <field name="rent_days" string="Days"/>
+                            <field name="rent_delivery_fee" string="Delivery fee"/>
+                            <field name="rent_total" string="Rent total" class="fw-bold"/>
+                            <field name="rent_invoice_id" string="Invoice" invisible="not rent_invoice_id"/>
+                        </group>
+                    </group>
+                    <group string="Quote" invisible="kind != 'quote'">
+                        <group>
+                            <field name="vendor_quote_price" string="Vendor's price" readonly="1"/>
+                            <field name="vendor_quote_note" string="Vendor's note" readonly="1"/>
+                            <field name="vendor_quote_date" string="Vendor priced on" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="quote_order_id" string="Offer" readonly="1"/>
+                            <field name="needed_by" string="Needed by"/>
+                            <field name="offer_accepted_at" string="Offer accepted on"/>
+                            <field name="offer_paid_at" string="Paid on"/>
+                        </group>
+                    </group>
+                    <group string="Buyer's note" invisible="not note">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_equipment_requests_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_equipment_request_form"/>
+        <field name="act_window_id" ref="action_equipment_requests"/>
+    </record>
+    <record id="action_equipment_requests_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_equipment_request_list"/>
+        <field name="act_window_id" ref="action_equipment_requests"/>
+    </record>
+    <menuitem id="menu_equipment_requests" name="Equipment requests" parent="menu_marketplace_orders"
+              action="action_equipment_requests" sequence="30"/>
     <record id="view_promo_code_list" model="ir.ui.view">
         <field name="name">leaders.promo.code.list</field>
         <field name="model">leaders.promo.code</field>

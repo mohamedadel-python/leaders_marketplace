@@ -40,13 +40,22 @@ STEP_OF = {
     "data_confirmed": 3,
 }
 PHONE_RE = re.compile(r"^\+?[\d\s-]{8,20}$")
+# BUG-00904: the Egyptian tax registration number is 9 digits; a commercial registration number 3 to 10 digits
+TAX_NUMBER_RE = re.compile(r"^\d{9}$")
+COMMERCIAL_REG_RE = re.compile(r"^\d{3,10}$")
+ARABIC_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
+
+
+def _digits(value):
+    """The digits of a typed number: Arabic digits become Latin ones, spaces and dashes are dropped."""
+    return re.sub(r"[\s-]", "", (value or "").translate(ARABIC_DIGITS))
 # Egypt's 27 governorates (Helwan and 6th of October were merged back in 2011); res.country.state is not translated
 GOVERNORATES_AR = {
     "C": "القاهرة", "GZ": "الجيزة", "ALX": "الإسكندرية", "KB": "القليوبية", "DK": "الدقهلية", "SHR": "الشرقية",
     "GH": "الغربية", "MNF": "المنوفية", "BH": "البحيرة", "KFS": "كفر الشيخ", "DT": "دمياط", "PTS": "بورسعيد",
     "IS": "الإسماعيلية", "SUZ": "السويس", "FYM": "الفيوم", "BNS": "بني سويف", "MN": "المنيا", "AST": "أسيوط",
     "SHG": "سوهاج", "KN": "قنا", "LX": "الأقصر", "ASN": "أسوان", "BA": "البحر الأحمر", "WAD": "الوادي الجديد",
-    "MT": "مطروح", "SIN": "شمال سيناء", "JS": "جنوب سيناء",
+    "MT": "مطروح", "SIN": "شمال سيناء", "JS": "جنوب سيناء", "SU": "6 أكتوبر", "HU": "حلوان",
 }
 OPEN_STATES = ("draft", "submitted", "under_review")
 # email check of a visitor who is not signed in: the code lives in the session, hashed
@@ -215,6 +224,16 @@ class VendorApplyController(http.Controller):
         email = email_normalize(values["owner_email"]) if values["owner_email"] else False
         if values["owner_email"] and not email:
             errors["owner_email"] = _("Enter a valid email address.")
+        for name, pattern, message in (
+                ("tax_number", TAX_NUMBER_RE, _("The tax number is 9 digits.")),
+                ("commercial_registration_number", COMMERCIAL_REG_RE,
+                 _("The commercial registration number is 3 to 10 digits."))):
+            if values.get(name) and name not in errors:
+                digits = _digits(values[name])
+                if pattern.match(digits):
+                    values[name] = digits  # saved as plain digits
+                else:
+                    errors[name] = message
         if not values["business_type"]:
             errors["business_type_id"] = required
         if not values["state"]:

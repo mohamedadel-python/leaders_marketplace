@@ -122,17 +122,19 @@ class AccountService:
         orders = self.env["sale.order"].sudo().search([("partner_id", "child_of", commercial.id)], order="date_order desc, id desc")
         rows = []
         for order in orders:
-            lines = order.order_line.filtered(lambda l: not l.display_type and not getattr(l, "is_delivery", False))
+            lines = order._leaders_sf_lines()  # with the parts that went to the vendors
             if not lines:
                 continue
-            title = lines[0].product_id.display_name or lines[0].name
+            title = lines[0][0].display_name
             if len(lines) > 1:
                 title += " +%s" % (len(lines) - 1)
+            total = order.amount_total + sum(order.vendor_order_ids.filtered(
+                lambda v: v.state != "cancelled").mapped("amount_total"))
             rows.append({"id": str(order.id), "reference": order.leaders_public_ref_get(), "kind": "purchase", "title": title,
                          "placedAt": iso(order.date_order or order.create_date),
-                         "quantity": int(sum(lines.mapped("product_uom_qty"))),
-                         "status": SALE_STATES.get(order.state, "pending"),
-                         "total": minor(order.amount_total), "currency": order.currency_id.name})
+                         "quantity": int(sum(row[1] for row in lines)),
+                         "status": SALE_STATES.get(order._leaders_sf_state(), "pending"),
+                         "total": minor(total), "currency": order.currency_id.name})
         return rows
 
     def _requests(self, kind):

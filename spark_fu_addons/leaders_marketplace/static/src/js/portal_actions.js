@@ -59,6 +59,62 @@
         enableInlineValidation();
     }
 
+    // A refused save shows the page again with an error: the server hands back what was typed
+    // (#lm_form_state) and it goes back into the form it came from, so nothing has to be typed twice.
+    // Passwords and files are never kept (the browser cannot be given a file back).
+    function restoreFormState() {
+        var holder = document.getElementById("lm_form_state");
+        if (!holder) {
+            return;
+        }
+        var state;
+        try {
+            state = JSON.parse(holder.getAttribute("data-state") || "{}");
+        } catch (error) {
+            return;
+        }
+        var path = window.location.pathname;
+        document.querySelectorAll("form").forEach(function (form) {
+            if ((form.getAttribute("method") || "").toLowerCase() !== "post") {
+                return;
+            }
+            var link = document.createElement("a");
+            link.href = form.getAttribute("action") || path;
+            if (link.pathname !== path) {
+                return;  // another form of the page: it was not the one submitted
+            }
+            Object.keys(state).forEach(function (name) {
+                var values = state[name];
+                var fields = Array.prototype.filter.call(
+                    form.querySelectorAll("[name]"), function (field) { return field.name === name; });
+                fields.forEach(function (field, index) {
+                    var type = (field.type || "").toLowerCase();
+                    if (["hidden", "file", "password", "submit", "button"].indexOf(type) !== -1) {
+                        return;
+                    }
+                    if (type === "checkbox" || type === "radio") {
+                        field.checked = values.indexOf(field.value) !== -1;
+                    } else if (field.tagName === "SELECT" && field.multiple) {
+                        Array.prototype.forEach.call(field.options, function (option) {
+                            option.selected = values.indexOf(option.value) !== -1;
+                        });
+                    } else {
+                        field.value = values[fields.length > 1 ? index : 0] !== undefined
+                            ? values[fields.length > 1 ? index : 0] : field.value;
+                    }
+                    field.dispatchEvent(new Event("input", {bubbles: true}));
+                    field.dispatchEvent(new Event("change", {bubbles: true}));
+                });
+            });
+        });
+        var alertBox = document.getElementById("lm_form_error");
+        if (alertBox && alertBox.scrollIntoView) {
+            alertBox.scrollIntoView({block: "center"});
+        }
+    }
+    // After "load": the other scripts of the page have drawn their parts (specs, variants) by then.
+    window.addEventListener("load", restoreFormState);
+
     // Restore buttons when the page comes back from the bfcache (Back button).
     window.addEventListener("pageshow", function (event) {
         if (!event.persisted) {

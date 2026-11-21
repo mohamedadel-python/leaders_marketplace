@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 from datetime import timedelta
 from odoo import api, fields, models, _
@@ -83,6 +84,15 @@ class SaleOrderLine(models.Model):
             lines.flush_recordset(["discount"])
         return lines
 
+    def _leaders_sf_is_rent(self):
+        """A storefront rent line: the platform rents in its own name, it never goes to the vendor directly."""
+        self.ensure_one()
+        try:
+            options = json.loads(self.leaders_sf_options or "{}") if "leaders_sf_options" in self._fields else {}
+        except ValueError:
+            options = {}
+        return isinstance(options, dict) and options.get("listing") == "rent"
+
     def _marketplace_vendor_line_vals(self):
         self.ensure_one()
         return {
@@ -94,6 +104,8 @@ class SaleOrderLine(models.Model):
             "price_unit": self.price_unit,
             "discount": self.discount,
             "tax_ids": [(6, 0, self.tax_id.ids)],
+            # the storefront keeps showing the customer what they chose (listing, seller, services)
+            "leaders_sf_options": self.leaders_sf_options if "leaders_sf_options" in self._fields else False,
         }
 
 
@@ -211,7 +223,9 @@ class SaleOrder(models.Model):
             order.message_post(body=_(
                 "All products of this checkout belong to marketplace vendors. "
                 "They were moved to the vendor orders: %s", ", ".join(order.vendor_order_ids.mapped("name"))))
-        to_confirm = self - vendor_only
+        # a checkout already sent whole to its vendors at placement has nothing left to confirm
+        routed = self.filtered(lambda o: o.marketplace_vendor_only and o.state == "cancel")
+        to_confirm = self - vendor_only - routed
         res = super(SaleOrder, to_confirm).action_confirm() if to_confirm else True
         # Vendor orders are confirmed once the checkout itself is accepted.
         split_orders.vendor_order_ids.filtered(lambda v: v.state == "pending").action_confirm()
@@ -252,7 +266,56 @@ class SaleOrder(models.Model):
                     line.marketplace_offer_id = offer
             if line.marketplace_offer_id:
                 lines |= line
+        only = self.env.context.get("lm_split_line_ids")
+        if only is not None:  # a partial split: only these lines leave the checkout now
+            lines = lines.filtered(lambda l: l.id in only)
         return lines
+
+    def _leaders_route_direct_lines(self):
+        """The PM's rule: a subscription vendor (or one in the free period) deals with the buyer directly. Their
+        lines leave the checkout the moment it is placed and become a confirmed vendor order, so the vendor sees
+        it at once; commission vendors and the platform's own products wait for the admin as before.
+        Returns the vendor orders made."""
+        made = self.env["leaders.vendor.order"]
+        for order in self.filtered(lambda o: o.state in ("draft", "sent")):
+            direct = order._marketplace_vendor_lines().filtered(
+                lambda l: l.marketplace_offer_id.vendor_id._leaders_sells_direct() and not l._leaders_sf_is_rent())
+            if not direct:
+                continue
+            before = order.vendor_order_ids
+            order.with_context(lm_split_line_ids=direct.ids)._marketplace_split_vendor_lines()
+            new = (order.vendor_order_ids - before).filtered(lambda v: v.state == "pending")
+            new.action_confirm()
+            made |= new
+            if not order._marketplace_company_lines():
+                # nothing left for the admin: the checkout lives on as its vendor orders
+                order.write({"state": "cancel", "marketplace_vendor_only": True})
+            order.message_post(body=_(
+                "Sent directly to the vendor (subscription): %s", ", ".join(new.mapped("name"))))
+        return made
+
+    def _leaders_sf_lines(self):
+        """What the customer bought on this checkout, wherever the lines live now: the lines still on it and the
+        ones moved to vendor orders. Rows of (product, quantity, unit price, options json)."""
+        self.ensure_one()
+        rows = [(l.product_id, l.product_uom_qty, l.price_unit, l.leaders_sf_options if "leaders_sf_options" in l._fields else False)
+                for l in self.order_line if not l.display_type and not l.is_delivery and l.product_id]
+        for line in self.sudo().vendor_order_ids.line_ids.filtered(lambda l: not l.is_delivery):
+            rows.append((line.product_id, line.product_uom_qty, line.price_unit, line.leaders_sf_options))
+        return rows
+
+    def _leaders_sf_state(self):
+        """The checkout's state as the customer sees it: a checkout that went whole to vendors is open while any
+        of its vendor orders is."""
+        self.ensure_one()
+        if not self.marketplace_vendor_only:
+            return self.state
+        parts = self.sudo().vendor_order_ids
+        if parts and all(v.state == "cancelled" for v in parts):
+            return "cancel"
+        if parts and all(v.state in ("completed", "cancelled") for v in parts):
+            return "done"
+        return "sale"
 
     def _marketplace_split_vendor_lines(self):
         """Move vendor lines to one vendor order per vendor. Returns True if anything moved."""
@@ -1035,6 +1098,7 @@ class VendorOrderLine(models.Model):
     is_delivery = fields.Boolean(default=False)
     commission_amount = fields.Monetary(currency_field="currency_id")
     move_ids = fields.One2many("stock.move", "leaders_vendor_line_id")
+    leaders_sf_options = fields.Text(readonly=True, copy=False, help="The storefront options of the checkout line.")
 
     @api.depends("product_uom_qty", "qty_cancelled")
     def _compute_qty_kept(self):

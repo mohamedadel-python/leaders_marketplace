@@ -37,6 +37,7 @@ _AR = {
     "الموديل (العائلة)": "family", "التاجز": "tags", "للبيع أم للإيجار": "listing_type", "صور المنتج": "image_urls",
     "الضمان مقدم من": "warranty_provider", "نطاق الضمان": "warranty_scope", "صورة العداد": "meter_photo_url",
     "صورة لوحة البيانات": "plate_photo_url",
+    "الكمية": "initial_qty", "كود المنتج (SKU)": "sku", "كود المنتج": "sku",
 }
 base.HEADER_ALIASES.update({base._norm_header(k): v for k, v in _AR.items()})
 
@@ -47,35 +48,39 @@ _EQUIPMENT = [
     ("warranty_months", True), ("rentable", True), ("rent_price_day", False), ("video_url", False),
     ("image_urls", True), ("description", True), ("description_en", False),
     ("engine", False), ("engine_size", False), ("prime_power", False), ("city", False), ("similar_names", False),
-    ("warranty_provider", False), ("warranty_scope", False), ("meter_photo_url", False), ("plate_photo_url", False)]
+    ("warranty_provider", False), ("warranty_scope", False), ("meter_photo_url", False), ("plate_photo_url", False),
+    ("initial_qty", False), ("sku", False)]
 _PARTS = [
     ("name", True), ("name_en", False), ("category", True), ("tags", True), ("part_number", True),
     ("alt_numbers", False), ("sources", False), ("compatible", True), ("brand", True), ("origin", True), ("condition", True),
     ("price", True), ("warranty_months", False), ("image_urls", True), ("description", True),
-    ("description_en", False), ("similar_names", False)]
+    ("description_en", False), ("similar_names", False), ("initial_qty", False), ("sku", False)]
 _PRODUCTS = [
     ("name", True), ("name_en", True), ("category", True), ("brand", True), ("family", True), ("tags", False),
     ("origin", True), ("condition", True), ("capacity", False), ("capacity_unit", False), ("energy", False),
     ("price", False), ("serial", False), ("year", False), ("hours", False), ("warranty_months", False),
     ("listing_type", True), ("rent_price_day", False), ("video_url", False), ("image_urls", True),
     ("description", True), ("description_en", True), ("similar_names", False),
-    ("warranty_provider", False), ("warranty_scope", False), ("meter_photo_url", False), ("plate_photo_url", False)]
+    ("warranty_provider", False), ("warranty_scope", False), ("meter_photo_url", False), ("plate_photo_url", False),
+    ("initial_qty", False), ("sku", False)]
 base.COLUMNS["products"] = _PRODUCTS
 base.EXAMPLES["products"] = [
     "مولد ديزل 100 ك.ف.أ", "Silent Diesel Generator 100 kVA", "مولدات كهربائية", "Perkins", "P110-5", "مولد صامت",
     "أوريجنال", "جديد", "100", "KVA", "ديزل", "850000", "PK-EXAMPLE", "", "", "24", "للبيع", "",
     "https://example.com/v.mp4", "https://example.com/1.jpg, https://example.com/2.jpg", "وصف المولد",
-    "Generator description", "genset, مولد ديزل", "manufacturer", "Engine and alternator, 2 years", "", ""]
+    "Generator description", "genset, مولد ديزل", "manufacturer", "Engine and alternator, 2 years", "", "", "3", "GEN-100-01"]
 base.COLUMNS["equipment"] = _EQUIPMENT
 base.COLUMNS["spare_parts"] = _PARTS
 base.EXAMPLES["equipment"] = [
     "Silent Diesel Generator 100 KVA", "", "Electric Generators", "Perkins", "P110-5", "original", "new",
     "100", "kva", "diesel", "850000", "", "", "PK-EXAMPLE", "24", "yes", "4500", "https://example.com/v.mp4",
     "https://example.com/1.jpg, https://example.com/2.jpg, https://example.com/3.jpg", "Specs here", "",
-    "Perkins 1506A", "8.8", "90 kVA", "cairo", "diesel genset, مولد ديزل", "manufacturer", "Engine and alternator", "", ""]
+    "Perkins 1506A", "8.8", "90 kVA", "cairo", "diesel genset, مولد ديزل", "manufacturer", "Engine and alternator", "", "",
+    "3", "GEN-100-01"]
 base.EXAMPLES["spare_parts"] = [
-    "Engine Oil Filter", "", "Filters", "oil filter, 93mm", "LF9009", "", "P110-5, P150-3", "Fleetguard",
-    "original", "new", "320", "6", "https://example.com/1.jpg", "Specs here", "", "oil filter, فلتر زيت"]
+    "Engine Oil Filter", "", "Filters", "oil filter, 93mm", "LF9009", "", "", "P110-5, P150-3", "Fleetguard",
+    "original", "new", "320", "6", "https://example.com/1.jpg", "Specs here", "", "oil filter, فلتر زيت",
+    "25", "LF9009-01"]
 
 _CONDITION = {"new": "new", "جديد": "new", "used": "used", "مستعمل": "used",
               "refurbished": "refurbished", "مجدد": "refurbished"}
@@ -178,7 +183,12 @@ class VendorImportCatalog(models.Model):
             return value or False
 
         payload["similar_names"] = (raw.get("similar_names") or "").strip()
-        payload["sku"] = (raw.get("serial") or "").strip() or "CAT-" + uuid.uuid4().hex[:10].upper()
+        typed_sku = (raw.get("sku") or "").strip()[:64]
+        payload["sku"] = typed_sku or (raw.get("serial") or "").strip() or "CAT-" + uuid.uuid4().hex[:10].upper()
+        if typed_sku and self.vendor_id and self.env["leaders.marketplace.offer"].sudo().with_context(
+                active_test=False).search_count([("vendor_id", "=", self.vendor_id.id), ("seller_sku", "=", typed_sku)]):
+            errors.append(("sku", _("The product code %s is already used by another of your products.", typed_sku)))
+        payload["initial_qty"] = number("initial_qty", integer=True) or 0
         for column in ("name", "name_en", "category", "brand", "description", "description_en"):
             payload[column] = raw.get(column, "")
         for column in ("name", "category", "brand", "description"):
@@ -204,6 +214,8 @@ class VendorImportCatalog(models.Model):
                 errors.append(("model", _("model is required.")))
             payload["capacity"] = number("capacity", required=True)
             payload["capacity_unit"] = choice("capacity_unit", _UNIT, required=not raw.get("_sheet"))
+            if payload["capacity"] and not payload["capacity_unit"] and not any(c == "capacity_unit" for c, _m in errors):
+                errors.append(("capacity_unit", _("Choose the capacity unit (kVA, kW, ton...) next to the capacity.")))
             payload["energy"] = raw.get("energy", "").strip()
             payload["year"] = number("year", integer=True)
             payload["hours"] = number("hours", integer=True)
@@ -446,6 +458,10 @@ class VendorImportCatalog(models.Model):
             "currency_id": self.env.company.currency_id.id, "fulfillment_type": "fbm",
             "stock_location_id": vendor._marketplace_stock_location("fbm").id,
         })
+        # the quantity on hand; a used or refurbished machine is always one piece (the guide hides its quantity)
+        qty = 1 if payload["condition"] in ("used", "refurbished") else payload.get("initial_qty") or 0
+        if qty:
+            offer._leaders_set_fbm_stock(qty)
         if self.submit_after_import:
             offer._leaders_vendor_submit(vendor)
         return offer, warnings

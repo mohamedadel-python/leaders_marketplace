@@ -62,3 +62,6 @@ from . import test_auth_api
 from . import test_catalog_spec
 from . import test_services_api
 from . import test_storefront_content
+from . import test_push
+from . import test_vendor_service_pages
+from . import test_vendor_invoice_report

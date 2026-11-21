@@ -1,0 +1,60 @@
+<odoo>
+    <record id="view_leaders_push_device_list" model="ir.ui.view">
+        <field name="name">leaders.push.device.list</field>
+        <field name="model">leaders.push.device</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0">
+                <field name="user_id"/>
+                <field name="platform"/>
+                <field name="lang"/>
+                <field name="last_seen"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_leaders_push_message_list" model="ir.ui.view">
+        <field name="name">leaders.push.message.list</field>
+        <field name="model">leaders.push.message</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" decoration-danger="state == 'failed'" decoration-muted="state == 'sent'">
+                <field name="create_date"/>
+                <field name="user_id"/>
+                <field name="event"/>
+                <field name="title"/>
+                <field name="body" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'sent'" decoration-danger="state == 'failed'"
+                       decoration-warning="state == 'pending'"/>
+                <field name="error" optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_leaders_push_message_search" model="ir.ui.view">
+        <field name="name">leaders.push.message.search</field>
+        <field name="model">leaders.push.message</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="user_id"/>
+                <field name="event"/>
+                <field name="title"/>
+                <filter name="failed" string="Failed" domain="[('state', '=', 'failed')]"/>
+                <filter name="pending" string="Waiting" domain="[('state', '=', 'pending')]"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_leaders_push_device" model="ir.actions.act_window">
+        <field name="name">Registered devices</field>
+        <field name="res_model">leaders.push.device</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html"><p>The phones that told the server their Firebase token. A person may have several.</p></field>
+    </record>
+    <record id="action_leaders_push_message" model="ir.actions.act_window">
+        <field name="name">Push notifications sent</field>
+        <field name="res_model">leaders.push.message</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html"><p>Every push notification, with how it went. Failed ones say why.</p></field>
+    </record>
+    <menuitem id="menu_leaders_push" name="Push notifications" parent="menu_configuration" sequence="95"/>
+    <menuitem id="menu_leaders_push_message" name="Push notifications sent" parent="menu_leaders_push"
+              action="action_leaders_push_message" sequence="10"/>
+    <menuitem id="menu_leaders_push_device" name="Registered devices" parent="menu_leaders_push"
+              action="action_leaders_push_device" sequence="20"/>
+</odoo>
