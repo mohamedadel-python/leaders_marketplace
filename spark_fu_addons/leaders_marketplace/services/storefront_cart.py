@@ -41,6 +41,15 @@ class CartService:
             return minor(line.offer_id.price + t.sudo().leaders_inspection_cost) if line.offer_id.price > 0 else None
         return minor(t.leaders_display_price) if t.leaders_display_price > 0 else None
 
+    def service_lines(self, line):
+        """The services of a cart line that are real services of the product (a code like ``operator`` that is no
+        service page stays in ``options.services`` and is not listed here)."""
+        asked = [s for s in (line.services or "").split(",") if s]
+        if not asked:
+            return []
+        pages = {p.leaders_slug: p for p in self.store.product_services(line.product_tmpl_id)}
+        return [self.store.service_option(pages[s]) for s in asked if s in pages]
+
     def render(self, cart):
         lines, subtotal = [], 0
         for line in (cart.line_ids if cart else []):
@@ -59,12 +68,19 @@ class CartService:
                 options["backorder"] = line.backorder
             data = {"lineId": line.line_key, "product": self.store.product(line.product_tmpl_id),
                     "quantity": line.quantity, "options": options}
+            service_lines = self.service_lines(line)
+            if service_lines:  # optional: the services asked with this line, as the product page lists them
+                data["serviceLines"] = service_lines
+            if not self.store.is_visible(line.product_tmpl_id):  # optional: false when the product left the storefront
+                data["available"] = False
             unit = self.unit_price(line)
             if unit is not None:
                 data["unitPrice"] = unit
                 subtotal += unit * line.quantity
             lines.append(data)
+        # services are quote-only: they add nothing to what is paid, each one becomes a request linked to the order
         return {"id": str(cart.id) if cart else "", "lines": lines, "subtotal": subtotal,
+                "servicesTotal": 0, "total": subtotal,
                 "updatedAt": (cart.write_date if cart else fields.Datetime.now()).strftime("%Y-%m-%dT%H:%M:%SZ")}
 
     # ---------------------------------------------------------- validation
@@ -105,7 +121,8 @@ class CartService:
                 errors["options.source"] = "Source applies to parts: one of %s." % (", ".join(allowed) or "turkish, chinese, egyptian")
         services = raw.get("services", (base["services"] or "").split(",") if base else [])
         services = services if isinstance(services, list) else []
-        if any(s not in SERVICES for s in services):
+        known = set(SERVICES) | {p.leaders_slug for p in self.store.product_services(tmpl)}  # codes and the product's services
+        if any(s not in known for s in services):
             errors["options.services"] = "Unknown service."
         offer = self.env["leaders.marketplace.offer"]
         offer_id = raw.get("offerId", ("platform" if base.get("platform_seller") else base["offer_id"]) if base else None)
@@ -125,7 +142,7 @@ class CartService:
         elif backorder and listing != "buy":
             errors["options.backorder"] = "Only bought products can be sourced."
         return {"listing": listing, "rent_period": period, "source": source or False,
-                "services": ",".join(sorted(set(s for s in services if s in SERVICES))) or False,
+                "services": ",".join(sorted(set(s for s in services if s in known))) or False,
                 "offer_id": offer.id or False, "platform_seller": platform, "backorder": backorder}
 
     def _product(self, product_id):

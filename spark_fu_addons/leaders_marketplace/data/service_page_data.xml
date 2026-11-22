@@ -358,6 +358,7 @@
         <field name="sequence">70</field>
         <field name="is_published" eval="True"/>
         <field name="leaders_service_mandatory" eval="False"/>
+        <field name="leaders_service_is_delivery" eval="True"/>
         <field name="leaders_service_responsible_id" ref="base.user_admin"/>
         <field name="public_categ_ids" eval="[(6, 0, [ref('leaders_categ_delivery')])]"/>
         <field name="name">Delivery &amp; transport</field>

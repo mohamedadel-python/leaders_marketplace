@@ -7,6 +7,7 @@ from odoo import http, fields
 from odoo.http import request
 
 from ..services.storefront import Storefront, fmt_num, minor
+from ..models.storefront import SERVICES
 from ..services.storefront_cart import PERIOD_DAYS
 from ..tools.auth_errors import AuthApiError, json_response, validation_error
 from .storefront_common import bearer_user, json_body, online_payments_ready, rate_limit, storefront_api
@@ -109,21 +110,21 @@ class StorefrontOrders(http.Controller):
             raise validation_error({"items.%s" % index: "This product is sold on quote only."})
         return minor(template.leaders_display_price)
 
-    @http.route("/orders", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, save_session=False)
-    @storefront_api(["POST"])
-    def place(self, cors, **kw):
-        rate_limit("sf_orders")
-        user = bearer_user(required=True)
-        body = json_body()
+    def _prepare(self, user, body, preview=False):
+        """Check the body of an order and price it. ONE place for ``POST /orders`` and ``POST /orders/preview``, so the
+        totals a customer sees before confirming are the ones the order gets. ``preview`` asks for the governorate
+        only (no address, payment or contract yet)."""
         errors = {}
         items = body.get("items") if isinstance(body.get("items"), list) else []
         shipping = body.get("shipping") if isinstance(body.get("shipping"), dict) else {}
         if not items:
             errors["items"] = "At least one item is required."
-        for key in ("name", "phone", "governorate", "city", "address"):
+        for key in (("governorate",) if preview else ("name", "phone", "governorate", "city", "address")):
             if not isinstance(shipping.get(key), str) or not shipping[key].strip():
                 errors["shipping.%s" % key] = "Required."
-        if body.get("payment") not in ("cod", "card", "paypal", "applePay"):
+        if body.get("payment") is None and preview:
+            pass  # the payment method is chosen after the totals are shown
+        elif body.get("payment") not in ("cod", "card", "paypal", "applePay"):
             errors["payment"] = "Invalid payment method."
         elif body["payment"] != "cod" and not online_payments_ready(request.env):
             # no gateway yet: an order that can never be paid is not created
@@ -134,8 +135,10 @@ class StorefrontOrders(http.Controller):
         if not zone:
             raise validation_error({"shipping.governorate": "We do not deliver to this governorate."})
         promo = self._promo(body["promoCode"]) if body.get("promoCode") else None
+        store = Storefront(request.env)
 
         lines = []
+        services = []  # (template, quantity, service page) asked with a bought part
         asked = {}  # units asked so far per (seller, product), across the lines
         for index, item in enumerate(items):
             item = item if isinstance(item, dict) else {}
@@ -144,6 +147,10 @@ class StorefrontOrders(http.Controller):
             product = template.product_variant_id if template else None
             if not product:
                 raise AuthApiError(404, "not_found", "Product not found.")
+            if not store.is_visible(template):  # it may have been in the cart before it was unpublished
+                raise AuthApiError(409, "product_unavailable", "This product is no longer available.",
+                                   fields={"items.%s" % index: "No longer available."},
+                                   extra={"index": index, "productId": str(template.id)})
             quantity = item.get("quantity")
             if isinstance(quantity, bool) or not isinstance(quantity, int) or not 1 <= quantity <= 999:
                 raise validation_error({"items.%s.quantity" % index: "Quantity must be between 1 and 999."})
@@ -160,7 +167,7 @@ class StorefrontOrders(http.Controller):
                 raise AuthApiError(409, "out_of_stock", "This product is out of stock.",
                                    fields={"items.%s" % index: "Out of stock."})
             if options.get("listing", "buy") == "buy":
-                Storefront(request.env).refuse_unsold(template, fields={"items.%s" % index: "Out of stock."})
+                store.refuse_unsold(template, fields={"items.%s" % index: "Out of stock."})
             offer = self._offer(template, options, index)
             unit = self._unit_price(template, options, index, offer)
             if item.get("unitPrice") != unit:
@@ -171,22 +178,20 @@ class StorefrontOrders(http.Controller):
                 seller = ("platform" if options.get("offerId") == "platform" else offer.id, template.id)
                 asked[seller] = asked.get(seller, 0) + quantity
                 try:
-                    Storefront(request.env).stock_check(template, offer, asked[seller],
-                                                        platform=options.get("offerId") == "platform")
+                    store.stock_check(template, offer, asked[seller], platform=options.get("offerId") == "platform")
                 except AuthApiError as error:  # say which line
                     error.fields = {"items.%s.quantity" % index: error.fields.get("quantity")}
                     error.extra["index"] = index
                     raise
+                chosen = options.get("services") or []
+                chosen = chosen if isinstance(chosen, list) else str(chosen).split(",")
+                pages = {p.leaders_slug: p for p in store.product_services(template)}
+                if any(code not in pages and code not in SERVICES for code in chosen):
+                    raise validation_error({"items.%s.options.services" % index: "Unknown service."})
+                services += [(template, quantity, pages[code], options) for code in chosen if code in pages]
             options["_offer"] = offer.id or False
             lines.append((template, product, quantity, options, unit))
 
-        partner = user.partner_id.commercial_partner_id
-        shipping_partner = request.env["res.partner"].sudo().create({
-            "name": shipping["name"].strip(), "phone": shipping["phone"].strip(),
-            "email": shipping.get("email") or False, "street": shipping["address"].strip(),
-            "city": shipping["city"].strip(), "state_id": state.id,
-            "country_id": state.country_id.id, "parent_id": partner.id, "type": "delivery",
-        })
         goods = sum(unit * quantity for _t, _p, quantity, _o, unit in lines) / 100.0
         if zone.minimum_order and goods < zone.minimum_order:
             raise validation_error({"items": "The minimum order for delivery to this governorate is %s." % fmt_num(zone.minimum_order)})
@@ -195,13 +200,82 @@ class StorefrontOrders(http.Controller):
             services = services if isinstance(services, list) else str(services).split(",")
             return options.get("listing") != "rent" or "delivery" in services
         shipped = [line for line in lines if needs_delivery(line[3])]
-        fee = 0.0 if not shipped or (zone.free_shipping_threshold and goods >= zone.free_shipping_threshold) else \
-            zone.price + self._delivery_surcharge([template for template, _p, _q, _o, _u in shipped])
+        free = bool(shipped and zone.free_shipping_threshold and goods >= zone.free_shipping_threshold)
+        surcharge, surcharge_categ = self._delivery_surcharge_info([line[0] for line in shipped])
+        fee = 0.0 if not shipped or free else zone.price + surcharge
         rent_lines = [line for line in lines if line[3].get("listing") == "rent"]
         contract = request.env["leaders.site.page"].sudo().search([("slug", "=", "rent-contract"), ("published", "=", True)],
                                                                   limit=1)
-        if rent_lines and contract and body.get("contractAccepted") is not True:
+        if not preview and rent_lines and contract and body.get("contractAccepted") is not True:
             raise validation_error({"contractAccepted": "Accept the rental contract to book."})
+        return {"user": user, "body": body, "shipping": shipping, "state": state, "zone": zone, "promo": promo,
+                "lines": lines, "services": services, "goods": goods, "fee": fee, "free": free,
+                "surcharge": surcharge if shipped and not free else 0.0, "surcharge_categ": surcharge_categ,
+                "rent_lines": rent_lines, "contract": contract}
+
+    @staticmethod
+    def _totals(goods_minor, percent_off, fee_minor):
+        """The money of an order, in piastres: the same sum for the preview and for the order's detail."""
+        discount = int(round(goods_minor * (percent_off or 0) / 100.0))
+        return {"subtotal": goods_minor, "shipping": fee_minor, "discount": discount,
+                "total": goods_minor - discount + fee_minor}
+
+    @http.route("/orders/preview", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, save_session=False)
+    @storefront_api(["POST"])
+    def preview(self, cors, **kw):
+        """What the order would cost, before it is placed. Takes the body of ``POST /orders`` (the shipping
+        governorate is enough; payment, address and contract are not needed) and answers with the very totals the
+        order will get, the delivery surcharge included, and the services asked with each line."""
+        rate_limit("sf_orders")
+        user = bearer_user(required=True)
+        ctx = self._prepare(user, json_body(), preview=True)
+        goods = int(round(ctx["goods"] * 100))
+        percent = ctx["promo"].percent_off if ctx["promo"] else 0
+        totals = self._totals(goods, percent, minor(ctx["fee"]))
+        totals["servicesTotal"] = 0  # services are quoted later: nothing is added to what is paid now
+        totals["deliverySurcharge"] = minor(ctx["surcharge"])
+        if ctx["surcharge"] and ctx["surcharge_categ"]:
+            totals["surchargeCategory"] = ctx["surcharge_categ"].leaders_slug or str(ctx["surcharge_categ"].id)
+        store = Storefront(request.env)
+        items = []
+        for index, (template, _p, quantity, options, unit) in enumerate(ctx["lines"]):
+            row = {"index": index, "productId": str(template.id), "quantity": quantity, "unitPrice": unit,
+                   "lineTotal": unit * quantity}
+            mine = [store.service_option(page) for t, _q, page, _o in ctx["services"] if t == template]
+            if mine:
+                row["serviceLines"] = mine
+            items.append(row)
+        zone = ctx["zone"]
+        out = {"items": items, "totals": totals,
+               "shipping": {"fee": minor(zone.price), "free": ctx["free"],
+                            "leadDays": {"min": zone.lead_days_min, "max": zone.lead_days_max}}}
+        if zone.free_shipping_threshold > 0:
+            out["shipping"]["freeShippingThreshold"] = minor(zone.free_shipping_threshold)
+        # the services that are asked, not priced: each becomes a request linked to the order once it is placed
+        quote = {}
+        for template, _q, page, _o in ctx["services"]:
+            if not page.leaders_service_is_delivery:
+                quote.setdefault(page.leaders_slug, store.service_option(page))
+        if quote:
+            out["quoteServices"] = list(quote.values())
+        return json_response(out, 200, cors)
+
+    @http.route("/orders", type="http", auth="public", methods=["POST", "OPTIONS"], csrf=False, save_session=False)
+    @storefront_api(["POST"])
+    def place(self, cors, **kw):
+        rate_limit("sf_orders")
+        user = bearer_user(required=True)
+        body = json_body()
+        ctx = self._prepare(user, body)
+        shipping, state, zone, promo = ctx["shipping"], ctx["state"], ctx["zone"], ctx["promo"]
+        lines, fee, rent_lines, contract = ctx["lines"], ctx["fee"], ctx["rent_lines"], ctx["contract"]
+        partner = user.partner_id.commercial_partner_id
+        shipping_partner = request.env["res.partner"].sudo().create({
+            "name": shipping["name"].strip(), "phone": shipping["phone"].strip(),
+            "email": shipping.get("email") or False, "street": shipping["address"].strip(),
+            "city": shipping["city"].strip(), "state_id": state.id,
+            "country_id": state.country_id.id, "parent_id": partner.id, "type": "delivery",
+        })
         order = request.env["sale.order"].sudo().create({
             "partner_id": partner.id, "partner_invoice_id": partner.id,
             "partner_shipping_id": shipping_partner.id,
@@ -265,10 +339,55 @@ class StorefrontOrders(http.Controller):
                     template.id, options.get("listing"), options.get("rentPeriod"), options.get("source"), services,
                     int(options["offerId"]) if str(options.get("offerId") or "").isdigit() and options.get("listing") == "buy" else None))
             cart.line_ids.filtered(lambda l: l.line_key in ordered).unlink()
+        requests_opened = self._open_service_requests(order, ctx, locale)
         result = {"reference": reference}
+        if requests_opened:  # optional: the services asked with the parts, each a request linked to this order
+            result["serviceRequests"] = [self._service_request_row(r) for r in requests_opened]
         if body["payment"] != "cod":
             result["paymentUrl"] = "%s/orders/%s/payment?locale=%s" % (self._base_url(), reference, locale)
         return json_response(result, 201, cors)
+
+    @staticmethod
+    def _service_request_row(record):
+        """A service asked with a parts order: its own reference and where it stands."""
+        status = {"executing": "inProgress"}.get(record.state, record.state)
+        return {"reference": record.name, "service": record.service or "", "name": record.service_name() or "",
+                "status": status}
+
+    def _open_service_requests(self, order, ctx, locale):
+        """One service request per service asked with the parts, linked to the order. The service is quoted later,
+        so it is a request and never a charge; and whatever goes wrong here, the order is already placed."""
+        import logging
+        by_page = {}
+        for template, quantity, page, options in ctx["services"]:
+            if page.leaders_service_is_delivery:
+                continue  # the shipping of the order is the delivery: not charged, not asked a second time
+            by_page.setdefault(page, []).append((template, quantity, options))
+        opened = []
+        user, shipping = ctx["user"], ctx["shipping"]
+        for page, asked in by_page.items():
+            try:
+                with request.env.cr.savepoint():
+                    details = {"orderReference": order.leaders_public_ref_get(), "city": shipping["city"].strip(),
+                               "governorate": shipping["governorate"].strip(), "address": shipping["address"].strip()}
+                    email = shipping.get("email") or user.email
+                    if email:
+                        details["email"] = email
+                    record = request.env["leaders.customer.request"].sudo().create({
+                        "kind": "service", "partner_id": order.partner_id.id, "phone": shipping["phone"].strip(),
+                        "product_tmpl_id": asked[0][0].id, "title": page.leaders_slug, "quantity": asked[0][1],
+                        "service": page.leaders_slug, "service_id": page.id, "parts_order_id": order.id,
+                        "service_details": json.dumps(details), "contact_name": shipping["name"].strip()[:120] or False,
+                        "contact_email": email or False, "request_locale": locale,
+                        "note": "Asked with the spare-parts order %s." % details["orderReference"],
+                        "line_ids": [(0, 0, {"product_tmpl_id": t.id, "quantity": q, "options": json.dumps(
+                            {k: v for k, v in o.items() if k != "_offer"})}) for t, q, o in asked]})
+                    record.notify_service_responsible()
+                    opened.append(record)
+            except Exception:  # the parts order stands whatever happens to the service request
+                logging.getLogger(__name__).exception("Could not open the %s service request of order %s",
+                                                      page.leaders_slug, order.name)
+        return opened
 
     @http.route("/orders/<string:reference>", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, save_session=False)
     @storefront_api(["GET"])
@@ -358,19 +477,21 @@ class StorefrontOrders(http.Controller):
         if order.leaders_sf_notes:
             details["notes"] = order.leaders_sf_notes
         stage, history = self._stage(order)
-        discount = int(round(goods * order.leaders_sf_percent_off / 100.0))
         fee = minor(order.leaders_sf_delivery_fee)
         placed = order.create_date
         low, high = order.leaders_sf_lead_min or 3, order.leaders_sf_lead_max or max(order.leaders_sf_lead_min, 5)
         result = {"reference": order.leaders_public_ref_get(), "placedAt": placed.strftime("%Y-%m-%dT%H:%M:%SZ"),
                   "stage": stage, "history": history, "cancelled": order._leaders_sf_state() == "cancel",
                   "lines": lines, "shipping": details, "payment": order.leaders_sf_payment or "cod",
-                  "totals": {"subtotal": goods, "shipping": fee, "discount": discount, "total": goods - discount + fee},
+                  "totals": self._totals(goods, order.leaders_sf_percent_off, fee),
                   "eta": {"from": (placed + timedelta(days=low)).date().isoformat(),
                           "to": (placed + timedelta(days=high)).date().isoformat()}}
         done = order.picking_ids.filtered(lambda p: p.state == "done" and "carrier_id" in p._fields and p.carrier_id)
         if done:
             result["courier"] = {"name": done[0].carrier_id.name, "phone": done[0].carrier_id.company_id.phone or ""}
+        asked = request.env["leaders.customer.request"].sudo().search([("parts_order_id", "=", order.id)], order="id")
+        if asked:  # optional: the services asked with the parts, each with its own reference and status
+            result["serviceRequests"] = [self._service_request_row(r) for r in asked]
         until = self._returnable_until(order)
         if until:  # optional: the last moment a return can be asked; omitted when nothing can be returned now
             result["returnableUntil"] = until.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -386,11 +507,21 @@ class StorefrontOrders(http.Controller):
         return max((v.date_shipped + timedelta(days=window) for v in parts), default=None)
 
     @staticmethod
+    def _delivery_surcharge_info(templates):
+        """``(amount, category)``: the highest delivery surcharge of the subcategories in the order, charged once,
+        and the category it comes from."""
+        store = Storefront(request.env)
+        best, categ = 0.0, None
+        for t in templates:
+            sub = store.subcategory(t)
+            if sub and sub._leaders_effective().leaders_delivery_surcharge > best:
+                best, categ = sub._leaders_effective().leaders_delivery_surcharge, sub
+        return best, categ
+
+    @staticmethod
     def _delivery_surcharge(templates):
         """The highest delivery surcharge of the subcategories in the order, charged once."""
-        store = Storefront(request.env)
-        return max([store.subcategory(t)._leaders_effective().leaders_delivery_surcharge
-                    for t in templates if store.subcategory(t)] or [0.0])
+        return StorefrontOrders._delivery_surcharge_info(templates)[0]
 
     @http.route("/promo-codes/<string:code>", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, save_session=False)
     @storefront_api(["GET"])

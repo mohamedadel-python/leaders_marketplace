@@ -71,6 +71,9 @@ class ProductTemplateServicePage(models.Model):
         "Service icon", attachment=True, help="Square, single-colour SVG (or PNG) shown at 36 px.")
     leaders_service_mandatory = fields.Boolean(
         "Required on purchase", help="Shows the 'required on purchase' badge and rule on the services pages.")
+    leaders_service_is_delivery = fields.Boolean(
+        "Is the delivery", help="The service is the delivery itself. Chosen with spare parts it adds nothing: the "
+        "shipping of the order already covers it, so it is never charged twice.")
     leaders_service_checklist_ids = fields.One2many(
         "leaders.service.checklist.item", "product_tmpl_id", string="Checklist", copy=True)
     leaders_service_responsible_id = fields.Many2one(
@@ -253,6 +256,10 @@ class LeadersCustomerRequestService(models.Model):
     service_id = fields.Many2one(
         "product.template", "Service page", ondelete="set null", index=True,
         domain=[("leaders_service_page", "=", True)])
+
+    parts_order_id = fields.Many2one(
+        "sale.order", "Spare-parts order", readonly=True, copy=False, index=True, ondelete="set null",
+        help="The spare-parts order this service was asked with. The order does not wait for it.")
 
     service_label = fields.Char("Service", compute="_compute_service_form", help="The service asked, by its name.")
     service_email = fields.Char("Email", compute="_compute_service_form")

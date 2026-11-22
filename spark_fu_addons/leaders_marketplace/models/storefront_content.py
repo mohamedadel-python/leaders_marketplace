@@ -116,6 +116,25 @@ class LeadersSitePage(models.Model):
 
     _sql_constraints = [("slug_uniq", "unique(slug)", "A page with this slug already exists.")]
 
+    @api.model
+    def _leaders_seed_pages(self):
+        """Give the legal pages (privacy, terms, rent-contract) their text, in English and Arabic, and publish
+        them. Only a page with no text yet is filled, so what the admin wrote is never overwritten."""
+        from .site_pages_seed import PAGES
+        arabic = self.env["res.lang"].search([("code", "like", "ar%"), ("active", "=", True)], limit=1)
+        for slug, page in PAGES.items():
+            english = self.sudo().with_context(lang="en_US", active_test=False)  # English is the source text
+            record = english.search([("slug", "=", slug)], limit=1)
+            if record and record.content:
+                continue
+            title, content = page["title"], page["content"]
+            if not record:
+                record = english.create({"slug": slug, "title": title[0]})
+            record.write({"title": title[0], "content": content[0], "published": True})
+            if arabic:
+                record.with_context(lang=arabic.code).write({"title": title[1], "content": content[1]})
+        return True
+
 
 class LeadersTestimonial(models.Model):
     """A customer quote of the landing page, with an optional video."""

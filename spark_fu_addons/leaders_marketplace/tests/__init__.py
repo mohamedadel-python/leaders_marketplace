@@ -65,3 +65,5 @@ from . import test_storefront_content
 from . import test_push
 from . import test_vendor_service_pages
 from . import test_vendor_invoice_report
+from . import test_app_store_readiness
+from . import test_checkout_services

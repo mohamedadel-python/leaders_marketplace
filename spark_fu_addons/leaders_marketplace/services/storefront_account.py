@@ -1,5 +1,6 @@
 """Storefront account: profile, orders tabs, notification preferences, password."""
 import re
+import secrets
 
 from ..tools.auth_errors import AuthApiError, validation_error
 from datetime import date
@@ -230,6 +231,54 @@ class AccountService:
             raise validation_error(errors)
         self.partner.commercial_partner_id.write({field: body[key] for key, field in keys.items()})
         return self.prefs()
+
+    # ------------------------------------------------------ delete the account
+    def open_requests(self):
+        """What is still under way for this person: orders being fulfilled, and quotes, services, rentals and
+        equipment requests that are neither completed nor cancelled."""
+        rows = [r for r in self._purchases() if r["status"] == "inProgress"]
+        for kind in ("service", "quote"):
+            rows += self._requests(kind)
+        rows += self._equipment_requests("purchase") + self._equipment_requests("rent")
+        return [r for r in rows if r["status"] not in ("completed", "cancelled")]
+
+    def delete_account(self):
+        """Delete the signed-in person's account (the store rules of Apple and Google ask for it).
+
+        The person is erased from the account: the login, name, phone, e-mail, addresses, picture, devices, cart,
+        wishlist and every session go. The orders, invoices and payments stay, as the law asks of a seller, but
+        under "Deleted user", so nobody can be told from them. Refused (409) while the person has open orders or
+        requests (they would lose their delivery) and for vendor and staff accounts.
+        """
+        user, partner = self.user, self.partner
+        if self.auth.account_type(user) == "vendor" or partner.commercial_partner_id.is_marketplace_vendor:
+            raise AuthApiError(409, "vendor_account", "A vendor account cannot be deleted from the app. Contact support.")
+        if user.has_group("base.group_user"):
+            raise AuthApiError(409, "staff_account", "A staff account cannot be deleted from the app.")
+        open_rows = self.open_requests()
+        if open_rows:
+            raise AuthApiError(409, "open_requests",
+                               "Finish or cancel your open orders and requests before deleting the account.",
+                               extra={"openCount": len(open_rows)})
+        env = self.env
+        env["leaders.auth.refresh.token"].sudo().search([("user_id", "=", user.id)]).unlink()
+        env["leaders.auth.reset.code"].sudo().search([("user_id", "=", user.id)]).unlink()
+        env["leaders.wishlist.item"].sudo().search([("user_id", "=", user.id)]).unlink()
+        env["leaders.cart"].sudo().search([("user_id", "=", user.id)]).unlink()
+        env["leaders.push.device"].sudo().search([("user_id", "=", user.id)]).unlink()
+        label = "Deleted user"
+        blank = {"name": label, "email": False, "phone": False, "mobile": False, "street": False, "street2": False,
+                 "city": False, "zip": False, "vat": False, "website": False, "image_1920": False, "comment": False,
+                 "company_name": False, "leaders_activity_type": False, "leaders_commercial_register": False,
+                 "leaders_notify_orders": False, "leaders_notify_quotes": False, "leaders_notify_promotions": False,
+                 "leaders_notify_newsletter": False, "leaders_notify_sms": False, "leaders_notify_whatsapp": False,
+                 "leaders_notify_email": False}
+        # the person's own contact; the company they belong to (if any) is not theirs to erase
+        partner.write({key: value for key, value in blank.items() if key in partner._fields})
+        user.write({"login": "deleted-%s@deleted.invalid" % user.id, "password": secrets.token_urlsafe(32),
+                    "active": False})
+        user.partner_id.active = False
+        return None
 
     # ------------------------------------------------------------ password
     def change_password(self, body):

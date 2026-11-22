@@ -24069,3 +24069,58 @@ msgstr ""
 #: code:addons/leaders_marketplace/tools/api_messages.py:0
 msgid "This request cannot be marked as received now."
 msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "A vendor account cannot be deleted from the app. Contact support."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "A staff account cannot be deleted from the app."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "Finish or cancel your open orders and requests before deleting the account."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:leaders.site.page,title:leaders_marketplace.site_page_rent_contract
+msgid "Equipment rental contract"
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "This product is no longer available."
+msgstr ""
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "No longer available."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_product_template__leaders_service_is_delivery
+msgid "Is the delivery"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_product_template__leaders_service_is_delivery
+msgid "The service is the delivery itself. Chosen with spare parts it adds nothing: the shipping of the order already covers it, so it is never charged twice."
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_customer_request__parts_order_id
+msgid "Spare-parts order"
+msgstr ""
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_customer_request__parts_order_id
+msgid "The spare-parts order this service was asked with. The order does not wait for it."
+msgstr ""

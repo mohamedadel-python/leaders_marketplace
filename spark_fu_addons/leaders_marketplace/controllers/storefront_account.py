@@ -31,6 +31,15 @@ class StorefrontAccount(http.Controller):
             return json_response(service.update_profile(json_body()), 200, cors)
         return json_response(service.profile(), 200, cors)
 
+    @http.route("/account", type="http", auth="public", methods=["DELETE", "OPTIONS"], csrf=False, save_session=False)
+    @storefront_api(["DELETE"])
+    def delete_account(self, cors, **kw):
+        """Delete the signed-in account (store rule): 204; 409 while orders/requests are open or for vendor/staff."""
+        rate_limit("sf_account")
+        service = _service()
+        service.delete_account()
+        return _session_cookies(json_response(None, 204, cors), None, 0)  # signed out here too
+
     @http.route("/account/business", type="http", auth="public", methods=["PATCH", "OPTIONS"], csrf=False, save_session=False)
     @storefront_api(["PATCH"])
     def business(self, cors, **kw):

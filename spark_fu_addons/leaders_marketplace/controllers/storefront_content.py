@@ -131,6 +131,19 @@ class StorefrontContent(http.Controller):
         """The logo to anyone (no cookie), so the storefront can show it on any origin."""
         return _image(request.env["leaders.site.partner"].sudo().browse(partner_id).exists(), "logo")
 
+    # ------------------------------------------------------------------ seller logos
+    @http.route("/sellers/<string:ref>/logo", type="http", auth="public", methods=["GET"], csrf=False, save_session=False)
+    def seller_logo(self, ref, **kw):
+        """The logo of a seller card (``sellerLogo`` / ``rentSellerLogo``), to anyone: the platform's (``platform``)
+        or a vendor's own. A vendor who sells under the platform's name has no logo of his own to show."""
+        if ref == "platform":
+            return _image(request.env.company.sudo(), "logo")
+        partner = request.env["res.partner"].sudo().browse(int(ref)).exists() if ref.isdigit() else None
+        if not partner or not partner.is_marketplace_vendor or partner.vendor_state not in ("approved", "frozen") \
+                or partner._leaders_name_hidden():
+            return _image(None, "image_1920")
+        return _image(partner, "image_1920")
+
     # -------------------------------------------------------------------- pages
     @http.route("/pages/<string:slug>", type="http", auth="public", methods=["GET", "OPTIONS"], csrf=False, save_session=False)
     @storefront_api(["GET"])

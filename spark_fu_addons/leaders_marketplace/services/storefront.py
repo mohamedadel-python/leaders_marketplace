@@ -6,6 +6,7 @@ Optional fields are omitted when unset, never sent as null.
 import math
 import re
 
+from odoo import fields
 from odoo.osv import expression
 
 from ..models.catalog_spec import normalize_search
@@ -119,7 +120,7 @@ class Storefront:
         eff = subcat._leaders_effective() if subcat else self.Category
         rentable = t.leaders_rentable
         buyable = eff.leaders_can_buy if subcat else True
-        listing = "buy" if buyable or not rentable else "rent"
+        listing = "rent" if rentable else "buy"  # the vendor chose "for sale or for rent"; availableFor says what else
         available = (["buy"] if buyable else []) + (["rent"] if rentable else [])
         data = {
             "id": str(t.id), "slug": t.leaders_slug or str(t.id), "name": t.name or "",
@@ -143,6 +144,9 @@ class Storefront:
             # the platform rents it out in its own name, at the vendor's price plus the platform margin
             data["rentPrice"] = minor(t._leaders_rent_customer_price())
             data["rentSeller"] = self.env.company.name
+            logo = self.seller_logo(None)
+            if logo:
+                data["rentSellerLogo"] = logo
         description = (t.description_sale or "").strip()
         if description:  # optional: the free-text description, in the Accept-Language language
             data["description"] = description
@@ -152,12 +156,19 @@ class Storefront:
         sources = self._sources(t)
         if sources:
             data["sources"] = sources
-        services = t._leaders_available_services() if t.leaders_kind else []
-        if services:  # optional: the services the customer can ask with this product
-            data["services"] = [{"slug": s.leaders_slug, "name": s.name} for s in services]
-        own = t._leaders_vendor_own_services() if t.leaders_kind else []
-        if own:  # the vendor's own services ride in the same list, with a slug of their own
-            data["services"] = data.get("services", []) + [s._leaders_card() for s in own]
+        entries = []
+        if t.leaders_kind:  # optional: the services the customer can ask with this product (platform's, then the vendor's own)
+            entries = [self.service_option(p) for p in t._leaders_available_services()]
+            for own in t._leaders_vendor_own_services():
+                page = own.service_tmpl_id.sudo()
+                entry = self.service_option(page) if page and page.is_published and page.leaders_slug else own._leaders_card()
+                if entry["slug"] not in {e["slug"] for e in entries}:
+                    entries.append(entry)
+        if entries:
+            data["services"] = entries
+        surcharge = eff.leaders_delivery_surcharge if subcat else 0.0
+        if surcharge > 0:  # optional: what this product's category adds, once, to the delivery of an order with it
+            data["deliverySurcharge"] = minor(surcharge)
         offers = self.offers(t) if "buy" in available else []
         if offers:  # optional: one card per seller with its price and quantity (Buy Box winner first)
             data["offers"] = [self.offer_card(o) for o in offers]
@@ -209,8 +220,12 @@ class Storefront:
         qty = self.platform_qty(tmpl)
         if not qty or qty <= 0:
             return None
-        return {"id": PLATFORM_OFFER, "seller": self.env.company.name,
+        card = {"id": PLATFORM_OFFER, "seller": self.env.company.name,
                 "unitPrice": minor(self.platform_price(tmpl)), "available": qty}
+        logo = self.seller_logo(None)
+        if logo:
+            card["sellerLogo"] = logo
+        return card
 
     def no_seller(self, tmpl):
         """A priced product nobody can sell now. With no live vendor offer, the project guide (p.3) has the
@@ -231,9 +246,57 @@ class Storefront:
         vendor = offer.vendor_id.commercial_partner_id
         # a commission vendor sells under the platform's name (the buyer never sees who they are)
         seller = self.env.company.name if vendor._leaders_name_hidden() else (vendor.vendor_store_name or vendor.name or "")
-        return {"id": str(offer.id), "seller": seller,
+        card = {"id": str(offer.id), "seller": seller,
                 "unitPrice": minor(offer.price + offer.product_tmpl_id.sudo().leaders_inspection_cost),
                 "available": int(offer.available_qty())}
+        logo = self.seller_logo(None if vendor._leaders_name_hidden() else vendor)  # a hidden vendor shows the platform's
+        if logo:
+            card["sellerLogo"] = logo
+        return card
+
+    # ------------------------------------------------------------ the services of a product
+    def product_services(self, tmpl):
+        """The service pages a customer can ask with ``tmpl``: the platform's, then the vendor's own approved ones."""
+        t = tmpl.sudo()
+        pages = t._leaders_available_services()
+        for own in t._leaders_vendor_own_services():
+            page = own.service_tmpl_id.sudo()
+            if page and page.is_published and page.leaders_slug and page not in pages:
+                pages |= page
+        return pages
+
+    def _arabic_code(self):
+        if not hasattr(self, "_ar_code_cache"):
+            lang = self.env["res.lang"].sudo().search([("code", "like", "ar%"), ("active", "=", True)], limit=1)
+            self._ar_code_cache = lang.code or None
+        return self._ar_code_cache
+
+    def service_option(self, page):
+        """One service of a product, for the product page, the cart and the checkout. ``id`` and ``code`` (the slug)
+        never change. A service is always ``pricing: "quote"``: the platform (or the vendor) prices it after the
+        request, so it adds nothing to the order total and never blocks the order."""
+        page = page.sudo()
+        english = page.with_context(lang="en_US").name or page.name or ""
+        arabic = (page.with_context(lang=self._arabic_code()).name if self._arabic_code() else None) or english
+        out = {"id": str(page.id), "slug": page.leaders_slug, "code": page.leaders_slug, "name": page.name or "",
+               "names": {"ar": arabic, "en": english}, "pricing": "quote"}
+        if page.leaders_service_is_delivery:  # the shipping of the order is the delivery: nothing is added or asked
+            out["coveredByShipping"] = True
+        return out
+
+    def is_visible(self, tmpl):
+        """Is ``tmpl`` shown on the storefront now (published, inspected, in a visible category...)?"""
+        return bool(self.Template.search_count(self.base_domain() + [("id", "=", tmpl.id)]))
+
+    def seller_logo(self, vendor):
+        """The URL of the seller's logo (``GET /sellers/<id>/logo``), or ``None`` when there is none. ``vendor`` is
+        ``None`` for the platform, whose logo is the company's."""
+        record = self.env.company.sudo() if vendor is None else vendor.sudo()
+        field = "logo" if vendor is None else "image_1920"
+        if not record[field]:
+            return None
+        stamp = fields.Datetime.to_string(record.write_date or fields.Datetime.now()).replace(" ", "T")
+        return "%s/sellers/%s/logo?unique=%s" % (self.base_url, "platform" if vendor is None else vendor.id, stamp)
 
     def stock_check(self, tmpl, offer, quantity, platform=False):
         """409 ``insufficient_stock`` when the seller has less than ``quantity``: the error says what this seller
@@ -574,9 +637,8 @@ class Storefront:
         if landing:
             limit = min(max(int(number(params.get("limit")) or 8), 1), 100)
             if params.get("featured") in ("true", "1"):
-                featured = self.Template.search(domain + [("leaders_featured", "=", True)],
-                                                order="marketplace_publish_date desc, id desc", limit=limit)
-                rows = featured or self.Template.browse(self.ordered_ids(domain, "newest")[:limit])
+                flagged = self.ordered_ids(domain + [("leaders_featured", "=", True)], sort)[:limit]  # sort is honoured
+                rows = self.Template.browse(flagged or self.ordered_ids(domain, "newest")[:limit])
             else:
                 rows = self.Template.browse(self.ordered_ids(domain, sort)[:limit])
             return [self.product(t) for t in rows]
@@ -601,6 +663,10 @@ class Storefront:
         domain = self.narrow_domain({k: params.get(k) for k in ("kind", "subcategory", "q", "listing")}, errors)
         if errors:
             raise validation_error(errors)
+        if params.get("featured") in ("true", "1"):  # the same products the featured list shows
+            flagged = domain + [("leaders_featured", "=", True)]
+            if self.Template.search_count(flagged):
+                domain = flagged
         rows = self.Template.search(domain)
 
         def count(values):

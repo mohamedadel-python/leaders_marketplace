@@ -24531,3 +24531,58 @@ msgstr "لا يمكن إلغاء هذا الطلب بعد الآن."
 #: code:addons/leaders_marketplace/tools/api_messages.py:0
 msgid "This request cannot be marked as received now."
 msgstr "لا يمكن تسجيل استلام هذا الطلب الآن."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "A vendor account cannot be deleted from the app. Contact support."
+msgstr "لا يمكن حذف حساب المورد من التطبيق. تواصل مع الدعم."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "A staff account cannot be deleted from the app."
+msgstr "لا يمكن حذف حساب الموظف من التطبيق."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "Finish or cancel your open orders and requests before deleting the account."
+msgstr "أنهِ طلباتك المفتوحة أو ألغِها قبل حذف الحساب."
+
+#. module: leaders_marketplace
+#: model:leaders.site.page,title:leaders_marketplace.site_page_rent_contract
+msgid "Equipment rental contract"
+msgstr "عقد إيجار المعدات"
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "This product is no longer available."
+msgstr "هذا المنتج لم يعد متاحاً."
+
+#. module: leaders_marketplace
+#. odoo-python
+#: code:addons/leaders_marketplace/tools/api_messages.py:0
+msgid "No longer available."
+msgstr "لم يعد متاحاً."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_product_template__leaders_service_is_delivery
+msgid "Is the delivery"
+msgstr "هي خدمة التوصيل"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_product_template__leaders_service_is_delivery
+msgid "The service is the delivery itself. Chosen with spare parts it adds nothing: the shipping of the order already covers it, so it is never charged twice."
+msgstr "الخدمة هي التوصيل نفسه. عند اختيارها مع قطع الغيار لا تضيف شيئاً: شحن الطلب يغطيها، فلا تُحاسَب مرتين."
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,field_description:leaders_marketplace.field_leaders_customer_request__parts_order_id
+msgid "Spare-parts order"
+msgstr "طلب قطع الغيار"
+
+#. module: leaders_marketplace
+#: model:ir.model.fields,help:leaders_marketplace.field_leaders_customer_request__parts_order_id
+msgid "The spare-parts order this service was asked with. The order does not wait for it."
+msgstr "طلب قطع الغيار الذي طُلبت معه هذه الخدمة. الطلب لا ينتظرها."

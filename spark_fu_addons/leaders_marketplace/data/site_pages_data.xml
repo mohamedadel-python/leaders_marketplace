@@ -1,0 +1,5 @@
+<odoo>
+    <!-- The privacy, terms and rental-contract texts, in English and Arabic. Outside noupdate so it also runs on an
+         upgrade; it fills only the pages that have no text yet, so what the admin wrote is never overwritten. -->
+    <function model="leaders.site.page" name="_leaders_seed_pages"/>
+</odoo>

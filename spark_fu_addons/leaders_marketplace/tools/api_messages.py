@@ -66,6 +66,10 @@ MESSAGES = [
     _lt("Only %s available from this seller."),
     _lt("Only %s available."),
     # equipment requests
+    # delete the account
+    _lt("A vendor account cannot be deleted from the app. Contact support."),
+    _lt("A staff account cannot be deleted from the app."),
+    _lt("Finish or cancel your open orders and requests before deleting the account."),
     _lt("This request can no longer be cancelled."),
     _lt("This request cannot be marked as received now."),
     _lt("This seller does not sell this product any more."),
@@ -104,6 +108,8 @@ MESSAGES = [
     _lt("At least one item is required."),
     _lt("Invalid payment method."),
     _lt("Out of stock."),
+    _lt("This product is no longer available."),
+    _lt("No longer available."),
     _lt("Price changed."),
     _lt("The product price changed."),
     _lt("We do not deliver to this governorate."),

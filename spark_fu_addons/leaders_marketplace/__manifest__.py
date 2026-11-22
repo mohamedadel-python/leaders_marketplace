@@ -1,6 +1,6 @@
 {
     "name": "Leaders Marketplace",
-    "version": "18.0.4.0.184",
+    "version": "18.0.4.0.186",
     "summary": "Multi-vendor marketplace core for Odoo 18 Community",
     "category": "Sales/Marketplace",
     "author": "MDARJ",
@@ -92,6 +92,7 @@
         "data/vendor_business_type_data.xml",
         "views/vendor_business_type_views.xml",
         "data/storefront_content_data.xml",
+        "data/site_pages_data.xml",
         "views/storefront_content_views.xml",
         "views/storefront_order_views.xml",
         "views/service_page_views.xml",

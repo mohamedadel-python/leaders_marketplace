@@ -41,6 +41,7 @@
                         <group string="Service rules">
                             <field name="leaders_service_responsible_id" help="The employee who gets a to-do every time a request for this service arrives."/>
                             <field name="leaders_service_mandatory" help="Shows the &#x27;required on purchase&#x27; badge and rule on the services pages."/>
+                            <field name="leaders_service_is_delivery"/>
                             <field name="leaders_service_coverage" help="How many governorates the service reaches, shown on its page. 0 leaves the number off."/>
                             <field name="leaders_service_warranty_months" help="The warranty after the service, in months. 0: no warranty is shown."/>
                         </group>
@@ -111,6 +112,7 @@
         <field name="arch" type="xml">
             <field name="service" position="after">
                 <field name="service_id" invisible="kind != 'service'"/>
+                <field name="parts_order_id" invisible="not parts_order_id"/>
             </field>
         </field>
     </record>

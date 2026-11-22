@@ -20,4 +20,8 @@
         <field name="slug">about</field>
         <field name="title">About us</field>
     </record>
+    <record id="site_page_rent_contract" model="leaders.site.page">
+        <field name="slug">rent-contract</field>
+        <field name="title">Equipment rental contract</field>
+    </record>
 </odoo>
