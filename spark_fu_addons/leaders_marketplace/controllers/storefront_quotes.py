@@ -137,6 +137,7 @@ class StorefrontQuotes(http.Controller):
             service = service_tmpl.leaders_slug
         else:
             details, service_tmpl = self._check_quote_request(body, name, phone, items), None
+        provider = self._service_provider(body, service_tmpl)
         needed_by = self._needed_by(body)
         if not needed_by and service and isinstance(details, dict) and details.get("neededBy"):
             needed_by = date.fromisoformat(details["neededBy"])  # a service form sends it inside serviceDetails
@@ -169,6 +170,7 @@ class StorefrontQuotes(http.Controller):
             "quantity": lines[0][2]["quantity"] if lines else 1,
             "note": ((body.get("notes") if isinstance(body.get("notes"), str) else "") + ("\nCity: %s" % body["city"] if body.get("city") else "")).strip() or False,
             "service": service or False, "service_id": service_tmpl.id if service_tmpl else False,
+            "service_provider_id": provider.id if provider else False,
             "service_details": json.dumps(details) if isinstance(details, dict) else False,
             "line_ids": lines, "needed_by": needed_by,
             # what the form carried besides the request itself: who typed it, how to write back, in which language
@@ -184,6 +186,26 @@ class StorefrontQuotes(http.Controller):
             ids = [line[2]["product_tmpl_id"] for line in lines]
             cart.line_ids.filtered(lambda l: l.product_tmpl_id.id in ids).unlink() if cart else None
         return json_response({"reference": record.name}, 201, cors)
+
+    @staticmethod
+    def _service_provider(body, service_tmpl):
+        """The optional ``serviceProvider`` of a service request: the ``id`` of one of the providers listed for the
+        service (``"platform"`` or a vendor's id). Missing: the platform assigns the request, as before."""
+        raw = body.get("serviceProvider")
+        if raw in (None, ""):
+            return request.env["leaders.service.provider"]
+        if not service_tmpl:
+            raise AuthApiError(400, "validation_error", _("Validation failed."),
+                               fields={"serviceProvider": _("Only a service request takes a provider.")})
+        Provider = request.env["leaders.service.provider"].sudo()
+        listed = Provider._leaders_public(service_tmpl)
+        text = str(raw).strip()
+        provider = listed.filtered(lambda p: p.is_platform) if text == "platform" else (
+            listed.filtered(lambda p: str(p.id) == text) if text.isdigit() else Provider.browse())
+        if not provider:
+            raise AuthApiError(400, "validation_error", _("Validation failed."),
+                               fields={"serviceProvider": _("Choose one of the providers of this service.")})
+        return provider[:1]
 
     @staticmethod
     def _needed_by(body):

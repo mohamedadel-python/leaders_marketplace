@@ -1330,7 +1330,10 @@
                         <h1 class="lm-page-title">My services</h1>
                         <p class="lm-page-subtitle">Services you offer. Each one is a page of the website, like the platform's services, once the marketplace approves it. The requests of your services come to you.</p>
                     </div>
-                    <a t-if="is_owner" href="/my/vendor/own-services/new" class="btn btn-primary">Add a service</a>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="/my/vendor/provide-services" class="btn btn-outline-primary">Services of the platform I provide</a>
+                        <a t-if="is_owner" href="/my/vendor/own-services/new" class="btn btn-primary">Add a service</a>
+                    </div>
                 </div>
                 <div t-if="message" class="alert alert-success" role="status" t-esc="message"/>
                 <div t-if="services" class="lm-table-responsive mb-4">
@@ -1350,6 +1353,88 @@
                     </table>
                 </div>
                 <p t-else="" class="text-muted">You have no services yet.</p>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_vendor_provide_services" name="Vendor Provides Platform Services">
+        <t t-call="leaders_marketplace.portal_vendor_layout">
+            <div class="lm-vendor-page" id="lm_vendor_provide_services">
+                <div class="lm-page-header">
+                    <div>
+                        <h1 class="lm-page-title">Services of the platform I provide</h1>
+                        <p class="lm-page-subtitle">Say which of the platform's services (inspection, installation, maintenance...) you carry out. Once the marketplace approves it, you show on the providers page of the service and customers can choose you. Their requests come to you.</p>
+                    </div>
+                    <a href="/my/vendor/own-services" class="btn btn-outline-secondary">My own services</a>
+                </div>
+                <div t-if="message" class="alert alert-success" role="status" t-esc="message"/>
+                <div t-if="error" class="alert alert-danger" role="alert" id="lm_form_error" t-esc="error"/>
+                <div t-if="name_hidden" class="alert alert-info" role="status">
+                    You sell under the platform's name, so you are not listed by name on the providers page. The requests of your services still come to the platform.
+                </div>
+                <div t-if="providers" class="lm-table-responsive mb-4">
+                    <table class="table align-middle lm-table">
+                        <thead><tr><th>Service</th><th>Status</th><th>Response</th><th>Where</th><th/></tr></thead>
+                        <tbody>
+                            <tr t-foreach="providers" t-as="p">
+                                <td class="lm-cell-title"><span t-esc="p.service_id.name"/><span t-if="not p.active" class="badge text-bg-secondary ms-2">Stopped</span></td>
+                                <td>
+                                    <span t-attf-class="badge #{'text-bg-success' if p.state == 'approved' else ('text-bg-danger' if p.state == 'rejected' else 'text-bg-warning')}" t-esc="states.get(p.state)"/>
+                                    <div t-if="p.state == 'rejected' and p.reject_reason" class="small text-danger mt-1" t-esc="p.reject_reason"/>
+                                </td>
+                                <td><t t-esc="p.response_hours"/> h</td>
+                                <td><span t-if="p.all_governorates">All governorates</span><span t-else="" t-esc="', '.join(p.governorate_ids.mapped('name'))"/></td>
+                                <td class="text-end">
+                                    <a t-if="p.state in ('draft', 'rejected', 'submitted')" t-attf-href="/my/vendor/provide-services?edit=#{p.id}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    <form t-if="is_owner and p.active" method="post" class="d-inline" action="/my/vendor/provide-services">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="provider_id" t-att-value="p.id"/>
+                                        <button type="submit" name="stop" value="1" class="btn btn-sm btn-outline-danger">Stop providing</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p t-else="" class="text-muted">You have not offered any of the platform's services yet.</p>
+                <form t-if="is_owner" method="post" action="/my/vendor/provide-services" class="lm-panel p-3 d-grid gap-3" id="lm_provider_form">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input t-if="edit" type="hidden" name="provider_id" t-att-value="edit.id"/>
+                    <h2 class="h5 mb-0"><t t-if="edit">Change your offer</t><t t-else="">Offer a service</t></h2>
+                    <div>
+                        <label class="form-label mb-1" for="lm_pv_service">Service</label>
+                        <select class="form-select" id="lm_pv_service" name="service_id" required="required">
+                            <option value="">Choose a service</option>
+                            <option t-foreach="services" t-as="s" t-att-value="s.id" t-esc="s.name"
+                                    t-att-selected="str(s.id) == str(post.get('service_id') or (edit and edit.service_id.id) or '')"/>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label mb-1" for="lm_pv_hours">How fast you answer a request (hours)</label>
+                        <input type="number" min="1" max="1440" class="form-control" id="lm_pv_hours" name="response_hours"
+                               t-att-value="post.get('response_hours') or (edit and edit.response_hours) or 24"/>
+                    </div>
+                    <div>
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="lm_pv_all" name="all_governorates" value="1"
+                                   t-att-checked="(post.get('all_governorates') if post else (edit.all_governorates if edit else True)) or None"/>
+                            <label class="form-check-label" for="lm_pv_all">I carry it out in all governorates</label>
+                        </div>
+                        <label class="form-label mb-1" for="lm_pv_states">Or only in these governorates</label>
+                        <select class="form-select" id="lm_pv_states" name="governorate_ids" multiple="multiple" size="8">
+                            <option t-foreach="states" t-as="st" t-att-value="st.id" t-esc="st.name"
+                                    t-att-selected="edit and st in edit.governorate_ids"/>
+                        </select>
+                    </div>
+                    <div t-if="specialties">
+                        <label class="form-label mb-1" for="lm_pv_specialties">What you are good at</label>
+                        <select class="form-select" id="lm_pv_specialties" name="specialty_ids" multiple="multiple" size="5">
+                            <option t-foreach="specialties" t-as="sp" t-att-value="sp.id" t-esc="sp.name"
+                                    t-att-selected="edit and sp in edit.specialty_ids"/>
+                        </select>
+                    </div>
+                    <div><button type="submit" class="btn btn-primary" data-lm-loading="">Send for approval</button></div>
+                </form>
             </div>
         </t>
     </template>

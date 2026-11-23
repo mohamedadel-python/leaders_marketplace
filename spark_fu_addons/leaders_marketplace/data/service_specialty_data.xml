@@ -1,0 +1,23 @@
+<odoo noupdate="1">
+    <!-- what a service provider may say it is good at; the back office adds, renames and reorders them -->
+    <record id="specialty_generators" model="leaders.service.specialty">
+        <field name="name">Generators</field>
+        <field name="slug">generators</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="specialty_load_banks" model="leaders.service.specialty">
+        <field name="name">Load banks</field>
+        <field name="slug">load-banks</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="specialty_solar" model="leaders.service.specialty">
+        <field name="name">Solar energy</field>
+        <field name="slug">solar</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="specialty_spare_parts" model="leaders.service.specialty">
+        <field name="name">Spare parts</field>
+        <field name="slug">spare-parts</field>
+        <field name="sequence">40</field>
+    </record>
+</odoo>

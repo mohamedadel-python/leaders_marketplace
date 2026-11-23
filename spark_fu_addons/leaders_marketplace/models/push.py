@@ -261,7 +261,8 @@ class LeadersPushMessage(models.Model):
     # ---- queueing
     @api.model
     def _leaders_queue(self, devices, texts_for, key, data):
-        """One queued message per device. ``texts_for(lang)`` gives the (title, body) in the device's language."""
+        """One queued message per device. ``texts_for(lang)`` gives the (title, body) in the device's language;
+        ``data`` is the dict the app reads, or a function of the device (each person has an inbox entry of his own)."""
         if not devices:
             return self.browse()
         cache, vals = {}, []
@@ -272,7 +273,8 @@ class LeadersPushMessage(models.Model):
             if not title:
                 continue
             vals.append({"device_id": device.id, "user_id": device.user_id.id, "token": device.token, "event": key,
-                         "title": title, "body": body or "", "data": json.dumps(data, ensure_ascii=False)})
+                         "title": title, "body": body or "",
+                         "data": json.dumps(data(device) if callable(data) else data, ensure_ascii=False)})
         messages = self.sudo().create(vals) if vals else self.browse()
         if messages:
             cron = self.env.ref("leaders_marketplace.cron_push_send", raise_if_not_found=False)
@@ -305,6 +307,7 @@ class LeadersPushMessage(models.Model):
     def _cron_send(self):
         """Send what is waiting, forget what was sent a while ago."""
         self.sudo()._purge()
+        self.env["leaders.inbox.entry"]._purge()
         pending = self.sudo().search([("state", "=", "pending")], order="id", limit=BATCH * 5)
         for start in range(0, len(pending), BATCH):
             pending[start:start + BATCH]._leaders_send()
@@ -362,19 +365,31 @@ class LeadersNotificationPush(models.AbstractModel):
         operation that raised the event."""
         Push = self.env["leaders.push.message"]
         try:
-            if not partners or not Push._leaders_enabled():
+            if not partners:
                 return
             if not force and not self._enabled(key):
                 return
             category = self._customer_category(key)
             if category and not force and key not in self._mandatory_events():
                 partners = partners.filtered(lambda p: p._leaders_customer_accepts(category))
+            texts = lambda lang: Push._leaders_texts(key, record, lang)  # noqa: E731
+            data = Push._leaders_data(key, record)
+            # the list of the app's bell: every person has an entry, with or without a device, even with push off
+            entries = {}
+            try:
+                with self.env.cr.savepoint():
+                    users = self.env["leaders.inbox.entry"]._leaders_users_of(partners, whole_company=whole_company)
+                    entries = self.env["leaders.inbox.entry"]._leaders_record(users, key, record, texts, data)
+            except Exception:  # noqa: BLE001
+                _logger.exception("Could not write the list entry of the %s event for %s", key, record)
+            if not Push._leaders_enabled():
+                return
             devices = self.env["leaders.push.device"]._leaders_for_partners(partners, whole_company=whole_company)
             if not devices:
                 return
-            with self.env.cr.savepoint():
-                Push._leaders_push(devices, key, lambda lang: Push._leaders_texts(key, record, lang),
-                                   Push._leaders_data(key, record))
+            with self.env.cr.savepoint():  # the push says which entry it is, so opening it can mark it read
+                Push._leaders_push(devices, key, texts, lambda device: dict(
+                    data, **({"inboxId": str(entries[device.user_id.id].id)} if device.user_id.id in entries else {})))
         except Exception:  # noqa: BLE001
             _logger.exception("Could not queue the %s push for %s", key, record)
 

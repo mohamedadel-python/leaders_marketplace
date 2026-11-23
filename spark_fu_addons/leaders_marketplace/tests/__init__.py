@@ -67,3 +67,5 @@ from . import test_vendor_service_pages
 from . import test_vendor_invoice_report
 from . import test_app_store_readiness
 from . import test_checkout_services
+from . import test_inbox
+from . import test_service_providers

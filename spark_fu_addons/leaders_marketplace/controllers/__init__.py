@@ -21,5 +21,6 @@ from . import storefront_vendor_apply
 from . import storefront_returns
 from . import storefront_equipment
 from . import storefront_push
+from . import storefront_inbox
 from . import vendor_join
 from . import storefront_item_requests

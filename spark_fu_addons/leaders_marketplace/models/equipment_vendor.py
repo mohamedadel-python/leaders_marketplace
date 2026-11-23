@@ -25,11 +25,17 @@ class LeadersCustomerRequestVendor(models.Model):
     vendor_quote_date = fields.Datetime("Vendor priced on", readonly=True, copy=False)
     vendor_notified = fields.Boolean(readonly=True, copy=False)
 
-    @api.depends("offer_id.vendor_id", "product_tmpl_id.marketplace_owner_vendor_id", "service_id.leaders_service_vendor_id")
+    service_provider_id = fields.Many2one(
+        "leaders.service.provider", "Chosen provider", copy=False, ondelete="set null", index=True,
+        help="The provider the customer picked for this service: a vendor's request is his, the platform's stays with "
+             "the platform.")
+
+    @api.depends("offer_id.vendor_id", "product_tmpl_id.marketplace_owner_vendor_id", "service_id.leaders_service_vendor_id",
+                 "service_provider_id.vendor_id")
     def _compute_vendor_id(self):
         for rec in self:
-            if rec.kind == "service":  # the page of a vendor's service: his request; a platform service has none
-                vendor = rec.service_id.leaders_service_vendor_id
+            if rec.kind == "service":  # a vendor's own service page, or the vendor the customer picked: his request
+                vendor = rec.service_id.leaders_service_vendor_id or rec.service_provider_id.vendor_id
             else:
                 vendor = rec.offer_id.vendor_id or rec.product_tmpl_id.marketplace_owner_vendor_id
             rec.vendor_id = vendor.commercial_partner_id if rec.kind in VENDOR_KINDS else False

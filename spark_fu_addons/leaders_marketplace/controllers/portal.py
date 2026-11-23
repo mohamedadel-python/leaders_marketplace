@@ -1988,6 +1988,78 @@ class MarketplacePortal(CustomerPortal):
         service.action_submit()
         return service
 
+    # ------------------------------------------------------------------ services of the platform the vendor provides
+    def _provider_choices(self):
+        """What a vendor may pick: the platform's services, the governorates and the specialties."""
+        env = request.env
+        services = env["product.template"].sudo().search([
+            ("leaders_service_page", "=", True), ("is_published", "=", True), ("leaders_service_vendor_id", "=", False)],
+            order="sequence, id")
+        from .vendor_apply import GOVERNORATES_AR
+        states = env["res.country.state"].sudo().search([("country_id.code", "=", "EG"), ("code", "in", list(GOVERNORATES_AR))])
+        return {"services": services, "states": states.sorted("name"),
+                "specialties": env["leaders.service.specialty"].sudo().search([])}
+
+    @http.route("/my/vendor/provide-services", type="http", auth="user", website=True, methods=["GET", "POST"])
+    def vendor_provide_services(self, **post):
+        """The vendor says which of the platform's services he carries out. The marketplace approves it; he then
+        shows on the providers page of the service and customers can pick him."""
+        vendor = self._require_vendor(allow_frozen=True)
+        Provider = request.env["leaders.service.provider"].sudo().with_context(active_test=False)
+        edit = Provider.browse()
+        edit_id = post.get("provider_id") or post.get("edit")
+        if edit_id and str(edit_id).isdigit():
+            edit = Provider.search([("id", "=", int(edit_id)), ("vendor_id", "=", vendor.id)], limit=1)
+        error = False
+        if request.httprequest.method == "POST":
+            self._own_service_owner_only()
+            try:
+                if post.get("stop") and edit:
+                    (edit.unlink() if edit.state != "approved" else edit.write({"active": False}))
+                    return request.redirect("/my/vendor/provide-services")
+                self._save_provider(vendor, edit, post, request.httprequest.form)
+                return request.redirect("/my/vendor/provide-services?sent=1")
+            except (UserError, ValidationError) as exc:
+                error = str(exc)
+        mine = Provider.search([("vendor_id", "=", vendor.id)])
+        values = {"vendor": vendor, "providers": mine, "edit": edit, "error": error, "post": post,
+                  "is_owner": self._is_vendor_owner(),
+                  "message": _("Your offer was sent for approval.") if post.get("sent") else False,
+                  "states": dict(Provider._fields["state"]._description_selection(request.env)),
+                  "name_hidden": vendor._leaders_name_hidden()}
+        values.update(self._provider_choices())
+        return self._vendor_render("leaders_marketplace.portal_vendor_provide_services", values)
+
+    def _save_provider(self, vendor, provider, post, form):
+        choices = self._provider_choices()
+        service_id = post.get("service_id") or (provider.service_id.id if provider else "")
+        service = choices["services"].filtered(lambda s: str(s.id) == str(service_id))
+        if not service:
+            raise UserError(_("Choose one of the platform's services."))
+        raw = (post.get("response_hours") or "").strip()
+        hours = int(raw) if raw.isdigit() else 24
+        if not 1 <= hours <= 1440:
+            raise UserError(_("The response time is a number of hours, from 1 to 1440."))
+        everywhere = bool(post.get("all_governorates"))
+        state_ids = [int(i) for i in form.getlist("governorate_ids") if str(i).isdigit() and int(i) in choices["states"].ids]
+        if not everywhere and not state_ids:
+            raise UserError(_("Choose where you carry it out, or tick all governorates."))
+        specialty_ids = [int(i) for i in form.getlist("specialty_ids")
+                         if str(i).isdigit() and int(i) in choices["specialties"].ids]
+        Provider = request.env["leaders.service.provider"].sudo().with_context(active_test=False)
+        provider = provider or Provider.search([("vendor_id", "=", vendor.id), ("service_id", "=", service.id)], limit=1)
+        if provider and provider.state == "approved" and provider.active:
+            raise UserError(_("You already provide this service. Stop it first to change it."))
+        vals = {"response_hours": hours, "all_governorates": everywhere, "active": True,
+                "governorate_ids": [(6, 0, [] if everywhere else state_ids)],
+                "specialty_ids": [(6, 0, specialty_ids)]}
+        if provider:
+            provider.write(dict(vals, service_id=service.id))
+        else:
+            provider = Provider.create(dict(vals, vendor_id=vendor.id, service_id=service.id))
+        provider.action_submit()
+        return provider
+
     @http.route("/my/vendor/welcome", type="http", auth="user", website=True, methods=["GET", "POST"])
     def vendor_welcome(self, **post):
         """The page a newly approved vendor sees before the dashboard: the free period, a commission or a

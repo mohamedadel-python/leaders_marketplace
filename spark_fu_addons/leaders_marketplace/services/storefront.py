@@ -936,6 +936,12 @@ class Storefront:
                 out[key] = lines
         if tmpl.leaders_service_warranty_months > 0:
             out["warrantyMonths"] = tmpl.leaders_service_warranty_months
+        # the texts of the panel (optional: the page keeps its own wording while they are empty)
+        for key, text in (("coverageText", tmpl.leaders_service_coverage_text),
+                          ("responseText", tmpl.leaders_service_response_text),
+                          ("priceNote", tmpl.leaders_service_price_note)):
+            if (text or "").strip():
+                out[key] = text.strip()
         return out
 
     # ------------------------------------------------------------- shelves

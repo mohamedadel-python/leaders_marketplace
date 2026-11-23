@@ -57,5 +57,7 @@ from . import backorder
 from . import equipment_vendor
 from . import subscription_plan
 from . import push
+from . import inbox
 from . import push_events
 from . import vendor_service
+from . import service_provider

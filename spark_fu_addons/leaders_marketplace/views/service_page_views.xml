@@ -65,7 +65,21 @@
                         </group>
                         <group>
                             <field name="leaders_service_deliverable" help="What the customer receives, shown in the request panel."/>
+                            <field name="leaders_service_coverage_text"/>
+                            <field name="leaders_service_response_text"/>
+                            <field name="leaders_service_price_note"/>
                         </group>
+                    </group>
+                    <group string="Providers" invisible="leaders_service_vendor_id">
+                        <field name="leaders_provider_ids" nolabel="1" context="{'default_service_id': id}">
+                            <list>
+                                <field name="is_platform"/>
+                                <field name="vendor_id"/>
+                                <field name="state"/>
+                                <field name="verified"/>
+                                <field name="response_hours"/>
+                            </list>
+                        </field>
                     </group>
                     <group string="Scope of the service">
                         <group>
@@ -112,6 +126,7 @@
         <field name="arch" type="xml">
             <field name="service" position="after">
                 <field name="service_id" invisible="kind != 'service'"/>
+                <field name="service_provider_id" invisible="kind != 'service'"/>
                 <field name="parts_order_id" invisible="not parts_order_id"/>
             </field>
         </field>
