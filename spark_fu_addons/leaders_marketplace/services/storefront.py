@@ -176,6 +176,8 @@ class Storefront:
             if own:  # the platform's own stock is one more seller
                 data["offers"].append(own)
             data["stockQuantity"] = int(offers[0].available_qty())  # optional: units on hand at the first seller
+            if not rentable and sum(int(o.available_qty()) for o in offers) <= 0 and not (own and own["available"] > 0):
+                data["inStock"] = False  # every seller is sold out and the platform holds none: nothing to add to the cart
         if not offers and "buy" in available and self.platform_sells():
             own = self.platform_qty(t)
             if own is not None:

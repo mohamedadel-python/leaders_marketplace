@@ -6,6 +6,8 @@ from unittest.mock import patch
 from odoo.tests import tagged
 from odoo.tests.common import HttpCase
 
+from .test_vendor_split import MarketplaceVendorCommon
+
 
 @tagged("post_install", "-at_install")
 class TestCheckoutServices(HttpCase):
@@ -154,3 +156,22 @@ class TestCheckoutServices(HttpCase):
                              (409, "product_unavailable", 0, str(self.part.id)), path)
             self.assertEqual(err["fields"], {"items.0": "No longer available."})
         self.assertFalse(self.env["sale.order"].search([("partner_id", "=", self.user.partner_id.id)]))  # no order made
+
+
+@tagged("post_install", "-at_install")
+class TestSoldOutOffers(HttpCase, MarketplaceVendorCommon):
+    """A product whose every seller has no stock left says ``inStock: false``, so the app does not offer it."""
+
+    def test_sold_out_sellers_make_the_product_not_in_stock(self):
+        from odoo.addons.leaders_marketplace.services.storefront import Storefront
+        offer = self.fbm_offer
+        tmpl = offer.product_tmpl_id
+        tmpl.write({"marketplace_state": "published", "is_published": True, "sale_ok": True})
+        store = Storefront(self.env)
+        card = store.product(tmpl)
+        self.assertNotIn("inStock", card)  # it has stock
+        self.assertGreater(card["stockQuantity"], 0)
+        with patch.object(type(offer), "available_qty", return_value=0):
+            card = store.product(tmpl)
+            self.assertIs(card["inStock"], False)
+            self.assertEqual(card["stockQuantity"], 0)
