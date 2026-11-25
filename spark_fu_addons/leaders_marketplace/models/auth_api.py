@@ -213,4 +213,11 @@ class ResUsersEmailVerified(models.Model):
         "Email verified", default=True, copy=False,
         help="Off for a storefront account registered with email and password until the customer enters the code "
              "sent to that email (sign-up OTP). Google accounts are verified by Google.")
+    leaders_google_sub = fields.Char(
+        "Google ID", copy=False, index=True, readonly=True,
+        help="The stable id (sub) of the Google account linked to this account: the next Google sign-in finds the "
+             "account by it, whatever the email of the Google account becomes.")
+
+    _sql_constraints = [("leaders_google_sub_unique", "unique(leaders_google_sub)",
+                         "This Google account is already linked to another account.")]
 

@@ -210,10 +210,11 @@ class TestStorefrontContent(HttpCase):
                 return self._claims
 
         claims = {"aud": "client-1.apps.googleusercontent.com", "iss": "https://accounts.google.com",
-                  "email": "New.Google@Example.com", "email_verified": "true", "name": "Nour Google"}
+                  "email": "New.Google@Example.com", "email_verified": "true", "name": "Nour Google",
+                  "sub": "sub-nour"}
         with patch("odoo.addons.leaders_marketplace.services.auth_service.requests.get",
                    return_value=Answer(dict(claims, aud="someone-else"))):
-            self.assertEqual(self.call("POST", "/auth/google", {"idToken": "t"})[1]["code"], "invalid_google_token")
+            self.assertEqual(self.call("POST", "/auth/google", {"idToken": "t"})[1]["code"], "invalid_credentials")
         with patch("odoo.addons.leaders_marketplace.services.auth_service.requests.get", return_value=Answer(claims)):
             response, data = self.call("POST", "/auth/google", {"idToken": "t", "remember": True, "phone": "+201007770011"})
             self.assertEqual(response.status_code, 200)

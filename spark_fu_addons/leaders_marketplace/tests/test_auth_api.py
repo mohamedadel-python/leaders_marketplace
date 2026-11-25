@@ -949,22 +949,90 @@ class TestAuthSignupOtp(AuthApiCommon):
             self.assertCode(self.post("/auth/register/verify", {"email": EMAIL, "code": first}), 400, "invalid_code")
         self.assertEqual(self.post("/auth/register/verify", {"email": EMAIL, "code": latest}).status_code, 201)
 
-    def test_google_sign_up_needs_the_phone(self):
-        self.param.set_param("leaders_marketplace.google_client_id", "client-1.apps.googleusercontent.com")
+    CLIENT = "client-1.apps.googleusercontent.com"
+
+    def _google(self, email="g.user@example.com", sub="sub-1", **extra):
+        """Patch Google's token check to answer with these claims."""
+        claims = {"aud": self.CLIENT, "iss": "https://accounts.google.com", "email": email, "email_verified": "true",
+                  "name": "G User", "sub": sub}
+        claims.update(extra)
 
         class Answer:
             status_code = 200
 
             def json(self):
-                return {"aud": "client-1.apps.googleusercontent.com", "iss": "https://accounts.google.com",
-                        "email": "g.user@example.com", "email_verified": "true", "name": "G User"}
-        with patch("odoo.addons.leaders_marketplace.services.auth_service.requests.get", return_value=Answer()):
+                return claims
+        return patch("odoo.addons.leaders_marketplace.services.auth_service.requests.get", return_value=Answer())
+
+    def test_google_sign_up_needs_the_phone(self):
+        self.param.set_param("leaders_marketplace.google_client_id", self.CLIENT)
+        with self._google():
             self.assertCode(self.post("/auth/google", {"idToken": "t"}), 422, "phone_required")
             r = self.post("/auth/google", {"idToken": "t", "phone": "+201009998877"})
             self.assertEqual(r.status_code, 200, r.text)
+            self.assertIn("refresh_token=", self.set_cookies(r))  # the same cookies as login
             self.assertEqual(self.post("/auth/google", {"idToken": "t"}).status_code, 200)  # existing account: no phone asked
         user = self.env["res.users"].sudo().search([("login", "=", "g.user@example.com")])
-        self.assertEqual((user.phone, user.leaders_email_verified), ("+201009998877", True))
+        self.assertEqual((user.phone, user.leaders_email_verified, user.leaders_google_sub),
+                         ("+201009998877", True, "sub-1"))
+
+    def test_google_checks_the_token_and_answers_invalid_credentials(self):
+        self.param.set_param("leaders_marketplace.google_client_id", self.CLIENT)
+        for name, change in (("another client", {"aud": "other.apps.googleusercontent.com"}),
+                             ("another issuer", {"iss": "https://evil.example.com"}),
+                             ("email not verified", {"email_verified": "false"}),
+                             ("no sub", {"sub": ""}),
+                             ("expired", {"exp": "1000"})):
+            with self._google(**change):
+                self.assertCode(self.post("/auth/google", {"idToken": "t", "phone": "+201009998877"}),
+                                401, "invalid_credentials")
+        self.assertFalse(self.env["res.users"].sudo().search([("login", "=", "g.user@example.com")]), "nothing was created")
+
+    def test_google_accepts_several_client_ids(self):
+        self.param.set_param("leaders_marketplace.google_client_id", "web.apps.googleusercontent.com, %s" % self.CLIENT)
+        with self._google():
+            self.assertCode(self.post("/auth/google", {"idToken": "t"}), 422, "phone_required")  # the 2nd id passes
+
+    def test_google_bad_phone_is_a_validation_error_and_a_taken_phone_is_409(self):
+        self.param.set_param("leaders_marketplace.google_client_id", self.CLIENT)
+        with self._google():
+            r = self.post("/auth/google", {"idToken": "t", "phone": "123"})
+            self.assertCode(r, 422, "validation_error")
+            self.assertIn("phone", r.json()["fields"])
+            self.register()  # an account with a phone
+            taken = OK_USER["phone"]
+            self.assertCode(self.post("/auth/google", {"idToken": "t", "phone": taken}), 409, "phone_taken")
+
+    def test_google_links_a_password_account_by_email_then_finds_it_by_sub(self):
+        self.param.set_param("leaders_marketplace.google_client_id", self.CLIENT)
+        self.param.set_param("leaders_marketplace.auth_register_otp", "0")
+        self.register()
+        with self._google(email=EMAIL, sub="sub-9"):
+            self.assertEqual(self.post("/auth/google", {"idToken": "t"}).status_code, 200)  # no phone: it exists
+        self.assertEqual(self.user().leaders_google_sub, "sub-9")
+        self.assertEqual(self.post("/auth/login", {"email": EMAIL, "password": PASSWORD}).status_code, 200)  # still works
+        # the Google account changed its email: the sub still finds the account
+        with self._google(email="renamed@example.com", sub="sub-9"):
+            self.assertEqual(self.post("/auth/google", {"idToken": "t"}).status_code, 200)
+        self.assertFalse(self.env["res.users"].sudo().search([("login", "=", "renamed@example.com")]))
+        # another Google account claiming the same email is refused
+        with self._google(email=EMAIL, sub="sub-other"):
+            self.assertCode(self.post("/auth/google", {"idToken": "t"}), 401, "invalid_credentials")
+
+    def test_a_google_account_can_set_a_password_with_forgot_password(self):
+        self.param.set_param("leaders_marketplace.google_client_id", self.CLIENT)
+        with self._google():
+            self.assertEqual(self.post("/auth/google", {"idToken": "t", "phone": "+201009998877"}).status_code, 200)
+        Code = self.env["leaders.auth.reset.code"].sudo()
+        user = self.env["res.users"].sudo().search([("login", "=", "g.user@example.com")])
+        self.assertEqual(self.post("/auth/password/forgot", {"email": "g.user@example.com"}).status_code, 202)
+        record = Code.search([("user_id", "=", user.id), ("state", "=", "pending")])
+        self.assertEqual(len(record), 1)
+        record.write({"code_hash": Code._hash_code(record.salt, user.id, "123456")})
+        self.env.flush_all()
+        token = self.post("/auth/password/verify", {"email": "g.user@example.com", "code": "123456"}).json()["resetToken"]
+        self.assertEqual(self.post("/auth/password/reset", {"resetToken": token, "password": "Brand-new9"}).status_code, 204)
+        self.assertEqual(self.post("/auth/login", {"email": "g.user@example.com", "password": "Brand-new9"}).status_code, 200)
 
     def test_sign_out_of_every_device(self):
         self.param.set_param("leaders_marketplace.auth_register_otp", "0")

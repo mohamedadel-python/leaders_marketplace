@@ -7,6 +7,7 @@ import base64
 import logging
 import re
 import secrets
+import time
 
 import psycopg2
 import requests
@@ -274,15 +275,20 @@ class AuthService:
 
     # ----------------------------------------------------------- google
     def google(self, body, user_agent="", ip=""):
-        """Sign in with a Google ID token; the first sign-in creates the account like a registration."""
+        """Sign in with a Google ID token; the first sign-in creates the account like a registration.
+
+        The account is found by the Google ``sub`` first, then by the email (and then linked to the ``sub``). Only a
+        brand-new account needs a mobile number."""
         self.throttle("login_ip", ip)
-        client_id = (self.env["ir.config_parameter"].sudo().get_param(GOOGLE_CLIENT_PARAM) or "").strip()
-        if not client_id:
+        # one client ID, or several separated by commas (the web storefront and the mobile app)
+        client_ids = {c.strip() for c in (self.env["ir.config_parameter"].sudo().get_param(GOOGLE_CLIENT_PARAM) or "").split(",")
+                      if c.strip()}
+        if not client_ids:
             raise AuthApiError(503, "google_disabled", "Google sign-in is not available.")
         token = _str(body, "idToken").strip()
         if not token:
             raise validation_error({"idToken": "Required."})
-        bad = AuthApiError(401, "invalid_google_token", "Google sign-in failed. Try again.")
+        bad = AuthApiError(401, "invalid_credentials", "Google sign-in failed. Try again.")
         try:
             answer = requests.get(GOOGLE_TOKENINFO, params={"id_token": token}, timeout=10)
         except requests.RequestException:
@@ -290,28 +296,44 @@ class AuthService:
             raise AuthApiError(502, "google_unavailable", "Google sign-in is not reachable. Try again.")
         claims = answer.json() if answer.status_code == 200 else {}
         email = (claims.get("email") or "").strip().lower()
-        if (claims.get("aud") != client_id or claims.get("iss") not in GOOGLE_ISSUERS
-                or str(claims.get("email_verified")).lower() != "true" or not EMAIL_RE.match(email)):
+        sub = str(claims.get("sub") or "").strip()
+        try:
+            expires = int(claims.get("exp") or 0)
+        except (TypeError, ValueError):
+            expires = 0
+        if (claims.get("aud") not in client_ids or claims.get("iss") not in GOOGLE_ISSUERS or not sub
+                or str(claims.get("email_verified")).lower() != "true" or not EMAIL_RE.match(email)
+                or (expires and expires <= time.time())):
             raise bad
-        user = self._find_user(email)
+        Users = self.env["res.users"].sudo().with_context(active_test=False)
+        user = Users.search([("leaders_google_sub", "=", sub)], limit=1)
+        if not user:
+            user = self._find_user(email)
+            if user and user.sudo().leaders_google_sub and user.sudo().leaders_google_sub != sub:
+                raise bad  # that account is linked to another Google account
         if user and not user.active:
             raise AuthApiError(403, "account_disabled", "This account has been disabled.")
         if not user:
             # the mobile number is required with Google too: it is needed for deliveries and site visits
             phone = re.sub(r"\s", "", _str(body, "phone"))
-            if not PHONE_RE.match(phone):
+            if not phone:
                 raise AuthApiError(422, "phone_required", "Enter your mobile number to finish signing up.",
-                                   fields={"phone": "Phone must be in E.164 format, e.g. +966501234567."})
+                                   fields={"phone": "Required."})
+            if not PHONE_RE.match(phone):
+                raise validation_error({"phone": "Phone must be in E.164 format, e.g. +966501234567."})
             if self._phone_taken(phone):
                 raise AuthApiError(409, "phone_taken", "An account with this phone number already exists.")
             name = (claims.get("name") or email.split("@")[0]).strip()[:80]
             user = self.env["res.users"].sudo().with_context(no_reset_password=True).create({
                 "name": name if len(name) >= 2 else email, "login": email, "email": email, "phone": phone,
-                "groups_id": [Command.set([self._register_group().id])],
+                "leaders_google_sub": sub, "groups_id": [Command.set([self._register_group().id])],
             })
             self.mark_customer(user)
-        elif not user.leaders_email_verified:
-            user.sudo().leaders_email_verified = True  # Google has verified the email
+        else:
+            if not user.sudo().leaders_google_sub:
+                user.sudo().leaders_google_sub = sub  # an account found by its email is linked from now on
+            if not user.leaders_email_verified:
+                user.sudo().leaders_email_verified = True  # Google has verified the email
         return self._open_session(user, body.get("remember") is True, user_agent, ip)
 
     @staticmethod
